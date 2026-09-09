@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v7
+## Combined Learning Path — v8
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `mechacoder-curriculum/curriculum-ledger.html` (this is now the one
@@ -104,51 +104,52 @@ JAVA 1
     CSA excludes try/catch by its own words: "not covered in the AP exam" (exception concepts
     like ArithmeticException/IndexOutOfBoundsException/NullPointerException are taught, just not
     the try/catch mechanism itself)
-13  Common Gotchas                                              [existing]
-14  How to Practice                                             [existing]
+13  Common Gotchas                                              [existing] ← likely thinner than
+    it should be; a real practice/exercise pass will probably surface more real gotchas than the
+    deck's current teaser slide covers (see Open questions)
 
 JAVA 2
-15  Why Design Patterns?                                        [existing]
-16  Advanced Collections (Set/Queue/Map)         ORACLE 13.1-4   [existing] ✓ captured (no CSA equivalent at all)
-17  Writing Your Own Generics                    ORACLE 14.1-5   [existing] ✓ captured
-18  Inheritance & Abstractions                                  [header]
-    18.1 Inheritance, Superclass, Subclass            CSA 5.1     [existing]
-    18.2 Inheritance and Constructors                  CSA 5.2     [new]
-    18.3 Inheritance Hierarchies                       CSA 5.5     [new]
-    18.4 Object Superclass                             CSA 5.7     [new]
-19  Polymorphism: Many Forms                                    [header]
-    19.1 Overriding Methods                            CSA 5.3     [existing]
-    19.2 super Keyword                                 CSA 5.4     [existing]
-    19.3 Polymorphism                                  CSA 5.6     [existing]
-20  Interfaces as Contracts                      ORACLE 15.1-6   [existing] ✓ captured (no CSA mapping at all, same case as 3.3)
-    20.1 Lambdas & Method References              ORACLE 12.1-2  [existing, relocated from Java 1] ✓ captured —
+14  Why Design Patterns?                                        [existing]
+15  Advanced Collections (Set/Queue/Map)         ORACLE 13.1-4   [existing] ✓ captured (no CSA equivalent at all)
+16  Writing Your Own Generics                    ORACLE 14.1-5   [existing] ✓ captured
+17  Inheritance & Abstractions                                  [header]
+    17.1 Inheritance, Superclass, Subclass            CSA 5.1     [existing]
+    17.2 Inheritance and Constructors                  CSA 5.2     [new]
+    17.3 Inheritance Hierarchies                       CSA 5.5     [new]
+    17.4 Object Superclass                             CSA 5.7     [new]
+18  Polymorphism: Many Forms                                    [header]
+    18.1 Overriding Methods                            CSA 5.3     [existing]
+    18.2 super Keyword                                 CSA 5.4     [existing]
+    18.3 Polymorphism                                  CSA 5.6     [existing]
+19  Interfaces as Contracts                      ORACLE 15.1-6   [existing] ✓ captured (no CSA mapping at all, same case as 3.3)
+    19.1 Lambdas & Method References              ORACLE 12.1-2  [existing, relocated from Java 1] ✓ captured —
         moved here since a lambda is really shorthand for a functional interface; teaching it
         before Interfaces exists (its old Java 1 spot) had no real grounding
-21  The IO-Layer Pattern                                        [existing]
-22  Static Factories                                            [existing]
-23  The Builder Pattern                                         [existing]
-24  Encapsulation & Final                                       [header]
-    24.1 Scope and Access                              CSA 3.8     [existing]
-25  Optional: Maybe a Value                                     [existing]
-26  State Machines: Logic (enum)                                [existing]
-27  Managing Transitions (switch)                               [existing]
-28  Event Loops & Triggers                                      [existing]
-29  Architecture Takeaways (DRY/YAGNI/SOLID)                    [existing]
+20  The IO-Layer Pattern                                        [existing]
+21  Static Factories                                            [existing]
+22  The Builder Pattern                                         [existing]
+23  Encapsulation & Final                                       [header]
+    23.1 Scope and Access                              CSA 3.8     [existing]
+24  Optional: Maybe a Value                                     [existing]
+25  State Machines: Logic (enum)                                [existing]
+26  Managing Transitions (switch)                               [existing]
+27  Event Loops & Triggers                                      [existing]
+28  Architecture Takeaways (DRY/YAGNI/SOLID)                    [existing]
 
 OPTIONAL / ADVANCED TOPICS
-30  Program Design & Abstraction  ⚠ OPTIONAL          [header, no existing anchor] ← conceptually sits between
+29  Program Design & Abstraction  ⚠ OPTIONAL          [header, no existing anchor] ← conceptually sits between
     Java 1 and Java 2 (was the required "Bridge"); demoted to optional since FRC teams build on WPILib's imposed
     architecture regardless, so general from-scratch program-design principles are informational, not a required
     gateway. Listed first in this block to preserve that conceptual position even though physically both chapters
     here trail Java 2.
-    30.1 Abstraction and Program Design                CSA 3.1     [new]
-    30.2 Impact of Program Design                      CSA 3.2     [new]
-31  Algorithms: Searching, Sorting & Recursion  ⚠ OPTIONAL  [header, no existing anchor] ← conceptually sits after
+    29.1 Abstraction and Program Design                CSA 3.1     [new]
+    29.2 Impact of Program Design                      CSA 3.2     [new]
+30  Algorithms: Searching, Sorting & Recursion  ⚠ OPTIONAL  [header, no existing anchor] ← conceptually sits after
     Java 2 (deepens the data-structure work from Ch.9/Ch.10); optional rather than required.
-    31.1 Searching Algorithms                          CSA 4.14    [new]
-    31.2 Sorting Algorithms                            CSA 4.15    [new]
-    31.3 Recursion                                     CSA 4.16    [new]
-    31.4 Recursive Searching and Sorting                CSA 4.17    [new]
+    30.1 Searching Algorithms                          CSA 4.14    [new]
+    30.2 Sorting Algorithms                            CSA 4.15    [new]
+    30.3 Recursion                                     CSA 4.16    [new]
+    30.4 Recursive Searching and Sorting                CSA 4.17    [new]
 ```
 
 ## Dropped from the deck, absorbed elsewhere
@@ -168,38 +169,38 @@ than a CSA-style mirror repo, since this pull is much narrower than a full trail
 
 Original scope was just the 3 gaps below the line; a later pass caught that ~11 of Java 2's
 chapters had zero CSA mapping *and* zero external-source plan — the 3 rows above the line
-(Ch.16/17/20) are the ones confirmed as a genuine Oracle fit out of that group (see this file's
+(Ch.15/16/19) are the ones confirmed as a genuine Oracle fit out of that group (see this file's
 "Optional/Supplementary" history or [[project_csa_topic_mapping]] memory for the ones ruled out
 as not an Oracle fit — design patterns, WPILib-specific content). See "Optional / Advanced
-Topics" below for the Ch.30/31 renumbering and Ch.32's removal.
+Topics" below for the Ch.29/30 renumbering and Ch.32's removal.
 
 | Item | ORACLE ref | Oracle source page | Status |
 |---|---|---|---|
-| Ch.16 Advanced Collections (Set/Queue/Deque/Map) | ORACLE 13.1–13.4 | [Collections → Interfaces](https://docs.oracle.com/javase/tutorial/collections/interfaces/index.html) | **Captured** — `oracle-java-tutorials/collections-interfaces/` (4 files), verbatim |
-| Ch.17 Generics (basics) | ORACLE 14.1–14.5 | [Lesson: Generics](https://docs.oracle.com/javase/tutorial/java/generics/index.html) | **Captured** — `oracle-java-tutorials/generics/` (5 files), verbatim |
-| Ch.20 Interfaces (base topic) | ORACLE 15.1–15.6 | [Interfaces and Inheritance → Interfaces half](https://docs.oracle.com/javase/tutorial/java/IandI/index.html) | **Captured** — `oracle-java-tutorials/interfaces/` (6 files), verbatim |
+| Ch.15 Advanced Collections (Set/Queue/Deque/Map) | ORACLE 13.1–13.4 | [Collections → Interfaces](https://docs.oracle.com/javase/tutorial/collections/interfaces/index.html) | **Captured** — `oracle-java-tutorials/collections-interfaces/` (4 files), verbatim |
+| Ch.16 Generics (basics) | ORACLE 14.1–14.5 | [Lesson: Generics](https://docs.oracle.com/javase/tutorial/java/generics/index.html) | **Captured** — `oracle-java-tutorials/generics/` (5 files), verbatim |
+| Ch.19 Interfaces (base topic) | ORACLE 15.1–15.6 | [Interfaces and Inheritance → Interfaces half](https://docs.oracle.com/javase/tutorial/java/IandI/index.html) | **Captured** — `oracle-java-tutorials/interfaces/` (6 files), verbatim |
 | Ch.11 Enums | ORACLE 10.1 | [Enum Types](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html) | **Captured** — `oracle-java-tutorials/enums/enum-types.md`, verbatim |
 | Ch.12 Exceptions & try/catch — the **mechanism** | ORACLE 11.1–11.16 | [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html) | **Captured** — `oracle-java-tutorials/exceptions/` (16 files), verbatim |
-| 20.1 Lambdas & Method References | ORACLE 12.1–12.2 | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) | **Captured** — `oracle-java-tutorials/lambdas/` (2 files: 12.1 Anonymous Classes, 12.2 Lambda Expressions), verbatim |
+| 19.1 Lambdas & Method References | ORACLE 12.1–12.2 | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) | **Captured** — `oracle-java-tutorials/lambdas/` (2 files: 12.1 Anonymous Classes, 12.2 Lambda Expressions), verbatim |
 
 All 34 pages captured 2026-09-09. **ORACLE unit numbering** (10-15, deliberately clear of CSA's
 0-5 so the two are never ambiguous) mirrors CSA's `Unit.Item` scheme — see each file's own
 `**Oracle ref:**` line. Content-authoring (the actual FRC-geared rewrite) not started — these
 are source material for that step, same relationship as the CSA files.
 
-## Optional / Advanced Topics (Ch.30-31)
+## Optional / Advanced Topics (Ch.29-30)
 
 Merged from two separate trailing blocks ("Additional Topics" + "Optional/Supplementary") into
 one, since both chapters ended up optional-for-FRC anyway and having two nearly-identical
 trailing sections added no real distinction:
 
-- **Ch.30 Program Design & Abstraction** (CSA 3.1, 3.2) — was the required "Bridge" between
+- **Ch.29 Program Design & Abstraction** (CSA 3.1, 3.2) — was the required "Bridge" between
   Java 1 and Java 2. Downgraded to optional: FRC teams build on WPILib's imposed architecture
   regardless of what general program-design theory says, so this is informational rather than a
   required gateway with no other option in practice. Ordered first in this block to keep its
   conceptual "sits between Java 1 and Java 2" position visible, even though physically it's
   listed after Java 2 like everything else here.
-- **Ch.31 Algorithms: Searching, Sorting & Recursion** (CSA 4.14-4.17) — was "Additional
+- **Ch.30 Algorithms: Searching, Sorting & Recursion** (CSA 4.14-4.17) — was "Additional
   Topics," its own band. Folded into this merged block instead since it's also optional for FRC
   purposes; ordered second since it conceptually deepens the data-structure work from Ch.9/10,
   which sits after Java 2 content-wise.
@@ -214,6 +215,17 @@ team is anywhere near ready to take on. Revisit only if/when scouting-stats work
 — until then this isn't worth carrying as a phantom optional chapter nobody will assign. Removed
 from the Ledger too (never shown there now); this note is the only remaining record.
 
+## Removed — How to Practice (old Ch.14)
+
+**Old Ch.14 "How to Practice" was removed entirely**, not renumbered into anything else. It's a
+mechadv-specific chapter (how *their* practice/exercise routine works) — this curriculum's own
+practice model will differ and land in a different placement once decided, so keeping it here in
+its current MechAdv-shaped form would misrepresent what this outline actually plans to do. Every
+chapter from the old Java 2 start onward shifted down by one to close the gap (old Ch.15 →
+Ch.14, ... old Ch.31 → Ch.30) — chapter numbers are sequence placeholders anyway, so closing the
+gap keeps the sequence readable rather than leaving a skipped 14. Revisit once this curriculum's
+own practice/exercise approach and its placement are actually decided.
+
 ## Exercise/quiz sizing (proposed, not settled)
 
 One exercise per item. 2-3 checkpoint quizzes total across all of this (end of the Java-1-side
@@ -221,8 +233,13 @@ new content, end of Java 2/Additional Topics) rather than one per item.
 
 ## Open questions (not yet decided)
 
+- Ch.13 Common Gotchas — likely thinner than it should be; a real practice/exercise pass will
+  probably surface more real gotchas than the deck's current teaser slide covers. Not yet scoped
+  how much to expand or where the extra material would come from.
 - Item 9.9 (Wrapper Classes – Integer and Double) — flagged as a candidate to drop entirely:
   mostly AP-exam-specific boxing/unboxing detail, and int/double are already covered at 2.1.
+- This curriculum's own practice/exercise model and where it lives in the sequence — needed
+  before old Ch.14 "How to Practice" (mechadv-specific, removed) gets any real replacement.
 - Final naming/numbering scheme — the chapter numbers above are sequence-order placeholders
   only (Java 1a/2a, Java III+, or something else still open).
 - Should `java-1.js`/`java-2.js` themselves ever be split into finer items to match this new
