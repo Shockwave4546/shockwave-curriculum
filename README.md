@@ -1,14 +1,23 @@
 # Shockwave Curriculum
 
-The authoring workspace (Repo 3 of 4) for a self-paced Java/WPILib learning platform for FRC
-Team 6328. This is where new curriculum content actually gets combined and written — not a raw
-source-material repo like the other two below, and not the existing app.
+An early-stage, independent learning-platform idea — not an official Team 6328 deliverable. It
+started from studying Team 6328's existing FRC lesson-deck ([`mechacoder-test`](../mechacoder-test))
+and is being built outward from there: less "building Team 6328's curriculum" and more
+"inspired by, and honestly borrowing generously from, their approach."
+
+The bigger idea this feeds: a fuller self-paced Java/WPILib learning platform — real lessons and
+exercises, plus (the actual motivating piece) an in-browser inline code editor with real
+code-execution checking against a remote server, so a learner gets immediate feedback instead of
+just reading slides. That execution/editor/hosting side isn't built yet — still very much in the
+laying-down-ideas-and-planning stage. This repo is just the curriculum-*content* slice of that
+bigger idea: combining Team 6328's existing lesson structure with real AP CS A content and other
+sources into a fuller, sourced outline, ready for an eventual lesson-writing pass.
 
 ## The four repos
 
-1. **[mechacoder-test](../mechacoder-test)** — the existing static slide-deck app (`java-1.js`/
-   `java-2.js` and friends). Frozen: never edited directly from this project. Pushed to the
-   team's GitHub org (`Shockwave4546/mechacoder-test`, private).
+1. **[mechacoder-test](../mechacoder-test)** — Team 6328's existing static slide-deck app
+   (`java-1.js`/`java-2.js` and friends), the starting point/inspiration for all of this. Frozen:
+   never edited directly from this project.
 2. **[csawesome-2026](../csawesome-2026)** — verbatim capture of CSAwesome2 (AP CSA Java), the
    primary content source. Frozen except for corrections.
 3. **shockwave-curriculum (this repo)** — combines Repo 1's existing structure with Repo 2's
@@ -50,6 +59,6 @@ source-material repo like the other two below, and not the existing app.
 
 Every new lesson file built from this outline should carry a reference line back to its sources
 — see `OUTLINE.md`'s "Provenance convention" section for the exact format. When this project
-eventually goes open-source, full credit will go to every original source (CSAwesome/Runestone,
-Oracle, WPILib, Team 5817, and any added later), with Claude's role in the process documented
-transparently.
+eventually goes open-source, full credit will go to every original source and inspiration —
+Team 6328's own lesson deck, CSAwesome/Runestone, Oracle, WPILib, Team 5817, and any added
+later — with Claude's role in the process documented transparently.
