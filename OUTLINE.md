@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v8
+## Combined Learning Path — v9
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `shockwave-curriculum/curriculum-ledger.html` (this is now the one
@@ -126,30 +126,45 @@ JAVA 2
         moved here since a lambda is really shorthand for a functional interface; teaching it
         before Interfaces exists (its old Java 1 spot) had no real grounding
 20  The IO-Layer Pattern                                        [existing]
-21  Static Factories                                            [existing]
-22  The Builder Pattern                                         [existing]
+21  Static Factories                                 T5817 30.2   [existing]
+22  The Builder Pattern                              T5817 30.1   [existing]
 23  Encapsulation & Final                                       [header]
     23.1 Scope and Access                              CSA 3.8     [existing]
-24  Optional: Maybe a Value                                     [existing]
-25  State Machines: Logic (enum)                                [existing]
-26  Managing Transitions (switch)                               [existing]
-27  Event Loops & Triggers                                      [existing]
-28  Architecture Takeaways (DRY/YAGNI/SOLID)                    [existing]
+24  Optional: Maybe a Value                                     [existing] ← label kept as-is for now;
+    flagged as possibly misleading (see Open questions) — the actual slide content is about Optional<T>
+    as a nullable-safe return value, not optional method parameters/default values
+25  Command-Based Programming                       WPILIB 20.1-8 [header, no existing anchor] ← this
+    is the big one: WPILib's own official architecture pattern (Subsystems + Commands + Triggers +
+    Scheduler). Placed here since it builds directly on IO-Layer (20) and Interfaces (19). 25.4-25.6
+    absorb what used to be three separate one-slide chapters (old Ch.25 State Machines, old Ch.26
+    Managing Transitions, old Ch.27 Event Loops & Triggers) — real conceptual overlap: Command-Based
+    IS the framework those three were describing pieces of. Order: intro → building blocks (Commands,
+    Scheduler) → a common technique for a Subsystem/Command's internal logic (enum/switch state
+    machines) → the external reactive piece (Triggers) → real project structure last.
+    25.1 What Is Command-Based Programming?          WPILIB 20.1  [new]
+    25.2 Commands & Command Compositions             WPILIB 20.2-3 [new]
+    25.3 The Command Scheduler                       WPILIB 20.8  [new]
+    25.4 State Machines: Logic (enum)                T5817 31.1-4 [existing, was Ch.25]
+    25.5 Managing Transitions (switch)               T5817 31.1-4 [existing, was Ch.26]
+    25.6 Binding Commands to Triggers                WPILIB 20.5  [existing, was Ch.27 "Event Loops & Triggers"]
+    25.7 Structuring a Command-Based Robot Project    WPILIB 20.4,6-7 [new]
+26  Architecture Takeaways (DRY/YAGNI/SOLID)                    [existing] ← was Ch.28; still unsourced,
+    neither WPILib nor T5817 teach these as named general principles
 
 OPTIONAL / ADVANCED TOPICS
-29  Program Design & Abstraction  ⚠ OPTIONAL          [header, no existing anchor] ← conceptually sits between
+27  Program Design & Abstraction  ⚠ OPTIONAL          [header, no existing anchor] ← conceptually sits between
     Java 1 and Java 2 (was the required "Bridge"); demoted to optional since FRC teams build on WPILib's imposed
     architecture regardless, so general from-scratch program-design principles are informational, not a required
     gateway. Listed first in this block to preserve that conceptual position even though physically both chapters
     here trail Java 2.
-    29.1 Abstraction and Program Design                CSA 3.1     [new]
-    29.2 Impact of Program Design                      CSA 3.2     [new]
-30  Algorithms: Searching, Sorting & Recursion  ⚠ OPTIONAL  [header, no existing anchor] ← conceptually sits after
+    27.1 Abstraction and Program Design                CSA 3.1     [new]
+    27.2 Impact of Program Design                      CSA 3.2     [new]
+28  Algorithms: Searching, Sorting & Recursion  ⚠ OPTIONAL  [header, no existing anchor] ← conceptually sits after
     Java 2 (deepens the data-structure work from Ch.9/Ch.10); optional rather than required.
-    30.1 Searching Algorithms                          CSA 4.14    [new]
-    30.2 Sorting Algorithms                            CSA 4.15    [new]
-    30.3 Recursion                                     CSA 4.16    [new]
-    30.4 Recursive Searching and Sorting                CSA 4.17    [new]
+    28.1 Searching Algorithms                          CSA 4.14    [new]
+    28.2 Sorting Algorithms                            CSA 4.15    [new]
+    28.3 Recursion                                     CSA 4.16    [new]
+    28.4 Recursive Searching and Sorting                CSA 4.17    [new]
 ```
 
 ## Dropped from the deck, absorbed elsewhere
@@ -172,7 +187,7 @@ chapters had zero CSA mapping *and* zero external-source plan — the 3 rows abo
 (Ch.15/16/19) are the ones confirmed as a genuine Oracle fit out of that group (see this file's
 "Optional/Supplementary" history or [[project_csa_topic_mapping]] memory for the ones ruled out
 as not an Oracle fit — design patterns, WPILib-specific content). See "Optional / Advanced
-Topics" below for the Ch.29/30 renumbering and Ch.32's removal.
+Topics" below for the Ch.27/28 renumbering and Ch.32's removal.
 
 | Item | ORACLE ref | Oracle source page | Status |
 |---|---|---|---|
@@ -188,19 +203,58 @@ All 34 pages captured 2026-09-09. **ORACLE unit numbering** (10-15, deliberately
 `**Oracle ref:**` line. Content-authoring (the actual FRC-geared rewrite) not started — these
 are source material for that step, same relationship as the CSA files.
 
-## Optional / Advanced Topics (Ch.29-30)
+### WPILib's official docs — chosen source for Ch.25 Command-Based Programming
+
+**Source: [WPILib's Command-Based Programming trail](https://docs.wpilib.org/en/stable/docs/software/commandbased/index.html)**
+(docs.wpilib.org) — free, authoritative, the actual framework Team 6328 (and every other FRC
+team) builds robot code on. Confirmed this is the *current/stable* docs, not a stale archived
+version, before scoping it (checked directly — no more "2020 rewrite" framing that the old 2021
+archive had). Scoped down to 8 pages, skipping PID Control, Motion Profiling, and the
+C++-specific "Technical Discussion on C++ Commands" pages — those belong to a controls course,
+not this Java/OOP curriculum. Captured into `other-reference-repo/wpilib/command-based/` — see
+that repo's own README for the numbering scheme (**WPILIB Unit 20**).
+
+| Item | WPILIB ref | Page | Status |
+|---|---|---|---|
+| 25.1 What Is Command-Based Programming? | WPILIB 20.1 | [What Is "Command-Based" Programming?](https://docs.wpilib.org/en/stable/docs/software/commandbased/what-is-command-based.html) | Pending — fetch in progress |
+| 25.2 Commands & Command Compositions | WPILIB 20.2-3 | [Commands](https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html), [Command Compositions](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html) | Pending — fetch in progress |
+| 25.7 Structuring a Command-Based Robot Project | WPILIB 20.4,6-7 | [Subsystems](https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html), [Structuring a Command-Based Robot Project](https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html), [Organizing Command-Based Robot Projects](https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html) | Pending — fetch in progress |
+| 25.6 Binding Commands to Triggers (was Ch.27) | WPILIB 20.5 | [Binding Commands to Triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html) | Pending — fetch in progress |
+| 25.3 The Command Scheduler | WPILIB 20.8 | [The Command Scheduler](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html) | Pending — fetch in progress |
+
+### Team 5817's public training guide — chosen source for Ch.21, Ch.22, and 25.4/25.5
+
+**Source: [Team 5817's Programming Training guide](https://uni-rex5817.gitbook.io/programming-training/)**
+— another FRC team's publicly-published GitBook, no login/paywall, no restrictive license notice
+found on the site. User found the Builder page directly; browsing that same guide's Design
+Patterns section turned up a matching Factory page, and its Subsystems section turned up real
+FRC-code examples of enum state machines living inside command-based subsystems. Captured into
+`other-reference-repo/team-5817-training/` — see that repo's own README for the numbering scheme
+(**T5817 Unit 30** design patterns, **Unit 31** subsystem/state-based patterns).
+
+| Item | T5817 ref | Page | Status |
+|---|---|---|---|
+| Ch.22 The Builder Pattern | T5817 30.1 | [Builder](https://uni-rex5817.gitbook.io/programming-training/code/design-patterns/builder) | **Captured** — `team-5817-training/design-patterns/builder.md`, verbatim |
+| Ch.21 Static Factories | T5817 30.2 | [Factory](https://uni-rex5817.gitbook.io/programming-training/code/design-patterns/factory) | **Captured** — `team-5817-training/design-patterns/factory.md`, verbatim |
+| 25.4 State Machines / 25.5 Managing Transitions | T5817 31.1-4 | [How do I make a Subsystem Work?](https://uni-rex5817.gitbook.io/programming-training/code/how-do-i-make-a-subsystem-work) + 3 sub-pages (Servo/Roller state-based subsystems, Subsystem Manager) | **Captured** — `team-5817-training/subsystems/` (4 files), verbatim |
+
+Ch.14 (Why Design Patterns?) and Ch.26 (Architecture Takeaways, DRY/YAGNI/SOLID) — checked both
+sources, neither teaches these as named general principles. Still unsourced; likely needs
+original authorship rather than a borrowed source.
+
+## Optional / Advanced Topics (Ch.27-28)
 
 Merged from two separate trailing blocks ("Additional Topics" + "Optional/Supplementary") into
 one, since both chapters ended up optional-for-FRC anyway and having two nearly-identical
 trailing sections added no real distinction:
 
-- **Ch.29 Program Design & Abstraction** (CSA 3.1, 3.2) — was the required "Bridge" between
+- **Ch.27 Program Design & Abstraction** (CSA 3.1, 3.2) — was the required "Bridge" between
   Java 1 and Java 2. Downgraded to optional: FRC teams build on WPILib's imposed architecture
   regardless of what general program-design theory says, so this is informational rather than a
   required gateway with no other option in practice. Ordered first in this block to keep its
   conceptual "sits between Java 1 and Java 2" position visible, even though physically it's
   listed after Java 2 like everything else here.
-- **Ch.30 Algorithms: Searching, Sorting & Recursion** (CSA 4.14-4.17) — was "Additional
+- **Ch.28 Algorithms: Searching, Sorting & Recursion** (CSA 4.14-4.17) — was "Additional
   Topics," its own band. Folded into this merged block instead since it's also optional for FRC
   purposes; ordered second since it conceptually deepens the data-structure work from Ch.9/10,
   which sits after Java 2 content-wise.
@@ -214,6 +268,26 @@ and the one plausible future use (statistics for scouting/data analysis) isn't a
 team is anywhere near ready to take on. Revisit only if/when scouting-stats work actually starts
 — until then this isn't worth carrying as a phantom optional chapter nobody will assign. Removed
 from the Ledger too (never shown there now); this note is the only remaining record.
+
+## Restructured — Command-Based Programming absorbs old Ch.25-27
+
+**New Ch.25 "Command-Based Programming"** was inserted right after Ch.24 (Optional), and old
+Ch.25 (State Machines), old Ch.26 (Managing Transitions), and old Ch.27 (Event Loops & Triggers)
+were folded into it as items 25.4-25.6 rather than staying separate one-slide chapters. Reasoning:
+Command-Based is WPILib's actual blessed architecture (Subsystems + Commands + Triggers +
+Scheduler) — old Ch.27's "Event Loops & Triggers" content is really just Command-Based's own
+"Binding Commands to Triggers" piece under a different name, and old Ch.25/26's enum+switch state
+machine is a common technique used *inside* a command-based Subsystem/Command, not a separate
+architecture. Keeping them as three disconnected one-slide chapters was hiding that they're all
+part of the same bigger framework. Old Ch.28 (Architecture Takeaways) simply shifted down to
+Ch.26; everything in the trailing Optional/Advanced block shifted down by one more (was 29-30,
+now 27-28).
+
+Also considered and rejected: moving Ch.21 Static Factories / Ch.22 Builder Pattern up next to
+Ch.14 (Why Design Patterns?). Checked the actual deck slides first — Ch.20 IO-Layer Pattern's own
+slide text explicitly depends on Ch.19 Interfaces ("the Subsystem only talks to the Interface"),
+so 20/21/22 stay where they are, right after Interfaces, matching the original deck's own slide
+order.
 
 ## Removed — How to Practice (old Ch.14)
 
@@ -233,6 +307,14 @@ new content, end of Java 2/Additional Topics) rather than one per item.
 
 ## Open questions (not yet decided)
 
+- Ch.24 "Optional: Maybe a Value" — the label may be misleading. The actual slide content (and
+  the intent behind it) is about `Optional<T>` as a nullable-safe *return value* ("no nulls, no
+  surprises" for things like vision pose estimators) — not about optional *method parameters* or
+  default parameter values (Java doesn't have default parameter values as a language feature
+  anyway). User flagged this as worth revisiting but said to leave the label as-is for now.
+- Ch.14 (Why Design Patterns?) and Ch.26 (Architecture Takeaways, DRY/YAGNI/SOLID) — checked both
+  WPILib's docs and Team 5817's guide, neither teaches these as named general principles. Still
+  need a source — likely original authorship rather than something borrowed.
 - Ch.13 Common Gotchas — likely thinner than it should be; a real practice/exercise pass will
   probably surface more real gotchas than the deck's current teaser slide covers. Not yet scoped
   how much to expand or where the extra material would come from.

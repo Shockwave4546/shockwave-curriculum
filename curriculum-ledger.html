@@ -90,7 +90,7 @@
 <div class="wrap">
 
   <header class="top">
-    <div class="eyebrow">shockwave-curriculum · OUTLINE.md v8</div>
+    <div class="eyebrow">shockwave-curriculum · OUTLINE.md v9</div>
     <h1>Curriculum Ledger</h1>
     <p class="sub">Chapter headers are pure organizational labels, never carrying a CSA number themselves — every actual piece of content is a numbered item underneath. "Item" is a placeholder term, not "lesson" (that collides with mechacoder's own <span class="mono">registerLesson()</span>).</p>
 
@@ -224,8 +224,8 @@
     </div>
 
     <div class="chapter"><div class="ch-head"><span class="ch-num">20</span><span class="dot existing"></span><span class="ch-name">The IO-Layer Pattern</span></div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">21</span><span class="dot existing"></span><span class="ch-name">Static Factories</span></div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">22</span><span class="dot existing"></span><span class="ch-name">The Builder Pattern</span></div></div>
+    <div class="chapter"><div class="ch-head"><span class="ch-num">21</span><span class="dot existing"></span><span class="ch-name">Static Factories</span><span class="csa-ref">T5817 30.2</span></div></div>
+    <div class="chapter"><div class="ch-head"><span class="ch-num">22</span><span class="dot existing"></span><span class="ch-name">The Builder Pattern</span><span class="csa-ref">T5817 30.1</span></div></div>
 
     <div class="chapter">
       <div class="ch-head"><span class="ch-num">23</span><span class="ch-name">Encapsulation &amp; Final</span></div>
@@ -233,25 +233,34 @@
     </div>
 
     <div class="chapter"><div class="ch-head"><span class="ch-num">24</span><span class="dot existing"></span><span class="ch-name">Optional: Maybe a Value</span></div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">25</span><span class="dot existing"></span><span class="ch-name">State Machines: Logic (enum)</span></div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">26</span><span class="dot existing"></span><span class="ch-name">Managing Transitions (switch)</span></div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">27</span><span class="dot existing"></span><span class="ch-name">Event Loops &amp; Triggers</span></div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">28</span><span class="dot existing"></span><span class="ch-name">Architecture Takeaways (DRY / YAGNI / SOLID)</span></div></div>
+
+    <div class="chapter">
+      <div class="ch-head"><span class="ch-num">25</span><span class="ch-name">Command-Based Programming</span><span class="csa-ref">WPILIB 20.1–20.8</span></div>
+      <div class="item"><span class="item-num">25.1</span><span class="dot new"></span><span class="item-name">What Is Command-Based Programming?</span><span class="csa-ref">WPILIB 20.1</span></div>
+      <div class="item"><span class="item-num">25.2</span><span class="dot new"></span><span class="item-name">Commands &amp; Command Compositions</span><span class="csa-ref">WPILIB 20.2–20.3</span></div>
+      <div class="item"><span class="item-num">25.3</span><span class="dot new"></span><span class="item-name">The Command Scheduler</span><span class="csa-ref">WPILIB 20.8</span></div>
+      <div class="item"><span class="item-num">25.4</span><span class="dot existing"></span><span class="item-name">State Machines: Logic (enum)</span><span class="csa-ref">T5817 31.1–31.4</span></div>
+      <div class="item"><span class="item-num">25.5</span><span class="dot existing"></span><span class="item-name">Managing Transitions (switch)</span><span class="csa-ref">T5817 31.1–31.4</span></div>
+      <div class="item"><span class="item-num">25.6</span><span class="dot existing"></span><span class="item-name">Binding Commands to Triggers</span><span class="csa-ref">WPILIB 20.5</span></div>
+      <div class="item"><span class="item-num">25.7</span><span class="dot new"></span><span class="item-name">Structuring a Command-Based Robot Project</span><span class="csa-ref">WPILIB 20.4, 20.6–20.7</span></div>
+    </div>
+
+    <div class="chapter"><div class="ch-head"><span class="ch-num">26</span><span class="dot existing"></span><span class="ch-name">Architecture Takeaways (DRY / YAGNI / SOLID)</span></div></div>
 
     <div class="band-label">Optional / Advanced Topics</div>
 
     <div class="chapter">
-      <div class="ch-head"><span class="ch-num">29</span><span class="ch-name">Program Design &amp; Abstraction</span><span class="chip opt">OPTIONAL</span></div>
-      <div class="item"><span class="item-num">29.1</span><span class="dot new"></span><span class="item-name">Abstraction and Program Design</span><span class="csa-ref">CSA 3.1</span></div>
-      <div class="item"><span class="item-num">29.2</span><span class="dot new"></span><span class="item-name">Impact of Program Design</span><span class="csa-ref">CSA 3.2</span></div>
+      <div class="ch-head"><span class="ch-num">27</span><span class="ch-name">Program Design &amp; Abstraction</span><span class="chip opt">OPTIONAL</span></div>
+      <div class="item"><span class="item-num">27.1</span><span class="dot new"></span><span class="item-name">Abstraction and Program Design</span><span class="csa-ref">CSA 3.1</span></div>
+      <div class="item"><span class="item-num">27.2</span><span class="dot new"></span><span class="item-name">Impact of Program Design</span><span class="csa-ref">CSA 3.2</span></div>
     </div>
 
     <div class="chapter">
-      <div class="ch-head"><span class="ch-num">30</span><span class="ch-name">Algorithms: Searching, Sorting &amp; Recursion</span><span class="chip opt">OPTIONAL</span></div>
-      <div class="item"><span class="item-num">30.1</span><span class="dot new"></span><span class="item-name">Searching Algorithms</span><span class="csa-ref">CSA 4.14</span></div>
-      <div class="item"><span class="item-num">30.2</span><span class="dot new"></span><span class="item-name">Sorting Algorithms</span><span class="csa-ref">CSA 4.15</span></div>
-      <div class="item"><span class="item-num">30.3</span><span class="dot new"></span><span class="item-name">Recursion</span><span class="csa-ref">CSA 4.16</span></div>
-      <div class="item"><span class="item-num">30.4</span><span class="dot new"></span><span class="item-name">Recursive Searching and Sorting</span><span class="csa-ref">CSA 4.17</span></div>
+      <div class="ch-head"><span class="ch-num">28</span><span class="ch-name">Algorithms: Searching, Sorting &amp; Recursion</span><span class="chip opt">OPTIONAL</span></div>
+      <div class="item"><span class="item-num">28.1</span><span class="dot new"></span><span class="item-name">Searching Algorithms</span><span class="csa-ref">CSA 4.14</span></div>
+      <div class="item"><span class="item-num">28.2</span><span class="dot new"></span><span class="item-name">Sorting Algorithms</span><span class="csa-ref">CSA 4.15</span></div>
+      <div class="item"><span class="item-num">28.3</span><span class="dot new"></span><span class="item-name">Recursion</span><span class="csa-ref">CSA 4.16</span></div>
+      <div class="item"><span class="item-num">28.4</span><span class="dot new"></span><span class="item-name">Recursive Searching and Sorting</span><span class="csa-ref">CSA 4.17</span></div>
     </div>
 
   </section>
