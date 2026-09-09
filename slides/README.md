@@ -30,5 +30,6 @@ structure differs from where the slide physically sits in the old one.
 ## Status
 
 All 27 **existing** items pulled as of 2026-09-09 (every chapter/item the deck already has a
-slide for). **New** items (the ~45 marked `[new]` in `OUTLINE.md`) not yet authored — in
-progress, chapter by chapter.
+slide for). **New** items (~45 total, marked `[new]` in `OUTLINE.md`): Ch.2's 4 new items (2.2,
+2.3, 2.4, 2.5) authored as a format/tone pilot — everything else still pending, chapter by
+chapter, once the pilot's format is confirmed.
