@@ -135,7 +135,6 @@ JAVA 2
     from "Optional: Maybe a Value" to disambiguate from optional method parameters, per the label
     concern raised earlier; the deck's actual slide heading is unchanged (mechacoder-test is
     frozen), this is an outline-label-only rename
-    as a nullable-safe return value, not optional method parameters/default values
 25  Command-Based Programming                       WPILIB 20.1-8 [header, no existing anchor] ← this
     is the big one: WPILib's own official architecture pattern (Subsystems + Commands + Triggers +
     Scheduler). Placed here since it builds directly on IO-Layer (20) and Interfaces (19). 25.4-25.6
