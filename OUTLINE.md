@@ -216,11 +216,11 @@ that repo's own README for the numbering scheme (**WPILIB Unit 20**).
 
 | Item | WPILIB ref | Page | Status |
 |---|---|---|---|
-| 25.1 What Is Command-Based Programming? | WPILIB 20.1 | [What Is "Command-Based" Programming?](https://docs.wpilib.org/en/stable/docs/software/commandbased/what-is-command-based.html) | Pending — fetch in progress |
-| 25.2 Commands & Command Compositions | WPILIB 20.2-3 | [Commands](https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html), [Command Compositions](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html) | Pending — fetch in progress |
-| 25.7 Structuring a Command-Based Robot Project | WPILIB 20.4,6-7 | [Subsystems](https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html), [Structuring a Command-Based Robot Project](https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html), [Organizing Command-Based Robot Projects](https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html) | Pending — fetch in progress |
-| 25.6 Binding Commands to Triggers (was Ch.27) | WPILIB 20.5 | [Binding Commands to Triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html) | Pending — fetch in progress |
-| 25.3 The Command Scheduler | WPILIB 20.8 | [The Command Scheduler](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html) | Pending — fetch in progress |
+| 25.1 What Is Command-Based Programming? | WPILIB 20.1 | [What Is "Command-Based" Programming?](https://docs.wpilib.org/en/stable/docs/software/commandbased/what-is-command-based.html) | **Captured** — `wpilib/command-based/01-what-is-command-based.md`, verbatim |
+| 25.2 Commands & Command Compositions | WPILIB 20.2-3 | [Commands](https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html), [Command Compositions](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html) | **Captured** — `wpilib/command-based/02-commands.md`, `03-command-compositions.md`, verbatim |
+| 25.7 Structuring a Command-Based Robot Project | WPILIB 20.4,6-7 | [Subsystems](https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html), [Structuring a Command-Based Robot Project](https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html), [Organizing Command-Based Robot Projects](https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html) | **Captured** — `wpilib/command-based/04-subsystems.md`, `06-structuring-command-based-project.md`, `07-organizing-command-based.md`, verbatim |
+| 25.6 Binding Commands to Triggers (was Ch.27) | WPILIB 20.5 | [Binding Commands to Triggers](https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html) | **Captured** — `wpilib/command-based/05-binding-commands-to-triggers.md`, verbatim |
+| 25.3 The Command Scheduler | WPILIB 20.8 | [The Command Scheduler](https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html) | **Captured** — `wpilib/command-based/08-command-scheduler.md`, verbatim |
 
 ### Team 5817's public training guide — chosen source for Ch.21, Ch.22, and 25.4/25.5
 
