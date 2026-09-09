@@ -18,6 +18,76 @@ stand on its own? mechadv (the original team) capped things at two Java lessons 
 teach live and a lecturer fills gaps in real time; that constraint doesn't apply to solo
 learners here, so there's no reason to force everything back into two lessons.
 
+## Combined Learning Path — v1
+
+One interleaved tree: existing deck topics (Java 1 / Java 2) with new clusters slotted in at
+the point they extend or attach to. Section labels (`Bridge`, `Additional Topics`) are
+placeholders at "mechacoder level," not final names. CSA's own topic order was set aside to
+build this — easy to flip back to CSA order later if needed.
+
+This is v1, expected to change. Neither mechacoder's existing ordering nor CSA's is treated as
+fixed — the next pass is refactoring this purely for student learning-progression sense,
+possibly drawing on how other Java textbooks/courses sequence these same topics, not just these
+two sources. A topic like Strings is a known example of an awkward single-parent fit (it
+also belongs with Arrays, not just Variables & Types) — expect more of these to surface.
+
+```
+Java 1
+  Why Java for FRC?
+  Variables & Types
+    ↳ [NEW] Expressions, Assignment & Casting        [CSA 1.3,1.4,1.5,1.6]
+    ↳ [NEW] Strings                                  [CSA 1.15]
+  Storing Data (arrays/collections)
+    ↳ [NEW] Arrays & ArrayLists: Traversal Patterns  [CSA 4.4,4.5,4.9,4.10]
+    ↳ [NEW] Wrapper Classes & Text Files             [CSA 4.6,4.7]
+  Control Structures
+    ↳ [NEW] Boolean Logic & Conditional Design       [CSA 2.1,2.2,2.4,2.5,2.6]
+    ↳ [NEW] Loops in Depth                           [CSA 2.7,2.9,2.11,2.12]
+    ↳ [NEW] String Algorithms                        [CSA 2.10]  (needs Strings + Loops above)
+  Reusable Methods
+    ↳ [NEW] Class/Instance Methods & the Math Library [CSA 1.10,1.11,1.14]
+    ↳ [NEW] Code Documentation & Preconditions        [CSA 1.8]
+  The Class Blueprint
+  Constructors & "this"
+  Enums: Named Choices
+  Packages & Imports
+  Exceptions & try/catch
+  Lambdas & Method References
+  Common Gotchas
+  How to Practice
+
+Bridge
+  ↳ [NEW] Program Design & Abstraction              [CSA 3.1,3.2]
+
+Java 2
+  Why Design Patterns?
+  Advanced Collections (Set/Queue/Map)
+  Writing Your Own Generics
+  Inheritance & Abstractions
+    ↳ [NEW] Inheritance in Depth                     [CSA 5.2,5.5,5.7]
+  Polymorphism: Many Forms
+  Interfaces as Contracts
+  The IO-Layer Pattern
+  Static Factories
+    ↳ [NEW] Object References & Static Members       [CSA 3.6,3.7]
+  The Builder Pattern
+  Encapsulation & Final
+  Optional: Maybe a Value
+  State Machines: Logic (enum)
+  Managing Transitions (switch)
+  Event Loops & Triggers
+  Architecture Takeaways (DRY/YAGNI/SOLID)
+
+Additional Topics
+  ↳ [NEW] 2D Arrays                                    [CSA 4.11,4.12,4.13]
+  ↳ [NEW] Algorithms: Searching, Sorting & Recursion   [CSA 4.14,4.15,4.16,4.17]
+
+(dropped) Tier 0 — CSA 1.1, reference CSA site directly
+(flagged, not building) Data Ethics & Data Sets — CSA 4.1, 4.2
+```
+
+## Original tier/cluster tables (detail behind the tree above)
+
 ## Dropped: Tier 0 (CSA 1.1 — Foundations of Programming)
 
 Not building a lesson for this. It's general CS literacy (what's an algorithm, what's a
