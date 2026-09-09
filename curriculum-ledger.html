@@ -60,7 +60,6 @@
   .legend-item{display:inline-flex; align-items:center;}
   .chip{display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.04em; font-weight:600; padding:2px 8px; border-radius:3px;}
   .chip.warn{background:var(--warn-soft); color:var(--warn);}
-  .chip.drop{background:var(--drop-soft); color:var(--drop);}
   .chip.opt{background:var(--opt-soft); color:var(--opt);}
   .chip.captured{background:var(--existing-soft); color:var(--existing-ink);}
 
@@ -74,14 +73,11 @@
   .ch-num{font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--ink-faint); min-width:22px;}
   .ch-name{font-size:16.5px; font-weight:600;}
   .csa-ref{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-faint);}
-  .ch-note{flex-basis:100%; font-size:12.5px; color:var(--ink-soft); font-style:italic; margin-left:32px; margin-top:2px;}
-
   .subgroup-label{font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); margin:10px 0 4px 32px; font-family:'IBM Plex Mono',monospace;}
   .item{display:flex; align-items:baseline; gap:10px; margin-left:32px; padding:4px 0; flex-wrap:wrap;}
   .item-num{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-faint); min-width:34px;}
   .item-name{font-size:14px;}
   .item .csa-ref{font-size:11px;}
-  .item-note{flex-basis:100%; margin-left:44px; font-size:12px; color:var(--ink-soft); font-style:italic;}
 
   .band-label{
     font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase;
@@ -89,20 +85,7 @@
     display:inline-block;
   }
 
-  .card{background:var(--panel); border:1px solid var(--line-soft); border-radius:4px; padding:18px 20px;}
-  table{width:100%; border-collapse:collapse; font-size:13.5px;}
-  th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); font-weight:500; padding:0 10px 8px 0; border-bottom:1px solid var(--line);}
-  td{padding:9px 10px 9px 0; border-bottom:1px solid var(--line-soft); vertical-align:top;}
-  tr:last-child td{border-bottom:none;}
-  td.status{white-space:nowrap;}
-  .status-pill{font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:3px; background:var(--warn-soft); color:var(--warn);}
   a{color:var(--existing-ink); text-decoration-color:var(--line);}
-  ul.plain{margin:0; padding-left:20px; font-size:14px;}
-  ul.plain li{margin-bottom:8px;}
-  .overflow{overflow-x:auto;}
-
-  .judgment{background:var(--new-soft); border:1px solid var(--new-ink); border-radius:3px; padding:10px 14px; font-size:13px; margin:10px 0 0 32px; color:var(--new-ink);}
-  .judgment b{color:inherit;}
 </style>
 
 <div class="wrap">
@@ -142,7 +125,6 @@
       <div class="item"><span class="item-num">3.1</span><span class="dot new"></span><span class="item-name">APIs and Libraries</span><span class="csa-ref">CSA 1.7</span></div>
       <div class="item"><span class="item-num">3.2</span><span class="dot new"></span><span class="item-name">Documentation with Comments and Preconditions</span><span class="csa-ref">CSA 1.8</span></div>
       <div class="item"><span class="item-num">3.3</span><span class="dot existing"></span><span class="item-name">Packages &amp; Imports</span></div>
-      <div class="item-note">3.3 folded in here (was its own Ch.4) — "packages" is a subsection inside CSA 1.7, already covered at 3.1, so no reason to keep it as a separate chapter.</div>
     </div>
 
     <div class="chapter">
@@ -173,7 +155,6 @@
 
     <div class="chapter">
       <div class="ch-head"><span class="ch-num">6</span><span class="ch-name">Strings</span></div>
-      <div class="ch-note">Moved to right after Control Structures finishes (not mid-chapter) — introduces something concrete to loop over right after loops are taught, and resolves the old two-parent dependency flag: now cleanly follows both Strings itself and all of Loops.</div>
       <div class="item"><span class="item-num">6.1</span><span class="dot new"></span><span class="item-name">Strings</span><span class="csa-ref">CSA 1.15</span></div>
       <div class="item"><span class="item-num">6.2</span><span class="dot new"></span><span class="item-name">String Algorithms</span><span class="csa-ref">CSA 2.10</span></div>
     </div>
@@ -182,7 +163,6 @@
       <div class="ch-head"><span class="ch-num">7</span><span class="ch-name">The Class Blueprint</span></div>
       <div class="item"><span class="item-num">7.1</span><span class="dot existing"></span><span class="item-name">Anatomy of a Java Class</span><span class="csa-ref">CSA 3.3</span></div>
       <div class="item"><span class="item-num">7.2</span><span class="dot existing"></span><span class="item-name">Methods: How to Write Them</span><span class="csa-ref">CSA 3.5</span></div>
-      <div class="item-note">7.2 is where "Reusable Methods" (dropped as its own slide) gets its real depth from.</div>
       <div class="item"><span class="item-num">7.3</span><span class="dot new"></span><span class="item-name">Methods: Passing and Returning References of an Object</span><span class="csa-ref">CSA 3.6</span></div>
       <div class="item"><span class="item-num">7.4</span><span class="dot new"></span><span class="item-name">Class (static) Variables and Methods</span><span class="csa-ref">CSA 3.7</span></div>
     </div>
@@ -206,27 +186,25 @@
       <div class="subgroup-label">Wrapper Classes &amp; Text Files</div>
       <div class="item"><span class="item-num">9.8</span><span class="dot new"></span><span class="item-name">Using Text Files</span><span class="csa-ref">CSA 4.6</span></div>
       <div class="item"><span class="item-num">9.9</span><span class="dot new"></span><span class="item-name">Wrapper Classes – Integer and Double</span><span class="csa-ref">CSA 4.7</span></div>
-      <div class="item-note">Leaving 9.9 for now — flagged as a candidate to drop: mostly AP-exam-specific boxing/unboxing detail, and int/double are already covered at 2.1.</div>
     </div>
 
     <div class="chapter">
       <div class="ch-head"><span class="ch-num">10</span><span class="ch-name">2D Arrays</span></div>
-      <div class="ch-note">Its own chapter — FRC-relevant (vision matrices, odometry math).</div>
       <div class="item"><span class="item-num">10.1</span><span class="dot new"></span><span class="item-name">2D Array Creation and Access</span><span class="csa-ref">CSA 4.11</span></div>
       <div class="item"><span class="item-num">10.2</span><span class="dot new"></span><span class="item-name">2D Array Traversals: Nested Loops</span><span class="csa-ref">CSA 4.12</span></div>
       <div class="item"><span class="item-num">10.3</span><span class="dot new"></span><span class="item-name">Implementing 2D Array Algorithms</span><span class="csa-ref">CSA 4.13</span></div>
     </div>
 
-    <div class="chapter"><div class="ch-head"><span class="ch-num">11</span><span class="dot existing"></span><span class="ch-name">Enums: Named Choices</span><span class="csa-ref">ORACLE 10.1</span><span class="chip captured">✓ SOURCE CAPTURED</span></div><div class="ch-note">Left in place — feeds Java 2's State Machines content. Oracle's "Enum Types" page captured verbatim in other-reference-repo.</div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">12</span><span class="dot existing"></span><span class="ch-name">Exceptions &amp; try/catch</span><span class="csa-ref">ORACLE 11.1–11.16</span><span class="chip captured">✓ SOURCE CAPTURED</span></div><div class="ch-note">The try/catch mechanism specifically — CSA excludes it by its own words. Oracle's full 16-page "Lesson: Exceptions" trail captured verbatim.</div></div>
+    <div class="chapter"><div class="ch-head"><span class="ch-num">11</span><span class="dot existing"></span><span class="ch-name">Enums: Named Choices</span><span class="csa-ref">ORACLE 10.1</span><span class="chip captured">✓ SOURCE CAPTURED</span></div></div>
+    <div class="chapter"><div class="ch-head"><span class="ch-num">12</span><span class="dot existing"></span><span class="ch-name">Exceptions &amp; try/catch</span><span class="csa-ref">ORACLE 11.1–11.16</span><span class="chip captured">✓ SOURCE CAPTURED</span></div></div>
     <div class="chapter"><div class="ch-head"><span class="ch-num">13</span><span class="dot existing"></span><span class="ch-name">Common Gotchas</span></div></div>
     <div class="chapter"><div class="ch-head"><span class="ch-num">14</span><span class="dot existing"></span><span class="ch-name">How to Practice</span></div></div>
 
     <div class="band-label">Java 2</div>
 
     <div class="chapter"><div class="ch-head"><span class="ch-num">15</span><span class="dot existing"></span><span class="ch-name">Why Design Patterns?</span></div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">16</span><span class="dot existing"></span><span class="ch-name">Advanced Collections</span><span class="csa-ref">ORACLE 13.1–13.4</span><span class="chip captured">✓ SOURCE CAPTURED</span></div><div class="ch-note">Set / Queue / Map — no CSA equivalent. Oracle's Set/Queue/Deque/Map interface pages captured verbatim (4 files).</div></div>
-    <div class="chapter"><div class="ch-head"><span class="ch-num">17</span><span class="dot existing"></span><span class="ch-name">Writing Your Own Generics</span><span class="csa-ref">ORACLE 14.1–14.5</span><span class="chip captured">✓ SOURCE CAPTURED</span></div><div class="ch-note">Oracle's Generics basics (5 pages: Why Use Generics, Generic Types, Generic Methods, Bounded Type Parameters, Wildcards) captured verbatim.</div></div>
+    <div class="chapter"><div class="ch-head"><span class="ch-num">16</span><span class="dot existing"></span><span class="ch-name">Advanced Collections</span><span class="csa-ref">ORACLE 13.1–13.4</span><span class="chip captured">✓ SOURCE CAPTURED</span></div></div>
+    <div class="chapter"><div class="ch-head"><span class="ch-num">17</span><span class="dot existing"></span><span class="ch-name">Writing Your Own Generics</span><span class="csa-ref">ORACLE 14.1–14.5</span><span class="chip captured">✓ SOURCE CAPTURED</span></div></div>
 
     <div class="chapter">
       <div class="ch-head"><span class="ch-num">18</span><span class="ch-name">Inheritance &amp; Abstractions</span></div>
@@ -245,9 +223,7 @@
 
     <div class="chapter">
       <div class="ch-head"><span class="ch-num">20</span><span class="dot existing"></span><span class="ch-name">Interfaces as Contracts</span><span class="csa-ref">ORACLE 15.1–15.6</span><span class="chip captured">✓ SOURCE CAPTURED</span></div>
-      <div class="ch-note">No CSA mapping at all for the base topic. Oracle's Interfaces pages (6 files: intro, defining, implementing, using as a type, default methods, summary) captured verbatim.</div>
       <div class="item"><span class="item-num">20.1</span><span class="dot existing"></span><span class="item-name">Lambdas &amp; Method References</span><span class="csa-ref">ORACLE 12.1–12.2</span><span class="chip captured">✓ SOURCE CAPTURED</span></div>
-      <div class="item-note">Relocated here from Java 1 — needs an interface to exist first. No CSA mapping. Oracle's "Lambda Expressions" + "Anonymous Classes" companion captured verbatim.</div>
     </div>
 
     <div class="chapter"><div class="ch-head"><span class="ch-num">21</span><span class="dot existing"></span><span class="ch-name">The IO-Layer Pattern</span></div></div>
@@ -269,7 +245,6 @@
 
     <div class="chapter">
       <div class="ch-head"><span class="ch-num">30</span><span class="ch-name">Algorithms: Searching, Sorting &amp; Recursion</span></div>
-      <div class="ch-note">Placement still open — could fold into Ch.9 Storing Data instead.</div>
       <div class="item"><span class="item-num">30.1</span><span class="dot new"></span><span class="item-name">Searching Algorithms</span><span class="csa-ref">CSA 4.14</span></div>
       <div class="item"><span class="item-num">30.2</span><span class="dot new"></span><span class="item-name">Sorting Algorithms</span><span class="csa-ref">CSA 4.15</span></div>
       <div class="item"><span class="item-num">30.3</span><span class="dot new"></span><span class="item-name">Recursion</span><span class="csa-ref">CSA 4.16</span></div>
@@ -280,52 +255,16 @@
 
     <div class="chapter">
       <div class="ch-head"><span class="ch-num">31</span><span class="ch-name">Program Design &amp; Abstraction</span><span class="chip opt">OPTIONAL</span></div>
-      <div class="ch-note">Was the required "Bridge" between Java 1 and Java 2 — demoted to optional and moved here. Reasoning: FRC teams build on WPILib's imposed architecture regardless, so general from-scratch program-design principles are informational, not a required gateway with "no other option" in practice.</div>
       <div class="item"><span class="item-num">31.1</span><span class="dot new"></span><span class="item-name">Abstraction and Program Design</span><span class="csa-ref">CSA 3.1</span></div>
       <div class="item"><span class="item-num">31.2</span><span class="dot new"></span><span class="item-name">Impact of Program Design</span><span class="csa-ref">CSA 3.2</span></div>
     </div>
 
     <div class="chapter">
       <div class="ch-head"><span class="ch-num">32</span><span class="ch-name">Data Ethics &amp; Data Sets</span><span class="chip opt">OPTIONAL</span></div>
-      <div class="ch-note">Was "flagged, recommend skip" — downgraded to optional rather than dropped entirely.</div>
       <div class="item"><span class="item-num">32.1</span><span class="dot new"></span><span class="item-name">Ethical and Social Issues Around Data Collection</span><span class="csa-ref">CSA 4.1</span></div>
       <div class="item"><span class="item-num">32.2</span><span class="dot new"></span><span class="item-name">Data Sets</span><span class="csa-ref">CSA 4.2</span></div>
     </div>
 
-  </section>
-
-  <section>
-    <h2>Dropped from the deck</h2>
-    <div class="card"><span class="chip drop">DROPPED</span> <b>Reusable Methods</b> — folded into Ch.7, real depth lives at item 7.2.</div>
-  </section>
-
-  <section>
-    <h2>External source — captured</h2>
-    <p class="desc">Source: <a href="https://docs.oracle.com/javase/tutorial/">Oracle's official Java Tutorials</a>. All 34 pages captured verbatim into <span class="mono">other-reference-repo/oracle-java-tutorials/</span> as of 2026-09-09 — content-authoring (the FRC-geared rewrite) not started yet, this is source material for that step.</p>
-    <div class="card overflow">
-      <table>
-        <thead><tr><th>Item</th><th>ORACLE ref</th><th>Oracle page</th><th>Captured to</th></tr></thead>
-        <tbody>
-          <tr><td>Ch.11 Enums</td><td class="mono">10.1</td><td><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html">Enum Types</a></td><td class="mono">enums/enum-types.md</td></tr>
-          <tr><td>Ch.12 Exceptions — try/catch mechanism</td><td class="mono">11.1–11.16</td><td><a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html">Lesson: Exceptions</a></td><td class="mono">exceptions/ (16 files)</td></tr>
-          <tr><td>Ch.16 Advanced Collections</td><td class="mono">13.1–13.4</td><td><a href="https://docs.oracle.com/javase/tutorial/collections/interfaces/index.html">Collections → Interfaces</a></td><td class="mono">collections-interfaces/ (4 files)</td></tr>
-          <tr><td>Ch.17 Generics (basics)</td><td class="mono">14.1–14.5</td><td><a href="https://docs.oracle.com/javase/tutorial/java/generics/index.html">Lesson: Generics</a></td><td class="mono">generics/ (5 files)</td></tr>
-          <tr><td>Ch.20 Interfaces (base topic)</td><td class="mono">15.1–15.6</td><td><a href="https://docs.oracle.com/javase/tutorial/java/IandI/index.html">Interfaces and Inheritance</a></td><td class="mono">interfaces/ (6 files)</td></tr>
-          <tr><td>20.1 Lambdas &amp; Method References</td><td class="mono">12.1–12.2</td><td><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html">Lambda Expressions</a></td><td class="mono">lambdas/ (2 files + Anonymous Classes)</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section>
-    <h2>Still open / still flagged</h2>
-    <div class="card">
-      <ul class="plain">
-        <li><b>9.9</b> (Wrapper Classes) — candidate to drop; AP-exam-specific, int/double already at 2.1.</li>
-        <li><b>Ch.30</b> (Algorithms) — placement still open, could fold into Ch.9 instead of Additional Topics.</li>
-        <li>Final naming/numbering scheme — chapter numbers above are sequence-order placeholders only.</li>
-      </ul>
-    </div>
   </section>
 
 </div>
