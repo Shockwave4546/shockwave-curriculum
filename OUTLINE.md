@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v10
+## Combined Learning Path — v11
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `shockwave-curriculum/curriculum-ledger.html` (this is now the one
@@ -46,8 +46,9 @@ JAVA 1
 3   APIs, Libraries & Documentation                  [header]
     3.1 APIs and Libraries                          CSA 1.7     [new]
     3.2 Documentation with Comments and Preconditions CSA 1.8    [new]
-    3.3 Packages & Imports                                       [existing] ← folded in from old Ch.4; "packages" is a
-        subsection inside CSA 1.7, already covered at 3.1, so no reason to keep it as its own chapter
+    3.3 Packages & Imports                          CSA 1.7 §1.7.2 [existing] ← folded in from old Ch.4; a real
+        existing deck slide (java-1.js section 10), distinct from 3.1's not-yet-authored content — they just
+        happen to share the same CSA source page (1.7.2 is the "Packages" subsection specifically)
 4   Using Objects & Calling Methods                  [header, no existing anchor]
     4.1 Calling Class Methods                        CSA 1.10    [new]
     4.2 Using the Math Class                         CSA 1.11    [new]
@@ -133,8 +134,8 @@ JAVA 2
 22  The Builder Pattern                              T5817 30.1   [existing]
 23  Encapsulation & Final                                       [header]
     23.1 Scope and Access                              CSA 3.8     [existing]
-24  Optional: Maybe a Value                                     [existing] ← label kept as-is for now;
-    flagged as possibly misleading (see Open questions) — the actual slide content is about Optional<T>
+24  Optional: Maybe a Value                          ORACLE 16.1  [existing] ✓ captured — label kept
+    as-is for now; flagged as possibly misleading (see Open questions) — the actual slide content is about Optional<T>
     as a nullable-safe return value, not optional method parameters/default values
 25  Command-Based Programming                       WPILIB 20.1-8 [header, no existing anchor] ← this
     is the big one: WPILib's own official architecture pattern (Subsystems + Commands + Triggers +
@@ -200,8 +201,10 @@ Topics" below for the Ch.27/28 renumbering and Ch.32's removal.
 | Ch.11 Enums | ORACLE 10.1 | [Enum Types](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html) | **Captured** — `oracle-java-tutorials/enums/enum-types.md`, verbatim |
 | Ch.12 Exceptions & try/catch — the **mechanism** | ORACLE 11.1–11.16 | [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html) | **Captured** — `oracle-java-tutorials/exceptions/` (16 files), verbatim |
 | 19.1 Lambdas & Method References | ORACLE 12.1–12.2 | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) | **Captured** — `oracle-java-tutorials/lambdas/` (2 files: 12.1 Anonymous Classes, 12.2 Lambda Expressions), verbatim |
+| Ch.24 Optional: Maybe a Value | ORACLE 16.1 | ["Tired of Null Pointer Exceptions? Consider Using Java SE 8's Optional!"](https://www.oracle.com/technical-resources/articles/java/java8-optional.html) — an Oracle technical article, not the tutorial trail (confirmed via Oracle's own site-wide index that the classic trail has zero Optional coverage) | **Captured** — `oracle-java-tutorials/optional/java8-optional.md`, verbatim |
 
-All 34 pages captured 2026-09-09. **ORACLE unit numbering** (10-15, deliberately clear of CSA's
+35 pages captured 2026-09-09 (34 from the tutorial trail + 1 technical article). **ORACLE unit
+numbering** (10-16, deliberately clear of CSA's
 0-5 so the two are never ambiguous) mirrors CSA's `Unit.Item` scheme — see each file's own
 `**Oracle ref:**` line. Content-authoring (the actual FRC-geared rewrite) not started — these
 are source material for that step, same relationship as the CSA files.
