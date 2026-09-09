@@ -100,7 +100,10 @@ JAVA 1
     10.2 2D Array Traversals: Nested Loops             CSA 4.12    [new]
     10.3 Implementing 2D Array Algorithms              CSA 4.13    [new]
 11  Enums: Named Choices                        ORACLE 10.1     [existing] ✓ captured — left in place on purpose (feeds Java 2's State Machines)
-12  Exceptions & try/catch                       ORACLE 11.1-16  [existing] ✓ mechanism captured
+12  Exceptions & try/catch                       ORACLE 11.1-16  [existing] ✓ mechanism captured —
+    CSA excludes try/catch by its own words: "not covered in the AP exam" (exception concepts
+    like ArithmeticException/IndexOutOfBoundsException/NullPointerException are taught, just not
+    the try/catch mechanism itself)
 13  Common Gotchas                                              [existing]
 14  How to Practice                                             [existing]
 
@@ -118,7 +121,9 @@ JAVA 2
     19.2 super Keyword                                 CSA 5.4     [existing]
     19.3 Polymorphism                                  CSA 5.6     [existing]
 20  Interfaces as Contracts                      ORACLE 15.1-6   [existing] ✓ captured (no CSA mapping at all, same case as 3.3)
-    20.1 Lambdas & Method References              ORACLE 12.1-2  [existing, relocated from Java 1] ✓ captured
+    20.1 Lambdas & Method References              ORACLE 12.1-2  [existing, relocated from Java 1] ✓ captured —
+        moved here since a lambda is really shorthand for a functional interface; teaching it
+        before Interfaces exists (its old Java 1 spot) had no real grounding
 21  The IO-Layer Pattern                                        [existing]
 22  Static Factories                                            [existing]
 23  The Builder Pattern                                         [existing]
