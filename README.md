@@ -34,20 +34,22 @@ sources into a fuller, sourced outline, ready for an eventual lesson-writing pas
   `OUTLINE.md`). Synced from `OUTLINE.md` one-way: edit the outline first, then mirror the
   change here and republish. See the top of `OUTLINE.md` for the full sync-workflow rule.
 
-## Current stage (as of 2026-09-09, outline v9)
+## Current stage (as of 2026-09-09, outline v11)
 
 **Structure and sourcing, not yet content-authoring.** Concretely:
 
-- The combined outline is stable-ish at v9: 28 numbered chapters across Java 1, Java 2, and an
+- The combined outline is at v11: 28 numbered chapters across Java 1, Java 2, and an
   Optional/Advanced Topics block, each item citing exactly where its real content will come from
-  (CSA, Oracle, WPILib, Team 5817, or "existing deck slide").
-- External sourcing is done for every identified gap **except** Ch.14 (Why Design Patterns?)
-  and Ch.26 (Architecture Takeaways — DRY/YAGNI/SOLID), which still need a source — likely
-  original authorship rather than something borrowed, since neither WPILib nor Team 5817 teach
-  those as named general principles.
-- A few small open questions remain (item 9.9 as a drop candidate, Ch.13 Common Gotchas likely
-  needing real expansion, Ch.24's label possibly being misleading, final chapter naming scheme)
-  — see `OUTLINE.md`'s "Open questions" section for the full, current list.
+  (CSA, Oracle, WPILib, Team 5817, AdvantageKit, java-design-patterns.com, or "existing deck
+  slide").
+- External sourcing is done for every chapter **except** Ch.14 (Why Design Patterns?) and Ch.26
+  (Architecture Takeaways — DRY/YAGNI/SOLID), filed as "slide-only" rather than a blocking gap —
+  checked against all 6 sources in use, none teach either as a dedicated lesson; not a problem to
+  fix, just where they stand for now.
+- Item 9.9 (Wrapper Classes) was dropped entirely (AP-exam-specific detail, redundant with an
+  earlier item). A few small open questions remain (Ch.13 Common Gotchas likely needing real
+  expansion once practice content exists, Ch.24's label possibly being misleading, final chapter
+  naming scheme) — see `OUTLINE.md`'s "Open questions" section for the current list.
 - **The actual content-authoring pass — turning all this captured, verbatim source material
   into original, FRC-geared lessons, exercises, and quizzes — has not started yet.** That's the
   next real phase once the outline settles further.

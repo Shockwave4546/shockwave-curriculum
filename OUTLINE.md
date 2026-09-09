@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v11
+## Combined Learning Path — v12
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `shockwave-curriculum/curriculum-ledger.html` (this is now the one
@@ -91,10 +91,7 @@ JAVA 1
     9.5 Implementing Array Algorithms                  CSA 4.5     [new]
     9.6 ArrayList Traversals                           CSA 4.9     [new]
     9.7 Implementing ArrayList Algorithms              CSA 4.10    [new]
-    — Wrapper Classes & Text Files (looser fit, flagged) —
     9.8 Using Text Files                                CSA 4.6     [new]
-    9.9 Wrapper Classes – Integer and Double            CSA 4.7     [new]  ← candidate to drop later: mostly
-        AP-exam-specific boxing/unboxing detail, int/double already covered at 2.1
 10  2D Arrays                                          [header, no existing anchor] ← own chapter (FRC-relevant:
     vision matrices, odometry math)
     10.1 2D Array Creation and Access                  CSA 4.11    [new]
@@ -287,7 +284,8 @@ in its footer — avoided citing or capturing anything from that site regardless
 
 Ch.14 (Why Design Patterns?) and Ch.26 (Architecture Takeaways, DRY/YAGNI/SOLID) — checked
 WPILib, Team 5817, AdvantageKit, and java-design-patterns.com; none teach these as named general
-principles. Still unsourced; likely needs original authorship rather than a borrowed source. See
+principles. Filed as "slide-only" rather than a blocking gap — see the "Slide-only chapters"
+section below. See
 "Background notes for Ch.14" below for raw material to work from when that authoring happens.
 
 ## Background notes for Ch.14 (Why Design Patterns?) — not a source, just notes
@@ -371,6 +369,27 @@ Ch.14, ... old Ch.31 → Ch.30) — chapter numbers are sequence placeholders an
 gap keeps the sequence readable rather than leaving a skipped 14. Revisit once this curriculum's
 own practice/exercise approach and its placement are actually decided.
 
+## Dropped — Item 9.9 (Wrapper Classes – Integer and Double)
+
+**Dropped entirely**, not folded anywhere else. Was CSA 4.7 — mostly AP-exam-specific
+boxing/unboxing detail, and int/double are already covered at item 2.1. No item renumbering
+needed since 9.9 was the last item in Ch.9 — 9.8 (Using Text Files) is now the chapter's last
+item. The "Wrapper Classes & Text Files" subgroup-label was also removed (Text Files alone
+didn't need a two-item subgroup label).
+
+## Slide-only chapters (no deeper lesson content yet)
+
+Ch.13 (Common Gotchas), Ch.14 (Why Design Patterns?), and Ch.26 (Architecture Takeaways —
+DRY/YAGNI/SOLID) share a real category, not three separate problems: each is a genuine existing
+deck slide with no deeper external source backing it, and — for now — that's fine rather than
+broken. They're not "missing" content so much as they're simply slide-only for the moment, same
+as most of the deck was before this whole sourcing effort started. Revisit any of them
+individually if real depth surfaces later (a better source is found, or the practice/exercise
+pass surfaces more material), same treatment as everything else in this outline — but there's no
+standing obligation to fix these three specifically. Checked against all 6 sources currently in
+use (CSA, Oracle, WPILib, Team 5817, AdvantageKit, java-design-patterns.com) for Ch.14/26 before
+settling on this framing — none teach either topic as a dedicated lesson.
+
 ## Exercise/quiz sizing (proposed, not settled)
 
 One exercise per item. 2-3 checkpoint quizzes total across all of this (end of the Java-1-side
@@ -383,14 +402,8 @@ new content, end of Java 2/Additional Topics) rather than one per item.
   surprises" for things like vision pose estimators) — not about optional *method parameters* or
   default parameter values (Java doesn't have default parameter values as a language feature
   anyway). User flagged this as worth revisiting but said to leave the label as-is for now.
-- Ch.14 (Why Design Patterns?) and Ch.26 (Architecture Takeaways, DRY/YAGNI/SOLID) — checked both
-  WPILib's docs and Team 5817's guide, neither teaches these as named general principles. Still
-  need a source — likely original authorship rather than something borrowed.
-- Ch.13 Common Gotchas — likely thinner than it should be; a real practice/exercise pass will
-  probably surface more real gotchas than the deck's current teaser slide covers. Not yet scoped
-  how much to expand or where the extra material would come from.
-- Item 9.9 (Wrapper Classes – Integer and Double) — flagged as a candidate to drop entirely:
-  mostly AP-exam-specific boxing/unboxing detail, and int/double are already covered at 2.1.
+- Ch.13, Ch.14, Ch.26 — see "Slide-only chapters" above; not blocking, revisit individually if
+  real depth surfaces.
 - This curriculum's own practice/exercise model and where it lives in the sequence — needed
   before old Ch.14 "How to Practice" (mechadv-specific, removed) gets any real replacement.
 - Final naming/numbering scheme — the chapter numbers above are sequence-order placeholders
