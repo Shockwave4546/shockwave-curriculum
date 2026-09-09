@@ -18,12 +18,15 @@ time; that constraint doesn't apply to solo learners here.
 ## Combined Learning Path — v6
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
-Ledger" artifact (https://claude.ai/code/artifact/b33b0cff-ce35-4977-bddc-14f50d1a1b27), same
-content as below with dots for existing/new, easier to scan. Sync flows one way: edit here
-first, then mirror the change into the Ledger artifact (chapter/item text, dots, chip status).
-**Any edit to this section without a matching Ledger update leaves the Ledger stale** — this
-already happened once (the whole Oracle-capture status went unsynced for a while). Update both
-in the same pass, don't defer the Ledger sync to "later."
+Ledger", source at `mechacoder-curriculum/curriculum-ledger.html` (this is now the one
+canonical local copy — never edit or publish from a session scratchpad path again), published
+at https://claude.ai/code/artifact/b33b0cff-ce35-4977-bddc-14f50d1a1b27. Same content as below
+with dots for existing/new, easier to scan. Sync flows one way: edit here first, then mirror
+the change into `curriculum-ledger.html` and republish (pass the artifact URL above so it
+updates in place rather than forking a new one). **Any edit to this section without a matching
+Ledger update leaves the Ledger stale** — this already happened once (the whole Oracle-capture
+status went unsynced for a while). Update both in the same pass, don't defer the Ledger sync to
+"later."
 
 **Numbering rule**: every chapter number is a pure organizational label — it never carries a
 CSA reference itself. Every actual piece of content (existing or new) is a numbered item
