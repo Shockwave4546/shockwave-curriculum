@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v9
+## Combined Learning Path — v10
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `shockwave-curriculum/curriculum-ledger.html` (this is now the one
@@ -125,7 +125,10 @@ JAVA 2
     19.1 Lambdas & Method References              ORACLE 12.1-2  [existing, relocated from Java 1] ✓ captured —
         moved here since a lambda is really shorthand for a functional interface; teaching it
         before Interfaces exists (its old Java 1 spot) had no real grounding
-20  The IO-Layer Pattern                                        [existing]
+20  The IO-Layer Pattern              ADVKIT 40.1-11, JDP 50.1  [existing] ✓ captured — the
+    pattern's real origin: Team 6328's own AdvantageKit docs (hardware abstraction, why
+    simulation/replay fall out of it for free) plus Hexagonal Architecture (Ports & Adapters)
+    for generic-CS grounding. See "Needs an external source" below for the full writeup.
 21  Static Factories                                 T5817 30.2   [existing]
 22  The Builder Pattern                              T5817 30.1   [existing]
 23  Encapsulation & Final                                       [header]
@@ -238,9 +241,74 @@ FRC-code examples of enum state machines living inside command-based subsystems.
 | Ch.21 Static Factories | T5817 30.2 | [Factory](https://uni-rex5817.gitbook.io/programming-training/code/design-patterns/factory) | **Captured** — `team-5817-training/design-patterns/factory.md`, verbatim |
 | 25.4 State Machines / 25.5 Managing Transitions | T5817 31.1-4 | [How do I make a Subsystem Work?](https://uni-rex5817.gitbook.io/programming-training/code/how-do-i-make-a-subsystem-work) + 3 sub-pages (Servo/Roller state-based subsystems, Subsystem Manager) | **Captured** — `team-5817-training/subsystems/` (4 files), verbatim |
 
-Ch.14 (Why Design Patterns?) and Ch.26 (Architecture Takeaways, DRY/YAGNI/SOLID) — checked both
-sources, neither teaches these as named general principles. Still unsourced; likely needs
-original authorship rather than a borrowed source.
+### AdvantageKit + java-design-patterns.com — chosen sources for Ch.20 The IO-Layer Pattern
+
+**Source: [AdvantageKit's official docs](https://docs.advantagekit.org/)** — Team 6328
+(Mechanical Advantage)'s own logging/telemetry/replay framework, used by 598 FRC teams as of
+2025. This is the actual origin of Ch.20's pattern, not just an analogy: the deck's existing
+IntakeIOSparkMax/IntakeIOSim example is a direct application of AdvantageKit's "IO layer"
+convention. User specifically wanted to lean into this source heavily, since it's one of Team
+6328's biggest community contributions and the curriculum's deck is expected to go deeper on it
+later. Captured into `other-reference-repo/advantagekit/` — see that repo's own README for the
+numbering scheme (**ADVKIT Unit 40**) and full scope table (11 pages: the conceptual "why",
+real case studies, data-flow mechanics including the anchor "IO Interfaces" page, and replay
+theory including real 2025 usage-comparison data against Hoot Replay).
+
+**Also: [java-design-patterns.com](https://java-design-patterns.com/) — Hexagonal Architecture
+(Ports and Adapters)**, for generic-CS grounding. Initially considered "Layered Architecture"
+(closer to N-tier web-app layers, a looser match) — checked both pages directly and picked
+Hexagonal Architecture instead, since "core logic isolated from external interfaces... exchangeable
+at any level, facilitates test automation" is a much closer conceptual match to the real/sim
+IO-interface split. Captured into `other-reference-repo/java-design-patterns/` (**JDP Unit 50**).
+
+| Item | Ref | Page | Status |
+|---|---|---|---|
+| Ch.20 (why AdvantageKit exists, the "why" narrative) | ADVKIT 40.1-40.4 | Getting Started section | **Captured** — `advantagekit/getting-started/` (4 files), verbatim |
+| Ch.20 (data-flow mechanics) | ADVKIT 40.5-40.9 | Data Flow section | **Captured** — `advantagekit/data-flow/` (5 files), verbatim |
+| Ch.20 (the anchor page) | ADVKIT 40.8 | [IO Interfaces](https://docs.advantagekit.org/data-flow/recording-inputs/io-interfaces) | **Captured** — matches the deck's existing IntakeIOSparkMax/IntakeIOSim example almost line-for-line |
+| Ch.20 (deeper theory + real usage stats) | ADVKIT 40.10-40.11 | Theory section | **Captured** — `advantagekit/theory/` (2 files; Replay Case Studies' 6 sub-pages NOT captured, flagged below) |
+| Ch.20 (generic-CS anchor) | JDP 50.1 | [Hexagonal Architecture](https://java-design-patterns.com/patterns/hexagonal-architecture/) | **Captured** — `java-design-patterns/hexagonal-architecture.md`, verbatim |
+
+**Not captured, flagged for later:** AdvantageKit's "Replay Case Studies" turned out to be a
+6-sub-page category (Elevator Profile, Autoscoring, Command Gremlins, Aiming Functions, AprilTag
+Vision, Traditional Vision), deeper than the originally scoped "1 page" — only the thin index
+page was captured. Revisit if a future chapter wants real worked-example depth.
+
+**Also checked and rejected:** a Stackify article
+(`stackify.com/optional-parameters-java/`) was suggested as a possible Ch.24 source — read in
+full, it never mentions `java.util.Optional` at all; it's entirely about Java's lack of default
+*method parameters* (solved via overloading/static factories/Builder/varargs), which is exactly
+the *other* "optional" concept flagged in the Open Questions below as a likely source of Ch.24's
+label confusion. Also, the live page has what looks like injected SEO spam (gambling site links)
+in its footer — avoided citing or capturing anything from that site regardless of content match.
+
+Ch.14 (Why Design Patterns?) and Ch.26 (Architecture Takeaways, DRY/YAGNI/SOLID) — checked
+WPILib, Team 5817, AdvantageKit, and java-design-patterns.com; none teach these as named general
+principles. Still unsourced; likely needs original authorship rather than a borrowed source. See
+"Background notes for Ch.14" below for raw material to work from when that authoring happens.
+
+## Background notes for Ch.14 (Why Design Patterns?) — not a source, just notes
+
+**This is NOT a captured/citable source** — it's a synthesized AI-search answer (via Google AI
+Search), not a primary source with a single author to attribute. Held onto here as background
+material for whenever Ch.14 actually gets written, since it correctly identifies real, relevant
+points even though it isn't citable the way Oracle/WPILib/AdvantageKit are:
+
+- **Why patterns matter in FRC specifically:** prevents "spaghetti code" as robots grow more
+  complex; isolates hardware from behavior (this IS Ch.20's IO-Layer point); prevents multiple
+  mechanisms fighting over the same motor/resource (this is what WPILib's Command Scheduler
+  actually does — see Ch.25.3); lets multiple students work on different parts of the robot
+  without breaking each other's code.
+- **Patterns it names as most relevant to FRC:** the Command-Based pattern itself (already
+  Ch.25), the State pattern (already Ch.25.4/25.5 — enum-based state machines for things like an
+  arm or elevator), and Singleton (used for subsystems/robot-container-style single-instance
+  objects so multiple files don't send conflicting commands to the same motor controller — not
+  currently a chapter, worth considering if Ch.14 ends up needing a concrete pattern to point at
+  beyond Command-Based).
+- Underlying source URLs the AI search cited, for whoever writes Ch.14 to check directly rather
+  than trust the synthesis: a Medium post on command-based robotics, a WPILib docs page (already
+  captured as ADVKIT/WPILIB material elsewhere), and a couple of community discussion threads —
+  not reproduced here since they're just links, not content worth capturing on their own.
 
 ## Optional / Advanced Topics (Ch.27-28)
 
