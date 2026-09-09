@@ -18,11 +18,12 @@ stand on its own? mechadv (the original team) capped things at two Java lessons 
 teach live and a lecturer fills gaps in real time; that constraint doesn't apply to solo
 learners here, so there's no reason to force everything back into two lessons.
 
-## Tier 0 — More fundamental than Java I
+## Dropped: Tier 0 (CSA 1.1 — Foundations of Programming)
 
-| Cluster | CSA topics | Notes |
-|---|---|---|
-| Foundations of Programming | 1.1 | What's an algorithm, what's a compiler — more basic than Java I's "Why Java" opener. Candidate for a "Java 0" or a lead-in before Java I even starts. |
+Not building a lesson for this. It's general CS literacy (what's an algorithm, what's a
+compiler), not FRC- or Java-specific — CSAwesome2026 itself is the reference for it. Any
+student curious about that level can be pointed to the live CSA site directly rather than us
+authoring our own version of it.
 
 ## Tier 1 — Before Java II (extends/deepens Java I)
 
