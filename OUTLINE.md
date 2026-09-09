@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v3
+## Combined Learning Path — v4
 
 ```
 Java 1
@@ -23,6 +23,7 @@ Java 1
   Variables & Types
     ↳ [NEW] Expressions, Assignment & Casting        [CSA 1.3,1.4,1.5,1.6]
   [NEW] APIs, Libraries & Documentation              [CSA 1.7,1.8]
+  Packages & Imports                ← moved up here (FRC-flavored concrete example, right after the concept)
   [NEW] Using Objects & Calling Methods              [CSA 1.10,1.11,1.12,1.13,1.14]
   Control Structures
     ↳ [NEW] Boolean Logic & Conditional Design       [CSA 2.1,2.2,2.4,2.5,2.6]
@@ -35,10 +36,9 @@ Java 1
   Storing Data (arrays/collections)
     ↳ [NEW] Arrays & ArrayLists: Traversal Patterns  [CSA 4.4,4.5,4.9,4.10]
     ↳ [NEW] Wrapper Classes & Text Files             [CSA 4.6,4.7]
-    ↳ [TENTATIVE, unconfirmed] 2D Arrays / Algorithms [CSA 4.11-4.17]
-  Enums: Named Choices              ⚠ needs external source (see below)
-  Packages & Imports                (FRC-flavored quick example; kept alongside the new APIs/Libraries cluster, not redundant with it)
-  Exceptions & try/catch             ⚠ mechanism needs external source (see below)
+    ↳ [NEW] 2D Arrays                                [CSA 4.11,4.12,4.13]   ← confirmed: FRC-relevant (vision matrices, odometry math)
+  Enums: Named Choices              ⚠ external source: Oracle Java Tutorials
+  Exceptions & try/catch             ⚠ mechanism from external source: Oracle Java Tutorials
   Common Gotchas
   How to Practice
 
@@ -53,7 +53,7 @@ Java 2
     ↳ [NEW] Inheritance in Depth                     [CSA 5.2,5.5,5.7]
   Polymorphism: Many Forms
   Interfaces as Contracts
-    ↳ Lambdas & Method References    ← MOVED here from Java 1  ⚠ needs external source (see below)
+    ↳ Lambdas & Method References    ← MOVED here from Java 1  ⚠ external source: Oracle Java Tutorials
   The IO-Layer Pattern
   Static Factories
   The Builder Pattern
@@ -65,7 +65,7 @@ Java 2
   Architecture Takeaways (DRY/YAGNI/SOLID)
 
 Additional Topics
-  (empty pending 2D Arrays/Algorithms placement decision)
+  ↳ Algorithms: Searching, Sorting & Recursion       [CSA 4.14,4.15,4.16,4.17]   ← still pending, see open questions
 ```
 
 ## Dropped from the deck, absorbed elsewhere
@@ -77,13 +77,21 @@ Additional Topics
 
 ## Needs an external source — CSA doesn't (fully) cover these
 
-| Topic | What CSA actually has |
-|---|---|
-| Enums | Zero mentions anywhere in the captured content. Not on the AP exam at all. |
-| Exceptions & try/catch — the **mechanism** | CSA teaches exception *concepts* substantively but scattered across many lessons (`ArithmeticException`, `IndexOutOfBoundsException`, `NullPointerException` all come up naturally — no new cluster needed for that, it'll thread through the other lessons as written). But CSA explicitly excludes `try`/`catch` itself: *"This method uses a try catch block for error-checking which is not covered in the AP exam"* (its own words, from the Consumer Review Lab). |
-| Lambdas & Method References | Zero CSA coverage (not on the AP exam; Java 8+ feature outside its scope). Moved to Java 2, after "Interfaces as Contracts," since a lambda is really shorthand for a functional interface — teaching it before interfaces exist (its old Java 1 spot) had no real grounding. |
+**Chosen source: [Oracle's official Java Tutorials](https://docs.oracle.com/javase/tutorial/)**
+(docs.oracle.com) — free, authoritative, web-based, has dedicated pedagogical lesson pages for
+each of the 3 gaps below (not just reference docs). Kept inside this repo (Repo 3) directly for
+now — no separate mirror repo the way `csawesome-2026` was built for CSA, since it's only 3
+targeted topics, not a whole curriculum to structure.
 
-All three: user is finding book/reference material for these separately — not CSA's job.
+| Topic | What CSA actually has | Oracle source page | Status |
+|---|---|---|---|
+| Enums | Zero mentions anywhere in the captured content. Not on the AP exam at all. | [Enum Types](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html) (Learning the Java Language > Classes and Objects) | Not started |
+| Exceptions & try/catch — the **mechanism** | CSA teaches exception *concepts* substantively but scattered across many lessons (`ArithmeticException`, `IndexOutOfBoundsException`, `NullPointerException` all come up naturally — no new cluster needed for that, it'll thread through the other lessons as written). But CSA explicitly excludes `try`/`catch` itself: *"This method uses a try catch block for error-checking which is not covered in the AP exam"* (its own words, from the Consumer Review Lab). | [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html) (Essential Java Classes) | Not started |
+| Lambdas & Method References | Zero CSA coverage (not on the AP exam; Java 8+ feature outside its scope). Moved to Java 2, after "Interfaces as Contracts," since a lambda is really shorthand for a functional interface — teaching it before interfaces exist (its old Java 1 spot) had no real grounding. | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) (Learning the Java Language > Classes and Objects) | Not started |
+
+"Not started" = source identified, nothing fetched yet. Update this table's Status column (and
+add a captured-content note, same provenance style as the CSA work) once any of these are
+actually pulled in.
 
 ## Flagged from CSA — weak fit, reconsider before building
 
@@ -99,9 +107,9 @@ per cluster.
 
 ## Open questions (not yet decided)
 
-- 2D Arrays / Algorithms (Searching, Sorting, Recursion): fold into Java 1 (right after Storing
-  Data) for CS-progression soundness, or keep deferred to "Additional Topics" after Java 2 for
-  FRC-relevance-first pacing? Still the user's call.
+- Algorithms (Searching, Sorting, Recursion) — still in "Additional Topics" (after Java 2).
+  2D Arrays already moved into Java 1 (confirmed: FRC-relevant for vision/odometry), but the
+  user only confirmed that one — Algorithms' placement is still open.
 - Final naming/numbering scheme (Java 1a/2a, Java III+, or something else).
 - Should `java-1.js`/`java-2.js` themselves ever be split into finer lessons to match this new
   granularity, or stay as the fixed fast-overview tier permanently?
