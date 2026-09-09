@@ -18,7 +18,7 @@ time; that constraint doesn't apply to solo learners here.
 ## Combined Learning Path — v8
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
-Ledger", source at `mechacoder-curriculum/curriculum-ledger.html` (this is now the one
+Ledger", source at `shockwave-curriculum/curriculum-ledger.html` (this is now the one
 canonical local copy — never edit or publish from a session scratchpad path again), published
 at https://claude.ai/code/artifact/b33b0cff-ce35-4977-bddc-14f50d1a1b27. Same content as below
 with dots for existing/new, easier to scan. Sync flows one way: edit here first, then mirror
