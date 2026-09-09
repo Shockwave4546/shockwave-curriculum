@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v12
+## Combined Learning Path — v13
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `shockwave-curriculum/curriculum-ledger.html` (this is now the one
@@ -131,8 +131,10 @@ JAVA 2
 22  The Builder Pattern                              T5817 30.1   [existing]
 23  Encapsulation & Final                                       [header]
     23.1 Scope and Access                              CSA 3.8     [existing]
-24  Optional: Maybe a Value                          ORACLE 16.1  [existing] ✓ captured — label kept
-    as-is for now; flagged as possibly misleading (see Open questions) — the actual slide content is about Optional<T>
+24  Optional: Avoiding Null Pointer Exceptions        ORACLE 16.1  [existing] ✓ captured — renamed
+    from "Optional: Maybe a Value" to disambiguate from optional method parameters, per the label
+    concern raised earlier; the deck's actual slide heading is unchanged (mechacoder-test is
+    frozen), this is an outline-label-only rename
     as a nullable-safe return value, not optional method parameters/default values
 25  Command-Based Programming                       WPILIB 20.1-8 [header, no existing anchor] ← this
     is the big one: WPILib's own official architecture pattern (Subsystems + Commands + Triggers +
@@ -198,7 +200,7 @@ Topics" below for the Ch.27/28 renumbering and Ch.32's removal.
 | Ch.11 Enums | ORACLE 10.1 | [Enum Types](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html) | **Captured** — `oracle-java-tutorials/enums/enum-types.md`, verbatim |
 | Ch.12 Exceptions & try/catch — the **mechanism** | ORACLE 11.1–11.16 | [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html) | **Captured** — `oracle-java-tutorials/exceptions/` (16 files), verbatim |
 | 19.1 Lambdas & Method References | ORACLE 12.1–12.2 | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) | **Captured** — `oracle-java-tutorials/lambdas/` (2 files: 12.1 Anonymous Classes, 12.2 Lambda Expressions), verbatim |
-| Ch.24 Optional: Maybe a Value | ORACLE 16.1 | ["Tired of Null Pointer Exceptions? Consider Using Java SE 8's Optional!"](https://www.oracle.com/technical-resources/articles/java/java8-optional.html) — an Oracle technical article, not the tutorial trail (confirmed via Oracle's own site-wide index that the classic trail has zero Optional coverage) | **Captured** — `oracle-java-tutorials/optional/java8-optional.md`, verbatim |
+| Ch.24 Optional: Avoiding Null Pointer Exceptions | ORACLE 16.1 | ["Tired of Null Pointer Exceptions? Consider Using Java SE 8's Optional!"](https://www.oracle.com/technical-resources/articles/java/java8-optional.html) — an Oracle technical article, not the tutorial trail (confirmed via Oracle's own site-wide index that the classic trail has zero Optional coverage) | **Captured** — `oracle-java-tutorials/optional/java8-optional.md`, verbatim |
 
 35 pages captured 2026-09-09 (34 from the tutorial trail + 1 technical article). **ORACLE unit
 numbering** (10-16, deliberately clear of CSA's
@@ -397,11 +399,6 @@ new content, end of Java 2/Additional Topics) rather than one per item.
 
 ## Open questions (not yet decided)
 
-- Ch.24 "Optional: Maybe a Value" — the label may be misleading. The actual slide content (and
-  the intent behind it) is about `Optional<T>` as a nullable-safe *return value* ("no nulls, no
-  surprises" for things like vision pose estimators) — not about optional *method parameters* or
-  default parameter values (Java doesn't have default parameter values as a language feature
-  anyway). User flagged this as worth revisiting but said to leave the label as-is for now.
 - Ch.13, Ch.14, Ch.26 — see "Slide-only chapters" above; not blocking, revisit individually if
   real depth surfaces.
 - This curriculum's own practice/exercise model and where it lives in the sequence — needed

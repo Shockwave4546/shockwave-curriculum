@@ -47,9 +47,10 @@ sources into a fuller, sourced outline, ready for an eventual lesson-writing pas
   checked against all 6 sources in use, none teach either as a dedicated lesson; not a problem to
   fix, just where they stand for now.
 - Item 9.9 (Wrapper Classes) was dropped entirely (AP-exam-specific detail, redundant with an
-  earlier item). A few small open questions remain (Ch.13 Common Gotchas likely needing real
-  expansion once practice content exists, Ch.24's label possibly being misleading, final chapter
-  naming scheme) — see `OUTLINE.md`'s "Open questions" section for the current list.
+  earlier item). Ch.24 was renamed from "Optional: Maybe a Value" to "Optional: Avoiding Null
+  Pointer Exceptions" to disambiguate from optional method parameters. A few small open questions
+  remain (Ch.13 Common Gotchas likely needing real expansion once practice content exists, final
+  chapter naming scheme) — see `OUTLINE.md`'s "Open questions" section for the current list.
 - **The actual content-authoring pass — turning all this captured, verbatim source material
   into original, FRC-geared lessons, exercises, and quizzes — has not started yet.** That's the
   next real phase once the outline settles further.
