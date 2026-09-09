@@ -1,9 +1,6 @@
 # Shockwave Curriculum
 
-An early-stage, independent learning-platform idea — not an official Team 6328 deliverable. It
-started from studying Team 6328's existing FRC lesson-deck ([`mechacoder-test`](../mechacoder-test))
-and is being built outward from there: less "building Team 6328's curriculum" and more
-"inspired by, and honestly borrowing generously from, their approach."
+An early-stage learning-platform idea.  The concept didn't solidify until seeing Mechanical Advantage (FRC 6328)'s lesson-deck ([`mechacoder-test`](../mechacoder-test)) — it's being built outward from there ever since.  So this is very much inspired by, and honestly borrowing generously from, their approach.
 
 The bigger idea this feeds: a fuller self-paced Java/WPILib learning platform — real lessons and
 exercises, plus (the actual motivating piece) an in-browser inline code editor with real
