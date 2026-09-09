@@ -152,19 +152,27 @@ OPTIONAL / SUPPLEMENTARY
 
 **Chosen source: [Oracle's official Java Tutorials](https://docs.oracle.com/javase/tutorial/)**
 (docs.oracle.com) — free, authoritative, web-based, has dedicated pedagogical lesson pages for
-each of the 3 gaps below (not just reference docs). Kept inside this repo (Repo 3) directly for
-now — no separate mirror repo the way `csawesome-2026` was built for CSA, since it's only 3
-targeted topics, not a whole curriculum to structure.
+each item below (not just reference docs). Captured into `other-reference-repo/oracle-java-tutorials/`
+(a 4th repo, generic across future external sources too — see that repo's own README) rather
+than a CSA-style mirror repo, since this pull is much narrower than a full trail per item.
 
-| Item | What CSA actually has | Oracle source page | Status |
-|---|---|---|---|
-| Ch.11 Enums | Zero mentions anywhere in the captured content. Not on the AP exam at all. | [Enum Types](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html) (Learning the Java Language > Classes and Objects) | Not started |
-| Ch.12 Exceptions & try/catch — the **mechanism** | CSA teaches exception *concepts* substantively but scattered across many lessons (`ArithmeticException`, `IndexOutOfBoundsException`, `NullPointerException` all come up naturally — no new cluster needed for that, it'll thread through the other lessons as written). But CSA explicitly excludes `try`/`catch` itself: *"This method uses a try catch block for error-checking which is not covered in the AP exam"* (its own words, from the Consumer Review Lab). | [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html) (Essential Java Classes) | Not started |
-| 20.1 Lambdas & Method References | Zero CSA coverage (not on the AP exam; Java 8+ feature outside its scope). Moved to Java 2, under "Interfaces as Contracts" (Ch.20), since a lambda is really shorthand for a functional interface — teaching it before interfaces exist (its old Java 1 spot) had no real grounding. | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) (Learning the Java Language > Classes and Objects) | Not started |
+Original scope was just the 3 gaps below the line; a later pass caught that ~11 of Java 2's
+chapters had zero CSA mapping *and* zero external-source plan — the 3 rows above the line
+(Ch.16/17/20) are the ones confirmed as a genuine Oracle fit out of that group (see this file's
+"Optional/Supplementary" history or [[project_csa_topic_mapping]] memory for the ones ruled out
+as not an Oracle fit — design patterns, WPILib-specific content).
 
-"Not started" = source identified, nothing fetched yet. Update this table's Status column (and
-add a captured-content note, same provenance style as the CSA work) once any of these are
-actually pulled in.
+| Item | Oracle source page | Status |
+|---|---|---|
+| Ch.16 Advanced Collections (Set/Queue/Deque/Map) | [Collections → Interfaces](https://docs.oracle.com/javase/tutorial/collections/interfaces/index.html) | **Captured** — `oracle-java-tutorials/collections-interfaces/` (4 files), verbatim |
+| Ch.17 Generics (basics) | [Lesson: Generics](https://docs.oracle.com/javase/tutorial/java/generics/index.html) | **Captured** — `oracle-java-tutorials/generics/` (5 files), verbatim |
+| Ch.20 Interfaces (base topic) | [Interfaces and Inheritance → Interfaces half](https://docs.oracle.com/javase/tutorial/java/IandI/index.html) | **Captured** — `oracle-java-tutorials/interfaces/` (6 files), verbatim |
+| Ch.11 Enums | [Enum Types](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html) | **Captured** — `oracle-java-tutorials/enums/enum-types.md`, verbatim |
+| Ch.12 Exceptions & try/catch — the **mechanism** | [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html) | **Captured** — `oracle-java-tutorials/exceptions/` (16 files), verbatim |
+| 20.1 Lambdas & Method References | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) | **Captured** — `oracle-java-tutorials/lambdas/` (2 files + Anonymous Classes companion), verbatim |
+
+All 34 pages captured 2026-09-09. Content-authoring (the actual FRC-geared rewrite) not started
+— these are source material for that step, same relationship as the CSA files.
 
 ## Optional / Supplementary (Ch.31-32)
 
