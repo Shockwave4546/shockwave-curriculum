@@ -99,15 +99,15 @@ JAVA 1
     10.1 2D Array Creation and Access                  CSA 4.11    [new]
     10.2 2D Array Traversals: Nested Loops             CSA 4.12    [new]
     10.3 Implementing 2D Array Algorithms              CSA 4.13    [new]
-11  Enums: Named Choices                                        [existing] ⚠ source needed — left in place on purpose (feeds Java 2's State Machines)
-12  Exceptions & try/catch                                      [existing] ⚠ mechanism source needed
+11  Enums: Named Choices                        ORACLE 10.1     [existing] ✓ captured — left in place on purpose (feeds Java 2's State Machines)
+12  Exceptions & try/catch                       ORACLE 11.1-16  [existing] ✓ mechanism captured
 13  Common Gotchas                                              [existing]
 14  How to Practice                                             [existing]
 
 JAVA 2
 15  Why Design Patterns?                                        [existing]
-16  Advanced Collections (Set/Queue/Map)                        [existing] (no CSA equivalent at all)
-17  Writing Your Own Generics                                   [existing]
+16  Advanced Collections (Set/Queue/Map)         ORACLE 13.1-4   [existing] ✓ captured (no CSA equivalent at all)
+17  Writing Your Own Generics                    ORACLE 14.1-5   [existing] ✓ captured
 18  Inheritance & Abstractions                                  [header]
     18.1 Inheritance, Superclass, Subclass            CSA 5.1     [existing]
     18.2 Inheritance and Constructors                  CSA 5.2     [new]
@@ -117,8 +117,8 @@ JAVA 2
     19.1 Overriding Methods                            CSA 5.3     [existing]
     19.2 super Keyword                                 CSA 5.4     [existing]
     19.3 Polymorphism                                  CSA 5.6     [existing]
-20  Interfaces as Contracts                                     [existing] (no CSA mapping at all, same case as 3.3)
-    20.1 Lambdas & Method References                              [existing, relocated from Java 1] ⚠ source needed
+20  Interfaces as Contracts                      ORACLE 15.1-6   [existing] ✓ captured (no CSA mapping at all, same case as 3.3)
+    20.1 Lambdas & Method References              ORACLE 12.1-2  [existing, relocated from Java 1] ✓ captured
 21  The IO-Layer Pattern                                        [existing]
 22  Static Factories                                            [existing]
 23  The Builder Pattern                                         [existing]
@@ -170,17 +170,19 @@ chapters had zero CSA mapping *and* zero external-source plan — the 3 rows abo
 "Optional/Supplementary" history or [[project_csa_topic_mapping]] memory for the ones ruled out
 as not an Oracle fit — design patterns, WPILib-specific content).
 
-| Item | Oracle source page | Status |
-|---|---|---|
-| Ch.16 Advanced Collections (Set/Queue/Deque/Map) | [Collections → Interfaces](https://docs.oracle.com/javase/tutorial/collections/interfaces/index.html) | **Captured** — `oracle-java-tutorials/collections-interfaces/` (4 files), verbatim |
-| Ch.17 Generics (basics) | [Lesson: Generics](https://docs.oracle.com/javase/tutorial/java/generics/index.html) | **Captured** — `oracle-java-tutorials/generics/` (5 files), verbatim |
-| Ch.20 Interfaces (base topic) | [Interfaces and Inheritance → Interfaces half](https://docs.oracle.com/javase/tutorial/java/IandI/index.html) | **Captured** — `oracle-java-tutorials/interfaces/` (6 files), verbatim |
-| Ch.11 Enums | [Enum Types](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html) | **Captured** — `oracle-java-tutorials/enums/enum-types.md`, verbatim |
-| Ch.12 Exceptions & try/catch — the **mechanism** | [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html) | **Captured** — `oracle-java-tutorials/exceptions/` (16 files), verbatim |
-| 20.1 Lambdas & Method References | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) | **Captured** — `oracle-java-tutorials/lambdas/` (2 files + Anonymous Classes companion), verbatim |
+| Item | ORACLE ref | Oracle source page | Status |
+|---|---|---|---|
+| Ch.16 Advanced Collections (Set/Queue/Deque/Map) | ORACLE 13.1–13.4 | [Collections → Interfaces](https://docs.oracle.com/javase/tutorial/collections/interfaces/index.html) | **Captured** — `oracle-java-tutorials/collections-interfaces/` (4 files), verbatim |
+| Ch.17 Generics (basics) | ORACLE 14.1–14.5 | [Lesson: Generics](https://docs.oracle.com/javase/tutorial/java/generics/index.html) | **Captured** — `oracle-java-tutorials/generics/` (5 files), verbatim |
+| Ch.20 Interfaces (base topic) | ORACLE 15.1–15.6 | [Interfaces and Inheritance → Interfaces half](https://docs.oracle.com/javase/tutorial/java/IandI/index.html) | **Captured** — `oracle-java-tutorials/interfaces/` (6 files), verbatim |
+| Ch.11 Enums | ORACLE 10.1 | [Enum Types](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html) | **Captured** — `oracle-java-tutorials/enums/enum-types.md`, verbatim |
+| Ch.12 Exceptions & try/catch — the **mechanism** | ORACLE 11.1–11.16 | [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html) | **Captured** — `oracle-java-tutorials/exceptions/` (16 files), verbatim |
+| 20.1 Lambdas & Method References | ORACLE 12.1–12.2 | [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) | **Captured** — `oracle-java-tutorials/lambdas/` (2 files: 12.1 Anonymous Classes, 12.2 Lambda Expressions), verbatim |
 
-All 34 pages captured 2026-09-09. Content-authoring (the actual FRC-geared rewrite) not started
-— these are source material for that step, same relationship as the CSA files.
+All 34 pages captured 2026-09-09. **ORACLE unit numbering** (10-15, deliberately clear of CSA's
+0-5 so the two are never ambiguous) mirrors CSA's `Unit.Item` scheme — see each file's own
+`**Oracle ref:**` line. Content-authoring (the actual FRC-geared rewrite) not started — these
+are source material for that step, same relationship as the CSA files.
 
 ## Optional / Supplementary (Ch.31-32)
 
