@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v6
+## Combined Learning Path — v7
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `mechacoder-curriculum/curriculum-ledger.html` (this is now the one
@@ -135,23 +135,20 @@ JAVA 2
 28  Event Loops & Triggers                                      [existing]
 29  Architecture Takeaways (DRY/YAGNI/SOLID)                    [existing]
 
-ADDITIONAL TOPICS
-30  Algorithms: Searching, Sorting & Recursion         [header, no existing anchor] ← placement still open, could fold into Ch.9 instead
-    30.1 Searching Algorithms                          CSA 4.14    [new]
-    30.2 Sorting Algorithms                            CSA 4.15    [new]
-    30.3 Recursion                                     CSA 4.16    [new]
-    30.4 Recursive Searching and Sorting                CSA 4.17    [new]
-
-OPTIONAL / SUPPLEMENTARY
-31  Program Design & Abstraction  ⚠ OPTIONAL          [header, no existing anchor] ← was the required "Bridge"
-    between Java 1 and Java 2; demoted to optional and moved here. FRC teams build on WPILib's imposed architecture
-    regardless, so general from-scratch program-design principles are informational, not a required gateway.
-    31.1 Abstraction and Program Design                CSA 3.1     [new]
-    31.2 Impact of Program Design                      CSA 3.2     [new]
-32  Data Ethics & Data Sets  ⚠ OPTIONAL                [header, no existing anchor] ← was "flagged, recommend skip,"
-    downgraded to optional rather than dropped entirely
-    32.1 Ethical and Social Issues Around Data Collection CSA 4.1   [new]
-    32.2 Data Sets                                     CSA 4.2     [new]
+OPTIONAL / ADVANCED TOPICS
+30  Program Design & Abstraction  ⚠ OPTIONAL          [header, no existing anchor] ← conceptually sits between
+    Java 1 and Java 2 (was the required "Bridge"); demoted to optional since FRC teams build on WPILib's imposed
+    architecture regardless, so general from-scratch program-design principles are informational, not a required
+    gateway. Listed first in this block to preserve that conceptual position even though physically both chapters
+    here trail Java 2.
+    30.1 Abstraction and Program Design                CSA 3.1     [new]
+    30.2 Impact of Program Design                      CSA 3.2     [new]
+31  Algorithms: Searching, Sorting & Recursion  ⚠ OPTIONAL  [header, no existing anchor] ← conceptually sits after
+    Java 2 (deepens the data-structure work from Ch.9/Ch.10); optional rather than required.
+    31.1 Searching Algorithms                          CSA 4.14    [new]
+    31.2 Sorting Algorithms                            CSA 4.15    [new]
+    31.3 Recursion                                     CSA 4.16    [new]
+    31.4 Recursive Searching and Sorting                CSA 4.17    [new]
 ```
 
 ## Dropped from the deck, absorbed elsewhere
@@ -173,7 +170,8 @@ Original scope was just the 3 gaps below the line; a later pass caught that ~11 
 chapters had zero CSA mapping *and* zero external-source plan — the 3 rows above the line
 (Ch.16/17/20) are the ones confirmed as a genuine Oracle fit out of that group (see this file's
 "Optional/Supplementary" history or [[project_csa_topic_mapping]] memory for the ones ruled out
-as not an Oracle fit — design patterns, WPILib-specific content).
+as not an Oracle fit — design patterns, WPILib-specific content). See "Optional / Advanced
+Topics" below for the Ch.30/31 renumbering and Ch.32's removal.
 
 | Item | ORACLE ref | Oracle source page | Status |
 |---|---|---|---|
@@ -189,16 +187,32 @@ All 34 pages captured 2026-09-09. **ORACLE unit numbering** (10-15, deliberately
 `**Oracle ref:**` line. Content-authoring (the actual FRC-geared rewrite) not started — these
 are source material for that step, same relationship as the CSA files.
 
-## Optional / Supplementary (Ch.31-32)
+## Optional / Advanced Topics (Ch.30-31)
 
-Two chapters demoted from "required" to optional this round:
+Merged from two separate trailing blocks ("Additional Topics" + "Optional/Supplementary") into
+one, since both chapters ended up optional-for-FRC anyway and having two nearly-identical
+trailing sections added no real distinction:
 
-- **Ch.31 Program Design & Abstraction** (CSA 3.1, 3.2) — was the required "Bridge" between
-  Java 1 and Java 2. Downgraded to optional and moved to the end: FRC teams build on WPILib's
-  imposed architecture regardless of what general program-design theory says, so this is
-  informational rather than a required gateway with no other option in practice.
-- **Ch.32 Data Ethics & Data Sets** (CSA 4.1, 4.2) — previously "flagged, recommend skip."
-  Downgraded to optional rather than dropped entirely.
+- **Ch.30 Program Design & Abstraction** (CSA 3.1, 3.2) — was the required "Bridge" between
+  Java 1 and Java 2. Downgraded to optional: FRC teams build on WPILib's imposed architecture
+  regardless of what general program-design theory says, so this is informational rather than a
+  required gateway with no other option in practice. Ordered first in this block to keep its
+  conceptual "sits between Java 1 and Java 2" position visible, even though physically it's
+  listed after Java 2 like everything else here.
+- **Ch.31 Algorithms: Searching, Sorting & Recursion** (CSA 4.14-4.17) — was "Additional
+  Topics," its own band. Folded into this merged block instead since it's also optional for FRC
+  purposes; ordered second since it conceptually deepens the data-structure work from Ch.9/10,
+  which sits after Java 2 content-wise.
+
+## Excluded from scope — Data Ethics & Data Sets
+
+**Ch.32 Data Ethics & Data Sets (CSA 4.1, 4.2) was dropped from the outline entirely**, not just
+demoted to optional. Previously "flagged, recommend skip," then downgraded to optional — now
+removed outright. Reasoning: it has no FRC application for the students this curriculum targets,
+and the one plausible future use (statistics for scouting/data analysis) isn't a project this
+team is anywhere near ready to take on. Revisit only if/when scouting-stats work actually starts
+— until then this isn't worth carrying as a phantom optional chapter nobody will assign. Removed
+from the Ledger too (never shown there now); this note is the only remaining record.
 
 ## Exercise/quiz sizing (proposed, not settled)
 
@@ -207,9 +221,6 @@ new content, end of Java 2/Additional Topics) rather than one per item.
 
 ## Open questions (not yet decided)
 
-- Ch.30 Algorithms (Searching, Sorting, Recursion) — still in "Additional Topics." Ch.10 2D
-  Arrays already promoted to its own chapter (confirmed FRC-relevant), but the user only
-  confirmed that one — Algorithms' placement is still open, could fold into Ch.9 instead.
 - Item 9.9 (Wrapper Classes – Integer and Double) — flagged as a candidate to drop entirely:
   mostly AP-exam-specific boxing/unboxing detail, and int/double are already covered at 2.1.
 - Final naming/numbering scheme — the chapter numbers above are sequence-order placeholders
