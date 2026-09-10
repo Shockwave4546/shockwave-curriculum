@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.8 — Constructors &amp; "this" (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.8 — Constructors &amp; "this"</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "8.1-8.2": {
+    title: "Constructors & \"this\"",
+    ref: "8.1 (Writing Constructors, CSA 3.4) + 8.2 (this Keyword, CSA 3.9)",
+    body: `
+      <h2>A Constructor's Job</h2>
+      <p>A constructor's only job is to put a new object into a <strong>valid state</strong> — every instance variable set to something usable. Its signature looks like a method's, but with two differences: no return type (not even <code class="inline">void</code>), and its name is always exactly the class's name.</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span>
+{
+    <span class="k">private int</span> motorPort;
+
+    <span class="k">public</span> <span class="me">Climber</span>(<span class="k">int</span> motorPort) <span class="c">// same name as the class, no return type</span>
+    {
+        <span class="k">this</span>.motorPort = motorPort;
+    }
+}</code></pre>
+      <h2>The Default Constructor</h2>
+      <p>If you don't write any constructor at all, Java gives your class a free no-argument one that sets every instance variable to its type's default (<code class="inline">0</code> for <code class="inline">int</code>, <code class="inline">0.0</code> for <code class="inline">double</code>, <code class="inline">false</code> for <code class="inline">boolean</code>, <code class="inline">null</code> for any reference type). The moment you write even one constructor yourself, that free one disappears — you have to cover every way you want objects of your class to be built.</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span>
+{
+    <span class="k">private int</span> motorPort; <span class="c">// if no constructor is written, this defaults to 0</span>
+}</code></pre>
+      <h2>Overloaded Constructors</h2>
+      <p>Just like methods (Ch.4.1), a class can have several constructors, distinguished by their parameter lists — this is the same <strong>overloading</strong> concept:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span>
+{
+    <span class="k">private int</span> motorPort;
+    <span class="k">private double</span> climbSpeed;
+
+    <span class="k">public</span> <span class="me">Climber</span>(<span class="k">int</span> motorPort)
+    {
+        <span class="k">this</span>.motorPort = motorPort;
+        <span class="k">this</span>.climbSpeed = <span class="n">0.5</span>; <span class="c">// a sensible default</span>
+    }
+
+    <span class="k">public</span> <span class="me">Climber</span>(<span class="k">int</span> motorPort, <span class="k">double</span> climbSpeed)
+    {
+        <span class="k">this</span>.motorPort = motorPort;
+        <span class="k">this</span>.climbSpeed = climbSpeed;
+    }
+}</code></pre>
+      <h2>this: Referring to the Current Object</h2>
+      <p>Inside an instance method or constructor, <code class="inline">this</code> refers to the specific object the method/constructor is currently running for. It's most useful when a parameter shares a name with an instance variable — <code class="inline">this.motorPort</code> unambiguously means "this object's <code class="inline">motorPort</code>," while bare <code class="inline">motorPort</code> means the parameter:</p>
+      <pre class="code"><code><span class="k">public</span> <span class="me">Climber</span>(<span class="k">int</span> motorPort)
+{
+    <span class="k">this</span>.motorPort = motorPort; <span class="c">// left side: instance variable. right side: parameter.</span>
+}</code></pre>
+      <p>Without <code class="inline">this</code>, <code class="inline">motorPort = motorPort;</code> would just assign the parameter to itself — the instance variable would never actually get set.</p>
+      <p><code class="inline">this</code> only exists inside instance methods and constructors — a <code class="inline">static</code> method has no current object to refer to, so it has no <code class="inline">this</code> (Ch.7.4).</p>
+      <h2>this as an Argument</h2>
+      <p><code class="inline">this</code> is a real reference, usable anywhere an object reference is expected — including passing the current object into another method or constructor:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span>
+{
+    <span class="k">private double</span> currentHeight;
+
+    <span class="k">public void</span> <span class="me">reportTo</span>(<span class="t">ClimbLogger</span> logger)
+    {
+        logger.<span class="me">record</span>(<span class="k">this</span>); <span class="c">// pass the current Climber object itself</span>
+    }
+}</code></pre>
+    `,
+    pitfalls: [
+      "Forgetting <code class=\"inline\">this</code> when a parameter shadows an instance variable. <code class=\"inline\">motorPort = motorPort;</code> (no <code class=\"inline\">this</code>) does nothing useful — it assigns the parameter to itself, leaving the actual instance variable untouched.",
+      "Assuming a class always gets a free default constructor. Only true if you write zero constructors yourself. Write even one, and you're responsible for every constructor your class needs."
+    ],
+    takeaways: [
+      "A constructor's signature has no return type and always matches the class's name; its job is to leave the object in a valid state.",
+      "With no constructor written, Java provides a default one that zeroes/nulls every instance variable — writing any constructor yourself removes that default.",
+      "Constructors can be overloaded, just like methods, distinguished by parameter lists.",
+      "<code class=\"inline\">this</code> refers to the current object inside an instance method or constructor — essential for disambiguating a parameter from an instance variable of the same name.",
+      "<code class=\"inline\">this</code> can be passed as an argument, like any other object reference. Static methods have no <code class=\"inline\">this</code>."
+    ],
+    prov: "Deck context: mechacoder-test/src/lessons/java-1.js, slide 8 (\"CONSTRUCTORS\")"
+  }
+};
+
+let currentItem = "8.1-8.2";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
