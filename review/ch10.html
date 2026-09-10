@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.10 — 2D Arrays (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.10 — 2D Arrays</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "10.1": {
+    title: "2D Array Creation and Access",
+    ref: "10.1 — 2D Array Creation and Access (CSA 4.11)",
+    body: `
+      <h2>Why 2D</h2>
+      <p>Some data is naturally rows-and-columns, not just a flat list. Swerve drive telemetry is a good example: 4 modules (front-left, front-right, back-left, back-right), each logging several current-draw samples over time. That's a 2D array — one row per module, one column per sample.</p>
+      <pre class="code"><code><span class="c">// datatype[][] variableName = new datatype[numberRows][numberCols];</span>
+<span class="k">double</span>[][] moduleCurrents = <span class="k">new double</span>[<span class="n">4</span>][<span class="n">5</span>]; <span class="c">// 4 modules, 5 samples each</span></code></pre>
+      <p>Java stores this as an <strong>array of arrays</strong> — the outer array holds 4 references, each pointing to its own 5-element inner array. Declared but not yet created (<code class="inline">double[][] moduleCurrents;</code> with no <code class="inline">new</code>), the variable is <code class="inline">null</code>, same as any other reference type. Once created with <code class="inline">new</code>, every element starts at that type's default (<code class="inline">0.0</code> here).</p>
+      <h2>Initializer Lists</h2>
+      <p>An initializer list for a 2D array is a list of 1D initializer lists, one per row — size is inferred:</p>
+      <pre class="code"><code><span class="k">double</span>[][] moduleCurrents =
+{
+    {<span class="n">12.1</span>, <span class="n">11.8</span>, <span class="n">40.2</span>, <span class="n">12.4</span>, <span class="n">11.9</span>}, <span class="c">// front-left</span>
+    {<span class="n">12.0</span>, <span class="n">11.9</span>, <span class="n">12.1</span>, <span class="n">11.7</span>, <span class="n">12.2</span>}, <span class="c">// front-right</span>
+    {<span class="n">11.9</span>, <span class="n">12.3</span>, <span class="n">12.0</span>, <span class="n">11.8</span>, <span class="n">12.1</span>}, <span class="c">// back-left</span>
+    {<span class="n">12.2</span>, <span class="n">12.0</span>, <span class="n">11.9</span>, <span class="n">12.4</span>, <span class="n">11.9</span>}, <span class="c">// back-right</span>
+};</code></pre>
+      <h2>Accessing Elements: arr[row][col]</h2>
+      <p>The first index is the row, the second is the column:</p>
+      <pre class="code"><code><span class="k">double</span> spike = moduleCurrents[<span class="n">0</span>][<span class="n">2</span>]; <span class="c">// front-left module, 3rd sample -> 40.2</span>
+moduleCurrents[<span class="n">0</span>][<span class="n">2</span>] = <span class="n">0.0</span>;          <span class="c">// overwrite a bad reading</span></code></pre>
+      <p>Printing a 2D array directly (<code class="inline">System.out.println(moduleCurrents)</code>) just prints its object reference, not its contents — printing every value takes nested loops (Lesson 10.2).</p>
+      <h2>Row and Column Counts</h2>
+      <p>The number of rows is <code class="inline">.length</code>; the number of columns is the length of any one row (AP CSA — and this curriculum — assumes every row has the same length, i.e. the array is rectangular, not "ragged"):</p>
+      <pre class="code"><code>moduleCurrents.length     <span class="c">// 4  (number of modules / rows)</span>
+moduleCurrents[<span class="n">0</span>].length  <span class="c">// 5  (samples per module / columns)</span></code></pre>
+      <p>Valid row indices: <code class="inline">0</code> to <code class="inline">length - 1</code>. Valid column indices: <code class="inline">0</code> to <code class="inline">arr[0].length - 1</code>. An out-of-range index in either dimension throws <code class="inline">ArrayIndexOutOfBoundsException</code>, same as a 1D array.</p>
+      <h2>Java Stores It as an Array of Arrays</h2>
+      <p>Internally, <code class="inline">moduleCurrents</code> is one 4-element outer array, where each element is a <strong>reference</strong> to its own separate 5-element inner array — not one giant contiguous block. That's why <code class="inline">moduleCurrents[0]</code> alone is a valid expression: it's a real, complete <code class="inline">double[]</code> (front-left's row), which is what makes <code class="inline">moduleCurrents[0].length</code> work.</p>
+      <pre class="code"><code><span class="k">double</span>[] frontLeftRow = moduleCurrents[<span class="n">0</span>]; <span class="c">// a single row IS a real 1D array on its own</span></code></pre>
+    `,
+    pitfalls: [
+      "Swapping row and column. <code class=\"inline\">moduleCurrents[2][0]</code> is back-left's <em>first</em> sample, not front-left's third — the first index is always the row.",
+      "Assuming <code class=\"inline\">new double[4][5]</code> gives usable data. It gives 20 zeros, not real readings — same default-value rule as 1D arrays.",
+      "Off-by-one against <code class=\"inline\">.length</code>. The last valid row index is <code class=\"inline\">moduleCurrents.length - 1</code>; the last valid column index is <code class=\"inline\">moduleCurrents[0].length - 1</code>."
+    ],
+    takeaways: [
+      "A 2D array is declared/created as <code class=\"inline\">datatype[][] name = new datatype[rows][cols];</code>, or filled in one step with a nested initializer list (one inner list per row).",
+      "<code class=\"inline\">arr[row][col]</code> reads or writes one element; the first index is always the row, the second the column.",
+      "<code class=\"inline\">.length</code> gives the row count; <code class=\"inline\">.length</code> on any one row (e.g. <code class=\"inline\">arr[0].length</code>) gives the column count.",
+      "Java implements a 2D array as an array of arrays — each row is itself a real, independent 1D array."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.11-2d-array-creation-and-access.md (CSA 4.11)"
+  },
+  "10.2": {
+    title: "2D Array Traversals: Nested Loops",
+    ref: "10.2 — 2D Array Traversals: Nested Loops (CSA 4.12)",
+    body: `
+      <h2>Nested Loops</h2>
+      <p>Since a 2D array is really an array of arrays, traversing every element takes a loop inside a loop — the outer loop walks the rows, the inner loop walks the columns of whichever row the outer loop is currently on:</p>
+      <pre class="code"><code><span class="k">double</span>[][] moduleCurrents = { {<span class="n">12.1</span>, <span class="n">11.8</span>, <span class="n">40.2</span>}, {<span class="n">12.0</span>, <span class="n">11.9</span>, <span class="n">12.1</span>} };
+<span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; moduleCurrents.length; row++)
+{
+    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[<span class="n">0</span>].length; col++)
+    {
+        System.out.<span class="me">println</span>(moduleCurrents[row][col]);
+    }
+}</code></pre>
+      <p>The loop body runs <code class="inline">rows × columns</code> times total. <code class="inline">moduleCurrents.length</code> is the row bound; <code class="inline">moduleCurrents[0].length</code> is the column bound (safe here because the array is rectangular — every row has the same length).</p>
+      <h2>Row-Major vs. Column-Major</h2>
+      <p>Which index changes in the <em>outer</em> loop decides the traversal order:</p>
+      <pre class="code"><code><span class="c">// Row-major: finish one module's samples before moving to the next module</span>
+<span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; moduleCurrents.length; row++)
+    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[<span class="n">0</span>].length; col++)
+        process(moduleCurrents[row][col]);
+
+<span class="c">// Column-major: look at sample #0 across ALL modules, then sample #1 across all modules...</span>
+<span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[<span class="n">0</span>].length; col++)
+    <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; moduleCurrents.length; row++)
+        process(moduleCurrents[row][col]);</code></pre>
+      <p>Row-major is the natural choice for "how did this one module behave over time." Column-major is the natural choice for "what was total robot current draw at this one instant" — e.g. checking whether all 4 modules spiked simultaneously (a brownout risk), which row-major order would never surface directly.</p>
+      <h2>Enhanced For-Each, Nested</h2>
+      <p>A nested for-each also traverses a 2D array, with no indices — but only when you don't need row/column numbers or in-place modification of primitive values:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">double</span>[] moduleRow : moduleCurrents)  <span class="c">// outer variable is a 1D array — one row</span>
+{
+    <span class="k">for</span> (<span class="k">double</span> sample : moduleRow)        <span class="c">// inner variable matches the element type</span>
+    {
+        System.out.<span class="me">println</span>(sample);
+    }
+}</code></pre>
+      <p>Pattern to remember: the <strong>outer</strong> loop variable is typed as a 1D array (a whole row); the <strong>inner</strong> loop variable is typed as one element. As with 1D for-each (Lesson 9.4), reassigning <code class="inline">sample</code> inside the loop does not change what's stored in the array.</p>
+      <h2>2D Arrays of Objects Are Different</h2>
+      <p>The for-each modification limit above is about <em>primitives</em>. A 2D array of objects — like a grid of <code class="inline">TalonFX</code> motor wrappers, or a vision system's <code class="inline">Pixel[][]</code> — can still have its objects mutated through a for-each loop, because you're calling a method on the object the loop variable refers to, not reassigning the array slot itself:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="t">TalonFX</span>[] moduleRow : driveMotors)
+{
+    <span class="k">for</span> (<span class="t">TalonFX</span> motor : moduleRow)
+    {
+        motor.<span class="me">setNeutralMode</span>(NeutralModeValue.Brake); <span class="c">// mutates the real object — this works</span>
+    }
+}</code></pre>
+    `,
+    pitfalls: [
+      "Using <code class=\"inline\">moduleCurrents.length</code> as the inner loop's bound. The inner loop walks <em>columns</em>, so its bound is <code class=\"inline\">moduleCurrents[0].length</code>, not <code class=\"inline\">moduleCurrents.length</code> (the row count).",
+      "Expecting for-each to let you assign into a primitive 2D array. <code class=\"inline\">for (double sample : moduleRow) { sample = 0.0; }</code> changes nothing — same rule as 1D arrays.",
+      "Confusing row-major and column-major with \"correct\" and \"incorrect.\" Neither is wrong — pick whichever matches what the question actually asks (per-module trends vs. per-instant totals)."
+    ],
+    takeaways: [
+      "Traversing a full 2D array needs nested loops: outer for rows, inner for columns.",
+      "Row-major order finishes one row before moving to the next; column-major order finishes one column (across all rows) before moving to the next — which one to use depends on what you're computing.",
+      "A nested for-each loop traverses a 2D array with no indices; its outer variable is a 1D array (one row), its inner variable matches the element type.",
+      "For-each can't modify a primitive 2D array's stored values, but it can call mutator methods on objects the array holds (like motor controllers)."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.12-2d-array-traversals-nested-loops.md (CSA 4.12)"
+  },
+  "10.3": {
+    title: "Implementing 2D Array Algorithms",
+    ref: "10.3 — Implementing 2D Array Algorithms (CSA 4.13)",
+    body: `
+      <p>Every algorithm shape from Lesson 9.5 (sum/average, min/max, property checks, duplicates) extends to 2D arrays — applied to the whole grid, or to just one row, one column, or a subsection.</p>
+      <h2>Sum a Row, Sum a Column</h2>
+      <pre class="code"><code><span class="k">public static double</span> <span class="me">getTotalForModule</span>(<span class="k">int</span> row, <span class="k">double</span>[][] a)
+{
+    <span class="k">double</span> total = <span class="n">0</span>;
+    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; a[<span class="n">0</span>].length; col++)
+    {
+        total = total + a[row][col];
+    }
+    <span class="k">return</span> total;
+}
+
+<span class="k">public static double</span> <span class="me">getTotalForSample</span>(<span class="k">int</span> col, <span class="k">double</span>[][] a)
+{
+    <span class="k">double</span> total = <span class="n">0</span>;
+    <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; a.length; row++)
+    {
+        total = total + a[row][col];
+    }
+    <span class="k">return</span> total;
+}</code></pre>
+      <p><code class="inline">getTotalForModule</code> sums one module's row across all samples; <code class="inline">getTotalForSample</code> sums one instant's column across all 4 modules (useful for spotting a simultaneous-spike brownout).</p>
+      <h2>Max Across the Whole Array</h2>
+      <pre class="code"><code><span class="k">public static double</span> <span class="me">getPeakCurrent</span>(<span class="k">double</span>[][] a)
+{
+    <span class="k">double</span> peak = a[<span class="n">0</span>][<span class="n">0</span>];
+    <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; a.length; row++)
+    {
+        <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; a[<span class="n">0</span>].length; col++)
+        {
+            <span class="k">if</span> (a[row][col] &gt; peak)
+            {
+                peak = a[row][col];
+            }
+        }
+    }
+    <span class="k">return</span> peak;
+}</code></pre>
+      <p>Same seed-with-the-first-real-value rule from Lesson 9.5 — seeding with <code class="inline">0</code> would be wrong if every reading happened to be negative.</p>
+      <h2>A Subsection Only</h2>
+      <p>Loop bounds don't have to cover the whole array — narrowing them checks just a range of rows/columns, e.g. counting how many samples in a given module range exceeded a spike threshold:</p>
+      <pre class="code"><code><span class="k">public static int</span> <span class="me">countSpikes</span>(<span class="k">double</span> threshold, <span class="k">double</span>[][] a,
+                               <span class="k">int</span> rowStart, <span class="k">int</span> rowEnd, <span class="k">int</span> colStart, <span class="k">int</span> colEnd)
+{
+    <span class="k">int</span> count = <span class="n">0</span>;
+    <span class="k">for</span> (<span class="k">int</span> row = rowStart; row &lt;= rowEnd; row++)
+    {
+        <span class="k">for</span> (<span class="k">int</span> col = colStart; col &lt;= colEnd; col++)
+        {
+            <span class="k">if</span> (a[row][col] &gt; threshold)
+            {
+                count++;
+            }
+        }
+    }
+    <span class="k">return</span> count;
+}</code></pre>
+      <h2>Duplicates Need 4 Nested Loops</h2>
+      <p>A 1D duplicate check needs 2 nested loops (Lesson 9.5). A full 2D duplicate check needs <strong>4</strong>: two to pick a starting cell (row, col), and two more to compare it against every cell that comes <em>after</em> it — later columns in the same row, plus every cell in every later row:</p>
+      <pre class="code"><code><span class="k">public static boolean</span> <span class="me">hasDuplicateReading</span>(<span class="k">double</span>[][] a)
+{
+    <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; a.length; row++)
+    {
+        <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; a[<span class="n">0</span>].length; col++)
+        {
+            <span class="k">for</span> (<span class="k">int</span> row2 = row; row2 &lt; a.length; row2++)
+            {
+                <span class="k">int</span> startCol = (row2 == row) ? col + <span class="n">1</span> : <span class="n">0</span>;
+                <span class="k">for</span> (<span class="k">int</span> col2 = startCol; col2 &lt; a[<span class="n">0</span>].length; col2++)
+                {
+                    <span class="k">if</span> (a[row][col] == a[row2][col2])
+                    {
+                        <span class="k">return true</span>;
+                    }
+                }
+            }
+        }
+    }
+    <span class="k">return false</span>;
+}</code></pre>
+      <p>The <code class="inline">startCol</code> trick avoids comparing a pair twice: within the same row (<code class="inline">row2 == row</code>), only look at columns after the candidate's own column; in a later row, every column is fair game.</p>
+      <h2>Rotate/Reverse a Single Row or Column</h2>
+      <p>Rotating or reversing just one row (or one "virtual column" — a fixed column index across every row) works exactly like the 1D version from Lesson 9.5, because you're really only touching one 1D array at a time:</p>
+      <pre class="code"><code><span class="k">public static void</span> <span class="me">rotateRowRight</span>(<span class="k">double</span>[][] a, <span class="k">int</span> row)
+{
+    <span class="k">double</span> last = a[row][a[<span class="n">0</span>].length - <span class="n">1</span>];
+    <span class="k">for</span> (<span class="k">int</span> col = a[<span class="n">0</span>].length - <span class="n">1</span>; col &gt; <span class="n">0</span>; col--)
+    {
+        a[row][col] = a[row][col - <span class="n">1</span>];
+    }
+    a[row][<span class="n">0</span>] = last;
+}</code></pre>
+    `,
+    pitfalls: [
+      "Confusing \"sum a row\" with \"sum a column.\" Fixing <code class=\"inline\">row</code> and looping <code class=\"inline\">col</code> sums a row; fixing <code class=\"inline\">col</code> and looping <code class=\"inline\">row</code> sums a column — it's easy to write the wrong one by habit.",
+      "Forgetting the duplicate check's <code class=\"inline\">startCol</code> trick. Without it, a 2D duplicate search either misses valid pairs or double-compares the same pair twice.",
+      "Using <code class=\"inline\">&lt;</code> instead of <code class=\"inline\">&lt;=</code> on subsection bounds that are meant to be inclusive. <code class=\"inline\">countSpikes</code>'s <code class=\"inline\">rowEnd</code>/<code class=\"inline\">colEnd</code> are inclusive bounds by design — a <code class=\"inline\">&lt;</code> would silently skip the last row/column."
+    ],
+    takeaways: [
+      "Every 1D array algorithm pattern (accumulator, min/max, property count, duplicates, rotate) extends to 2D — applied to the whole array, one row, one column, or a bounded subsection.",
+      "Summing a row fixes the row index and loops columns; summing a column fixes the column index and loops rows.",
+      "A full 2D duplicate check needs 4 nested loops, not 2 — two to pick the candidate cell, two more to scan every cell that comes after it without re-checking any pair.",
+      "Rotating or reversing a single row (or a fixed-column \"column slice\") reuses the exact 1D in-place pattern from Lesson 9.5."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.13-implementing-2d-array-algorithms.md (CSA 4.13)"
+  }
+};
+
+let currentItem = "10.1";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
