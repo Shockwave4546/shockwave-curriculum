@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.9 — Storing Data (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+table.cmp{width:100%;border-collapse:collapse;margin:0 0 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+table.cmp th,table.cmp td{border:1px solid var(--card-line);padding:8px 10px;text-align:left;}
+table.cmp th{background:var(--card);font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--ink-soft);font-size:11px;text-transform:uppercase;letter-spacing:0.03em;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.9 — Storing Data</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "9.1": {
+    title: "Array Creation and Access",
+    ref: "9.1 — Array Creation and Access (CSA 4.3)",
+    body: `
+      <h2>What an Array Is</h2>
+      <p>An array is a fixed-size block of memory holding several values of the same type, accessed by position (<strong>index</strong>) instead of by separate variable names — the fix for needing <code class="inline">motor1</code>, <code class="inline">motor2</code>, <code class="inline">motor3</code>... variables.</p>
+      <pre class="code"><code><span class="k">int</span>[] canBusIds = {<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>}; <span class="c">// an initializer list — size inferred, values set immediately</span></code></pre>
+      <h2>Two Ways to Create One</h2>
+      <pre class="code"><code><span class="k">int</span>[] canBusIds;              <span class="c">// declares the variable — no array exists yet (it's null)</span>
+canBusIds = <span class="k">new int</span>[<span class="n">4</span>];       <span class="c">// creates a 4-element array — all elements start at 0</span>
+
+<span class="k">int</span>[] canBusIds2 = {<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>}; <span class="c">// initializer list: create + fill in one step</span></code></pre>
+      <p>An array is itself an object — a declared-but-not-yet-created array variable holds <code class="inline">null</code>, exactly like any other reference type.</p>
+      <p>When you create an array with <code class="inline">new</code> and a size, every element starts at that type's default: <code class="inline">0</code> for <code class="inline">int</code>, <code class="inline">0.0</code> for <code class="inline">double</code>, <code class="inline">false</code> for <code class="inline">boolean</code>, <code class="inline">null</code> for <code class="inline">String</code> or any reference type.</p>
+      <h2>Indexing</h2>
+      <p>Indices start at 0; the last valid index is always <code class="inline">length - 1</code> (a <code class="inline">public final int</code> field, not a method — no parentheses, unlike <code class="inline">String.length()</code>).</p>
+      <pre class="code"><code>System.out.<span class="me">println</span>(canBusIds.length); <span class="c">// 4</span>
+canBusIds[<span class="n">0</span>] = <span class="n">5</span>;                     <span class="c">// assign</span>
+System.out.<span class="me">println</span>(canBusIds[<span class="n">0</span>]);     <span class="c">// read — prints 5</span></code></pre>
+      <p>Accessing an index outside <code class="inline">0</code> to <code class="inline">length - 1</code> throws <code class="inline">ArrayIndexOutOfBoundsException</code> — one of the most common real runtime errors.</p>
+      <h2>Parallel Arrays</h2>
+      <p>Two (or more) arrays, kept in the same order, where index <code class="inline">i</code> in one corresponds to index <code class="inline">i</code> in the other:</p>
+      <pre class="code"><code><span class="t">String</span>[] autoNames = {<span class="s">"3-Piece-Left"</span>, <span class="s">"1-Piece-Safe"</span>, <span class="s">"Mobility-Only"</span>};
+<span class="k">double</span>[] autoTimes = {<span class="n">14.2</span>, <span class="n">8.5</span>, <span class="n">3.1</span>}; <span class="c">// autoTimes[i] is the recorded time for autoNames[i]</span></code></pre>
+      <h2>Arrays of Objects</h2>
+      <p>An array can hold any type, including your own classes — but each element still has to be constructed individually:</p>
+      <pre class="code"><code><span class="t">TalonFX</span>[] driveMotors = <span class="k">new</span> <span class="t">TalonFX</span>[<span class="n">4</span>]; <span class="c">// 4 slots, all currently null</span>
+driveMotors[<span class="n">0</span>] = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">1</span>);        <span class="c">// must construct each element separately</span>
+driveMotors[<span class="n">0</span>].<span class="me">set</span>(<span class="n">0.5</span>);                <span class="c">// then call methods through the index</span></code></pre>
+    `,
+    pitfalls: [
+      "Forgetting an array must be constructed, not just declared. <code class=\"inline\">int[] canBusIds;</code> alone is <code class=\"inline\">null</code> — you need <code class=\"inline\">new int[size]</code> or an initializer list before using it.",
+      "Off-by-one on the last index. The last valid index is <code class=\"inline\">length - 1</code>, not <code class=\"inline\">length</code>.",
+      "Forgetting to construct each element of an object array. <code class=\"inline\">new TalonFX[4]</code> gives you 4 <code class=\"inline\">null</code> slots, not 4 ready-to-use motor objects — each one still needs its own <code class=\"inline\">new TalonFX(...)</code>."
+    ],
+    takeaways: [
+      "An array is a fixed-size, same-type collection, accessed by a 0-based index.",
+      "<code class=\"inline\">new type[size]</code> creates an array with every element at its type's default; an initializer list creates and fills it in one step.",
+      "<code class=\"inline\">length</code> is a field (no parentheses); the last valid index is <code class=\"inline\">length - 1</code>.",
+      "Parallel arrays keep related data in sync by index.",
+      "An array of objects still requires constructing each element individually."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.03-array-creation-and-access.md (CSA 4.3)"
+  },
+  "9.2": {
+    title: "ArrayList and its Methods",
+    ref: "9.2 — ArrayList and its Methods (CSA 4.8)",
+    body: `
+      <h2>Why ArrayList Exists</h2>
+      <p>An array's size is fixed forever once created. <strong>ArrayList</strong> is Java's resizable alternative — use it whenever you don't know the final size up front, or items will be added/removed while the program runs (a growing log of events, for instance).</p>
+      <pre class="code"><code><span class="k">import</span> java.util.ArrayList;
+
+<span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt; logs = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt;();
+logs.<span class="me">add</span>(<span class="s">"Robot Initialized"</span>);</code></pre>
+      <h2>The Type Parameter</h2>
+      <p><code class="inline">ArrayList&lt;Type&gt;</code> — the type in angle brackets is what kind of object the list holds. <code class="inline">ArrayList</code> can only hold objects, never primitives directly — a list of numbers uses the wrapper types <code class="inline">Integer</code>/<code class="inline">Double</code> (Java auto-converts back and forth, called autoboxing/unboxing):</p>
+      <pre class="code"><code><span class="t">ArrayList</span>&lt;<span class="t">Double</span>&gt; sensorReadings = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">Double</span>&gt;();
+sensorReadings.<span class="me">add</span>(<span class="n">2.4</span>); <span class="c">// autoboxed into a Double automatically</span></code></pre>
+      <h2>Core Methods</h2>
+      <pre class="code"><code><span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt; logs = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt;();
+logs.<span class="me">size</span>();          <span class="c">// number of elements (like length, but a method — () required)</span>
+logs.<span class="me">add</span>(<span class="s">"started"</span>);  <span class="c">// appends to the end</span>
+logs.<span class="me">add</span>(<span class="n">0</span>, <span class="s">"boot"</span>);  <span class="c">// inserts at index 0, shifting everything else right</span>
+logs.<span class="me">get</span>(<span class="n">0</span>);           <span class="c">// reads the element at index 0</span>
+logs.<span class="me">set</span>(<span class="n">0</span>, <span class="s">"ready"</span>);  <span class="c">// replaces the element at index 0</span>
+logs.<span class="me">remove</span>(<span class="n">0</span>);        <span class="c">// removes the element at index 0, shifting later ones left</span></code></pre>
+      <p><code class="inline">ArrayList</code> uses methods (<code class="inline">get</code>/<code class="inline">set</code>) instead of <code class="inline">[]</code> — it's a real class, not a built-in language feature the way arrays are.</p>
+      <h2>Array vs. ArrayList, Side by Side</h2>
+      <table class="cmp"><thead><tr><th>Operation</th><th>array</th><th>ArrayList</th></tr></thead><tbody>
+        <tr><td>count</td><td>arr.length</td><td>list.size()</td></tr>
+        <tr><td>read</td><td>arr[i]</td><td>list.get(i)</td></tr>
+        <tr><td>write</td><td>arr[i] = v;</td><td>list.set(i, v);</td></tr>
+        <tr><td>grow/shrink</td><td>not possible</td><td>add/remove</td></tr>
+      </tbody></table>
+    `,
+    pitfalls: [
+      "Using <code class=\"inline\">[]</code> on an ArrayList. It doesn't compile — always <code class=\"inline\">get(i)</code>/<code class=\"inline\">set(i, v)</code> instead.",
+      "Mixing up <code class=\"inline\">.length</code> and <code class=\"inline\">.size()</code>. Arrays use the field <code class=\"inline\">.length</code>; <code class=\"inline\">ArrayList</code> uses the method <code class=\"inline\">.size()</code>.",
+      "Using an uninitialized <code class=\"inline\">ArrayList</code>. Declaring <code class=\"inline\">ArrayList&lt;String&gt; list;</code> without <code class=\"inline\">new ArrayList&lt;String&gt;()</code> leaves it <code class=\"inline\">null</code> — calling any method on it throws <code class=\"inline\">NullPointerException</code>."
+    ],
+    takeaways: [
+      "<code class=\"inline\">ArrayList</code> is a resizable list — use it when the size isn't known up front or will change at runtime.",
+      "The type parameter (<code class=\"inline\">ArrayList&lt;Type&gt;</code>) says what it holds; primitives need their wrapper type (<code class=\"inline\">Integer</code>, <code class=\"inline\">Double</code>).",
+      "Core methods: <code class=\"inline\">size()</code>, <code class=\"inline\">add()</code>, <code class=\"inline\">add(index, obj)</code>, <code class=\"inline\">get(index)</code>, <code class=\"inline\">set(index, obj)</code>, <code class=\"inline\">remove(index)</code>.",
+      "Arrays use <code class=\"inline\">.length</code> and <code class=\"inline\">[]</code>; <code class=\"inline\">ArrayList</code> uses <code class=\"inline\">.size()</code> and <code class=\"inline\">get</code>/<code class=\"inline\">set</code>."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.08-arraylist-and-its-methods.md (CSA 4.8)"
+  },
+  "9.3": {
+    title: "Optional: HashMap (Dictionary) Data Structure",
+    ref: "9.3 — Optional: HashMap (Dictionary) Data Structure (CSA 4.60)",
+    body: `
+      <h2>Key-Value Pairs</h2>
+      <p>A <strong>HashMap</strong> stores pairs — each unique <strong>key</strong> maps to a <strong>value</strong>, like a real dictionary mapping a word to its definition:</p>
+      <pre class="code"><code><span class="k">import</span> java.util.HashMap;
+
+<span class="t">HashMap</span>&lt;<span class="t">Integer</span>, <span class="t">Double</span>&gt; motorOffsets = <span class="k">new</span> <span class="t">HashMap</span>&lt;<span class="t">Integer</span>, <span class="t">Double</span>&gt;();
+motorOffsets.<span class="me">put</span>(<span class="n">5</span>, <span class="n">0.02</span>);   <span class="c">// CAN ID 5's calibration offset is 0.02</span>
+motorOffsets.<span class="me">put</span>(<span class="n">6</span>, -<span class="n">0.01</span>);
+
+<span class="k">double</span> offset = motorOffsets.<span class="me">get</span>(<span class="n">5</span>); <span class="c">// 0.02</span></code></pre>
+      <p><code class="inline">put(key, value)</code> adds or replaces a pair; <code class="inline">get(key)</code> retrieves the value for a key.</p>
+      <h2>When to Reach for a HashMap</h2>
+      <p>Arrays and <code class="inline">ArrayList</code> are naturally indexed by position (0, 1, 2...). A <code class="inline">HashMap</code> is for when the natural "index" is something else entirely — a name, an ID number, a label — and you want to look values up by that instead of a position:</p>
+      <pre class="code"><code><span class="t">HashMap</span>&lt;<span class="t">String</span>, <span class="t">String</span>&gt; subsystemStatus = <span class="k">new</span> <span class="t">HashMap</span>&lt;<span class="t">String</span>, <span class="t">String</span>&gt;();
+subsystemStatus.<span class="me">put</span>(<span class="s">"Intake"</span>, <span class="s">"Ready"</span>);
+subsystemStatus.<span class="me">put</span>(<span class="s">"Shooter"</span>, <span class="s">"Spinning Up"</span>);</code></pre>
+      <h2>Looping Through Every Pair</h2>
+      <p><code class="inline">keySet()</code> gives you every key, which you can then use with <code class="inline">get()</code> to reach each value:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="t">String</span> name : subsystemStatus.<span class="me">keySet</span>()) {
+    <span class="t">String</span> status = subsystemStatus.<span class="me">get</span>(name);
+    System.out.<span class="me">println</span>(name + <span class="s">": "</span> + status);
+}</code></pre>
+    `,
+    pitfalls: [
+      "Assuming a <code class=\"inline\">HashMap</code> remembers insertion order. Unlike <code class=\"inline\">ArrayList</code>, it doesn't guarantee any particular order when you loop through <code class=\"inline\">keySet()</code>.",
+      "Calling <code class=\"inline\">get()</code> with a key that was never <code class=\"inline\">put()</code>. Returns <code class=\"inline\">null</code> rather than throwing an error — check for that if a lookup might legitimately miss."
+    ],
+    takeaways: [
+      "A <code class=\"inline\">HashMap&lt;KeyType, ValueType&gt;</code> stores unique keys mapped to values.",
+      "<code class=\"inline\">put(key, value)</code> adds or replaces a pair; <code class=\"inline\">get(key)</code> retrieves the value.",
+      "Reach for a <code class=\"inline\">HashMap</code> when you naturally look things up by name/ID rather than by position.",
+      "<code class=\"inline\">keySet()</code> gives every key, for looping through all pairs with <code class=\"inline\">get()</code>."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.60-optional-hashmap-dictionary-data-structure.md (CSA 4.60)"
+  },
+  "9.4": {
+    title: "Array Traversals",
+    ref: "9.4 — Array Traversals (CSA 4.4)",
+    body: `
+      <h2>Looping Through an Array</h2>
+      <p><strong>Traversing</strong> an array means visiting its elements, usually with a loop. The loop variable doubles as the index:</p>
+      <pre class="code"><code><span class="k">double</span>[] sensorReadings = {<span class="n">2.1</span>, <span class="n">2.4</span>, <span class="n">1.9</span>, <span class="n">2.2</span>};
+<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; sensorReadings.length; i++) {
+    System.out.<span class="me">println</span>(sensorReadings[i]);
+}</code></pre>
+      <p>Writing the loop against <code class="inline">.length</code> (not a hardcoded number) means the same code keeps working no matter how many elements the array actually has.</p>
+      <h2>Arrays Are Objects — Passed by Reference</h2>
+      <p>An array is an object, so passing one into a method passes the reference — changes a method makes to the array's contents are visible back in the caller, same as any mutable object (Ch.7.3):</p>
+      <pre class="code"><code><span class="k">public static void</span> <span class="me">zeroOut</span>(<span class="k">double</span>[] values) {
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; values.length; i++) {
+        values[i] = <span class="n">0.0</span>; <span class="c">// this really does change the caller's array</span>
+    }
+}</code></pre>
+      <h2>The Enhanced For-Each Loop</h2>
+      <p>When you just need every value, with no index and no plan to modify elements, the for-each form is simpler:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">double</span> reading : sensorReadings) {
+    System.out.<span class="me">println</span>(reading);
+}</code></pre>
+      <p>It always starts at index 0 and runs through every element in order. It's genuinely equivalent to an indexed loop — just more concise when you don't need the index.</p>
+      <h2>What For-Each Can't Do</h2>
+      <ul>
+        <li><strong>Can't modify a primitive array's elements.</strong> <code class="inline">reading = 0.0;</code> inside the loop only changes the local copy, not the real array.</li>
+        <li><strong>Can't get the index.</strong> If you need to know where something is, use an indexed loop.</li>
+        <li><strong>Can't skip around or go partway.</strong> For-each always visits every element in order, front to back.</li>
+      </ul>
+    `,
+    pitfalls: [
+      "Off-by-one on the loop bound. <code class=\"inline\">i <= values.length</code> runs one iteration too many and throws <code class=\"inline\">ArrayIndexOutOfBoundsException</code>; the correct bound is always <code class=\"inline\">i < values.length</code>.",
+      "Expecting a for-each loop to change array values. <code class=\"inline\">for (double v : values) { v = 0.0; }</code> compiles, runs, and does absolutely nothing to the real array.",
+      "Returning \"not found\" too early in a search. A search loop must check every element before concluding something isn't present."
+    ],
+    takeaways: [
+      "Traversing an array means looping through it, index by index, with the loop bound written against <code class=\"inline\">.length</code>.",
+      "Arrays are objects — a method that changes array elements changes the caller's real array too.",
+      "The for-each loop is simpler when you don't need the index and won't modify elements.",
+      "For-each cannot modify primitive array elements or provide the index — use an indexed loop for those."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.04-array-traversals.md (CSA 4.4)"
+  },
+  "9.5": {
+    title: "Implementing Array Algorithms",
+    ref: "9.5 — Implementing Array Algorithms (CSA 4.5)",
+    body: `
+      <p>A handful of patterns, all built from a loop plus a little bookkeeping, cover almost everything you'll want to do with an array.</p>
+      <h2>Sum / Average (Accumulator)</h2>
+      <pre class="code"><code><span class="k">double</span> sum = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">double</span> reading : sensorReadings) {
+    sum += reading;
+}
+<span class="k">double</span> average = sum / sensorReadings.length;</code></pre>
+      <h2>Min / Max</h2>
+      <pre class="code"><code><span class="k">double</span> max = sensorReadings[<span class="n">0</span>]; <span class="c">// seed with the first element, not 0 — a reading could be negative</span>
+<span class="k">for</span> (<span class="k">double</span> reading : sensorReadings) {
+    <span class="k">if</span> (reading &gt; max) {
+        max = reading;
+    }
+}</code></pre>
+      <h2>Search — Check Everything Before Giving Up</h2>
+      <pre class="code"><code><span class="k">public static boolean</span> <span class="me">contains</span>(<span class="k">double</span>[] values, <span class="k">double</span> target) {
+    <span class="k">for</span> (<span class="k">double</span> v : values) {
+        <span class="k">if</span> (v == target) {
+            <span class="k">return true</span>; <span class="c">// fine to return early on a MATCH</span>
+        }
+    }
+    <span class="k">return false</span>; <span class="c">// only after checking every element</span>
+}</code></pre>
+      <h2>"At Least One" / "All" / "Count"</h2>
+      <pre class="code"><code><span class="c">// at least one has the property</span>
+<span class="k">for</span> (<span class="k">double</span> v : values) { <span class="k">if</span> (isFaulty(v)) <span class="k">return true</span>; }
+<span class="k">return false</span>;
+
+<span class="c">// all have the property (check the NEGATION, bail early on a counter-example)</span>
+<span class="k">for</span> (<span class="k">double</span> v : values) { <span class="k">if</span> (!isFaulty(v)) <span class="k">return false</span>; }
+<span class="k">return true</span>;
+
+<span class="c">// count how many have the property</span>
+<span class="k">int</span> count = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">double</span> v : values) { <span class="k">if</span> (isFaulty(v)) count++; }</code></pre>
+      <h2>Duplicates and Reversing</h2>
+      <pre class="code"><code><span class="c">// duplicates anywhere — nested loop over every pair</span>
+<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; values.length; i++) {
+    <span class="k">for</span> (<span class="k">int</span> j = i + <span class="n">1</span>; j &lt; values.length; j++) {
+        <span class="k">if</span> (values[i] == values[j]) <span class="k">return true</span>;
+    }
+}
+
+<span class="c">// reversing — swap from both ends toward the middle</span>
+<span class="k">int</span> start = <span class="n">0</span>, end = values.length - <span class="n">1</span>;
+<span class="k">while</span> (start &lt; end) {
+    <span class="k">double</span> temp = values[start];
+    values[start] = values[end];
+    values[end] = temp;
+    start++; end--;
+}</code></pre>
+    `,
+    pitfalls: [
+      "Seeding min/max with <code class=\"inline\">0</code> instead of the first element. If every real value is negative, <code class=\"inline\">0</code> is a wrong starting point that never gets replaced correctly.",
+      "Returning \"not found\" from inside the loop. Only a match should return early; \"not found\" has to wait until the loop has checked every element.",
+      "Comparing <code class=\"inline\">values[i]</code> to <code class=\"inline\">values[i+1]</code> all the way to the last index. The adjacent-duplicate loop must stop at <code class=\"inline\">length - 2</code>."
+    ],
+    takeaways: [
+      "Sum/average, min/max, search, and property-counting are all the same basic shape: a loop plus a little state.",
+      "A search for \"not found\" must check every element before concluding absence; a search for a match can return the instant it's found.",
+      "Adjacent-duplicate checks are a single loop; any-pair duplicate checks need a nested loop.",
+      "Reversing in place swaps from both ends toward the middle using a temporary variable."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.05-implementing-array-algorithms.md (CSA 4.5)"
+  },
+  "9.6": {
+    title: "ArrayList Traversals",
+    ref: "9.6 — ArrayList Traversals (CSA 4.9)",
+    body: `
+      <h2>Same Loop Shapes as Arrays</h2>
+      <p>For-each, indexed <code class="inline">for</code>, and <code class="inline">while</code> all work on an <code class="inline">ArrayList</code> — just with <code class="inline">get(i)</code> instead of <code class="inline">[i]</code>, and <code class="inline">.size()</code> instead of <code class="inline">.length</code>:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="t">String</span> log : logs) { System.out.<span class="me">println</span>(log); }             <span class="c">// for-each — read-only pass</span>
+<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; logs.size(); i++) { System.out.<span class="me">println</span>(logs.get(i)); } <span class="c">// indexed</span></code></pre>
+      <h2>The Big Restriction: Don't Resize During a For-Each</h2>
+      <p>Adding or removing elements from an <code class="inline">ArrayList</code> while a for-each loop is traversing it throws <code class="inline">ConcurrentModificationException</code>. If you need to add or remove while looping, use an indexed <code class="inline">for</code> or <code class="inline">while</code> loop instead.</p>
+      <h2>Removing While Looping — The Careful Way</h2>
+      <p>Removing an element shifts every later element down by one index. If you increment the loop index unconditionally after a removal, you skip checking the element that just got shifted into the spot you were on:</p>
+      <pre class="code"><code><span class="k">int</span> i = <span class="n">0</span>;
+<span class="k">while</span> (i &lt; logs.size()) {
+    <span class="k">if</span> (shouldRemove(logs.get(i))) {
+        logs.<span class="me">remove</span>(i); <span class="c">// don't increment i here — the next element just shifted into index i</span>
+    } <span class="k">else</span> {
+        i++; <span class="c">// only advance when nothing was removed this iteration</span>
+    }
+}</code></pre>
+      <h2>Chaining Through a List of Objects</h2>
+      <pre class="code"><code><span class="t">ArrayList</span>&lt;<span class="t">Subsystem</span>&gt; subsystems = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">Subsystem</span>&gt;();
+<span class="t">String</span> firstName = subsystems.<span class="me">get</span>(<span class="n">0</span>).<span class="me">getName</span>(); <span class="c">// chain: get the object, then call a method on it</span></code></pre>
+    `,
+    pitfalls: [
+      "Adding/removing inside a for-each loop. Throws <code class=\"inline\">ConcurrentModificationException</code> — switch to an indexed <code class=\"inline\">for</code> or <code class=\"inline\">while</code> loop if the list's size needs to change mid-traversal.",
+      "Incrementing the index unconditionally after a <code class=\"inline\">remove</code>. This skips the element that shifted into the just-vacated slot.",
+      "Using <code class=\"inline\">&lt;=</code> against <code class=\"inline\">.size()</code>. Same off-by-one risk as arrays — the last valid index is <code class=\"inline\">size() - 1</code>."
+    ],
+    takeaways: [
+      "<code class=\"inline\">ArrayList</code> supports the same loop shapes as arrays, using <code class=\"inline\">get(i)</code>/<code class=\"inline\">.size()</code> instead of <code class=\"inline\">[i]</code>/<code class=\"inline\">.length</code>.",
+      "Never add or remove elements from an <code class=\"inline\">ArrayList</code> while traversing it with a for-each loop.",
+      "When removing elements in an indexed/while loop, only advance the index on iterations where nothing was removed."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.09-arraylist-traversals.md (CSA 4.9)"
+  },
+  "9.7": {
+    title: "Implementing ArrayList Algorithms",
+    ref: "9.7 — Implementing ArrayList Algorithms (CSA 4.10)",
+    body: `
+      <p>Every pattern from Lesson 9.5 (sum/average, min/max, search, property checks, duplicates, reversing) applies to <code class="inline">ArrayList</code> too — just swap <code class="inline">[i]</code>/<code class="inline">.length</code> for <code class="inline">get(i)</code>/<code class="inline">.size()</code>.</p>
+      <h2>Min / Max / Average</h2>
+      <pre class="code"><code><span class="k">public static double</span> <span class="me">average</span>(<span class="t">ArrayList</span>&lt;<span class="t">Double</span>&gt; nums) {
+    <span class="k">double</span> sum = <span class="n">0</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; nums.size(); i++) {
+        sum += nums.get(i);
+    }
+    <span class="k">return</span> sum / nums.size();
+}</code></pre>
+      <h2>Duplicates — Use .equals(), Not ==</h2>
+      <p>For <code class="inline">ArrayList&lt;Integer&gt;</code> (or any object type), comparing with <code class="inline">==</code> checks identity, not value — use <code class="inline">.equals()</code> instead:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; nums.size(); i++) {
+    <span class="k">for</span> (<span class="k">int</span> j = i + <span class="n">1</span>; j &lt; nums.size(); j++) {
+        <span class="k">if</span> (nums.get(i).<span class="me">equals</span>(nums.get(j))) { <span class="c">// .equals(), not ==</span>
+            <span class="k">return true</span>;
+        }
+    }
+}</code></pre>
+      <h2>Rotating (In Place)</h2>
+      <pre class="code"><code><span class="k">public static void</span> <span class="me">rotateRight</span>(<span class="t">ArrayList</span>&lt;<span class="t">Double</span>&gt; nums) {
+    <span class="k">double</span> last = nums.get(nums.size() - <span class="n">1</span>);
+    <span class="k">for</span> (<span class="k">int</span> i = nums.size() - <span class="n">1</span>; i &gt; <span class="n">0</span>; i--) {
+        nums.set(i, nums.get(i - <span class="n">1</span>));
+    }
+    nums.set(<span class="n">0</span>, last);
+}</code></pre>
+      <h2>Parallel ArrayLists</h2>
+      <p>Same idea as parallel arrays (Ch.9.1) — two lists kept in sync by index:</p>
+      <pre class="code"><code><span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt; autoNames = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt;();
+<span class="t">ArrayList</span>&lt;<span class="t">Double</span>&gt; autoTimes = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">Double</span>&gt;();
+<span class="c">// autoTimes.get(i) is the recorded time for autoNames.get(i)</span></code></pre>
+    `,
+    pitfalls: [
+      "Comparing objects with <code class=\"inline\">==</code> instead of <code class=\"inline\">.equals()</code>. This is the single most common ArrayList-specific mistake.",
+      "Using array syntax (<code class=\"inline\">[]</code>) out of habit. <code class=\"inline\">nums[i]</code> doesn't compile on an <code class=\"inline\">ArrayList</code>.",
+      "Forgetting <code class=\"inline\">.size()</code> changes as you add/remove."
+    ],
+    takeaways: [
+      "Every array algorithm pattern transfers directly to <code class=\"inline\">ArrayList</code> — just swap <code class=\"inline\">[i]</code>/<code class=\"inline\">.length</code> for <code class=\"inline\">get(i)</code>/<code class=\"inline\">.size()</code>.",
+      "Compare <code class=\"inline\">ArrayList</code> elements with <code class=\"inline\">.equals()</code>, not <code class=\"inline\">==</code>, when the element type is an object (including boxed numbers).",
+      "Parallel <code class=\"inline\">ArrayList</code>s keep related data in sync by index, same as parallel arrays."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.10-implementing-arraylist-algorithms.md (CSA 4.10)"
+  },
+  "9.8": {
+    title: "Using Text Files",
+    ref: "9.8 — Using Text Files (CSA 4.6)",
+    body: `
+      <h2>Why Read From a File</h2>
+      <p>A file's data persists even when the program isn't running — useful for loading configuration or data too large (or too changeable) to hard-code into your source. A robot might load a table of autonomous starting positions from a file instead of hardcoding them.</p>
+      <h2>Opening a File</h2>
+      <p><code class="inline">File</code> (from <code class="inline">java.io</code>) represents the file itself; <code class="inline">Scanner</code> (from <code class="inline">java.util</code>) reads from it:</p>
+      <pre class="code"><code><span class="k">import</span> java.io.*;
+<span class="k">import</span> java.util.*;
+
+<span class="t">File</span> configFile = <span class="k">new</span> <span class="t">File</span>(<span class="s">"auto_config.csv"</span>);
+<span class="t">Scanner</span> scan = <span class="k">new</span> <span class="t">Scanner</span>(configFile); <span class="c">// can throw FileNotFoundException</span></code></pre>
+      <p>Since opening a file can fail (wrong name, missing file), Java requires you to acknowledge that. The simplest way: add <code class="inline">throws IOException</code> to the method's header:</p>
+      <pre class="code"><code><span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args) <span class="k">throws</span> <span class="t">IOException</span> {
+    <span class="t">File</span> configFile = <span class="k">new</span> <span class="t">File</span>(<span class="s">"auto_config.csv"</span>);
+    <span class="t">Scanner</span> scan = <span class="k">new</span> <span class="t">Scanner</span>(configFile);
+    <span class="c">// ...</span>
+    scan.<span class="me">close</span>();
+}</code></pre>
+      <h2>Reading Line by Line</h2>
+      <pre class="code"><code><span class="k">while</span> (scan.hasNext()) {
+    <span class="t">String</span> line = scan.<span class="me">nextLine</span>();
+    <span class="c">// process this line</span>
+}
+scan.<span class="me">close</span>(); <span class="c">// always close when done</span></code></pre>
+      <h2>Splitting a CSV Line</h2>
+      <pre class="code"><code><span class="c">// One line of auto_config.csv: "3-Piece-Left,14.2,BlueAlliance"</span>
+<span class="t">String</span> line = scan.<span class="me">nextLine</span>();
+<span class="t">String</span>[] fields = line.<span class="me">split</span>(<span class="s">","</span>);
+<span class="t">String</span> routeName = fields[<span class="n">0</span>];       <span class="c">// "3-Piece-Left"</span>
+<span class="k">double</span> routeTime = <span class="t">Double</span>.<span class="me">parseDouble</span>(fields[<span class="n">1</span>]); <span class="c">// "14.2" -> 14.2</span>
+<span class="t">String</span> alliance = fields[<span class="n">2</span>];        <span class="c">// "BlueAlliance"</span></code></pre>
+      <h2>Reading Into Objects</h2>
+      <p>Rather than working with raw <code class="inline">String[]</code> rows, define a class matching the file's columns and build one object per row:</p>
+      <pre class="code"><code><span class="t">ArrayList</span>&lt;<span class="t">AutoRoute</span>&gt; routes = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">AutoRoute</span>&gt;();
+<span class="k">while</span> (scan.hasNext()) {
+    <span class="t">String</span>[] fields = scan.<span class="me">nextLine</span>().<span class="me">split</span>(<span class="s">","</span>);
+    routes.<span class="me">add</span>(<span class="k">new</span> <span class="t">AutoRoute</span>(fields[<span class="n">0</span>], <span class="t">Double</span>.<span class="me">parseDouble</span>(fields[<span class="n">1</span>]), fields[<span class="n">2</span>]));
+}</code></pre>
+    `,
+    pitfalls: [
+      "Forgetting <code class=\"inline\">throws IOException</code> (or a try/catch). Java won't compile file-reading code unless you've acknowledged that opening the file might fail.",
+      "Forgetting to <code class=\"inline\">close()</code> the scanner. A small leak that adds up in a program that opens many files.",
+      "Trying to parse a header row as data. The first line of a CSV is often column names, not values — skip it before parsing rows as real data."
+    ],
+    takeaways: [
+      "<code class=\"inline\">File</code> represents the file; <code class=\"inline\">Scanner</code> reads from it — both can throw exceptions Java requires you to acknowledge.",
+      "<code class=\"inline\">hasNext()</code> combined with a <code class=\"inline\">while</code> loop is the standard pattern for reading an entire file, line by line.",
+      "<code class=\"inline\">String.split(\",\")</code> breaks a CSV line into fields.",
+      "Reading rows into custom objects is cleaner than working with raw split arrays once the data has real structure."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.06-using-text-files.md (CSA 4.6)"
+  }
+};
+
+let currentItem = "9.1";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
