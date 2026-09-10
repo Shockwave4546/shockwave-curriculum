@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.6 — Strings (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.6 — Strings</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "6.1": {
+    title: "Strings",
+    ref: "6.1 — Strings (CSA 1.15)",
+    body: `
+      <h2>Strings Are Objects</h2>
+      <p><code class="inline">String</code> is a class, part of <code class="inline">java.lang</code> (no import needed). Like any class, you can create one with <code class="inline">new</code>, or with the shorter <strong>string literal</strong> syntax:</p>
+      <pre class="code"><code><span class="t">String</span> autoName = <span class="k">new</span> <span class="t">String</span>(<span class="s">"BlueAlliance-Left"</span>); <span class="c">// rarely used</span>
+<span class="t">String</span> autoName = <span class="s">"BlueAlliance-Left"</span>;              <span class="c">// the normal way</span></code></pre>
+      <p>Both create a <code class="inline">String</code> object; the literal form is what you'll use almost always.</p>
+      <h2>Strings Are Immutable</h2>
+      <p>Once a <code class="inline">String</code> is created, its characters can never change. Every method that looks like it "modifies" a string actually returns a brand-new one, leaving the original untouched:</p>
+      <pre class="code"><code><span class="t">String</span> name = <span class="s">"Titan"</span>;
+name.<span class="me">toUpperCase</span>(); <span class="c">// does nothing useful — the result is thrown away!</span>
+name = name.<span class="me">toUpperCase</span>(); <span class="c">// this is how you actually keep the change</span></code></pre>
+      <h2>Concatenation</h2>
+      <p><code class="inline">+</code> and <code class="inline">+=</code> join strings together, and automatically convert non-string values into strings:</p>
+      <pre class="code"><code><span class="t">String</span> status = <span class="s">"Auto: "</span> + autoName + <span class="s">", step "</span> + <span class="n">3</span>; <span class="c">// the int 3 converts automatically</span></code></pre>
+      <p>Watch the order when mixing <code class="inline">+</code> with numbers — it's evaluated left to right, so <code class="inline">"Score: " + 1 + 2</code> gives <code class="inline">"Score: 12"</code> (each number appends as text in turn), not <code class="inline">"Score: 3"</code>. Use parentheses — <code class="inline">"Score: " + (1 + 2)</code> — to force the addition first.</p>
+      <h2>Index and Length</h2>
+      <p>Each character has a position, or <strong>index</strong>, starting at 0. <code class="inline">length()</code> returns the total character count — the last valid index is always <code class="inline">length() - 1</code>. There's no bracket notation like an array's (<code class="inline">autoName[0]</code> isn't valid Java) — getting a single character means using <code class="inline">substring</code>, covered next.</p>
+      <p>Accessing an index outside <code class="inline">0</code> to <code class="inline">length() - 1</code> throws an <code class="inline">IndexOutOfBoundsException</code>.</p>
+      <h2>The Core String Methods</h2>
+      <pre class="code"><code><span class="t">String</span> autoName = <span class="s">"BlueAlliance-Left"</span>;
+autoName.<span class="me">length</span>();          <span class="c">// 17</span>
+autoName.<span class="me">substring</span>(<span class="n">0</span>, <span class="n">4</span>);   <span class="c">// "Blue" — from index 0 up to (not including) 4</span>
+autoName.<span class="me">substring</span>(<span class="n">13</span>);     <span class="c">// "Left" — from index 13 to the end</span>
+autoName.<span class="me">indexOf</span>(<span class="s">"Left"</span>);   <span class="c">// 13 — or -1 if not found</span>
+autoName.<span class="me">equals</span>(<span class="s">"BlueAlliance-Left"</span>); <span class="c">// true — compares actual characters</span></code></pre>
+      <p><code class="inline">substring(i, i + 1)</code> is the standard way to get just the single character at index <code class="inline">i</code>.</p>
+      <h2>.equals(), Not ==</h2>
+      <p><code class="inline">==</code> on a <code class="inline">String</code> checks whether two variables point at the <em>same object</em> — not whether their text matches. Use <code class="inline">.equals()</code> to compare actual content:</p>
+      <pre class="code"><code><span class="t">String</span> a = <span class="k">new</span> <span class="t">String</span>(<span class="s">"Left"</span>);
+<span class="t">String</span> b = <span class="k">new</span> <span class="t">String</span>(<span class="s">"Left"</span>);
+System.out.<span class="me">println</span>(a == b);       <span class="c">// false — two different objects</span>
+System.out.<span class="me">println</span>(a.<span class="me">equals</span>(b));  <span class="c">// true — same characters</span></code></pre>
+    `,
+    pitfalls: [
+      "Using <code class=\"inline\">==</code> to compare string content. It compiles, runs, and gives the wrong answer far more often than it errors — always use <code class=\"inline\">.equals()</code> for strings.",
+      "Forgetting a string method's result has to be used. <code class=\"inline\">autoName.toUpperCase();</code> alone does nothing — strings are immutable, so the result must be captured (<code class=\"inline\">autoName = autoName.toUpperCase();</code>) or it's lost.",
+      "Off-by-one in <code class=\"inline\">substring</code>. The <code class=\"inline\">to</code> index in <code class=\"inline\">substring(from, to)</code> is exclusive — <code class=\"inline\">substring(0, 4)</code> gives 4 characters (indices 0-3), not 5."
+    ],
+    takeaways: [
+      "<code class=\"inline\">String</code> is a class; string literals (<code class=\"inline\">\"text\"</code>) are the normal way to create one.",
+      "Strings are immutable — every \"modifying\" method returns a new string instead of changing the original.",
+      "<code class=\"inline\">+</code>/<code class=\"inline\">+=</code> concatenate, auto-converting non-string values to text.",
+      "<code class=\"inline\">length()</code>, <code class=\"inline\">substring()</code>, <code class=\"inline\">indexOf()</code> are the core methods, all indexed from 0.",
+      "Use <code class=\"inline\">.equals()</code> to compare string content — <code class=\"inline\">==</code> only checks whether two variables reference the same object."
+    ],
+    prov: "csawesome-2026: unit-1-using-objects-and-methods/1.15-strings.md (CSA 1.15)"
+  },
+  "6.2": {
+    title: "String Algorithms",
+    ref: "6.2 — String Algorithms (CSA 2.10)",
+    body: `
+      <h2>Scanning a String Character by Character</h2>
+      <p>A <code class="inline">for</code> loop is the standard way to visit every character of a string — start at 0, stop before <code class="inline">length()</code>:</p>
+      <pre class="code"><code><span class="t">String</span> autoName = <span class="s">"BlueAlliance-Left"</span>;
+<span class="k">int</span> dashCount = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; autoName.<span class="me">length</span>(); i++) {
+    <span class="k">if</span> (autoName.<span class="me">substring</span>(i, i + <span class="n">1</span>).<span class="me">equals</span>(<span class="s">"-"</span>)) {
+        dashCount++;
+    }
+}</code></pre>
+      <p>Use a <code class="inline">for</code> loop when you know you want to check every character. Use a <code class="inline">while</code> loop instead when you're searching for something and don't know in advance how many characters you'll need to check — see the find-and-replace pattern below.</p>
+      <h2>Find and Replace with indexOf + substring</h2>
+      <p>A <code class="inline">while</code> loop paired with <code class="inline">indexOf</code> repeatedly finds and processes one match at a time, until none remain:</p>
+      <pre class="code"><code><span class="t">String</span> name = <span class="s">"Alli1ance"</span>;
+<span class="k">int</span> i = <span class="n">0</span>;
+<span class="k">while</span> (name.<span class="me">indexOf</span>(<span class="s">"1"</span>) &gt;= <span class="n">0</span>) {
+    i = name.<span class="me">indexOf</span>(<span class="s">"1"</span>);
+    <span class="t">String</span> firstPart = name.<span class="me">substring</span>(<span class="n">0</span>, i);
+    <span class="t">String</span> lastPart = name.<span class="me">substring</span>(i + <span class="n">1</span>);
+    name = firstPart + <span class="s">"l"</span> + lastPart; <span class="c">// replace the "1" with "l"</span>
+}</code></pre>
+      <p>Each pass finds the <em>next</em> occurrence, because the string was already reassigned — the search always runs against the current (updated) value of <code class="inline">name</code>.</p>
+      <h2>Building a New String</h2>
+      <p>Since strings are immutable, "building" one really means starting with an empty string and concatenating onto it inside a loop:</p>
+      <pre class="code"><code><span class="t">String</span> reversed = <span class="s">""</span>;
+<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; autoName.<span class="me">length</span>(); i++) {
+    <span class="t">String</span> letter = autoName.<span class="me">substring</span>(i, i + <span class="n">1</span>);
+    reversed = letter + reversed; <span class="c">// prepend — builds the string backwards</span>
+}</code></pre>
+    `,
+    pitfalls: [
+      "Starting a string-scanning loop at 1 instead of 0. The first character is always at index 0 — starting at 1 skips it.",
+      "Using <code class=\"inline\">&lt;=</code> instead of <code class=\"inline\">&lt;</code> against <code class=\"inline\">length()</code>. <code class=\"inline\">i &lt;= autoName.length()</code> reads one index past the end and throws <code class=\"inline\">IndexOutOfBoundsException</code>.",
+      "An infinite loop in a find-and-replace pattern. If the replacement text itself still contains the thing you're searching for, <code class=\"inline\">indexOf</code> finds it again forever — make sure each pass genuinely reduces what's left to find."
+    ],
+    takeaways: [
+      "<code class=\"inline\">for</code> loops fit scanning every character; <code class=\"inline\">while</code> loops fit searching for an unknown number of matches.",
+      "A find-and-replace loop combines <code class=\"inline\">indexOf</code> (to locate) with <code class=\"inline\">substring</code> (to rebuild around the match), reassigning the string each pass.",
+      "Building a new string from scratch means starting empty and concatenating inside a loop — strings can't be modified in place."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.10-implementing-string-algorithms.md (CSA 2.10)"
+  }
+};
+
+let currentItem = "6.1";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
