@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.22 — The Builder Pattern (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.22 — The Builder Pattern</h1>
+  <p class="sub">shockwave-curriculum · draft lesson, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lesson only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "22": {
+    title: "The Builder Pattern",
+    ref: "22 — The Builder Pattern (T5817 30.1)",
+    body: `
+      <h2>The Problem: "Constructor Hell"</h2>
+      <p>A constructor with many parameters — especially several of the same type, or several optional ones — becomes genuinely hard to read and easy to get wrong:</p>
+      <pre class="code"><code><span class="t">Shooter</span> shooter = <span class="k">new</span> <span class="t">Shooter</span>(<span class="n">0.01</span>, <span class="n">0.3</span>, <span class="n">0.02</span>, <span class="k">true</span>, <span class="k">false</span>, <span class="n">12.0</span>, <span class="n">0.5</span>);</code></pre>
+      <p>What does each number actually mean? Swap two arguments of the same type by mistake, and the compiler won't catch it — it'll just silently misconfigure the shooter. This is sometimes called "constructor hell," and it gets worse the more optional settings a class has, since a constructor either forces every caller to specify every parameter, or multiplies into a pile of overloads trying to cover every combination.</p>
+      <h2>The Builder Pattern: Construct Step by Step</h2>
+      <p>The <strong>Builder Pattern</strong> separates <em>building</em> an object from <em>using</em> it — a separate <code class="inline">Builder</code> object collects settings one at a time, through named, chainable methods, then produces the final object only once, via a <code class="inline">build()</code> call:</p>
+      <pre class="code"><code><span class="t">Shooter</span> shooter = <span class="k">new</span> <span class="t">Shooter</span>.<span class="t">Builder</span>()
+    .<span class="me">setKP</span>(<span class="n">0.01</span>)
+    .<span class="me">setKI</span>(<span class="n">0.3</span>)
+    .<span class="me">setKD</span>(<span class="n">0.02</span>)
+    .<span class="me">enableFeedforward</span>(<span class="k">true</span>)
+    .<span class="me">setMaxRPM</span>(<span class="n">12.0</span>)
+    .<span class="me">setMinRPM</span>(<span class="n">0.5</span>)
+    .<span class="me">build</span>();</code></pre>
+      <p>Every call is now self-documenting — <code class="inline">.setKP(0.01)</code> says exactly what <code class="inline">0.01</code> means, in a way a bare constructor argument never could.</p>
+      <h2>Implementing a Builder</h2>
+      <p>The target class (<code class="inline">Shooter</code>) gets a <code class="inline">private</code> constructor — callers can no longer construct it directly, only through the builder — plus a <code class="inline">public static</code> nested <code class="inline">Builder</code> class that collects the settings:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Shooter</span>
+{
+    <span class="k">private final double</span> kP, kI, kD;
+    <span class="k">private final boolean</span> feedforward;
+    <span class="k">private final double</span> maxRPM, minRPM;
+
+    <span class="k">private</span> <span class="me">Shooter</span>(<span class="t">Builder</span> builder)
+    {
+        <span class="k">this</span>.kP = builder.kP;
+        <span class="k">this</span>.kI = builder.kI;
+        <span class="k">this</span>.kD = builder.kD;
+        <span class="k">this</span>.feedforward = builder.feedforward;
+        <span class="k">this</span>.maxRPM = builder.maxRPM;
+        <span class="k">this</span>.minRPM = builder.minRPM;
+    }
+
+    <span class="k">public static class</span> <span class="t">Builder</span>
+    {
+        <span class="k">private double</span> kP = <span class="n">0</span>, kI = <span class="n">0</span>, kD = <span class="n">0</span>;
+        <span class="k">private boolean</span> feedforward = <span class="k">false</span>;
+        <span class="k">private double</span> maxRPM = <span class="n">0</span>, minRPM = <span class="n">0</span>;
+
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">setKP</span>(<span class="k">double</span> kP) { <span class="k">this</span>.kP = kP; <span class="k">return this</span>; }
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">setKI</span>(<span class="k">double</span> kI) { <span class="k">this</span>.kI = kI; <span class="k">return this</span>; }
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">setKD</span>(<span class="k">double</span> kD) { <span class="k">this</span>.kD = kD; <span class="k">return this</span>; }
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">enableFeedforward</span>(<span class="k">boolean</span> ff) { <span class="k">this</span>.feedforward = ff; <span class="k">return this</span>; }
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">setMaxRPM</span>(<span class="k">double</span> max) { <span class="k">this</span>.maxRPM = max; <span class="k">return this</span>; }
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">setMinRPM</span>(<span class="k">double</span> min) { <span class="k">this</span>.minRPM = min; <span class="k">return this</span>; }
+
+        <span class="k">public</span> <span class="t">Shooter</span> <span class="me">build</span>() { <span class="k">return new</span> <span class="t">Shooter</span>(<span class="k">this</span>); }
+    }
+}</code></pre>
+      <h2>The Fluent Chain: Why return this; Matters</h2>
+      <p>Every <code class="inline">Builder</code> method ends with <code class="inline">return this;</code> — returning the same builder object it was just called on. That's exactly what makes chaining possible: each call's result is another <code class="inline">Builder</code>, ready for the next call in the chain, all the way until <code class="inline">.build()</code> finally produces the real <code class="inline">Shooter</code>. This style (a method call chain, each step returning the object it was called on) is called a <strong>fluent interface</strong>.</p>
+      <h2>Why the Result Is Safer, Not Just Prettier</h2>
+      <ul>
+        <li>Every setting has a readable name at the call site, instead of an anonymous position in an argument list.</li>
+        <li>Optional settings simply aren't called, rather than needing a separate constructor overload for every combination.</li>
+        <li>The final object is typically built as immutable — every field is <code class="inline">final</code> and set exactly once, inside the private constructor, from the builder's already-finished values.</li>
+      </ul>
+      <h2>Real Patterns This Mirrors in WPILib</h2>
+      <p>Several real WPILib classes already use builder-like chaining, even without a nested <code class="inline">Builder</code> class:</p>
+      <pre class="code"><code><span class="t">TrajectoryConfig</span> config = <span class="k">new</span> <span class="t">TrajectoryConfig</span>(maxSpeed, maxAccel)
+    .<span class="me">setKinematics</span>(driveKinematics)
+    .<span class="me">addConstraint</span>(voltageConstraint);</code></pre>
+      <p><code class="inline">SequentialCommandGroup</code> and <code class="inline">ParallelCommandGroup</code> follow the same underlying idea — building up a larger thing step by step, out of smaller declared pieces, rather than one giant constructor call.</p>
+      <h2>When Not to Reach for a Builder</h2>
+      <p>A builder is genuine overhead — a whole extra nested class — that only pays for itself once a constructor's parameter list gets long or has several optional pieces. For a class with 2-3 simple, always-required parameters, a plain constructor (or, per Ch.21, a static factory method) is simpler and should be preferred.</p>
+    `,
+    pitfalls: [
+      "Forgetting <code class=\"inline\">return this;</code> in a builder method. Without it, the method returns <code class=\"inline\">void</code>, and chaining the next call fails to compile.",
+      "Making the target class's constructor <code class=\"inline\">public</code> alongside the builder. That defeats the pattern's purpose — the real constructor should stay <code class=\"inline\">private</code>.",
+      "Reaching for a builder on a simple, 2-3-parameter class. That's exactly the case the pattern isn't meant for."
+    ],
+    takeaways: [
+      "The Builder Pattern separates step-by-step construction from a class's actual usage, avoiding \"constructor hell.\"",
+      "A builder is a nested <code class=\"inline\">static</code> class collecting settings via named, chainable methods (each returning <code class=\"inline\">this</code> — a fluent interface), finishing with <code class=\"inline\">build()</code>.",
+      "The target class's real constructor is <code class=\"inline\">private</code>, taking the finished builder and copying its values into <code class=\"inline\">final</code> fields.",
+      "Real WPILib classes (<code class=\"inline\">TrajectoryConfig</code>, command groups) already use this same chaining idea.",
+      "Skip the builder for simple classes with few, always-required parameters — a constructor or static factory (Ch.21) is simpler there."
+    ],
+    prov: "other-reference-repo: team-5817-training/design-patterns/builder.md (T5817 30.1) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 8 (\"The Builder Pattern\") — MotorConfig fluent-builder example"
+  }
+};
+
+let currentItem = "22";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">Ch.${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
