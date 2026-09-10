@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.19 — Interfaces as Contracts (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.19 — Interfaces as Contracts</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "19": {
+    title: "Interfaces as Contracts",
+    ref: "19 — Interfaces as Contracts (ORACLE 15.1-6)",
+    body: `
+      <h2>What vs. How</h2>
+      <p>An <strong>interface</strong> defines <em>what</em> an object can do, without specifying <em>how</em> it does it. It's a "contract" — a set of method signatures any implementing class agrees to provide, with no implementation of its own for those methods. This matters enormously in real engineering: it lets two groups write code against a shared agreement without either needing to know the other's internals — a hardware vendor and an application team can each build against the same interface independently, as long as both honor it.</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">IntakeIO</span>
+{
+    <span class="k">void</span> <span class="me">updateInputs</span>(<span class="t">IntakeInputs</span> inputs);
+    <span class="k">void</span> <span class="me">setVoltage</span>(<span class="k">double</span> volts);
+}</code></pre>
+      <p>Method signatures inside an interface have no body — just a semicolon, no braces. <code class="inline">interface</code> is the keyword; a class agrees to the contract with <code class="inline">implements</code>:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">RealIntakeIO</span> <span class="k">implements</span> <span class="t">IntakeIO</span>
+{
+    <span class="me">@Override</span>
+    <span class="k">public void</span> <span class="me">updateInputs</span>(<span class="t">IntakeInputs</span> inputs) { <span class="c">/* real sensor reads */</span> }
+
+    <span class="me">@Override</span>
+    <span class="k">public void</span> <span class="me">setVoltage</span>(<span class="k">double</span> volts) { <span class="c">/* real motor.setVoltage(volts) */</span> }
+}</code></pre>
+      <p>A class implementing an interface must provide a real method body for <em>every</em> method the interface declares (default and static methods excepted — see below) — or the class fails to compile.</p>
+      <h2>Multiple Interfaces, One Superclass</h2>
+      <p>Unlike <code class="inline">extends</code> (limited to exactly one superclass — Lesson 17.1), a class can <code class="inline">implements</code> as many interfaces as it needs:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Robot</span> <span class="k">implements</span> <span class="t">Loggable</span>, <span class="t">Sendable</span>
+{
+    <span class="c">// must provide every method declared by BOTH Loggable and Sendable</span>
+}</code></pre>
+      <p>This is one of the biggest practical differences between inheritance and interfaces: a class has one parent, but can honor any number of separate contracts at once.</p>
+      <h2>Using an Interface as a Type</h2>
+      <p>Just like a superclass (Lesson 17.3), an interface is a real reference type — a variable, parameter, array, or collection can be declared against an interface type, and hold any object whose class implements it:</p>
+      <pre class="code"><code><span class="k">public void</span> <span class="me">configureIntake</span>(<span class="t">IntakeIO</span> io)
+{
+    io.<span class="me">setVoltage</span>(<span class="n">0.0</span>); <span class="c">// works for RealIntakeIO, SimIntakeIO, or any other IntakeIO implementation</span>
+}</code></pre>
+      <p>Code written against <code class="inline">IntakeIO</code> never needs to know or care which concrete implementation it's actually working with — real hardware, or a simulated stand-in (this exact pattern is the foundation of the IO-Layer Pattern, Ch.20).</p>
+      <h2>Default and Static Methods</h2>
+      <p>Normally every method in an interface is abstract (no body). A <strong>default method</strong> is the one exception — it provides a real implementation directly inside the interface, marked with the <code class="inline">default</code> keyword, which implementing classes inherit automatically without being forced to write it themselves:</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">IntakeIO</span>
+{
+    <span class="k">default void</span> <span class="me">updateInputs</span>(<span class="t">IntakeInputs</span> inputs) {}  <span class="c">// default: does nothing unless overridden</span>
+    <span class="k">default void</span> <span class="me">setVoltage</span>(<span class="k">double</span> volts) {}           <span class="c">// default: does nothing unless overridden</span>
+}</code></pre>
+      <p>This matters for a very practical reason: default methods let an interface add new methods later without breaking every class that already implements it — existing implementations simply inherit the default behavior rather than suddenly failing to compile. A class can still override a default method with its own real implementation, exactly like overriding an inherited method from a superclass (Lesson 18.1).</p>
+      <p>An interface can also declare <strong>static methods</strong> — utility methods associated with the interface itself, not with any implementing object, called directly on the interface name rather than through an instance.</p>
+    `,
+    pitfalls: [
+      "Forgetting to implement every abstract method an interface declares. A class that leaves even one required method unimplemented fails to compile.",
+      "Confusing <code class=\"inline\">extends</code> and <code class=\"inline\">implements</code>. A class <code class=\"inline\">extends</code> exactly one class, but can <code class=\"inline\">implements</code> any number of interfaces.",
+      "Assuming every interface method needs to be written from scratch. Default methods come \"for free\" — only override one if the default behavior isn't what you want."
+    ],
+    takeaways: [
+      "An interface is a contract: method signatures with no implementation (default/static methods aside), specifying <em>what</em> a class can do, not <em>how</em>.",
+      "A class agrees to an interface's contract with <code class=\"inline\">implements</code>, and can implement any number of interfaces at once.",
+      "An interface is a real type — variables, parameters, arrays, and collections can all be declared against it.",
+      "A <code class=\"inline\">default</code> method provides a real implementation directly in the interface, letting implementing classes inherit it without writing their own."
+    ],
+    prov: "other-reference-repo: oracle-java-tutorials/interfaces/01-06 (ORACLE 15.1-6) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 6 (\"Interfaces as Contracts\") — IntakeIO example"
+  },
+  "19.1": {
+    title: "Lambdas & Method References",
+    ref: "19.1 — Lambdas & Method References (ORACLE 12.1-2) — relocated here since a lambda is really shorthand for a functional interface",
+    body: `
+      <h2>The Problem Lambdas Solve</h2>
+      <p>When an interface declares exactly <strong>one</strong> abstract method (a <strong>functional interface</strong>), implementing it with a full named class — or even an anonymous class — is a lot of ceremony for something conceptually simple: "here's the one bit of behavior you asked for." A <strong>lambda expression</strong> lets you write that one method's body directly, with no class declaration at all:</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">DoubleSupplier</span>
+{
+    <span class="k">double</span> <span class="me">getAsDouble</span>(); <span class="c">// exactly one abstract method — this is a functional interface</span>
+}</code></pre>
+      <pre class="code"><code><span class="c">// Without a lambda: a full anonymous class just to supply one value</span>
+<span class="t">DoubleSupplier</span> speed = <span class="k">new</span> <span class="t">DoubleSupplier</span>()
+{
+    <span class="me">@Override</span>
+    <span class="k">public double</span> <span class="me">getAsDouble</span>() { <span class="k">return</span> joystick.<span class="me">getY</span>(); }
+};
+
+<span class="c">// With a lambda: the same thing, far more directly</span>
+<span class="t">DoubleSupplier</span> speed = () -&gt; joystick.<span class="me">getY</span>();</code></pre>
+      <p><code class="inline">WPILib</code> commands and suppliers are built almost entirely on this pattern — this is exactly what makes lambdas so central to command-based programming (Ch.25).</p>
+      <h2>Lambda Syntax</h2>
+      <p>A lambda expression has three parts: a parameter list in parentheses, the arrow <code class="inline">-&gt;</code>, and a body:</p>
+      <pre class="code"><code>(parameters) -&gt; expression</code></pre>
+      <ul>
+        <li><strong>Parameter types are inferred</strong>, not written — the compiler already knows them from the functional interface being implemented.</li>
+        <li><strong>Parentheses can be dropped</strong> around a single parameter: <code class="inline">p -&gt; p.getY()</code> is valid, just like <code class="inline">(p) -&gt; p.getY()</code>.</li>
+        <li><strong>A single expression is the return value automatically</strong> — no <code class="inline">return</code> keyword needed. A multi-statement body needs braces and an explicit <code class="inline">return</code>.</li>
+      </ul>
+      <pre class="code"><code><span class="t">DoubleSupplier</span> speed = () -&gt; joystick.<span class="me">getY</span>();              <span class="c">// single expression — auto-returned</span>
+
+<span class="t">DoubleSupplier</span> clampedSpeed = () -&gt; {                       <span class="c">// multi-statement body needs braces + return</span>
+    <span class="k">double</span> raw = joystick.<span class="me">getY</span>();
+    <span class="k">return</span> <span class="t">Math</span>.<span class="me">max</span>(-<span class="n">1.0</span>, <span class="t">Math</span>.<span class="me">min</span>(<span class="n">1.0</span>, raw));
+};</code></pre>
+      <p>A lambda with more than one parameter lists them comma-separated inside the parentheses:</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">IntBinaryOperation</span>
+{
+    <span class="k">int</span> <span class="me">apply</span>(<span class="k">int</span> a, <span class="k">int</span> b);
+}
+
+<span class="t">IntBinaryOperation</span> add = (a, b) -&gt; a + b;</code></pre>
+      <h2>Common Functional Interfaces You'll Actually Use</h2>
+      <p>Java (and WPILib) ship several ready-made functional interfaces, so you rarely need to declare your own:</p>
+      <pre class="code"><code><span class="t">Runnable</span> stopAll = () -&gt; intake.<span class="me">stop</span>();                 <span class="c">// no arguments, no return value</span>
+<span class="t">DoubleSupplier</span> speed = () -&gt; joystick.<span class="me">getY</span>();            <span class="c">// no arguments, returns a double</span>
+<span class="t">BooleanSupplier</span> hasGamePiece = () -&gt; intake.<span class="me">hasPiece</span>();  <span class="c">// no arguments, returns a boolean</span></code></pre>
+      <h2>Method References: An Even Shorter Form</h2>
+      <p>When a lambda's <em>entire</em> body is just calling one existing method, a <strong>method reference</strong> (<code class="inline">::</code>) says the same thing even more directly:</p>
+      <pre class="code"><code><span class="t">Runnable</span> stopAll = () -&gt; intake.<span class="me">stop</span>(); <span class="c">// a lambda...</span>
+<span class="t">Runnable</span> stopAll2 = intake::stop;       <span class="c">// ...is exactly equivalent to this method reference</span></code></pre>
+      <p><code class="inline">intake::stop</code> reads as "the <code class="inline">stop</code> method, called on <code class="inline">intake</code>" — Java fills in the call automatically, with whatever arguments the functional interface's method expects. Method references exist purely as a shorthand for a lambda that does nothing but forward to an existing method.</p>
+    `,
+    pitfalls: [
+      "Writing parameter types into a lambda. <code class=\"inline\">(Person p) -&gt; p.getAge()</code> — while technically legal — is unusual style; letting the compiler infer the type is the normal convention.",
+      "Forgetting <code class=\"inline\">return</code> in a multi-statement lambda body. A single-expression lambda auto-returns its value, but a <code class=\"inline\">{ }</code> block body needs an explicit <code class=\"inline\">return</code>.",
+      "Reaching for a method reference when the lambda does more than forward one call. A method reference only replaces a lambda that does nothing but call one existing method."
+    ],
+    takeaways: [
+      "A lambda expression is a compact way to implement a functional interface (an interface with exactly one abstract method) inline, without writing a class.",
+      "Syntax: <code class=\"inline\">(parameters) -&gt; expression</code> (or a braced block for multi-statement bodies); parameter types are inferred.",
+      "<code class=\"inline\">Runnable</code>, <code class=\"inline\">DoubleSupplier</code>, and <code class=\"inline\">BooleanSupplier</code> are common ready-made functional interfaces WPILib code uses constantly.",
+      "A method reference (<code class=\"inline\">object::method</code>) is exact shorthand for a lambda that does nothing but call one existing method."
+    ],
+    prov: "other-reference-repo: oracle-java-tutorials/lambdas/lambda-expressions.md (ORACLE 12.2) · Deck context: mechacoder-test/src/lessons/java-1.js, slide 12 (\"Lambdas & Method References\")"
+  }
+};
+
+let currentItem = "19";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
