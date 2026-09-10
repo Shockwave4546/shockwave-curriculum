@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v13
+## Combined Learning Path — v14
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `shockwave-curriculum/curriculum-ledger.html` (this is now the one
@@ -36,7 +36,12 @@ numbers here are sequence-order placeholders, not a proposed final naming scheme
 
 ```
 JAVA 1
-1   Why Java for FRC?                                          [existing]
+1   Getting Started                                             [header]
+    1.1 Why Java for FRC?                                       [existing]
+    1.2 Intro to Algorithms, Programming & Compilers CSA 1.1     [new] — the base-syntax lesson
+        (statements/semicolons, a first Java program, IDE/compiler concept, keywords, syntax vs.
+        run-time errors, comments). Item 2.1 originally covered semicolons redundantly with this;
+        removed from 2.1 once this item was added.
 2   Variables & Types                                          [header]
     2.1 Variables and Data Types                    CSA 1.2     [existing]
     2.2 Expressions and Output                      CSA 1.3     [new]
