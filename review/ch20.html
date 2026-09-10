@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.20 — The IO-Layer Pattern (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.20 — The IO-Layer Pattern</h1>
+  <p class="sub">shockwave-curriculum · draft lesson, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lesson only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "20": {
+    title: "The IO-Layer Pattern",
+    ref: "20 — The IO-Layer Pattern (ADVKIT 40.1-11, JDP 50.1)",
+    body: `
+      <p>Everything Ch.17-19 built — inheritance, polymorphism, and especially interfaces as contracts — comes together here in a real, widely-used FRC architecture pattern: keeping hardware access completely separate from the logic that uses it.</p>
+      <h2>The Problem: Hardware Everywhere Makes Testing (and Logging) Hard</h2>
+      <p>A subsystem that talks directly to real motor controllers and sensors is genuinely hard to reason about: it can't run at all without the physical robot present, and there's no clean seam where you could intercept its data. Team 6328's own AdvantageKit logging framework is built around a stronger idea than typical FRC logging — instead of just logging a handful of chosen values, it logs <em>every</em> input flowing into the robot code, every loop cycle. Since every input is captured, a match can later be <strong>replayed</strong> in a simulator with the exact same inputs, running the exact same logic — turning logging from "a tool for checking specific values" into a genuine safety net for verifying how any part of the code actually behaved.</p>
+      <p>That capability only works if hardware access is structured so all input data flows through one well-defined seam. This is what the <strong>IO layer</strong> is for.</p>
+      <h2>Three Layers of a Subsystem</h2>
+      <p>Traditionally, an FRC subsystem mixes three concerns in one class: its <strong>public interface</strong> (methods the rest of the robot calls), its <strong>control logic</strong> (deciding what to do with sensor data), and its <strong>hardware interface</strong> (actually reading sensors, actually commanding motors). The IO-Layer Pattern pulls that third piece out into its own object:</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">IntakeIO</span>
+{
+    <span class="k">default void</span> <span class="me">updateInputs</span>(<span class="t">IntakeInputs</span> inputs) {}
+    <span class="k">default void</span> <span class="me">setVoltage</span>(<span class="k">double</span> volts) {}
+}</code></pre>
+      <p><code class="inline">IntakeIO</code> is exactly the kind of contract from Lesson 19 — it says <em>what</em> an intake can do (report its inputs, accept a voltage command), without saying <em>how</em>. Two real implementations honor that same contract:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">IntakeIOSparkMax</span> <span class="k">implements</span> <span class="t">IntakeIO</span>
+{
+    <span class="c">// uses real CAN IDs and hardware APIs to move physical rollers</span>
+}
+
+<span class="k">public class</span> <span class="t">IntakeIOSim</span> <span class="k">implements</span> <span class="t">IntakeIO</span>
+{
+    <span class="c">// uses physics math (moment of inertia) to "fake" the robot in code</span>
+}</code></pre>
+      <p>The subsystem class itself only ever talks to the <code class="inline">IntakeIO</code> interface — it never knows, and never needs to know, which concrete implementation is actually running underneath.</p>
+      <h2>Choosing the Implementation Once, at Construction</h2>
+      <p>The whole point is decided in exactly one place — typically <code class="inline">RobotContainer</code>, at startup — by simply constructing the subsystem with a different <code class="inline">IntakeIO</code> implementation depending on whether the code is running on the real robot or in simulation:</p>
+      <pre class="code"><code><span class="k">public</span> <span class="me">RobotContainer</span>()
+{
+    <span class="k">if</span> (isReal())
+    {
+        intake = <span class="k">new</span> <span class="t">Intake</span>(<span class="k">new</span> <span class="t">IntakeIOSparkMax</span>());
+    }
+    <span class="k">else</span>
+    {
+        intake = <span class="k">new</span> <span class="t">Intake</span>(<span class="k">new</span> <span class="t">IntakeIOSim</span>());
+    }
+}</code></pre>
+      <p><code class="inline">Intake</code> (the subsystem) accepts an <code class="inline">IntakeIO</code> in its constructor and stores it — every call from then on goes through that reference, polymorphically (Lesson 18.3) dispatching to whichever implementation was actually supplied.</p>
+      <h2>Inputs Flow Through a Loggable Object</h2>
+      <p>Outputs (commands like <code class="inline">setVoltage</code>) are simple, one-way method calls. Inputs are handled more carefully, since they need to be logged <em>and</em> later replayable: each IO interface defines an accompanying inputs class holding public fields for every value that comes off the hardware, plus methods (<code class="inline">toLog</code>/<code class="inline">fromLog</code>) for saving and restoring that data from a log file:</p>
+      <pre class="code"><code>io.<span class="me">updateInputs</span>(inputs);                         <span class="c">// pull fresh data from the IO layer into `inputs`</span>
+<span class="t">Logger</span>.<span class="me">processInputs</span>(<span class="s">"Intake"</span>, inputs);          <span class="c">// send it to the logging framework (or restore it, during replay)</span></code></pre>
+      <p>The rest of the subsystem then reads from the <code class="inline">inputs</code> object — never straight from the IO layer — for a critical reason: every piece of code within one loop cycle sees the exact same cached values, so a replay from the log looks byte-for-byte identical to what really happened on the field.</p>
+      <h2>The General Pattern Behind This: Ports and Adapters</h2>
+      <p>This isn't an FRC-specific trick — it's a specific application of a broader, well-known software architecture idea called <strong>Hexagonal Architecture</strong> (or <strong>Ports and Adapters</strong>): keep core logic decoupled from whatever external system it happens to talk to (a database, a UI, real hardware), by defining a <strong>port</strong> (the interface — <code class="inline">IntakeIO</code>) that any number of <strong>adapters</strong> (<code class="inline">IntakeIOSparkMax</code>, <code class="inline">IntakeIOSim</code>) can plug into. The core logic only ever depends on the port, never on any specific adapter — exactly mirroring <code class="inline">Intake</code> only ever depending on <code class="inline">IntakeIO</code>. The tradeoff is real: it's more abstraction and more files than talking to hardware directly, which is overkill for a one-off script — but it pays for itself the moment testability, simulation, or swappable hardware actually matter, which for a competition robot, they do.</p>
+    `,
+    pitfalls: [
+      "Letting the subsystem read hardware directly, bypassing the IO layer. That reintroduces exactly the coupling the pattern exists to remove — no sim support, no clean replay.",
+      "Reading straight from the IO layer instead of the cached inputs object. Values read directly from <code class=\"inline\">io</code> could change mid-cycle in ways a replayed log never could — always read from <code class=\"inline\">inputs</code>.",
+      "Treating the IO layer as optional overhead on a small subsystem. It's genuinely more files and more ceremony — but the payoff (simulation, replay, decoupled testing) is exactly why competitive FRC codebases use it anyway."
+    ],
+    takeaways: [
+      "The IO-Layer Pattern separates a subsystem's hardware access into its own interface, so the subsystem's own logic never touches real hardware APIs directly.",
+      "One interface, multiple implementations (real hardware vs. simulated), chosen once at construction — everything else dispatches polymorphically through the shared interface.",
+      "Inputs flow through a dedicated, loggable object (<code class=\"inline\">updateInputs</code> + <code class=\"inline\">toLog</code>/<code class=\"inline\">fromLog</code>), so a match's exact inputs can be replayed later with identical results.",
+      "This is FRC's specific application of the general Hexagonal Architecture (Ports and Adapters) pattern: core logic depends only on a port (interface), never on a specific adapter (implementation)."
+    ],
+    prov: "other-reference-repo: advantagekit/getting-started/01-what-is-advantagekit.md (ADVKIT 40.1), advantagekit/data-flow/08-io-interfaces.md (ADVKIT 40.8), java-design-patterns/hexagonal-architecture.md (JDP 50.1) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 7 — IntakeIOSparkMax/IntakeIOSim example"
+  }
+};
+
+let currentItem = "20";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">Ch.${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
