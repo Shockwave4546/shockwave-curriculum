@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.25 — Command-Based Programming (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.25 — Command-Based Programming</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. The big one — WPILib's own architecture pattern. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "25.1": {
+    title: "What Is Command-Based Programming?",
+    ref: "25.1 — What Is Command-Based Programming? (WPILIB 20.1)",
+    body: `
+      <h2>The Big Payoff of Everything So Far</h2>
+      <p>Every idea from Ch.17-24 — inheritance, interfaces, the IO-Layer Pattern, static factories, builders — leads here. <strong>Command-based programming</strong> is WPILib's own official architecture pattern for structuring an entire robot's code. It's not the only way to write a robot program, but it's the one WPILib itself provides deep library support for, and the one most competitive FRC codebases are built around.</p>
+      <h2>Declarative, Not Imperative</h2>
+      <p>Command-based is a <strong>declarative</strong> paradigm: you describe <em>what</em> should happen under what condition, and the library handles checking that condition every single loop, on your behalf. Compare these two ways of saying "extend the piston when a condition becomes true":</p>
+      <pre class="code"><code><span class="c">// Declarative (command-based): say what should happen, once</span>
+<span class="k">new</span> <span class="t">Trigger</span>(condition::get).<span class="me">onTrue</span>(<span class="t">Commands</span>.<span class="me">runOnce</span>(() -&gt; piston.<span class="me">set</span>(DoubleSolenoid.Value.kForward)));</code></pre>
+      <pre class="code"><code><span class="c">// Imperative (without command-based): manually track state every single loop</span>
+<span class="k">if</span> (condition.<span class="me">get</span>())
+{
+    <span class="k">if</span> (!pressed)
+    {
+        piston.<span class="me">set</span>(DoubleSolenoid.Value.kForward);
+        pressed = <span class="k">true</span>;
+    }
+}
+<span class="k">else</span>
+{
+    pressed = <span class="k">false</span>;
+}</code></pre>
+      <p>The declarative version is written once and never touched again; the imperative version requires you to manually manage a <code class="inline">pressed</code> flag correctly, forever, in every place a similar check is needed. Multiply that by dozens of buttons and sensors across a real robot, and the difference in maintainability is enormous.</p>
+      <h2>Two Core Abstractions: Subsystems and Commands</h2>
+      <p>Command-based organizes an entire robot around exactly two ideas:</p>
+      <ul>
+        <li>A <strong>Subsystem</strong> represents an independently-controlled piece of hardware (or group of hardware) — a drivetrain, an intake, a climber. Ch.20's IO-Layer Pattern already showed how a subsystem hides its hardware details behind a clean interface; command-based builds directly on that.</li>
+        <li>A <strong>Command</strong> represents an action the robot can take — something that runs when scheduled, until it's interrupted or its own end condition is met.</li>
+      </ul>
+      <p>Commands declare which subsystem(s) they need (their <strong>requirements</strong>), and this is what makes resource management automatic: the scheduler guarantees only one command can control a given subsystem at a time, so two different pieces of code can never fight over the same motor's output.</p>
+      <h2>How It All Runs: The Scheduler</h2>
+      <p>The <strong>CommandScheduler</strong> is the engine underneath all of this — a singleton object that, once per loop (every 20ms), checks all registered triggers for commands that should start, runs the currently-active commands, and ends any that have finished. Lesson 25.3 covers the scheduler's actual run sequence in depth.</p>
+      <h2>Composability</h2>
+      <p>Commands are <strong>recursively composable</strong> — a complex robot action (like "intake a game piece, then aim the shooter, then fire") can be built out of several small, simple commands combined together, and that composite is itself just another command, usable anywhere a command is expected. Lesson 25.2 covers this in depth.</p>
+    `,
+    pitfalls: [
+      "Writing large amounts of imperative logic directly in <code class=\"inline\">Robot.java</code>. This works against the entire declarative philosophy command-based is built on.",
+      "Forgetting that commands need declared requirements. A command that touches a subsystem without declaring it as a requirement bypasses the resource-management system entirely.",
+      "Assuming command-based is the only valid way to write robot code. It isn't — but it's the pattern this curriculum focuses on, since it's what WPILib itself is built to support."
+    ],
+    takeaways: [
+      "Command-based programming is WPILib's own declarative architecture pattern: describe what should happen under what condition, once, and the library handles checking it every loop.",
+      "The two core abstractions are Subsystems (hardware, building on Ch.20's IO-Layer Pattern) and Commands (actions), tied together by the CommandScheduler.",
+      "A command declares its subsystem requirements, which is what lets the scheduler guarantee only one command controls a given subsystem at a time.",
+      "Commands are recursively composable — small commands combine into larger ones, which are themselves still just commands."
+    ],
+    prov: "other-reference-repo: wpilib/command-based/01-what-is-command-based.md (WPILIB 20.1)"
+  },
+  "25.2": {
+    title: "Commands & Command Compositions",
+    ref: "25.2 — Commands & Command Compositions (WPILIB 20.2-3)",
+    body: `
+      <h2>The Four Lifecycle Methods</h2>
+      <p>A <code class="inline">Command</code> defines what it does through four overridable methods, all of which default to doing nothing (or <code class="inline">false</code>) so you only override the ones you actually need:</p>
+      <ul>
+        <li><strong>initialize()</strong> — called exactly once, when the command starts. Use it to set the command's starting state.</li>
+        <li><strong>execute()</strong> — called repeatedly, once per scheduler run, for as long as the command is scheduled.</li>
+        <li><strong>isFinished()</strong> — called every loop, after <code class="inline">execute()</code>. As soon as it returns <code class="inline">true</code>, the command ends. Defaults to <code class="inline">false</code>.</li>
+        <li><strong>end(boolean interrupted)</strong> — called exactly once, when the command stops, whether it finished naturally or was interrupted.</li>
+      </ul>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">GrabHatch</span> <span class="k">extends</span> <span class="t">Command</span>
+{
+    <span class="k">private final</span> <span class="t">HatchSubsystem</span> hatchSubsystem;
+
+    <span class="k">public</span> <span class="me">GrabHatch</span>(<span class="t">HatchSubsystem</span> subsystem)
+    {
+        hatchSubsystem = subsystem;
+        <span class="me">addRequirements</span>(hatchSubsystem); <span class="c">// declares the resource this command needs</span>
+    }
+
+    <span class="me">@Override</span>
+    <span class="k">public void</span> <span class="me">initialize</span>() { hatchSubsystem.<span class="me">grabHatch</span>(); }
+
+    <span class="me">@Override</span>
+    <span class="k">public boolean</span> <span class="me">isFinished</span>() { <span class="k">return true</span>; } <span class="c">// runs once, then immediately ends</span>
+}</code></pre>
+      <p>Notice the subsystem is passed into the command's constructor — this is <strong>dependency injection</strong> (a pattern you'll see again in Lesson 25.7), and it's what lets a command reach a subsystem's methods without that subsystem being a global variable anywhere.</p>
+      <h2>Requirements: The Resource-Management Backbone</h2>
+      <p>Every command declares which subsystems it needs, via <code class="inline">addRequirements(...)</code>. This is what backs the scheduler's promise that no two commands ever fight over the same subsystem at once (Lesson 25.3 covers exactly how conflicts get resolved).</p>
+      <h2>Built-In Command Factories: You Rarely Need a Custom Class</h2>
+      <p>Writing a full <code class="inline">Command</code> subclass for every simple action is unnecessarily verbose. The library provides factory methods, built on lambdas, that cover almost every real case:</p>
+      <pre class="code"><code><span class="t">Commands</span>.<span class="me">runOnce</span>(() -&gt; hatchSolenoid.<span class="me">set</span>(kForward), hatchSubsystem);       <span class="c">// runs a lambda once, then finishes</span>
+<span class="t">Commands</span>.<span class="me">run</span>(() -&gt; drive.<span class="me">arcadeDrive</span>(joystick.<span class="me">getY</span>(), joystick.<span class="me">getX</span>()), drive); <span class="c">// repeats until interrupted — a natural default command</span>
+<span class="t">Commands</span>.<span class="me">startEnd</span>(
+    () -&gt; shooter.<span class="me">setSpeed</span>(<span class="n">0.5</span>),  <span class="c">// runs once at the start</span>
+    () -&gt; shooter.<span class="me">setSpeed</span>(<span class="n">0.0</span>),  <span class="c">// runs once when the command ends</span>
+    shooter
+);
+<span class="t">Commands</span>.<span class="me">waitSeconds</span>(<span class="n">5.0</span>);       <span class="c">// finishes 5 seconds after being scheduled</span>
+<span class="t">Commands</span>.<span class="me">waitUntil</span>(limitSwitch::get); <span class="c">// finishes once the given condition becomes true</span></code></pre>
+      <p><code class="inline">FunctionalCommand</code> covers the general case — four lambdas, one for each of the four lifecycle methods — for when a command needs real custom behavior in more than one of them.</p>
+      <h2>Command Compositions: Building Bigger Actions From Smaller Ones</h2>
+      <p>A <strong>command composition</strong> combines several commands into one — and since a composition is itself a <code class="inline">Command</code>, compositions can be nested arbitrarily deep. Three shapes matter most:</p>
+      <ul>
+        <li><strong>Sequential</strong> — runs each command in order, finishing when the last one finishes: <code class="inline">fooCommand.andThen(barCommand)</code></li>
+        <li><strong>Parallel</strong> — runs several commands at once, finishing once <em>all</em> finish: <code class="inline">Commands.parallel(a, b, c)</code></li>
+        <li><strong>Race</strong> — runs several commands at once, finishing as soon as <em>any one</em> finishes (interrupting the rest): <code class="inline">Commands.race(a, b, c)</code></li>
+      </ul>
+      <p>Two useful decorators add extra end conditions to any command:</p>
+      <pre class="code"><code>command.<span class="me">until</span>(limitSwitch::get); <span class="c">// ends early if the limit switch trips</span>
+command.<span class="me">withTimeout</span>(<span class="n">5</span>);          <span class="c">// ends after 5 seconds no matter what</span></code></pre>
+      <p>A composition inherits the union of every component's requirements — a sequence that uses the intake, then the indexer, then the shooter reserves all three subsystems for the composition's entire duration, not just while each is actively in use.</p>
+    `,
+    pitfalls: [
+      "Scheduling a command that's already inside a composition. This throws and crashes the program — a command in a composition can't also be independently scheduled.",
+      "Writing a full custom <code class=\"inline\">Command</code> subclass for something a factory already covers. The built-in factories cover the overwhelming majority of real cases with far less code.",
+      "Forgetting that a sequential composition needs every step to actually finish. If one command never returns <code class=\"inline\">isFinished() == true</code>, every command after it in the sequence never runs."
+    ],
+    takeaways: [
+      "A <code class=\"inline\">Command</code>'s behavior is defined by four lifecycle methods: <code class=\"inline\">initialize()</code>, <code class=\"inline\">execute()</code>, <code class=\"inline\">isFinished()</code>, <code class=\"inline\">end(interrupted)</code>.",
+      "<code class=\"inline\">addRequirements(...)</code> declares which subsystems a command needs, backing the scheduler's resource-conflict prevention.",
+      "Built-in factories (<code class=\"inline\">runOnce</code>, <code class=\"inline\">run</code>, <code class=\"inline\">startEnd</code>, <code class=\"inline\">waitSeconds</code>, <code class=\"inline\">waitUntil</code>, <code class=\"inline\">FunctionalCommand</code>) cover almost every use case without writing a custom class.",
+      "Compositions (sequential, parallel, race) combine commands into bigger ones, and are themselves ordinary commands — usable recursively."
+    ],
+    prov: "other-reference-repo: wpilib/command-based/02-commands.md, 03-command-compositions.md (WPILIB 20.2-3)"
+  },
+  "25.3": {
+    title: "The Command Scheduler",
+    ref: "25.3 — The Command Scheduler (WPILIB 20.8)",
+    body: `
+      <h2>The Engine Underneath Everything</h2>
+      <p>The <code class="inline">CommandScheduler</code> is the singleton object that actually runs commands — everything in Lessons 25.1-25.2 depends on it silently doing its job every single loop. It must be told to run explicitly: <code class="inline">CommandScheduler.getInstance().run()</code> needs to be called from <code class="inline">robotPeriodic()</code> (Lesson 25.7 shows exactly where), or nothing in the whole command-based framework ever executes.</p>
+      <h2>One Scheduler Iteration, Step by Step</h2>
+      <p>Every 20ms (WPILib's default loop rate), the scheduler works through four steps, always in this order:</p>
+      <p><strong>Step 1 — Run every registered Subsystem's periodic().</strong> This happens first, so subsystems can update their own state (like odometry) before any commands act on it this loop.</p>
+      <p><strong>Step 2 — Poll triggers for new commands to schedule.</strong> Every registered <code class="inline">Trigger</code> (Lesson 25.6) is checked; if a binding's condition is met, its command is scheduled and that command's <code class="inline">initialize()</code> runs immediately.</p>
+      <p><strong>Step 3 — Run every currently-scheduled command.</strong> For each one: call <code class="inline">execute()</code>, then check <code class="inline">isFinished()</code>. If it's <code class="inline">true</code>, call <code class="inline">end(false)</code> and remove the command, freeing its subsystem requirements.</p>
+      <p><strong>Step 4 — Schedule default commands.</strong> Any subsystem not currently claimed by another command gets its default command scheduled (if it has one) — this is how a drivetrain "just keeps driving from joystick input" whenever nothing more specific is happening.</p>
+      <h2>How Requirement Conflicts Get Resolved</h2>
+      <p>When a new command is scheduled and it needs a subsystem some other running command already has, the scheduler checks each conflicting command's <strong>interruption behavior</strong>: by default (<code class="inline">kCancelSelf</code>), the already-running command is canceled — its <code class="inline">end(true)</code> runs — and the new command takes over. A command can instead be marked <code class="inline">kCancelIncoming</code>, in which case the new command simply fails to schedule, and the original keeps running.</p>
+      <h2>Why the Call Order Matters</h2>
+      <p>Subsystem <code class="inline">periodic()</code> methods run <em>before</em> triggers are polled and commands execute, each loop — so a subsystem's periodic logic (like updating odometry) is always based on the previous loop's final state, and any command reading that subsystem's state this loop sees it freshly updated. This ordering is part of why command-based code behaves predictably: the sequence is the same, every single loop, without exception.</p>
+    `,
+    pitfalls: [
+      "Forgetting to call <code class=\"inline\">CommandScheduler.getInstance().run()</code> in <code class=\"inline\">robotPeriodic()</code>. Without this one line, nothing in the entire command-based framework does anything.",
+      "Assuming a command's <code class=\"inline\">initialize()</code> runs exactly when the scheduler's <code class=\"inline\">run()</code> is called. It actually runs the moment the command is scheduled — during Step 2.",
+      "Expecting a canceled command's <code class=\"inline\">end()</code> to report <code class=\"inline\">interrupted = false</code>. A forcibly interrupted command always gets <code class=\"inline\">end(true)</code>."
+    ],
+    takeaways: [
+      "The <code class=\"inline\">CommandScheduler</code> is a singleton that must be run explicitly (<code class=\"inline\">CommandScheduler.getInstance().run()</code>, from <code class=\"inline\">robotPeriodic()</code>).",
+      "Each iteration runs in a fixed order: subsystem <code class=\"inline\">periodic()</code>, poll triggers, execute/finish scheduled commands, schedule default commands.",
+      "Requirement conflicts are resolved by interruption behavior: default cancels the already-running command, unless set to <code class=\"inline\">kCancelIncoming</code>.",
+      "This fixed, predictable run order is a big part of why command-based code behaves consistently loop after loop."
+    ],
+    prov: "other-reference-repo: wpilib/command-based/08-command-scheduler.md (WPILIB 20.8)"
+  },
+  "25.4": {
+    title: "State Machines: Logic",
+    ref: "25.4 — State Machines: Logic (enum) (T5817 31.1-4)",
+    body: `
+      <h2>The Problem: Tracking State With Booleans Doesn't Scale</h2>
+      <p>A subsystem often needs to remember "what am I currently doing" — an intake might be idle, actively intaking, holding a game piece, or scoring. Tracking that with a pile of booleans gets unmanageable fast:</p>
+      <pre class="code"><code><span class="k">private boolean</span> isIdle;
+<span class="k">private boolean</span> isIntaking;
+<span class="k">private boolean</span> isHolding;
+<span class="k">private boolean</span> isScoring;</code></pre>
+      <p>Nothing stops two of these from accidentally being <code class="inline">true</code> at the same time — a bug that's easy to introduce and hard to spot, since "impossible" combinations (<code class="inline">isIdle</code> and <code class="inline">isScoring</code> both <code class="inline">true</code>) compile just fine.</p>
+      <h2>The Fix: One Enum, One Set of Named States</h2>
+      <p>Enums (Ch.11) are exactly the tool for this — a fixed, named set of mutually exclusive states, with the compiler enforcing that a variable can only ever be one of them:</p>
+      <pre class="code"><code><span class="k">public enum</span> <span class="t">IntakeState</span>
+{
+    IDLE,
+    INTAKING,
+    HOLDING,
+    SCORING
+}
+
+<span class="k">private</span> <span class="t">IntakeState</span> currentState = <span class="t">IntakeState</span>.IDLE;</code></pre>
+      <p>Now the subsystem's state is a single variable, and it's structurally impossible for it to be two states at once. This is a <strong>state machine</strong>: a system that's always in exactly one of a fixed set of named states, and moves between them according to defined rules.</p>
+      <h2>Real Codebases Do This at Scale</h2>
+      <p>This exact pattern — an enum representing a fixed set of named states for a subsystem — is how real, competitive FRC codebases (like Team 5817's own production code) structure their subsystems, just with more states and richer per-state behavior than this introductory example: an elevator's states might be tied to interpolated target heights that shift based on scoring distance, or a roller's states might each carry their own target voltage. The underlying idea is identical to <code class="inline">IntakeState</code> above — a state machine core built on an enum — dressed up with more sophisticated per-state data as a subsystem's real requirements grow.</p>
+      <h2>What Comes Next</h2>
+      <p>Having a named state is only half the picture — a state machine also needs logic that reads the current state and decides what to do (and when to move to a different state). That's the subject of Lesson 25.5.</p>
+    `,
+    pitfalls: [
+      "Reaching for several independent booleans instead of one enum. This lets impossible/contradictory combinations exist in the code, even though only one is ever supposed to be true.",
+      "Forgetting a state machine needs an initial value. <code class=\"inline\">currentState</code> should always be initialized to a real starting state — an uninitialized state variable is a <code class=\"inline\">null</code> waiting to cause a <code class=\"inline\">NullPointerException</code>."
+    ],
+    takeaways: [
+      "Tracking \"what state am I in\" with multiple independent booleans allows impossible combinations and doesn't scale.",
+      "A single enum field, initialized to a sensible starting value, makes a subsystem's current state both self-documenting and structurally guaranteed to be exactly one thing at a time.",
+      "This pattern — enum-based state machines for subsystems — is exactly what real, competitive FRC codebases use, just with richer per-state data as requirements grow."
+    ],
+    prov: "other-reference-repo: team-5817-training/subsystems/02-state-based-servo-subsystems.md, 03-state-based-roller-subsystems.md (T5817 31.1-4) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 10 (\"State Machines: Logic\") — IntakeState enum example"
+  },
+  "25.5": {
+    title: "Managing Transitions",
+    ref: "25.5 — Managing Transitions (switch) (T5817 31.1-4)",
+    body: `
+      <h2>Reading the Current State, Every Loop</h2>
+      <p>Lesson 25.4 gave a subsystem a single enum field representing its current state. The natural place to <em>act</em> on that state — and decide when to <em>transition</em> to a different one — is a <code class="inline">switch</code> (Ch.5) inside the subsystem's <code class="inline">periodic()</code> method, which the scheduler calls once every loop (Lesson 25.3):</p>
+      <pre class="code"><code><span class="me">@Override</span>
+<span class="k">public void</span> <span class="me">periodic</span>()
+{
+    <span class="k">switch</span> (currentState)
+    {
+        <span class="k">case</span> INTAKING:
+            motor.<span class="me">set</span>(<span class="n">0.5</span>);
+            <span class="k">if</span> (sensor.<span class="me">get</span>())
+            {
+                currentState = <span class="t">IntakeState</span>.HOLDING; <span class="c">// transition: a sensor reading changed the state</span>
+            }
+            <span class="k">break</span>;
+        <span class="k">case</span> IDLE:
+            motor.<span class="me">set</span>(<span class="n">0</span>);
+            <span class="k">break</span>;
+        <span class="k">case</span> HOLDING:
+            motor.<span class="me">set</span>(<span class="n">0.1</span>); <span class="c">// gentle hold pressure</span>
+            <span class="k">break</span>;
+        <span class="k">case</span> SCORING:
+            motor.<span class="me">set</span>(-<span class="n">0.5</span>);
+            <span class="k">break</span>;
+    }
+}</code></pre>
+      <p>Each <code class="inline">case</code> does two jobs: it runs whatever behavior belongs to that state (<code class="inline">motor.set(...)</code>), and it checks whether a <strong>transition</strong> to a different state should happen (here, a sensor detecting a game piece moves the intake from <code class="inline">INTAKING</code> to <code class="inline">HOLDING</code>).</p>
+      <h2>Transitions Are Just Reassigning the State Field</h2>
+      <p>A transition is nothing more than assigning a new value to the state field — no special syntax beyond what Ch.2/Ch.11 already covered. What makes a state machine's behavior correct is <em>where</em> those reassignments happen: inside the specific <code class="inline">case</code> for the state that condition applies to, based on whatever real-world signal (a sensor, a timer, a driver input) should trigger the change.</p>
+      <h2>Why This Belongs in periodic()</h2>
+      <p><code class="inline">periodic()</code> runs every single scheduler loop, which is exactly the cadence a state machine needs — checking "should I transition now?" once per loop is what makes a sensor-triggered transition (like the intake noticing a game piece) responsive in real time, rather than only checked occasionally.</p>
+    `,
+    pitfalls: [
+      "Forgetting <code class=\"inline\">break;</code> in a <code class=\"inline\">switch</code> (Ch.5). Without it, execution falls through into the next case's code.",
+      "Putting transition logic in the wrong <code class=\"inline\">case</code>. A transition condition checked inside the wrong state's case either never triggers, or triggers behavior meant for a different state.",
+      "Mutating the state field from outside <code class=\"inline\">periodic()</code>. Scattering <code class=\"inline\">currentState = ...</code> assignments across multiple methods makes the whole state machine harder to reason about."
+    ],
+    takeaways: [
+      "A <code class=\"inline\">switch</code> over the state enum, inside <code class=\"inline\">periodic()</code>, is the natural place to both run each state's behavior and check for transitions.",
+      "A transition is just a plain reassignment of the state field — the important part is placing it inside the correct state's case, gated on the right condition.",
+      "Running this logic in <code class=\"inline\">periodic()</code> (called every scheduler loop) is what makes transitions responsive to sensors and other real-time signals.",
+      "Missing a <code class=\"inline\">break;</code> is the single most common bug in a switch-based state machine."
+    ],
+    prov: "other-reference-repo: team-5817-training/subsystems/02-state-based-servo-subsystems.md, 03-state-based-roller-subsystems.md (T5817 31.1-4) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 11 (\"Managing Transitions\") — IntakeState switch example"
+  },
+  "25.6": {
+    title: "Binding Commands to Triggers",
+    ref: "25.6 — Binding Commands to Triggers (WPILIB 20.5)",
+    body: `
+      <h2>Triggers: The Declarative Glue</h2>
+      <p>A <code class="inline">Trigger</code> wraps any boolean condition — a button, a sensor, an arbitrary check — so a command can be bound to it once, declaratively, during setup. From then on, the scheduler itself checks the condition every loop (Lesson 25.3's Step 2) and schedules or cancels the command as needed.</p>
+      <pre class="code"><code><span class="c">// From a controller button</span>
+<span class="t">Trigger</span> xButton = driverController.<span class="me">x</span>();
+
+<span class="c">// From an arbitrary condition — any BooleanSupplier (Lesson 19.1) works</span>
+<span class="t">Trigger</span> loaded = <span class="k">new</span> <span class="t">Trigger</span>(intake::isLoaded);</code></pre>
+      <h2>The Core Bindings</h2>
+      <pre class="code"><code><span class="c">// Schedules once, the instant the trigger becomes true (e.g. the button is first pressed)</span>
+driverController.<span class="me">y</span>().<span class="me">onTrue</span>(intake.<span class="me">retractCommand</span>());
+
+<span class="c">// Schedules while the trigger is true, cancels the instant it becomes false</span>
+driverController.<span class="me">b</span>().<span class="me">whileTrue</span>(intake.<span class="me">runIntakeCommand</span>());
+
+<span class="c">// Schedules once, the instant the trigger becomes false — the mirror of onTrue</span>
+driverController.<span class="me">a</span>().<span class="me">onFalse</span>(shooter.<span class="me">stopCommand</span>());</code></pre>
+      <p><code class="inline">onTrue</code> fires once on the rising edge and doesn't re-fire unless the trigger goes false and true again. <code class="inline">whileTrue</code> keeps a command running for as long as the condition holds, and cancels it the moment the condition ends — this is the natural fit for "run the intake while this button is held down."</p>
+      <h2>Composing Triggers</h2>
+      <p>Triggers combine with <code class="inline">and()</code>, <code class="inline">or()</code>, and <code class="inline">negate()</code>, just like boolean expressions (Ch.5):</p>
+      <pre class="code"><code><span class="c">// Only schedules when BOTH buttons are pressed together</span>
+driverController.<span class="me">x</span>().<span class="me">and</span>(driverController.<span class="me">y</span>()).<span class="me">onTrue</span>(<span class="k">new</span> <span class="t">ExampleCommand</span>());</code></pre>
+      <h2>Chaining Multiple Bindings on One Trigger</h2>
+      <p>Binding methods return the same trigger they were called on, so several different bindings can be chained onto one trigger:</p>
+      <pre class="code"><code>exampleButton
+    .<span class="me">onTrue</span>(<span class="k">new</span> <span class="t">FooCommand</span>())   <span class="c">// runs when pressed</span>
+    .<span class="me">onFalse</span>(<span class="k">new</span> <span class="t">BarCommand</span>()); <span class="c">// runs when released</span></code></pre>
+      <h2>Debouncing: Filtering Out Noise</h2>
+      <p>A digital sensor's raw signal can flicker rapidly right at the transition point — a <code class="inline">debounce</code> filters that out, requiring the condition to hold steady for a set duration before it's treated as a real change:</p>
+      <pre class="code"><code>exampleButton.<span class="me">debounce</span>(<span class="n">0.1</span>).<span class="me">onTrue</span>(<span class="k">new</span> <span class="t">ExampleCommand</span>()); <span class="c">// ignores flickers under 0.1s</span></code></pre>
+    `,
+    pitfalls: [
+      "Expecting <code class=\"inline\">onTrue</code> to re-fire while a button stays held. It only fires once, on the transition — use <code class=\"inline\">whileTrue</code> for continuous behavior while held.",
+      "Confusing a <code class=\"inline\">Trigger</code>'s boolean condition with the command it's bound to. A <code class=\"inline\">Trigger</code> is just a wrapped condition.",
+      "Not debouncing a noisy digital sensor. A sensor near its trip point can rapidly flicker, causing repeated unwanted scheduling."
+    ],
+    takeaways: [
+      "A <code class=\"inline\">Trigger</code> wraps any boolean condition so a command can be bound to it once, declaratively.",
+      "<code class=\"inline\">onTrue</code>/<code class=\"inline\">onFalse</code> fire once on a transition; <code class=\"inline\">whileTrue</code>/<code class=\"inline\">whileFalse</code> schedule while the condition holds and cancel when it changes.",
+      "Triggers compose with <code class=\"inline\">and()</code>, <code class=\"inline\">or()</code>, <code class=\"inline\">negate()</code> — same boolean logic as Ch.5.",
+      "Binding methods return the same trigger, so multiple bindings can be chained onto one trigger.",
+      "<code class=\"inline\">debounce(...)</code> filters out rapid flickering near a condition's trip point."
+    ],
+    prov: "other-reference-repo: wpilib/command-based/05-binding-commands-to-triggers.md (WPILIB 20.5) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 12 (\"Event Loops & Triggers\")"
+  },
+  "25.7": {
+    title: "Structuring a Command-Based Robot Project",
+    ref: "25.7 — Structuring a Command-Based Robot Project (WPILIB 20.4,6-7)",
+    body: `
+      <h2>The Standard Project Shape</h2>
+      <p>WPILib's own project template organizes a command-based robot around four root-level classes plus two subdirectories:</p>
+      <ul>
+        <li><strong>Robot</strong> — the entry point, kept intentionally thin.</li>
+        <li><strong>RobotContainer</strong> — where subsystems, commands, and trigger bindings are actually declared.</li>
+        <li><strong>Constants</strong> — globally-accessible, <code class="inline">public static final</code> constants.</li>
+        <li><strong>Subsystems/</strong> and <strong>Commands/</strong> — one file per user-defined class.</li>
+      </ul>
+      <h2>Robot: Deliberately Thin</h2>
+      <p>Because command-based is declarative, <code class="inline">Robot.java</code> should contain almost nothing beyond a handful of required calls:</p>
+      <pre class="code"><code><span class="k">public</span> <span class="me">Robot</span>()
+{
+    robotContainer = <span class="k">new</span> <span class="t">RobotContainer</span>(); <span class="c">// performs all the actual setup</span>
+}
+
+<span class="me">@Override</span>
+<span class="k">public void</span> <span class="me">robotPeriodic</span>()
+{
+    <span class="t">CommandScheduler</span>.<span class="me">getInstance</span>().<span class="me">run</span>(); <span class="c">// THE single most important line in the whole project</span>
+}
+
+<span class="me">@Override</span>
+<span class="k">public void</span> <span class="me">autonomousInit</span>()
+{
+    autonomousCommand = robotContainer.<span class="me">getAutonomousCommand</span>();
+    <span class="k">if</span> (autonomousCommand != <span class="k">null</span>)
+    {
+        <span class="t">CommandScheduler</span>.<span class="me">getInstance</span>().<span class="me">schedule</span>(autonomousCommand);
+    }
+}
+
+<span class="me">@Override</span>
+<span class="k">public void</span> <span class="me">teleopInit</span>()
+{
+    <span class="k">if</span> (autonomousCommand != <span class="k">null</span>)
+    {
+        autonomousCommand.<span class="me">cancel</span>(); <span class="c">// stop auto once teleop begins</span>
+    }
+}</code></pre>
+      <p>Piling large amounts of imperative logic directly into <code class="inline">Robot.java</code> fights the entire declarative philosophy (Lesson 25.1) — real setup belongs in <code class="inline">RobotContainer</code>.</p>
+      <h2>RobotContainer: Where Setup Actually Happens</h2>
+      <p>Subsystems are declared as <code class="inline">private</code> fields here — deliberately <em>not</em> global variables:</p>
+      <pre class="code"><code><span class="k">private final</span> <span class="t">Intake</span> intake = <span class="k">new</span> <span class="t">Intake</span>();
+
+<span class="k">private void</span> <span class="me">configureBindings</span>()
+{
+    driverController.<span class="me">b</span>().<span class="me">whileTrue</span>(intake.<span class="me">runIntakeCommand</span>());
+}
+
+<span class="k">public</span> <span class="t">Command</span> <span class="me">getAutonomousCommand</span>()
+{
+    <span class="k">return</span> <span class="t">AutoRoutines</span>.<span class="me">driveAndIntake</span>(drivetrain, intake);
+}</code></pre>
+      <p>Keeping subsystems <code class="inline">private</code> and passing them explicitly to whatever needs them (<strong>dependency injection</strong>, first introduced in Lesson 25.2) is deliberate: if subsystems were globally accessible, any code anywhere could call subsystem methods directly, completely bypassing the scheduler's resource-management guarantees.</p>
+      <h2>Constants: One Place for Every Tunable Number</h2>
+      <pre class="code"><code><span class="k">public static final class</span> <span class="t">IntakeConstants</span>
+{
+    <span class="k">public static final int</span> kMotorId = <span class="n">5</span>;
+    <span class="k">public static final double</span> kIntakeSpeed = <span class="n">0.8</span>;
+}</code></pre>
+      <p>Every constant is <code class="inline">public static final</code> — globally reachable, and impossible to accidentally reassign (Ch.23's <code class="inline">final</code>).</p>
+      <h2>Choosing How to Define a Reusable Command</h2>
+      <p>For a command that's used in more than one place, a few options exist, each suited to a different case:</p>
+      <ul>
+        <li><strong>Instance factory method on a single subsystem</strong> — best for a command tied to exactly one subsystem: <code class="inline">intake.runIntakeCommand()</code>.</li>
+        <li><strong>Static factory method</strong> (Ch.21) — best when a command needs to coordinate <em>multiple</em> subsystems at once.</li>
+        <li><strong>A full Command subclass</strong> — best when a command needs its own genuine internal state or unusually complex logic.</li>
+      </ul>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">SubsystemBase</span>
+{
+    <span class="k">public</span> <span class="t">Command</span> <span class="me">runIntakeCommand</span>()
+    {
+        <span class="k">return this</span>.<span class="me">startEnd</span>(() -&gt; <span class="k">this</span>.<span class="me">set</span>(<span class="n">1.0</span>), () -&gt; <span class="k">this</span>.<span class="me">set</span>(<span class="n">0.0</span>)); <span class="c">// implicitly requires `this`</span>
+    }
+}</code></pre>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">AutoRoutines</span>
+{
+    <span class="k">public static</span> <span class="t">Command</span> <span class="me">driveAndIntake</span>(<span class="t">Drivetrain</span> drivetrain, <span class="t">Intake</span> intake)
+    {
+        <span class="k">return</span> <span class="t">Commands</span>.<span class="me">sequence</span>(
+            <span class="t">Commands</span>.<span class="me">parallel</span>(drivetrain.<span class="me">driveCommand</span>(<span class="n">0.5</span>, <span class="n">0.5</span>), intake.<span class="me">runIntakeCommand</span>()).<span class="me">withTimeout</span>(<span class="n">5.0</span>),
+            <span class="t">Commands</span>.<span class="me">parallel</span>(drivetrain.<span class="me">stopCommand</span>(), intake.<span class="me">stopCommand</span>())
+        );
+    }
+}</code></pre>
+    `,
+    pitfalls: [
+      "Declaring subsystems as global/static fields for easy access. This defeats the resource-management system's whole purpose.",
+      "Forgetting to cancel the autonomous command in <code class=\"inline\">teleopInit()</code>. Without it, an unfinished autonomous command can keep running (and keep its requirements locked) into teleop.",
+      "Scattering constants across many files instead of one <code class=\"inline\">Constants</code> class. Changing one tunable value should mean editing exactly one line."
+    ],
+    takeaways: [
+      "A standard command-based project has <code class=\"inline\">Robot</code> (thin), <code class=\"inline\">RobotContainer</code> (real setup), <code class=\"inline\">Constants</code> (all tunables), and <code class=\"inline\">Subsystems</code>/<code class=\"inline\">Commands</code> directories.",
+      "<code class=\"inline\">Robot.robotPeriodic()</code> must call <code class=\"inline\">CommandScheduler.getInstance().run()</code> — nothing works without this line.",
+      "Subsystems stay <code class=\"inline\">private</code> in <code class=\"inline\">RobotContainer</code>; other code reaches them only by dependency injection, never as globals.",
+      "Choose how to define a reusable command based on its shape: instance factory (single subsystem), static factory (multiple subsystems), or a full class (real internal state or complex logic)."
+    ],
+    prov: "other-reference-repo: wpilib/command-based/04-subsystems.md (WPILIB 20.4), 06-structuring-command-based-project.md (WPILIB 20.6), 07-organizing-command-based.md (WPILIB 20.7)"
+  }
+};
+
+let currentItem = "25.1";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
