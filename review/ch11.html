@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.11 — Enums: Named Choices (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.11 — Enums</h1>
+  <p class="sub">shockwave-curriculum · draft lesson, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lesson only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "11": {
+    title: "Enums: Named Choices",
+    ref: "11 — Enums: Named Choices (ORACLE 10.1)",
+    body: `
+      <h2>Why Enums Exist</h2>
+      <p>An <strong>enum</strong> ("enumerated type") is a type with a fixed, predefined set of named values — a variable of that type can only ever be one of those values, nothing else. Before enums, code often used plain integers or strings to represent a fixed set of states (<code class="inline">int armState = 2;</code>), which lets any number in — including ones that mean nothing. An enum makes invalid states impossible to even compile:</p>
+      <pre class="code"><code><span class="k">public enum</span> <span class="t">ArmPosition</span>
+{
+    STOWED, INTAKE, SCORE
+}
+
+<span class="t">ArmPosition</span> target = <span class="t">ArmPosition</span>.INTAKE; <span class="c">// legal</span>
+<span class="t">ArmPosition</span> target = <span class="t">ArmPosition</span>.CLIMB;  <span class="c">// compile error — CLIMB was never defined</span></code></pre>
+      <p>By convention, enum constants are written in <code class="inline">SCREAMING_SNAKE_CASE</code>, the same naming style used for other constants (Lesson 1.2).</p>
+      <h2>Switching Over an Enum</h2>
+      <p>A <code class="inline">switch</code> over an enum reads close to plain English, and (with modern arrow-style <code class="inline">case</code>) needs no <code class="inline">break</code>:</p>
+      <pre class="code"><code><span class="k">switch</span> (target)
+{
+    <span class="k">case</span> STOWED -&gt; arm.<span class="me">setAngle</span>(<span class="n">0</span>);
+    <span class="k">case</span> INTAKE -&gt; arm.<span class="me">setAngle</span>(<span class="n">35</span>);
+    <span class="k">case</span> SCORE  -&gt; arm.<span class="me">setAngle</span>(<span class="n">110</span>);
+}</code></pre>
+      <p>Notice the case labels are just <code class="inline">STOWED</code>, not <code class="inline">ArmPosition.STOWED</code> — inside a switch over an enum, Java already knows the type, so the prefix would be redundant (and doesn't compile).</p>
+      <h2>An Enum Is Really a Class</h2>
+      <p>An enum isn't just a fancier set of named integers — it's a full class. Its body can declare fields, a constructor, and methods, letting each constant carry its own data:</p>
+      <pre class="code"><code><span class="k">public enum</span> <span class="t">ArmPosition</span>
+{
+    STOWED(<span class="n">0</span>), INTAKE(<span class="n">35</span>), SCORE(<span class="n">110</span>); <span class="c">// constants, WITH constructor arguments</span>
+
+    <span class="k">private final double</span> angleDegrees;
+
+    <span class="me">ArmPosition</span>(<span class="k">double</span> angleDegrees)
+    {
+        <span class="k">this</span>.angleDegrees = angleDegrees;
+    }
+
+    <span class="k">public double</span> <span class="me">getAngleDegrees</span>()
+    {
+        <span class="k">return</span> angleDegrees;
+    }
+}</code></pre>
+      <p>Two rules this pattern depends on: the list of constants must come <strong>first</strong> in the enum body, and once there are fields or methods after it, that constant list must end with a semicolon. Each constant listed (<code class="inline">STOWED(0)</code>, <code class="inline">INTAKE(35)</code>, <code class="inline">SCORE(110)</code>) calls the constructor with its own arguments — an enum's constructor is implicitly <code class="inline">private</code>, since you're never allowed to write <code class="inline">new ArmPosition(...)</code> yourself; the only <code class="inline">ArmPosition</code> objects that will ever exist are the ones listed in the enum body.</p>
+      <p>With this version, the earlier switch could be simplified — every position now carries its own target angle:</p>
+      <pre class="code"><code>arm.<span class="me">setAngle</span>(target.<span class="me">getAngleDegrees</span>());</code></pre>
+      <h2>Iterating Every Value: values()</h2>
+      <p>Every enum automatically gets a static <code class="inline">values()</code> method, returning an array of all its constants in declared order — handy for looping over every possibility:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="t">ArmPosition</span> position : <span class="t">ArmPosition</span>.values())
+{
+    System.out.<span class="me">println</span>(position + <span class="s">" -> "</span> + position.<span class="me">getAngleDegrees</span>() + <span class="s">" degrees"</span>);
+}</code></pre>
+      <h2>What Enums Can't Do</h2>
+      <p>Every enum implicitly extends <code class="inline">java.lang.Enum</code> behind the scenes. Since Java only allows extending one parent class, an enum can never <code class="inline">extends</code> anything else of its own — though it can still <code class="inline">implement</code> interfaces.</p>
+      <h2>Looking Ahead</h2>
+      <p>This chapter's ideas — a fixed set of named states, plus a <code class="inline">switch</code> that reacts to whichever one is currently active — are exactly the foundation the <strong>State Machine</strong> pattern (Java II) builds on, where a subsystem tracks "which named state am I in right now" and transitions between them over time.</p>
+    `,
+    pitfalls: [
+      "Writing the enum type prefix inside a <code class=\"inline\">switch</code>. <code class=\"inline\">case ArmPosition.INTAKE -&gt;</code> doesn't compile inside a switch over an <code class=\"inline\">ArmPosition</code> — just <code class=\"inline\">case INTAKE -&gt;</code>.",
+      "Forgetting the semicolon after the constant list once fields/methods follow. <code class=\"inline\">STOWED(0), INTAKE(35), SCORE(110)</code> with no trailing <code class=\"inline\">;</code> before <code class=\"inline\">private final double angleDegrees;</code> fails to compile.",
+      "Trying to <code class=\"inline\">new</code> an enum constant. <code class=\"inline\">new ArmPosition(...)</code> is illegal — the only instances that will ever exist are the constants declared in the enum body itself."
+    ],
+    takeaways: [
+      "An enum defines a fixed, named set of legal values for a type — the compiler rejects anything not in that list.",
+      "Enum constant names use <code class=\"inline\">SCREAMING_SNAKE_CASE</code>; a <code class=\"inline\">switch</code> over an enum omits the type prefix on each <code class=\"inline\">case</code>.",
+      "An enum is a real class — it can have its own fields, a constructor, and methods, letting each constant carry its own data.",
+      "<code class=\"inline\">EnumType.values()</code> returns every constant, in order, for looping.",
+      "An enum implicitly extends <code class=\"inline\">java.lang.Enum</code>, so it can't extend any other class (interfaces are still fine)."
+    ],
+    prov: "other-reference-repo: oracle-java-tutorials/enums/enum-types.md (ORACLE 10.1) · Deck context: mechacoder-test/src/lessons/java-1.js, slide 9 (\"Enums: Named Choices\")"
+  }
+};
+
+let currentItem = "11";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">Ch.${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
