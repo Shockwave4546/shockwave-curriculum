@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.16 — Writing Your Own Generics (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.16 — Writing Your Own Generics</h1>
+  <p class="sub">shockwave-curriculum · draft lesson, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lesson only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "16": {
+    title: "Writing Your Own Generics",
+    ref: "16 — Writing Your Own Generics (ORACLE 14.1-5)",
+    body: `
+      <p><code class="inline">List&lt;String&gt;</code>, <code class="inline">Map&lt;Integer, Double&gt;</code>, <code class="inline">ArrayList&lt;TalonFX&gt;</code> — every collection since Ch.9 has <em>used</em> a generic type someone else wrote. This chapter is about writing your own.</p>
+      <h2>Why Generics Exist</h2>
+      <p>Before generics, a reusable container had to work with the generic <code class="inline">Object</code> type, requiring an explicit cast every time you got something back out — and nothing stopped the wrong type from going in in the first place:</p>
+      <pre class="code"><code><span class="t">List</span> list = <span class="k">new</span> <span class="t">ArrayList</span>();         <span class="c">// no generics</span>
+list.<span class="me">add</span>(<span class="s">"hello"</span>);
+<span class="t">String</span> s = (<span class="t">String</span>) list.<span class="me">get</span>(<span class="n">0</span>);     <span class="c">// cast required, and could fail at runtime</span></code></pre>
+      <p>With a type parameter, the compiler enforces correctness <em>before</em> the program ever runs, and the cast disappears entirely:</p>
+      <pre class="code"><code><span class="t">List</span>&lt;<span class="t">String</span>&gt; list = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt;();
+list.<span class="me">add</span>(<span class="s">"hello"</span>);
+<span class="t">String</span> s = list.<span class="me">get</span>(<span class="n">0</span>);              <span class="c">// no cast — the compiler already knows it's a String</span></code></pre>
+      <h2>Writing a Generic Class</h2>
+      <p>A generic class introduces one or more <strong>type parameters</strong> in angle brackets after the class name. Here's a value wrapper — a natural fit for logging a tunable robot value alongside its current setpoint, using a placeholder type instead of committing to <code class="inline">double</code> or <code class="inline">String</code> up front:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">LoggedValue</span>&lt;<span class="t">T</span>&gt;
+{
+    <span class="k">private</span> <span class="t">T</span> value;
+
+    <span class="k">public void</span> <span class="me">set</span>(<span class="t">T</span> v) { value = v; }
+    <span class="k">public</span> <span class="t">T</span> <span class="me">get</span>() { <span class="k">return</span> value; }
+}</code></pre>
+      <p><code class="inline">T</code> isn't a real type — it's a <strong>type variable</strong>, a placeholder standing in for whatever concrete type gets supplied when the class is actually used:</p>
+      <pre class="code"><code><span class="t">LoggedValue</span>&lt;<span class="t">Double</span>&gt; setpoint = <span class="k">new</span> <span class="t">LoggedValue</span>&lt;&gt;(); <span class="c">// the "diamond" <> — compiler infers Double from the left side</span>
+setpoint.<span class="me">set</span>(<span class="n">3.5</span>);    <span class="c">// OK</span>
+setpoint.<span class="me">set</span>(<span class="s">"fast"</span>); <span class="c">// compile error — a String doesn't belong in a LoggedValue<Double></span></code></pre>
+      <p>By convention, type parameters are single uppercase letters — <code class="inline">T</code> (Type), <code class="inline">E</code> (Element, used throughout the collections you already know), <code class="inline">K</code>/<code class="inline">V</code> (Key/Value, as in <code class="inline">Map&lt;K, V&gt;</code>), <code class="inline">N</code> (Number). This convention exists specifically so a type variable is instantly recognizable and never confused with a real class name.</p>
+      <p>A generic class can take more than one type parameter, exactly like <code class="inline">Map&lt;K, V&gt;</code> does:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Pair</span>&lt;<span class="t">K</span>, <span class="t">V</span>&gt;
+{
+    <span class="k">private</span> <span class="t">K</span> key;
+    <span class="k">private</span> <span class="t">V</span> value;
+
+    <span class="k">public</span> <span class="me">Pair</span>(<span class="t">K</span> key, <span class="t">V</span> value)
+    {
+        <span class="k">this</span>.key = key;
+        <span class="k">this</span>.value = value;
+    }
+
+    <span class="k">public</span> <span class="t">K</span> <span class="me">getKey</span>()   { <span class="k">return</span> key; }
+    <span class="k">public</span> <span class="t">V</span> <span class="me">getValue</span>() { <span class="k">return</span> value; }
+}
+
+<span class="t">Pair</span>&lt;<span class="t">String</span>, <span class="t">Double</span>&gt; reading = <span class="k">new</span> <span class="t">Pair</span>&lt;&gt;(<span class="s">"Front-Left Current"</span>, <span class="n">12.4</span>);</code></pre>
+      <h2>Generic Methods</h2>
+      <p>A single method — even inside an otherwise non-generic class — can introduce its own type parameter, written in angle brackets right before the return type. Its scope is limited to that one method:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Util</span>
+{
+    <span class="k">public static</span> &lt;<span class="t">K</span>, <span class="t">V</span>&gt; <span class="k">boolean</span> <span class="me">sameEntry</span>(<span class="t">Pair</span>&lt;<span class="t">K</span>, <span class="t">V</span>&gt; p1, <span class="t">Pair</span>&lt;<span class="t">K</span>, <span class="t">V</span>&gt; p2)
+    {
+        <span class="k">return</span> p1.<span class="me">getKey</span>().<span class="me">equals</span>(p2.<span class="me">getKey</span>()) &amp;&amp; p1.<span class="me">getValue</span>().<span class="me">equals</span>(p2.<span class="me">getValue</span>());
+    }
+}</code></pre>
+      <p>Almost always, the compiler figures out the type on its own from how you call it — this is <strong>type inference</strong> — so you can call <code class="inline">Util.sameEntry(p1, p2)</code> directly, without ever writing the type parameter yourself.</p>
+      <h2>Bounded Type Parameters</h2>
+      <p>Sometimes a generic type shouldn't accept <em>just anything</em> — a method built around numeric comparisons only makes sense for actual numbers. <code class="inline">extends</code> restricts a type parameter to a specific type (or subtype of it) — here meaning "any subtype of <code class="inline">Number</code>," which covers <code class="inline">Integer</code>, <code class="inline">Double</code>, and the rest:</p>
+      <pre class="code"><code><span class="k">public static</span> &lt;<span class="t">T</span> <span class="k">extends</span> <span class="t">Number</span>&gt; <span class="k">double</span> <span class="me">clampedValue</span>(<span class="t">T</span> value, <span class="k">double</span> min, <span class="k">double</span> max)
+{
+    <span class="k">double</span> v = value.<span class="me">doubleValue</span>(); <span class="c">// legal — Number guarantees a doubleValue() method</span>
+    <span class="k">if</span> (v &lt; min) <span class="k">return</span> min;
+    <span class="k">if</span> (v &gt; max) <span class="k">return</span> max;
+    <span class="k">return</span> v;
+}</code></pre>
+      <p>Without the <code class="inline">extends Number</code> bound, <code class="inline">value.doubleValue()</code> wouldn't compile at all — the compiler would only know <code class="inline">value</code> is <em>some</em> type, with no guarantee it has a <code class="inline">doubleValue()</code> method to call. The bound is what unlocks calling methods that only <code class="inline">Number</code> (and its subtypes) actually have.</p>
+      <h2>Wildcards: A Quick Preview</h2>
+      <p>The <code class="inline">?</code> wildcard represents an unknown type, mostly useful for parameters and fields where you want to accept "a <code class="inline">List</code> of anything" without pinning down exactly what. Wildcard variations (upper-bounded, lower-bounded) go beyond what this chapter covers — the short version to remember for now is: <code class="inline">?</code> is never used when <em>creating</em> a generic type (<code class="inline">new Box&lt;?&gt;()</code> isn't a thing) — only when referring to one you don't need to be specific about.</p>
+    `,
+    pitfalls: [
+      "Forgetting the <code class=\"inline\">&lt;T&gt;</code> on the class declaration itself. <code class=\"inline\">public class Box { private T t; }</code> doesn't compile — <code class=\"inline\">T</code> has to be introduced with <code class=\"inline\">public class Box&lt;T&gt;</code> before it can be used anywhere inside the class.",
+      "Using a primitive as a type argument. <code class=\"inline\">LoggedValue&lt;double&gt;</code> doesn't compile — type arguments must be reference types, so use the wrapper (<code class=\"inline\">LoggedValue&lt;Double&gt;</code>) instead, same rule as <code class=\"inline\">ArrayList</code> (Lesson 9.2).",
+      "Calling a bound-specific method without the bound. <code class=\"inline\">value.doubleValue()</code> only compiles once <code class=\"inline\">T</code> is declared <code class=\"inline\">extends Number</code> — without the bound, the compiler only knows <code class=\"inline\">T</code> is <em>some</em> type, with no guaranteed methods beyond what every <code class=\"inline\">Object</code> has."
+    ],
+    takeaways: [
+      "A generic class introduces type parameters in angle brackets after its name (<code class=\"inline\">class LoggedValue&lt;T&gt;</code>); the type variable then stands in for a real type anywhere in the class.",
+      "Generic types replace the old cast-from-<code class=\"inline\">Object</code> pattern with compile-time type safety — a wrong type is now a compile error, not a runtime surprise.",
+      "A generic method can introduce its own type parameter, scoped to just that method; the compiler usually infers the type automatically.",
+      "<code class=\"inline\">&lt;T extends SomeType&gt;</code> restricts what a type parameter can be, and unlocks calling <code class=\"inline\">SomeType</code>'s own methods on values of that type.",
+      "The <code class=\"inline\">?</code> wildcard represents an unknown type for referring to a generic type generically — it's never used when constructing one."
+    ],
+    prov: "other-reference-repo: oracle-java-tutorials/generics/01-05 (ORACLE 14.1-5) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 2 (\"Writing Your Own Generics\")"
+  }
+};
+
+let currentItem = "16";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">Ch.${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
