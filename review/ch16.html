@@ -118,7 +118,7 @@ list.<span class="me">add</span>(<span class="s">"hello"</span>);
       <p><code class="inline">T</code> isn't a real type — it's a <strong>type variable</strong>, a placeholder standing in for whatever concrete type gets supplied when the class is actually used:</p>
       <pre class="code"><code><span class="t">LoggedValue</span>&lt;<span class="t">Double</span>&gt; setpoint = <span class="k">new</span> <span class="t">LoggedValue</span>&lt;&gt;(); <span class="c">// the "diamond" <> — compiler infers Double from the left side</span>
 setpoint.<span class="me">set</span>(<span class="n">3.5</span>);    <span class="c">// OK</span>
-setpoint.<span class="me">set</span>(<span class="s">"fast"</span>); <span class="c">// compile error — a String doesn't belong in a LoggedValue<Double></span></code></pre>
+setpoint.<span class="me">set</span>(<span class="s">"fast"</span>); <span class="c">// compile error — a String doesn't belong in a LoggedValue&lt;Double&gt;</span></code></pre>
       <p>By convention, type parameters are single uppercase letters — <code class="inline">T</code> (Type), <code class="inline">E</code> (Element, used throughout the collections you already know), <code class="inline">K</code>/<code class="inline">V</code> (Key/Value, as in <code class="inline">Map&lt;K, V&gt;</code>), <code class="inline">N</code> (Number). This convention exists specifically so a type variable is instantly recognizable and never confused with a real class name.</p>
       <p>A generic class can take more than one type parameter, exactly like <code class="inline">Map&lt;K, V&gt;</code> does:</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">Pair</span>&lt;<span class="t">K</span>, <span class="t">V</span>&gt;
