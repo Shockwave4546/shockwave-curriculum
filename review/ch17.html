@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.17 — Inheritance &amp; Abstractions (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.17 — Inheritance & Abstractions</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "17.1": {
+    title: "Inheritance, Superclass, Subclass",
+    ref: "17.1 — Inheritance, Superclass, Subclass (CSA 5.1)",
+    body: `
+      <h2>What Inheritance Does</h2>
+      <p><strong>Inheritance</strong> lets one class inherit fields and methods from another. The class being inherited from is the <strong>superclass</strong> (or parent class); the class doing the inheriting is the <strong>subclass</strong> (or child class). Every FRC robot's subsystems share real structure — a name for logging, a <code class="inline">stop()</code> method, a <code class="inline">periodic()</code> method WPILib calls every loop — which makes them a natural fit for a shared superclass:</p>
+      <pre class="code"><code><span class="k">public abstract class</span> <span class="t">Subsystem</span>
+{
+    <span class="k">private</span> <span class="t">String</span> name;
+
+    <span class="k">public</span> <span class="me">Subsystem</span>(<span class="t">String</span> name) { <span class="k">this</span>.name = name; }
+    <span class="k">public</span> <span class="t">String</span> <span class="me">getName</span>() { <span class="k">return</span> name; }
+    <span class="k">public void</span> <span class="me">log</span>(<span class="t">String</span> msg) { System.out.<span class="me">println</span>(<span class="s">"["</span> + name + <span class="s">"] "</span> + msg); }
+}
+
+<span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
+{
+    <span class="c">// inherits getName() and log() for free</span>
+}</code></pre>
+      <p><code class="inline">extends</code> is the keyword that sets up inheritance. A Java class can only <code class="inline">extends</code> <strong>one</strong> superclass — unlike a person with two biological parents, there's no multiple inheritance of this kind in Java. Omitting <code class="inline">extends</code> entirely doesn't mean "no parent" — it means the class implicitly inherits from Java's built-in <code class="inline">Object</code> class (Lesson 17.4).</p>
+      <h2>The is-a Relationship</h2>
+      <p>Inheritance should only model a genuine <strong>is-a</strong> relationship: an <code class="inline">Intake</code> <em>is a</em> <code class="inline">Subsystem</code>, a <code class="inline">Climber</code> <em>is a</em> <code class="inline">Subsystem</code>. The test to apply: could you substitute the subclass anywhere the superclass is expected, and have it still make sense? A <code class="inline">Vision</code> processor being asked to <code class="inline">stop()</code> and get <code class="inline">log()</code>ed makes sense as a <code class="inline">Subsystem</code> — but a <code class="inline">Robot</code> class itself, or a <code class="inline">Controller</code> wrapping a joystick, isn't a <em>kind of</em> <code class="inline">Subsystem</code>, even if it happens to interact with one.</p>
+      <h2>is-a vs. has-a</h2>
+      <p>The <strong>has-a</strong> relationship (also called <strong>association</strong>) is different: it's when one class simply holds a reference to another, without being a specialized kind of it. A <code class="inline">Robot</code> <em>has a</em> <code class="inline">Drivetrain</code>, an <code class="inline">Intake</code>, and a <code class="inline">Shooter</code> — it isn't a subclass of any of them:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Robot</span>
+{
+    <span class="k">private</span> <span class="t">Drivetrain</span> drivetrain;  <span class="c">// has-a: Robot holds a Drivetrain, isn't one</span>
+    <span class="k">private</span> <span class="t">Intake</span> intake;          <span class="c">// has-a</span>
+}</code></pre>
+      <p>Compare that to <code class="inline">Intake extends Subsystem</code> — that's is-a: an <code class="inline">Intake</code> really is a specialized kind of <code class="inline">Subsystem</code>, not just something that happens to reference one.</p>
+      <h2>Why Bother</h2>
+      <p>Two forces motivate reaching for a superclass:</p>
+      <ul>
+        <li><strong>Generalization</strong> — several classes already share data/behavior, so pull the shared parts up into one common parent. <code class="inline">Intake</code>, <code class="inline">Shooter</code>, and <code class="inline">Climber</code> all need a name and a <code class="inline">log()</code> method — that's exactly what <code class="inline">Subsystem</code> is for.</li>
+        <li><strong>Specialization</strong> — a class wants most of a parent's behavior, but needs to add something of its own or do one thing differently. <code class="inline">Intake</code> inherits <code class="inline">log()</code> unchanged, but still needs its own <code class="inline">stop()</code> that's specific to its own motor.</li>
+      </ul>
+    `,
+    pitfalls: [
+      "Using inheritance purely to reuse code, without a real is-a relationship. If the substitution test fails — the subclass wouldn't actually make sense wherever the superclass is expected — model it as has-a (a field) instead of <code class=\"inline\">extends</code>.",
+      "Forgetting a class always has exactly one superclass. Omitting <code class=\"inline\">extends</code> doesn't mean \"no parent\" — it means the implicit parent is <code class=\"inline\">Object</code> (Lesson 17.4).",
+      "Assuming a class can extend more than one class. <code class=\"inline\">class Intake extends Subsystem, Loggable</code> doesn't compile — Java allows only one <code class=\"inline\">extends</code>, though a class can <code class=\"inline\">implement</code> multiple interfaces."
+    ],
+    takeaways: [
+      "<code class=\"inline\">extends</code> declares inheritance: the subclass gains the superclass's fields and methods.",
+      "A class can only <code class=\"inline\">extends</code> one superclass; omitting <code class=\"inline\">extends</code> implicitly means extending <code class=\"inline\">Object</code>.",
+      "Use inheritance only for a genuine is-a relationship — verify with the substitution test.",
+      "has-a (association) is the right model when is-a doesn't genuinely apply."
+    ],
+    prov: "csawesome-2026: unit-5-inheritance-optional/5.01-inheritance-superclass-subclass.md (CSA 5.1) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 4 (\"Inheritance & Abstractions\")"
+  },
+  "17.2": {
+    title: "Inheritance and Constructors",
+    ref: "17.2 — Inheritance and Constructors (CSA 5.2)",
+    body: `
+      <h2>Constructors Are Never Inherited</h2>
+      <p>A subclass inherits its superclass's <code class="inline">public</code> methods and fields, but it does <strong>not</strong> inherit constructors, and it can't directly touch the superclass's <code class="inline">private</code> fields. Yet those inherited private fields still need to be properly set up before anything uses them — so how does a subclass initialize state that belongs to its superclass?</p>
+      <h2>The super(...) Call</h2>
+      <p>The keyword <code class="inline">super</code>, used like a method call, runs the superclass's constructor code in the context of the object already being built:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
+{
+    <span class="k">private</span> <span class="t">String</span> name;
+
+    <span class="k">public</span> <span class="me">Subsystem</span>(<span class="t">String</span> name) { <span class="k">this</span>.name = name; }
+    <span class="k">public</span> <span class="t">String</span> <span class="me">getName</span>() { <span class="k">return</span> name; }
+}
+
+<span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
+{
+    <span class="k">private boolean</span> hasGamePiece;
+
+    <span class="k">public</span> <span class="me">Intake</span>(<span class="t">String</span> name)
+    {
+        <span class="k">super</span>(name);          <span class="c">// runs Subsystem's constructor, setting the private `name` field</span>
+        hasGamePiece = <span class="k">false</span>;  <span class="c">// Intake's own field</span>
+    }
+}</code></pre>
+      <p><code class="inline">super(name)</code> isn't creating a second object — it's the one and only way to run <code class="inline">Subsystem</code>'s own initialization logic for the object currently under construction. Without it, <code class="inline">name</code> would never get set, since <code class="inline">Intake</code> has no direct access to that private field to assign it itself.</p>
+      <h2>The Implicit super() Call</h2>
+      <p>If a constructor doesn't start with an explicit <code class="inline">super(...)</code> call, Java automatically inserts a no-argument <code class="inline">super()</code> call for you. That only works if the superclass actually <em>has</em> a no-argument constructor — if it doesn't, any subclass constructor must explicitly call <code class="inline">super(...)</code> with arguments matching a constructor that does exist, or the code won't compile.</p>
+      <h2>The Chain Bottoms Out at Object</h2>
+      <p>Whether called explicitly or inserted implicitly, every chain of <code class="inline">super</code> calls eventually reaches <code class="inline">java.lang.Object</code>'s own no-argument constructor — the one class with no superclass of its own (Lesson 17.4). From there, construction "unwinds": <code class="inline">Object</code>'s constructor logic runs first, then each class going back down the hierarchy, ending with whichever class was actually instantiated. By the time your own constructor's body runs, every inherited field further up the chain has already been properly initialized.</p>
+      <pre class="code"><code><span class="t">Intake</span> intake = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>);
+<span class="c">// Order of execution: Object() -> Subsystem(String) -> Intake(String)</span></code></pre>
+    `,
+    pitfalls: [
+      "Trying to assign a superclass's private field directly. <code class=\"inline\">this.name = name;</code> inside <code class=\"inline\">Intake</code>'s constructor doesn't compile if <code class=\"inline\">name</code> is <code class=\"inline\">private</code> in <code class=\"inline\">Subsystem</code> — only <code class=\"inline\">super(name)</code> can reach it.",
+      "Forgetting <code class=\"inline\">super(...)</code> must be the first statement. A subclass constructor calling <code class=\"inline\">super(...)</code> after other statements doesn't compile.",
+      "Assuming a no-argument <code class=\"inline\">super()</code> always works. If the superclass has no no-argument constructor, Java can't insert an implicit call — the subclass must explicitly call <code class=\"inline\">super(...)</code> with matching arguments."
+    ],
+    takeaways: [
+      "Constructors are never inherited — only a <code class=\"inline\">super(...)</code> call can run the superclass's constructor logic to initialize its own (even private) fields.",
+      "If a subclass constructor doesn't call <code class=\"inline\">super(...)</code> explicitly, Java inserts a no-argument <code class=\"inline\">super()</code> call automatically — which only works if the superclass has one.",
+      "Every construction chain eventually reaches <code class=\"inline\">Object</code>'s constructor, which runs first; the subclass's own code only runs after every class above it has finished initializing."
+    ],
+    prov: "csawesome-2026: unit-5-inheritance-optional/5.02-inheritance-and-constructors.md (CSA 5.2)"
+  },
+  "17.3": {
+    title: "Inheritance Hierarchies",
+    ref: "17.3 — Inheritance Hierarchies (CSA 5.5)",
+    body: `
+      <h2>Multiple Subclasses, One Superclass</h2>
+      <p>An <strong>inheritance hierarchy</strong> forms when several subclasses inherit (directly, or through another subclass) from a common superclass. <code class="inline">Intake</code>, <code class="inline">Shooter</code>, and <code class="inline">Climber</code> all extending <code class="inline">Subsystem</code> is a small hierarchy; <code class="inline">Object</code> sits at the very top of <em>every</em> hierarchy in Java, since every class ultimately inherits from it (Lesson 17.4).</p>
+      <h2>A Superclass Reference Can Hold Any Subclass Object</h2>
+      <p>A variable typed as the superclass can refer to an object of that class <em>or any of its subclasses</em>:</p>
+      <pre class="code"><code><span class="t">Subsystem</span> s1 = <span class="k">new</span> <span class="t">Subsystem</span>(<span class="s">"Generic"</span>);
+<span class="t">Subsystem</span> s2 = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>);   <span class="c">// legal — an Intake IS-A Subsystem</span>
+<span class="t">Subsystem</span> s3 = <span class="k">new</span> <span class="t">Climber</span>(<span class="s">"Left Climber"</span>);  <span class="c">// legal — a Climber IS-A Subsystem</span></code></pre>
+      <p>The reverse doesn't work — a subclass-typed variable cannot hold a plain superclass object, since not every <code class="inline">Subsystem</code> is specifically an <code class="inline">Intake</code>:</p>
+      <pre class="code"><code><span class="t">Intake</span> i = <span class="k">new</span> <span class="t">Subsystem</span>(<span class="s">"Generic"</span>); <span class="c">// ERROR — a Subsystem isn't necessarily an Intake</span></code></pre>
+      <h2>Why This Matters: One Parameter Type, Every Subclass</h2>
+      <p>A method, array, or collection typed against the superclass automatically accepts every subclass too — this is what makes managing a whole robot's subsystems from one place possible:</p>
+      <pre class="code"><code><span class="k">public void</span> <span class="me">stopAll</span>(<span class="t">Subsystem</span>[] subsystems)
+{
+    <span class="k">for</span> (<span class="t">Subsystem</span> s : subsystems)
+    {
+        s.<span class="me">stop</span>(); <span class="c">// works for an Intake, a Climber, a Shooter — anything extending Subsystem</span>
+    }
+}
+
+<span class="t">Subsystem</span>[] robotSubsystems = { <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front"</span>), <span class="k">new</span> <span class="t">Climber</span>(<span class="s">"Left"</span>), <span class="k">new</span> <span class="t">Shooter</span>(<span class="s">"Main"</span>) };
+<span class="me">stopAll</span>(robotSubsystems);</code></pre>
+      <p>The same holds for collections — an <code class="inline">ArrayList&lt;Subsystem&gt;</code> happily holds <code class="inline">Intake</code>, <code class="inline">Climber</code>, and <code class="inline">Shooter</code> objects side by side:</p>
+      <pre class="code"><code><span class="t">ArrayList</span>&lt;<span class="t">Subsystem</span>&gt; allSubsystems = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">Subsystem</span>&gt;();
+allSubsystems.<span class="me">add</span>(<span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front"</span>));
+allSubsystems.<span class="me">add</span>(<span class="k">new</span> <span class="t">Climber</span>(<span class="s">"Left"</span>));</code></pre>
+      <h2>Which Method Actually Runs?</h2>
+      <p>When a method typed against the superclass is called on an object that's actually a subclass instance, Java runs <em>that object's</em> actual version of the method — decided by its real runtime type, not the variable's declared type. This is the foundation of <strong>polymorphism</strong>, covered in full in Lesson 18.3 — for now, the key idea is just that a <code class="inline">Subsystem</code>-typed variable holding an <code class="inline">Intake</code> object still calls <code class="inline">Intake</code>'s own overridden methods, if it has any.</p>
+    `,
+    pitfalls: [
+      "Trying to assign a superclass object to a subclass-typed variable. <code class=\"inline\">Intake i = new Subsystem(...);</code> is a compile error — not every <code class=\"inline\">Subsystem</code> is an <code class=\"inline\">Intake</code>.",
+      "Thinking a <code class=\"inline\">Subsystem[]</code> array can only hold plain <code class=\"inline\">Subsystem</code> objects. It can hold any mix of <code class=\"inline\">Subsystem</code> and its subclasses.",
+      "Forgetting which method version actually runs. Even though a variable is declared <code class=\"inline\">Subsystem</code>, calling a method on it runs the object's <em>real</em> class's version — not necessarily <code class=\"inline\">Subsystem</code>'s own."
+    ],
+    takeaways: [
+      "Several subclasses inheriting from one common superclass form an inheritance hierarchy, with <code class=\"inline\">Object</code> at the top of every hierarchy in Java.",
+      "A superclass-typed variable, array, or collection can hold objects of that class or any of its subclasses — never the reverse.",
+      "This lets one method signature, one array type, or one collection type work seamlessly across an entire family of related subsystem classes.",
+      "Which method actually executes depends on the object's real runtime type, not the variable's declared type — the basis of polymorphism (Lesson 18.3)."
+    ],
+    prov: "csawesome-2026: unit-5-inheritance-optional/5.05-inheritance-hierarchies.md (CSA 5.5)"
+  },
+  "17.4": {
+    title: "Object Superclass",
+    ref: "17.4 — Object Superclass (CSA 5.7)",
+    body: `
+      <h2>Every Class's Ultimate Parent</h2>
+      <p><code class="inline">Object</code> (from <code class="inline">java.lang</code>) is the superclass of every class in Java — any class without an explicit <code class="inline">extends</code> inherits from it automatically. Two of <code class="inline">Object</code>'s methods matter enough to override in almost every class you write: <code class="inline">toString()</code> and <code class="inline">equals(Object other)</code>.</p>
+      <h2>Overriding toString()</h2>
+      <p><code class="inline">Object</code>'s default <code class="inline">toString()</code> produces an unhelpful string like <code class="inline">Subsystem@1a2b3c</code> (the class name plus a memory-address-derived hash). Overriding it to describe the object's real state is good practice in nearly every class:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
+{
+    <span class="k">private</span> <span class="t">String</span> name;
+
+    <span class="k">public</span> <span class="me">Subsystem</span>(<span class="t">String</span> name) { <span class="k">this</span>.name = name; }
+
+    <span class="me">@Override</span>
+    <span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>() { <span class="k">return</span> name; }
+}</code></pre>
+      <p>A subclass's own <code class="inline">toString()</code> can call <code class="inline">super.toString()</code> and build on it, rather than starting from scratch:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
+{
+    <span class="k">private boolean</span> hasGamePiece;
+
+    <span class="k">public</span> <span class="me">Intake</span>(<span class="t">String</span> name) { <span class="k">super</span>(name); }
+
+    <span class="me">@Override</span>
+    <span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>()
+    {
+        <span class="k">return</span> <span class="k">super</span>.<span class="me">toString</span>() + <span class="s">" (hasGamePiece="</span> + hasGamePiece + <span class="s">")"</span>;
+    }
+}</code></pre>
+      <h2>The equals() Method</h2>
+      <p><code class="inline">equals(Object other)</code>, inherited from <code class="inline">Object</code>, tests whether two references point to the exact same object — the same result as <code class="inline">==</code> (Lesson 13's "== vs. .equals()" gotcha exists precisely because many classes, like <code class="inline">String</code>, override this default with something more useful).</p>
+      <h2>Overriding equals() Correctly</h2>
+      <p>Overriding <code class="inline">equals</code> is more involved than <code class="inline">toString</code>, since it has to satisfy five formal requirements to remain safe to use anywhere: <strong>reflexive</strong> (<code class="inline">o.equals(o)</code> is always <code class="inline">true</code>), <strong>symmetric</strong> (<code class="inline">a.equals(b)</code> matches <code class="inline">b.equals(a)</code>), <strong>transitive</strong> (<code class="inline">a.equals(b)</code> and <code class="inline">b.equals(c)</code> implies <code class="inline">a.equals(c)</code>), <strong>consistent</strong> (repeated calls give the same answer, if nothing changed), and <strong>never equal to null</strong>.</p>
+      <p>A standard recipe satisfies all five:</p>
+      <pre class="code"><code><span class="me">@Override</span>
+<span class="k">public boolean</span> <span class="me">equals</span>(<span class="t">Object</span> other)
+{
+    <span class="k">if</span> (<span class="k">this</span> == other) <span class="k">return true</span>;               <span class="c">// 1. quick check: same object</span>
+    <span class="k">if</span> (!(other <span class="k">instanceof</span> <span class="t">Subsystem</span>)) <span class="k">return false</span>; <span class="c">// 2. must be the same type</span>
+    <span class="t">Subsystem</span> o = (<span class="t">Subsystem</span>) other;               <span class="c">// 3. safe to cast now</span>
+    <span class="k">return this</span>.name.<span class="me">equals</span>(o.name);               <span class="c">// 4. compare the relevant fields</span>
+}</code></pre>
+      <p>Note the parameter type is always <code class="inline">Object</code>, never the class itself — <code class="inline">equals(Subsystem other)</code> would be a completely different method (overloading, not overriding), not the one <code class="inline">Object</code> actually declares.</p>
+      <h2>The Subclass equals() Trap</h2>
+      <p>Overriding <code class="inline">equals</code> again in a subclass of a class that's already overridden it is genuinely difficult to get right, and easy to accidentally break <strong>symmetry</strong>. If <code class="inline">Intake</code> (subclass of <code class="inline">Subsystem</code>) overrode <code class="inline">equals</code> to <em>also</em> compare <code class="inline">hasGamePiece</code>, then <code class="inline">genericSubsystem.equals(intakeObj)</code> would call <code class="inline">Subsystem</code>'s <code class="inline">equals</code> (comparing only <code class="inline">name</code>), while <code class="inline">intakeObj.equals(genericSubsystem)</code> would call <code class="inline">Intake</code>'s <code class="inline">equals</code> — which checks <code class="inline">other instanceof Intake</code> and returns <code class="inline">false</code>, since a plain <code class="inline">Subsystem</code> isn't an <code class="inline">Intake</code>. The two calls disagree, breaking the symmetry rule. The general guideline: only one class in a hierarchy should provide a real <code class="inline">equals</code> override.</p>
+    `,
+    pitfalls: [
+      "Writing <code class=\"inline\">equals(Subsystem other)</code> instead of <code class=\"inline\">equals(Object other)</code>. That's overloading a new method, not overriding <code class=\"inline\">Object</code>'s.",
+      "Forgetting the <code class=\"inline\">instanceof</code> check before casting. Casting <code class=\"inline\">other</code> without checking first throws <code class=\"inline\">ClassCastException</code> if it's an unrelated type.",
+      "Overriding <code class=\"inline\">equals</code> again further down an inheritance hierarchy. This tends to violate symmetry — safest to let only one class in the hierarchy own the <code class=\"inline\">equals</code> override."
+    ],
+    takeaways: [
+      "<code class=\"inline\">Object</code> is the superclass of every class in Java; <code class=\"inline\">toString()</code> and <code class=\"inline\">equals(Object other)</code> are its two methods worth overriding almost everywhere.",
+      "A subclass's <code class=\"inline\">toString()</code> can call <code class=\"inline\">super.toString()</code> and extend it, rather than rebuilding the whole description from scratch.",
+      "<code class=\"inline\">Object</code>'s default <code class=\"inline\">equals</code> is identity comparison (same as <code class=\"inline\">==</code>); a correct override must be reflexive, symmetric, transitive, consistent, and never <code class=\"inline\">true</code> against <code class=\"inline\">null</code>.",
+      "The standard <code class=\"inline\">equals</code> recipe: check <code class=\"inline\">this == other</code>, check <code class=\"inline\">instanceof</code>, cast, then compare the relevant fields — always with parameter type <code class=\"inline\">Object</code>.",
+      "Avoid overriding <code class=\"inline\">equals</code> more than once down an inheritance hierarchy — it tends to break symmetry."
+    ],
+    prov: "csawesome-2026: unit-5-inheritance-optional/5.07-object-superclass.md (CSA 5.7)"
+  }
+};
+
+let currentItem = "17.1";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
