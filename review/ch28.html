@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.28 — Algorithms (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+table.cmp{width:100%;border-collapse:collapse;margin:0 0 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+table.cmp th,table.cmp td{border:1px solid var(--card-line);padding:8px 10px;text-align:left;}
+table.cmp th{background:var(--card);font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--ink-soft);font-size:11px;text-transform:uppercase;letter-spacing:0.03em;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+.optbadge{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-line);background:var(--gold-soft);border-radius:5px;padding:2px 7px;margin-bottom:14px;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.28 — Algorithms</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. ⚠ Optional chapter — deepens Ch.9/Ch.10's array work.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "28.1": {
+    title: "Searching Algorithms",
+    ref: "28.1 — Searching Algorithms (CSA 4.14)",
+    body: `
+      <div class="optbadge">⚠ Optional</div>
+      <h2>Linear (Sequential) Search</h2>
+      <p><strong>Linear search</strong> checks each element in order until it finds the target or runs out of elements — the same "check every element" shape from Ch.9.5, applied specifically to finding a value:</p>
+      <pre class="code"><code><span class="k">public static int</span> <span class="me">sequentialSearch</span>(<span class="k">int</span>[] canBusIds, <span class="k">int</span> target)
+{
+    <span class="k">for</span> (<span class="k">int</span> j = <span class="n">0</span>; j &lt; canBusIds.length; j++)
+    {
+        <span class="k">if</span> (canBusIds[j] == target)
+        {
+            <span class="k">return</span> j;
+        }
+    }
+    <span class="k">return</span> -<span class="n">1</span>; <span class="c">// not found</span>
+}</code></pre>
+      <p>Searching for a <code class="inline">String</code> (like an autonomous route name) needs <code class="inline">.equals()</code> instead of <code class="inline">==</code> (Lesson 6.1/13). Linear search's slowest case is a target that isn't present at all; its fastest case is the target sitting at index 0.</p>
+      <h2>Linear Search Over a 2D Array</h2>
+      <p>Extending linear search to a 2D array (Ch.10) just means looping through every row and searching within it:</p>
+      <pre class="code"><code><span class="k">public static boolean</span> <span class="me">containsFault</span>(<span class="k">double</span>[][] moduleCurrents, <span class="k">double</span> faultValue)
+{
+    <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; moduleCurrents.length; row++)
+    {
+        <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[<span class="n">0</span>].length; col++)
+        {
+            <span class="k">if</span> (moduleCurrents[row][col] == faultValue)
+            {
+                <span class="k">return true</span>;
+            }
+        }
+    }
+    <span class="k">return false</span>;
+}</code></pre>
+      <h2>Binary Search: Only Works on Sorted Data</h2>
+      <p><strong>Binary search</strong> is dramatically faster than linear search, but only works on data that's already <strong>sorted</strong> — like looking up a name in a phone book by jumping to roughly the right spot. It keeps <code class="inline">left</code>/<code class="inline">right</code> bounds, checks the middle element, and eliminates half the remaining range every time:</p>
+      <pre class="code"><code><span class="k">public static int</span> <span class="me">binarySearch</span>(<span class="k">int</span>[] sortedTemps, <span class="k">int</span> target)
+{
+    <span class="k">int</span> left = <span class="n">0</span>;
+    <span class="k">int</span> right = sortedTemps.length - <span class="n">1</span>;
+    <span class="k">while</span> (left &lt;= right)
+    {
+        <span class="k">int</span> middle = (left + right) / <span class="n">2</span>;
+        <span class="k">if</span> (target &lt; sortedTemps[middle])
+        {
+            right = middle - <span class="n">1</span>; <span class="c">// target must be in the left half</span>
+        }
+        <span class="k">else if</span> (target &gt; sortedTemps[middle])
+        {
+            left = middle + <span class="n">1</span>;  <span class="c">// target must be in the right half</span>
+        }
+        <span class="k">else</span>
+        {
+            <span class="k">return</span> middle;      <span class="c">// found it</span>
+        }
+    }
+    <span class="k">return</span> -<span class="n">1</span>; <span class="c">// left > right means the range is exhausted — not found</span>
+}</code></pre>
+      <p>For a <code class="inline">String[]</code>, <code class="inline">compareTo</code> replaces <code class="inline">&lt;</code>/<code class="inline">&gt;</code> (which only work on primitives).</p>
+      <h2>Why Binary Search Is So Much Faster</h2>
+      <table class="cmp"><thead><tr><th>Elements (n)</th><th>Linear Search</th><th>Binary Search</th></tr></thead><tbody>
+        <tr><td>8</td><td>8</td><td>4</td></tr>
+        <tr><td>16</td><td>16</td><td>5</td></tr>
+        <tr><td>100</td><td>100</td><td>7</td></tr>
+        <tr><td>500</td><td>500</td><td>~9</td></tr>
+      </tbody></table>
+      <p>Doubling the data size costs linear search twice the work, but only costs binary search <em>one more comparison</em>. This growth-rate distinction — O(n) vs. O(log n) in formal terms — is why sorted, frequently-searched data is worth keeping sorted specifically so binary search stays available.</p>
+    `,
+    pitfalls: [
+      "Running binary search on unsorted data. It will return wrong or missing results — its correctness depends entirely on the data already being sorted.",
+      "Assuming binary search requires integers. It works on anything with a well-defined ordering — Strings via compareTo, for instance.",
+      "Forgetting the loop-ending condition. A search for something not present must still terminate once the range is exhausted (left > right)."
+    ],
+    takeaways: [
+      "Linear search checks every element in order; its worst case (not found) requires checking all n elements.",
+      "Binary search only works on sorted data, but eliminates half the remaining range with each comparison — roughly log₂(n) comparisons worst case.",
+      "Use .equals()/compareTo() for String comparisons in either algorithm, never ==/&lt;/&gt;.",
+      "The gap between linear and binary search's growth rates is exactly why sorted data is worth maintaining when it's searched often."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.14-searching-algorithms.md (CSA 4.14)"
+  },
+  "28.2": {
+    title: "Sorting Algorithms",
+    ref: "28.2 — Sorting Algorithms (CSA 4.15)",
+    body: `
+      <div class="optbadge">⚠ Optional</div>
+      <h2>Why Sort at All</h2>
+      <p>Binary search (Lesson 28.1) needs sorted data to work, and sorted match-scouting data, sensor logs, or leaderboard scores are simply easier for a human to read. Two straightforward sorting algorithms cover the core idea; a third, more efficient one (merge sort) is covered in Lesson 28.4.</p>
+      <h2>Selection Sort</h2>
+      <p><strong>Selection sort</strong> repeatedly finds the smallest remaining value and swaps it into its correct, final position:</p>
+      <pre class="code"><code><span class="k">public static void</span> <span class="me">selectionSort</span>(<span class="k">double</span>[] sensorReadings)
+{
+    <span class="k">for</span> (<span class="k">int</span> j = <span class="n">0</span>; j &lt; sensorReadings.length - <span class="n">1</span>; j++)
+    {
+        <span class="k">int</span> minIndex = j; <span class="c">// assume the current position holds the smallest remaining value</span>
+        <span class="k">for</span> (<span class="k">int</span> k = j + <span class="n">1</span>; k &lt; sensorReadings.length; k++)
+        {
+            <span class="k">if</span> (sensorReadings[k] &lt; sensorReadings[minIndex])
+            {
+                minIndex = k; <span class="c">// found something smaller — remember its index</span>
+            }
+        }
+        <span class="k">double</span> temp = sensorReadings[j];
+        sensorReadings[j] = sensorReadings[minIndex];
+        sensorReadings[minIndex] = temp;
+    }
+}</code></pre>
+      <p>This is the exact <code class="inline">findMin</code> pattern from Ch.9.5, done once per position. Selection sort takes the same amount of work regardless of the data's initial order — it always scans the entire unsorted remainder to find the minimum, every single pass.</p>
+      <h2>Insertion Sort</h2>
+      <p><strong>Insertion sort</strong> instead takes each element and inserts it into its correct position among the already-sorted elements to its left, shifting larger values right to make room:</p>
+      <pre class="code"><code><span class="k">public static void</span> <span class="me">insertionSort</span>(<span class="k">double</span>[] sensorReadings)
+{
+    <span class="k">for</span> (<span class="k">int</span> j = <span class="n">1</span>; j &lt; sensorReadings.length; j++)
+    {
+        <span class="k">double</span> temp = sensorReadings[j];
+        <span class="k">int</span> possibleIndex = j;
+        <span class="k">while</span> (possibleIndex &gt; <span class="n">0</span> &amp;&amp; temp &lt; sensorReadings[possibleIndex - <span class="n">1</span>])
+        {
+            sensorReadings[possibleIndex] = sensorReadings[possibleIndex - <span class="n">1</span>]; <span class="c">// shift right</span>
+            possibleIndex--;
+        }
+        sensorReadings[possibleIndex] = temp; <span class="c">// place temp in its final spot for this pass</span>
+    }
+}</code></pre>
+      <p>Unlike selection sort, insertion sort is <strong>adaptive</strong> — if the data is already (or nearly) sorted, the <code class="inline">while</code> loop's condition fails almost immediately for most elements, doing very little actual shifting. Data sorted descending is insertion sort's worst case.</p>
+      <h2>Comparing the Two</h2>
+      <table class="cmp"><thead><tr><th></th><th>Selection Sort</th><th>Insertion Sort</th></tr></thead><tbody>
+        <tr><td>Already sorted ascending</td><td>No speedup</td><td>Much faster — adaptive</td></tr>
+        <tr><td>Already sorted descending</td><td>No speedup</td><td>Worst case</td></tr>
+        <tr><td>Typical use</td><td>Simple, predictable cost</td><td>Good on mostly-sorted data</td></tr>
+      </tbody></table>
+    `,
+    pitfalls: [
+      "Starting selection sort's inner loop at index 0 instead of j + 1. That re-scans (and can undo) already-correctly-placed elements.",
+      "Stopping insertion sort's outer loop one element too early. It must run through the entire array, or the last element never gets inserted.",
+      "Assuming either algorithm's runtime depends on input order the same way. Selection sort's cost is fixed; insertion sort's genuinely isn't."
+    ],
+    takeaways: [
+      "Selection sort repeatedly finds the minimum of the remaining unsorted portion and swaps it into place — same cost regardless of initial order.",
+      "Insertion sort inserts each element into its correct position among already-sorted elements to its left — adaptive, much faster on nearly-sorted data.",
+      "Both run roughly n² in the worst case, but real-world performance can differ significantly depending on how sorted the input already is.",
+      "Sorted data unlocks binary search (Lesson 28.1) — one reason sorting matters beyond just readability."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.15-sorting-algorithms.md (CSA 4.15)"
+  },
+  "28.3": {
+    title: "Recursion",
+    ref: "28.3 — Recursion (CSA 4.16)",
+    body: `
+      <div class="optbadge">⚠ Optional</div>
+      <h2>A Method That Calls Itself</h2>
+      <p><strong>Recursion</strong> is when a method calls itself — another form of repetition, alongside loops (Ch.5). Without care, this goes wrong immediately:</p>
+      <pre class="code"><code><span class="k">public static void</span> <span class="me">neverEnd</span>()
+{
+    System.out.<span class="me">println</span>(<span class="s">"This never stops!"</span>);
+    <span class="me">neverEnd</span>(); <span class="c">// calls itself again, forever</span>
+}</code></pre>
+      <p>This is <strong>infinite recursion</strong> — it eventually crashes with <code class="inline">StackOverflowError</code>, since a program can only recurse so deep before running out of space to track all those in-progress calls.</p>
+      <h2>Two Required Ingredients</h2>
+      <p>Every well-behaved recursive method needs at least one <strong>base case</strong> (stops the recursion, returns directly) and at least one <strong>recursive call</strong> (moves the problem closer to the base case). The classic example, factorial:</p>
+      <pre class="code"><code><span class="k">public static int</span> <span class="me">factorial</span>(<span class="k">int</span> n)
+{
+    <span class="k">if</span> (n == <span class="n">0</span>)         <span class="c">// base case — the smallest input this method answers directly</span>
+    {
+        <span class="k">return</span> <span class="n">1</span>;
+    }
+    <span class="k">else</span>
+    {
+        <span class="k">return</span> n * <span class="me">factorial</span>(n - <span class="n">1</span>); <span class="c">// recursive call — moves toward the base case</span>
+    }
+}</code></pre>
+      <h2>Tracing: The Call Stack</h2>
+      <p>Each recursive call gets pushed onto the <strong>call stack</strong> with its own independent copy of local variables and parameters. Tracing <code class="inline">factorial(3)</code>:</p>
+      <pre class="code"><code>factorial(3) returns 3 * factorial(2)
+factorial(2) returns 2 * factorial(1)
+factorial(1) returns 1 * factorial(0)
+factorial(0) returns 1</code></pre>
+      <p>Then substituting values back upward from the base case:</p>
+      <pre class="code"><code>factorial(1) returns 1 * factorial(0) = 1 * 1 = 1
+factorial(2) returns 2 * factorial(1) = 2 * 1 = 2
+factorial(3) returns 3 * factorial(2) = 3 * 2 = 6</code></pre>
+      <p><code class="inline">factorial(3)</code> returns <code class="inline">6</code>.</p>
+      <h2>Why Bother? Loops for Trees</h2>
+      <p>Any loop can, in principle, be rewritten recursively, and vice versa — so why use recursion at all? It shines on <strong>branching</strong> structures ("trees") rather than simple linear ones. A useful mental model: a <code class="inline">for</code> loop for a linear structure like an array (Ch.9), nested loops for a 2D array (Ch.10), and recursion for something that branches — like a nested equipment group that can itself contain further nested groups, where each nested group is <em>the same problem</em>, just smaller.</p>
+    `,
+    pitfalls: [
+      "Forgetting the base case entirely. Without one, every recursive method is really just neverEnd() in disguise — infinite recursion and a crash.",
+      "A recursive call that doesn't actually shrink the problem. If the argument doesn't move closer to the base case, the recursion never terminates.",
+      "Confusing \"recursion is elegant here\" with \"recursion is required here.\" Simple linear traversal is usually clearer and more efficient as a loop."
+    ],
+    takeaways: [
+      "Recursion is a method calling itself — repetition, like a loop, but structured around self-calls.",
+      "Every correct recursive method needs a base case and a recursive call that moves toward it.",
+      "Each recursive call gets its own independent local variables/parameters, tracked via the call stack.",
+      "Recursion is most valuable for branching (\"tree\") structures — a simple for loop remains the better tool for flat, linear ones."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.16-recursion.md (CSA 4.16)"
+  },
+  "28.4": {
+    title: "Recursive Searching and Sorting",
+    ref: "28.4 — Recursive Searching and Sorting (CSA 4.17)",
+    body: `
+      <div class="optbadge">⚠ Optional</div>
+      <p>Closes out the curriculum by combining Lessons 28.1-28.3: the same searching/sorting ideas, rewritten recursively.</p>
+      <h2>Recursive Binary Search</h2>
+      <p>The iterative binary search from Lesson 28.1 tracks <code class="inline">left</code>/<code class="inline">right</code> bounds in loop variables. A recursive version instead passes the shrinking range as parameters:</p>
+      <pre class="code"><code><span class="k">public static int</span> <span class="me">recursiveBinarySearch</span>(<span class="k">int</span>[] elements, <span class="k">int</span> start, <span class="k">int</span> end, <span class="k">int</span> target)
+{
+    <span class="k">if</span> (end &lt; start)                          <span class="c">// base case 1: range is empty — not found</span>
+    {
+        <span class="k">return</span> -<span class="n">1</span>;
+    }
+    <span class="k">int</span> middle = (start + end) / <span class="n">2</span>;
+    <span class="k">if</span> (target == elements[middle])            <span class="c">// base case 2: found it</span>
+    {
+        <span class="k">return</span> middle;
+    }
+    <span class="k">else if</span> (target &lt; elements[middle])
+    {
+        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, start, middle - <span class="n">1</span>, target); <span class="c">// search the left half</span>
+    }
+    <span class="k">else</span>
+    {
+        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, middle + <span class="n">1</span>, end, target);   <span class="c">// search the right half</span>
+    }
+}</code></pre>
+      <p>This has <strong>two base cases</strong>: a match at the middle, or an exhausted range. Removing the <code class="inline">end &lt; start</code> check would mean a not-found search keeps recursing into an already-empty range forever — exactly the missing-base-case bug from Lesson 28.3.</p>
+      <h2>Merge Sort: A Third Sorting Algorithm</h2>
+      <p>Selection sort and insertion sort (Lesson 28.2) both cost roughly n² in the worst case. <strong>Merge sort</strong> is a <strong>divide-and-conquer</strong> algorithm — like binary search, it splits the problem in half repeatedly, which makes it substantially faster on large data (roughly n log n instead of n²):</p>
+      <ol>
+        <li>Split the array into two halves.</li>
+        <li>Recursively sort each half (a single-element array is trivially already sorted — the base case).</li>
+        <li><strong>Merge</strong> the two now-sorted halves back together, in order.</li>
+      </ol>
+      <pre class="code"><code><span class="k">public static void</span> <span class="me">mergeSort</span>(<span class="k">int</span>[] elements)
+{
+    <span class="k">int</span> n = elements.length;
+    <span class="k">int</span>[] temp = <span class="k">new int</span>[n]; <span class="c">// scratch space used during merging</span>
+    <span class="me">mergeSortHelper</span>(elements, <span class="n">0</span>, n - <span class="n">1</span>, temp);
+}
+
+<span class="k">private static void</span> <span class="me">mergeSortHelper</span>(<span class="k">int</span>[] elements, <span class="k">int</span> from, <span class="k">int</span> to, <span class="k">int</span>[] temp)
+{
+    <span class="k">if</span> (from &gt;= to) <span class="k">return</span>; <span class="c">// base case: a range of 0 or 1 elements is already sorted</span>
+    <span class="k">int</span> middle = (from + to) / <span class="n">2</span>;
+    <span class="me">mergeSortHelper</span>(elements, from, middle, temp);      <span class="c">// recursively sort the left half</span>
+    <span class="me">mergeSortHelper</span>(elements, middle + <span class="n">1</span>, to, temp);    <span class="c">// recursively sort the right half</span>
+    <span class="me">merge</span>(elements, from, middle, to, temp);            <span class="c">// combine the two sorted halves</span>
+}</code></pre>
+      <p>Tracing the split-then-merge structure for <code class="inline">{86, 3, 43, 5}</code>:</p>
+      <pre class="code"><code>Split:  { {86, 3} , {43, 5} }
+Split:  { { {86}, {3} } , { {43}, {5} } }   &lt;- single elements: base case reached
+Merge:  { {3, 86} , {5, 43} }
+Merge:  { 3, 5, 43, 86 }</code></pre>
+      <p>Because its divide-and-conquer approach scales so much better than n² sorting, merge sort is the fastest of the three algorithms in this curriculum, most of the time, especially as the data set grows.</p>
+      <h2>Iterative vs. Recursive: Same Algorithm, Different Shape</h2>
+      <p>Binary search exists in both forms — a good concrete reminder of Lesson 28.3's point that many algorithms can be written either way. Iteration is usually preferred in real code (no risk of <code class="inline">StackOverflowError</code>, generally a bit more efficient) — but a recursive version can be more compact and can make a divide-and-conquer structure much more natural to express.</p>
+    `,
+    pitfalls: [
+      "Forgetting either base case in recursive binary search. Both \"found it\" and \"range exhausted\" are needed — missing the exhausted-range check risks infinite recursion.",
+      "Merging without first ensuring both halves are actually sorted. Merge sort's merge step assumes its two inputs are already individually sorted.",
+      "Assuming recursive is always \"better\" than iterative, or vice versa. Each has real tradeoffs — the right choice depends on the algorithm and data size."
+    ],
+    takeaways: [
+      "Recursive binary search replaces loop-tracked bounds with a shrinking range passed as parameters, needing two base cases: a match, or an exhausted range.",
+      "Merge sort is a recursive, divide-and-conquer sort: split in half, recursively sort each half, then merge the sorted halves back together.",
+      "Merge sort scales better than selection/insertion sort on large data (n log n vs. n²), regardless of the input's initial order.",
+      "The same algorithm can often be written iteratively or recursively — the choice is a real tradeoff, not a universal \"better\" answer either way."
+    ],
+    prov: "csawesome-2026: unit-4-data-collections/4.17-recursive-searching-and-sorting.md (CSA 4.17)"
+  }
+};
+
+let currentItem = "28.1";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
