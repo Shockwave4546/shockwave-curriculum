@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.21 — Static Factories (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.21 — Static Factories</h1>
+  <p class="sub">shockwave-curriculum · draft lesson, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lesson only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "21": {
+    title: "Static Factories",
+    ref: "21 — Static Factories (T5817 30.2)",
+    body: `
+      <h2>Why Not Just new?</h2>
+      <p>A <strong>static factory method</strong> is a <code class="inline">public static</code> method that returns an object, used <em>instead of</em> calling a constructor directly. At first glance this looks like extra ceremony for no reason — but it buys a few concrete things a plain constructor can't:</p>
+      <ul>
+        <li><strong>A descriptive name.</strong> <code class="inline">Command.printMessage("Ready")</code> says exactly what you're getting; <code class="inline">new PrintCommand("Ready")</code> doesn't communicate intent nearly as clearly.</li>
+        <li><strong>The freedom to not construct a new object at all.</strong> A factory method can return a cached, already-existing instance instead of a fresh one.</li>
+        <li><strong>The freedom to return a completely different concrete type</strong>, chosen by logic inside the method — the caller only ever sees the return type (often an interface), never which concrete class was actually picked.</li>
+      </ul>
+      <pre class="code"><code><span class="k">public static</span> <span class="t">Command</span> <span class="me">printMessage</span>(<span class="t">String</span> msg)
+{
+    <span class="k">return new</span> <span class="t">InstantCommand</span>(() -&gt; System.out.<span class="me">println</span>(msg));
+}</code></pre>
+      <p>Calling <code class="inline">printMessage("Ready")</code> reads clearly as "give me a command that prints this message" — the caller never needs to know or care that it's actually an <code class="inline">InstantCommand</code> wrapping a lambda underneath.</p>
+      <h2>The Real Payoff: Choosing an Implementation by Condition</h2>
+      <p>The pattern's biggest use in FRC code is picking between real and simulated hardware — deciding <em>which</em> concrete class to construct, in exactly one place, based on a condition:</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">Drivetrain</span>
+{
+    <span class="k">void</span> <span class="me">drive</span>(<span class="k">double</span> speed, <span class="k">double</span> turn);
+}
+
+<span class="k">public class</span> <span class="t">RealDrivetrain</span> <span class="k">implements</span> <span class="t">Drivetrain</span>
+{
+    <span class="k">public void</span> <span class="me">drive</span>(<span class="k">double</span> speed, <span class="k">double</span> turn) { <span class="c">/* control real Talons/Sparks */</span> }
+}
+
+<span class="k">public class</span> <span class="t">SimDrivetrain</span> <span class="k">implements</span> <span class="t">Drivetrain</span>
+{
+    <span class="k">public void</span> <span class="me">drive</span>(<span class="k">double</span> speed, <span class="k">double</span> turn) { <span class="c">/* simulate motion via WPILib sim */</span> }
+}
+
+<span class="k">public class</span> <span class="t">DrivetrainFactory</span>
+{
+    <span class="k">public static</span> <span class="t">Drivetrain</span> <span class="me">createDrivetrain</span>()
+    {
+        <span class="k">if</span> (RobotBase.isReal())
+        {
+            <span class="k">return new</span> <span class="t">RealDrivetrain</span>();
+        }
+        <span class="k">else</span>
+        {
+            <span class="k">return new</span> <span class="t">SimDrivetrain</span>();
+        }
+    }
+}</code></pre>
+      <pre class="code"><code><span class="t">Drivetrain</span> drivetrain = <span class="t">DrivetrainFactory</span>.<span class="me">createDrivetrain</span>(); <span class="c">// caller never picks the concrete class itself</span></code></pre>
+      <p>This is a genuine alternative to the constructor-injection style from the IO-Layer Pattern (Ch.20) — instead of the caller deciding which <code class="inline">IntakeIO</code> to pass in, the factory itself makes that decision, centralizing the real-vs-sim logic in one place instead of duplicating an <code class="inline">if (isReal())</code> check everywhere a subsystem gets built.</p>
+      <h2>Factories for More Than Hardware</h2>
+      <p>The same idea works for building the right object out of a whole family of choices — not just two (real/sim), but any number, selected by some other input:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">AutoFactory</span>
+{
+    <span class="k">public static</span> <span class="t">Command</span> <span class="me">createAuto</span>(<span class="t">String</span> mode)
+    {
+        <span class="k">return switch</span> (mode)
+        {
+            <span class="k">case</span> <span class="s">"Taxi"</span> -&gt; <span class="k">new</span> <span class="t">DriveForwardCommand</span>(<span class="n">3.0</span>);
+            <span class="k">case</span> <span class="s">"2 Ball"</span> -&gt; <span class="k">new</span> <span class="t">TwoBallAutoCommand</span>();
+            <span class="k">case</span> <span class="s">"Nothing"</span> -&gt; <span class="k">new</span> <span class="t">WaitCommand</span>(<span class="n">0.1</span>);
+            <span class="k">default</span> -&gt; <span class="k">new</span> <span class="t">PrintCommand</span>(<span class="s">"Unknown Auto Mode"</span>);
+        };
+    }
+}</code></pre>
+      <pre class="code"><code><span class="t">Command</span> auto = <span class="t">AutoFactory</span>.<span class="me">createAuto</span>(chooser.<span class="me">getSelected</span>()); <span class="c">// built from whatever the driver station selected</span></code></pre>
+    `,
+    pitfalls: [
+      "Returning a concrete class instead of an interface. <code class=\"inline\">public static RealDrivetrain createDrivetrain()</code> locks callers into one specific implementation — return the interface type instead.",
+      "Duplicating the same real-vs-sim <code class=\"inline\">if</code> check in multiple places. The whole point of a factory is centralizing that decision in one method.",
+      "Confusing a factory with a constructor. A factory method is just a regular <code class=\"inline\">static</code> method — it can validate arguments, return a cached instance, or pick any subtype; a constructor always returns a new instance of its own exact class."
+    ],
+    takeaways: [
+      "A static factory method returns an object in place of a direct constructor call, with a descriptive name, the option to return a cached instance, and the freedom to choose the actual concrete type internally.",
+      "Its most common FRC use: centralizing real-vs-simulated (or comp-bot-vs-practice-bot) selection logic in one place, so callers only ever depend on an interface.",
+      "Factories generalize beyond hardware — anything selected by a condition (an autonomous mode, a config option) is a natural fit.",
+      "Always return the interface type from a factory method, not a specific concrete class."
+    ],
+    prov: "other-reference-repo: team-5817-training/design-patterns/factory.md (T5817 30.2) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 7 (\"Static Factories\")"
+  }
+};
+
+let currentItem = "21";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">Ch.${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
