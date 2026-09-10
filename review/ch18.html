@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.18 — Polymorphism: Many Forms (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.18 — Polymorphism</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "18.1": {
+    title: "Overriding Methods",
+    ref: "18.1 — Overriding Methods (CSA 5.3)",
+    body: `
+      <h2>What Overriding Is</h2>
+      <p>A subclass inherits all its superclass's <code class="inline">public</code> methods unchanged — but it can also <strong>override</strong> one, replacing the inherited version with its own. Overriding requires matching the superclass method's exact <strong>signature</strong>: same name, same parameter list, and the same (or a subtype of the) return type.</p>
+      <pre class="code"><code><span class="k">public abstract class</span> <span class="t">Subsystem</span>
+{
+    <span class="k">public void</span> <span class="me">stop</span>() { System.out.<span class="me">println</span>(<span class="s">"Stopping subsystem"</span>); }
+}
+
+<span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
+{
+    <span class="me">@Override</span>
+    <span class="k">public void</span> <span class="me">stop</span>()
+    {
+        motor.<span class="me">set</span>(<span class="n">0</span>); <span class="c">// Intake's own, specific version replaces Subsystem's</span>
+    }
+}</code></pre>
+      <p><code class="inline">@Override</code> is optional but always worth writing — it tells the compiler "I intend to override an inherited method here," and the compiler then checks the signature truly matches. Without it, a typo in the method name (<code class="inline">stopp()</code> instead of <code class="inline">stop()</code>) would silently create a brand-new, unrelated method instead of overriding anything — with <code class="inline">@Override</code>, that same typo becomes a compile error instead of a bug that only shows up at runtime.</p>
+      <h2>Overriding vs. Overloading</h2>
+      <p>These sound similar but are entirely different things. <strong>Overriding</strong> means the exact same signature, in a subclass, replacing the superclass's version. <strong>Overloading</strong> means the same method <em>name</em>, in the <em>same</em> class, with a different parameter list:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
+{
+    <span class="k">public void</span> <span class="me">log</span>(<span class="t">String</span> message) { System.out.<span class="me">println</span>(message); }
+    <span class="k">public void</span> <span class="me">log</span>(<span class="t">String</span> message, <span class="k">int</span> code) { System.out.<span class="me">println</span>(message + <span class="s">" ["</span> + code + <span class="s">"]"</span>); } <span class="c">// overload — different parameters</span>
+}</code></pre>
+      <p>Two methods can never differ <em>only</em> in return type — that alone doesn't count as a valid overload, and doesn't count as an override either (a mismatched return type on an otherwise-identical signature is just a compile error).</p>
+      <h2>Inherited Getters and Setters Still Apply</h2>
+      <p>A subclass gets its superclass's public getters and setters automatically, and — since the superclass's fields are <code class="inline">private</code> — those accessor methods remain the <em>only</em> way to reach them, even from the subclass itself:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
+{
+    <span class="k">private</span> <span class="t">String</span> name;
+    <span class="k">public</span> <span class="t">String</span> <span class="me">getName</span>() { <span class="k">return</span> name; }
+    <span class="k">public void</span> <span class="me">setName</span>(<span class="t">String</span> name) { <span class="k">this</span>.name = name; }
+}
+
+<span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
+{
+    <span class="k">public void</span> <span class="me">rename</span>(<span class="t">String</span> newName)
+    {
+        <span class="me">setName</span>(newName); <span class="c">// must go through the inherited setter — direct access to `name` isn't legal here</span>
+    }
+}</code></pre>
+    `,
+    pitfalls: [
+      "Mismatching the signature and expecting an override anyway. Changing the parameter list makes it an overload, not an override — the original method is still inherited unchanged, sitting alongside the new one.",
+      "Forgetting <code class=\"inline\">@Override</code>. Skipping it doesn't break anything when the signature is right, but it removes the compiler's safety net against typos.",
+      "Trying to differ only by return type. That doesn't compile — it's neither a valid override nor a valid overload."
+    ],
+    takeaways: [
+      "Overriding replaces an inherited method with a new version in the subclass, using the <em>exact same</em> signature.",
+      "<code class=\"inline\">@Override</code> isn't required, but should always be used — it turns a signature typo into a compile error.",
+      "Overloading is different: same name, same class, different parameter list.",
+      "Two methods can never differ only in return type.",
+      "Inherited getters/setters remain the only way to reach a superclass's private fields, even from within the subclass."
+    ],
+    prov: "csawesome-2026: unit-5-inheritance-optional/5.03-overriding-methods.md (CSA 5.3) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 5 (\"Polymorphism: Many Forms\")"
+  },
+  "18.2": {
+    title: "super Keyword",
+    ref: "18.2 — super Keyword (CSA 5.4)",
+    body: `
+      <h2>Extending, Not Just Replacing, Inherited Behavior</h2>
+      <p>Overriding a method (Lesson 18.1) completely replaces the superclass's version — but often a subclass wants to run the <em>original</em> logic too, and add something on top of it, rather than throwing it away entirely. <code class="inline">super.method()</code> calls the superclass's version of a method explicitly, from inside an override:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
+{
+    <span class="me">@Override</span>
+    <span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>() { <span class="k">return</span> <span class="s">"Subsystem"</span>; }
+}
+
+<span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
+{
+    <span class="me">@Override</span>
+    <span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>()
+    {
+        <span class="k">return</span> <span class="k">super</span>.<span class="me">toString</span>() + <span class="s">" (Intake)"</span>; <span class="c">// runs Subsystem's version first, then extends it</span>
+    }
+}</code></pre>
+      <p><code class="inline">super</code> has two distinct uses, both already introduced separately: <code class="inline">super(...)</code>, which must be the first line of a constructor and calls a superclass <em>constructor</em> (Lesson 17.2); and <code class="inline">super.method()</code>, which calls a superclass <em>method</em> from anywhere inside a subclass method body.</p>
+      <h2>How Method Lookup Actually Works</h2>
+      <p>Every object remembers the actual class it was created with. A method call on that object starts looking there first; if the method isn't found in that exact class, Java searches up the chain — parent, grandparent, and so on — until it finds a match (which it always will, or the code wouldn't have compiled in the first place).</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
+{
+    <span class="k">public void</span> <span class="me">periodic</span>() { System.out.<span class="me">println</span>(<span class="s">"Subsystem periodic"</span>); }
+}
+
+<span class="k">public class</span> <span class="t">Climber</span> <span class="k">extends</span> <span class="t">Subsystem</span>
+{
+    <span class="me">@Override</span>
+    <span class="k">public void</span> <span class="me">periodic</span>()
+    {
+        <span class="k">super</span>.<span class="me">periodic</span>();                    <span class="c">// explicitly runs Subsystem's version first</span>
+        System.out.<span class="me">println</span>(<span class="s">"Climber periodic"</span>); <span class="c">// then adds Climber's own behavior</span>
+    }
+}</code></pre>
+      <p>Calling <code class="inline">climberInstance.periodic()</code> starts in <code class="inline">Climber.periodic()</code>; when execution reaches <code class="inline">super.periodic()</code>, it runs <code class="inline">Subsystem.periodic()</code>, then returns to finish the rest of <code class="inline">Climber.periodic()</code>'s body.</p>
+      <h2>A Subtlety: super Only Affects the One Call It's Written On</h2>
+      <p><code class="inline">super.someMethod()</code> only changes which version of <em>that specific call</em> runs — it doesn't change how any other method call inside the same method resolves. Any call made without <code class="inline">super</code> still dispatches based on the object's actual runtime type, even from inside inherited code. This is why a <code class="inline">super.methodOne()</code> call that internally calls another method still ends up running the <em>subclass's</em> override of that other method, not the superclass's — the override "wins" everywhere except the one spot <code class="inline">super</code> explicitly overrides it.</p>
+    `,
+    pitfalls: [
+      "Forgetting <code class=\"inline\">super.method()</code> must be called explicitly — it never happens automatically the way <code class=\"inline\">super()</code> does for constructors.",
+      "Confusing the two <code class=\"inline\">super</code> forms. <code class=\"inline\">super(...)</code> only calls a constructor, as the first line; <code class=\"inline\">super.method()</code> calls a named method, anywhere in a method body.",
+      "Assuming <code class=\"inline\">super.method()</code> changes every call inside that method to use the superclass's versions. It only affects the one call written with <code class=\"inline\">super</code>."
+    ],
+    takeaways: [
+      "<code class=\"inline\">super.method()</code> explicitly calls the superclass's version of a method, letting a subclass extend rather than fully replace inherited behavior.",
+      "Method lookup starts at the object's actual class and searches upward through its ancestors until a match is found.",
+      "<code class=\"inline\">super(...)</code> (constructors) and <code class=\"inline\">super.method()</code> (methods) are two distinct, unrelated uses of the same keyword.",
+      "A <code class=\"inline\">super.method()</code> call only affects that one call — any other unqualified method call inside still dispatches to the object's real runtime type."
+    ],
+    prov: "csawesome-2026: unit-5-inheritance-optional/5.04-super-keyword.md (CSA 5.4) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 5 (\"Polymorphism: Many Forms\")"
+  },
+  "18.3": {
+    title: "Polymorphism",
+    ref: "18.3 — Polymorphism (CSA 5.6)",
+    body: `
+      <h2>Many Forms, One Piece of Code</h2>
+      <p><strong>Polymorphism</strong> ("many forms") means the method that actually runs at runtime depends on the object's <em>actual</em> type — not the type its variable was declared with. This is the concrete payoff of everything Ch.17 and Lessons 18.1-18.2 built toward: real WPILib code treats a <code class="inline">TalonFX</code> or a <code class="inline">SparkMax</code> as just a <code class="inline">MotorController</code>, and calls the same method on either without caring which one it actually is:</p>
+      <pre class="code"><code><span class="k">public void</span> <span class="me">driveForward</span>(<span class="t">MotorController</span> controller)
+{
+    controller.<span class="me">set</span>(<span class="n">0.5</span>); <span class="c">// works identically whether controller is a TalonFX or a SparkMax</span>
+}</code></pre>
+      <h2>Declared Type vs. Actual Type</h2>
+      <p>Every variable has two types that matter: its <strong>declared (compile-time) type</strong> — what it's written as in the code — and its <strong>actual (runtime) type</strong> — the real class that was actually constructed with <code class="inline">new</code>:</p>
+      <pre class="code"><code><span class="t">Subsystem</span> s = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>);
+<span class="c">// declared type: Subsystem</span>
+<span class="c">// actual type:   Intake</span></code></pre>
+      <p>The compiler only ever checks the <strong>declared</strong> type when deciding whether code compiles — it verifies that whatever method you're calling actually exists on that declared type (or an ancestor of it):</p>
+      <pre class="code"><code><span class="t">Object</span> message = <span class="k">new</span> <span class="t">String</span>(<span class="s">"hi"</span>);
+message.<span class="me">indexOf</span>(<span class="s">"h"</span>); <span class="c">// COMPILE ERROR — Object has no indexOf method, even though String does</span></code></pre>
+      <p>Even though the real object here is a <code class="inline">String</code> (which absolutely does have <code class="inline">indexOf</code>), the compiler only looks at <code class="inline">message</code>'s <em>declared</em> type, <code class="inline">Object</code> — and refuses to compile, since <code class="inline">Object</code> never promises an <code class="inline">indexOf</code> method.</p>
+      <h2>Runtime Dispatch: The Actual Type Decides Which Version Runs</h2>
+      <p>Once code <em>does</em> compile, the JVM decides which overridden version of a method actually executes by looking at the object's real, actual type — starting there and searching upward through its superclasses if needed (same lookup process as Lesson 18.2's <code class="inline">super</code>):</p>
+      <pre class="code"><code><span class="t">Subsystem</span> s = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>); <span class="c">// declared Subsystem, actually an Intake</span>
+s.<span class="me">stop</span>(); <span class="c">// the compiler only confirms Subsystem HAS a stop() method — but Intake's own override is what actually runs</span></code></pre>
+      <p>This is exactly what makes the earlier <code class="inline">Subsystem[]</code>/<code class="inline">ArrayList&lt;Subsystem&gt;</code> examples (Lesson 17.3) genuinely useful — a single loop calling <code class="inline">s.stop()</code> on each element automatically runs whichever subclass's own <code class="inline">stop()</code> actually applies, without an <code class="inline">if</code>/<code class="inline">else</code> chain checking each one's specific type:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="t">Subsystem</span> s : allSubsystems)
+{
+    s.<span class="me">stop</span>(); <span class="c">// Intake's stop(), Climber's stop(), Shooter's stop() — whichever is actually correct for each object</span>
+}</code></pre>
+      <h2>Static Methods Don't Get This</h2>
+      <p>Polymorphic dispatch only applies to regular (instance) methods. A <code class="inline">static</code> method call is resolved entirely by the declared type, at compile time — there's no runtime lookup involved at all, since static methods belong to the class itself, not to any particular object.</p>
+    `,
+    pitfalls: [
+      "Assuming the compiler checks the actual type. It never does — a method call fails to compile even when the real object genuinely has that method, if the declared type doesn't.",
+      "Forgetting that runtime dispatch is what actually decides which override runs. The declared type only gates whether the code compiles.",
+      "Expecting polymorphism to apply to static methods. Static calls are resolved by declared type alone, with no runtime dispatch."
+    ],
+    takeaways: [
+      "Polymorphism means the method that runs depends on an object's actual runtime type, not its variable's declared type.",
+      "The compiler only checks the declared type for whether a method call is legal; the JVM decides which overridden version actually runs based on the real, actual type.",
+      "This is why a <code class=\"inline\">Subsystem</code>-typed array or method parameter can transparently work with any subclass — one piece of code, many possible real behaviors.",
+      "Static methods don't participate in this — they're resolved entirely by declared type, at compile time."
+    ],
+    prov: "csawesome-2026: unit-5-inheritance-optional/5.06-polymorphism.md (CSA 5.6) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 5 — TalonFX/SparkMax-as-MotorController example"
+  }
+};
+
+let currentItem = "18.1";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
