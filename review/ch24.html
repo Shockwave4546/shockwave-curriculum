@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.24 — Optional: Avoiding NPEs (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.24 — Optional</h1>
+  <p class="sub">shockwave-curriculum · draft lesson, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lesson only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "24": {
+    title: "Optional: Avoiding Null Pointer Exceptions",
+    ref: "24 — Optional: Avoiding Null Pointer Exceptions (ORACLE 16.1)",
+    body: `
+      <h2>The Null Problem</h2>
+      <p>Returning <code class="inline">null</code> to mean "there's no value here" is one of the most common sources of bugs in any Java program — Tony Hoare, who introduced the null reference in 1965, later called it his "billion-dollar mistake." The trouble is that <code class="inline">null</code> is invisible in a method's signature: nothing about <code class="inline">Pose2d getVisionPose()</code> warns a caller that it might come back <code class="inline">null</code>, so it's easy to forget the check and get a <code class="inline">NullPointerException</code> (Ch.12/13) instead.</p>
+      <p>The classic FRC case: a vision pose estimator can only report a robot position if a camera actually sees an AprilTag <em>this frame</em> — plenty of frames, it can't. Returning <code class="inline">null</code> on those frames leaves every caller responsible for remembering to check first.</p>
+      <h2>Optional: Making "Might Be Absent" Part of the Type</h2>
+      <p><code class="inline">java.util.Optional&lt;T&gt;</code> is a container that either holds a value, or is explicitly <strong>empty</strong> — and unlike <code class="inline">null</code>, that possibility is written directly into the method's return type:</p>
+      <pre class="code"><code><span class="k">public</span> <span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; <span class="me">getPose</span>()
+{
+    <span class="k">if</span> (!hasTargetThisFrame())
+    {
+        <span class="k">return</span> <span class="t">Optional</span>.<span class="me">empty</span>();       <span class="c">// explicitly "no value" — not null</span>
+    }
+    <span class="k">return</span> <span class="t">Optional</span>.<span class="me">of</span>(currentPose);   <span class="c">// wraps a real, non-null value</span>
+}</code></pre>
+      <p>Just by reading <code class="inline">Optional&lt;Pose2d&gt; getPose()</code>'s signature, a caller already knows the pose might not be there this frame — the type itself documents it, instead of relying on a comment or tribal knowledge.</p>
+      <h2>Creating an Optional</h2>
+      <pre class="code"><code><span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; empty = <span class="t">Optional</span>.<span class="me">empty</span>();           <span class="c">// definitely no value</span>
+<span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; present = <span class="t">Optional</span>.<span class="me">of</span>(currentPose);  <span class="c">// wraps a value — throws immediately if currentPose is null</span>
+<span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; maybe = <span class="t">Optional</span>.<span class="me">ofNullable</span>(currentPose); <span class="c">// empty if currentPose is null, present otherwise</span></code></pre>
+      <p><code class="inline">Optional.of(...)</code> is a deliberate safety check: if you accidentally pass it a <code class="inline">null</code>, it throws right away — better to fail loudly at the source than to silently wrap a <code class="inline">null</code> and have it surface as a confusing failure somewhere else later.</p>
+      <h2>Handling Both Cases Honestly</h2>
+      <pre class="code"><code><span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; visionPose = vision.<span class="me">getPose</span>();
+
+<span class="c">// Run logic only when a value exists</span>
+visionPose.<span class="me">ifPresent</span>(pose -&gt; estimator.<span class="me">addVisionMeasurement</span>(pose, timestamp));
+
+<span class="c">// Or supply a fallback value for the empty case</span>
+<span class="t">Pose2d</span> pose = visionPose.<span class="me">orElse</span>(lastKnownPose);
+
+<span class="c">// Or throw a specific exception if a value was truly required</span>
+<span class="t">Pose2d</span> requiredPose = visionPose.<span class="me">orElseThrow</span>(IllegalStateException::<span class="k">new</span>);</code></pre>
+      <p><code class="inline">ifPresent</code> runs a lambda (Lesson 19.1) only if a value is actually there — nothing happens otherwise. <code class="inline">orElse</code> supplies a fallback value for the empty case. <code class="inline">orElseThrow</code> is for the rarer case where an empty <code class="inline">Optional</code> really does mean something has gone wrong, and continuing anyway wouldn't make sense.</p>
+      <h2>The One Pitfall That Defeats the Whole Point</h2>
+      <p><code class="inline">Optional</code> has an <code class="inline">isPresent()</code> check and a <code class="inline">get()</code> method that returns the wrapped value — but calling <code class="inline">get()</code> without checking <code class="inline">isPresent()</code> first throws <code class="inline">NoSuchElementException</code> on an empty <code class="inline">Optional</code>, which is exactly the same class of crash <code class="inline">Optional</code> exists to prevent, just under a different exception name:</p>
+      <pre class="code"><code><span class="t">Pose2d</span> pose = visionPose.<span class="me">get</span>(); <span class="c">// never do this blind — this is a NullPointerException with extra steps</span></code></pre>
+      <p>Even the safer <code class="inline">isPresent()</code> + <code class="inline">get()</code> pairing is discouraged — it's really just a nested-null-check in disguise. <code class="inline">ifPresent</code>, <code class="inline">orElse</code>, and <code class="inline">orElseThrow</code> all handle both cases directly, without ever needing to call bare <code class="inline">get()</code>.</p>
+      <h2>Filtering and Transforming (a Brief Look)</h2>
+      <p>Beyond the core methods above, <code class="inline">Optional</code> supports <code class="inline">filter</code> (keep the value only if it matches a condition, otherwise become empty) and <code class="inline">map</code> (transform the value, if present, into something else) — useful for chaining a couple of extra checks without falling back into nested <code class="inline">if</code> statements:</p>
+      <pre class="code"><code>visionPose
+    .<span class="me">filter</span>(pose -&gt; pose.<span class="me">getX</span>() &gt;= <span class="n">0</span>)         <span class="c">// only proceed if the pose has a valid X coordinate</span>
+    .<span class="me">ifPresent</span>(pose -&gt; estimator.<span class="me">addVisionMeasurement</span>(pose, timestamp));</code></pre>
+      <p>These compose well for simple cases; genuinely complex chains of <code class="inline">Optional</code> transformations are a more advanced topic than this curriculum covers in depth.</p>
+    `,
+    pitfalls: [
+      "Calling <code class=\"inline\">.get()</code> without checking first. This throws on an empty <code class=\"inline\">Optional</code>, defeating the entire purpose of using one.",
+      "Using <code class=\"inline\">Optional</code> for every field or parameter, out of habit. It's meant for genuinely optional results (especially return values) — not a blanket replacement for every reference type.",
+      "Passing a <code class=\"inline\">null</code> to <code class=\"inline\">Optional.of(...)</code>. That throws immediately — use <code class=\"inline\">Optional.ofNullable(...)</code> instead when the value genuinely might be <code class=\"inline\">null</code>."
+    ],
+    takeaways: [
+      "<code class=\"inline\">Optional&lt;T&gt;</code> makes \"this might not have a value\" visible directly in a method's return type, instead of relying on an invisible, easy-to-forget <code class=\"inline\">null</code> check.",
+      "Create one with <code class=\"inline\">Optional.empty()</code>, <code class=\"inline\">Optional.of(value)</code> (throws if null), or <code class=\"inline\">Optional.ofNullable(value)</code> (safe either way).",
+      "Handle both cases with <code class=\"inline\">ifPresent(...)</code>, <code class=\"inline\">orElse(fallback)</code>, or <code class=\"inline\">orElseThrow(...)</code> — never call bare <code class=\"inline\">.get()</code> without checking first.",
+      "<code class=\"inline\">filter</code> and <code class=\"inline\">map</code> let you chain a couple of extra conditions/transformations without falling back into nested <code class=\"inline\">if</code> checks."
+    ],
+    prov: "other-reference-repo: oracle-java-tutorials/optional/java8-optional.md (ORACLE 16.1) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 9b (\"Optional: Maybe a Value\") — vision pose estimator example"
+  }
+};
+
+let currentItem = "24";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">Ch.${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
