@@ -30,8 +30,8 @@ structure differs from where the slide physically sits in the old one.
 ## Status
 
 Complete as of 2026-09-09. All 27 **existing** items pulled (every chapter/item the deck already
-has a slide for), and all 46 **new** items authored (every item marked `[new]` in `OUTLINE.md`,
-including item 1.2 added afterward and the optional Ch.27/Ch.28 block) — each grounded in real `csawesome-2026`,
+has a slide for), and all 47 **new** items authored (every item marked `[new]` in `OUTLINE.md`,
+including items 1.2 and 4.1 added afterward and the optional Ch.27/Ch.28 block) — each grounded in real `csawesome-2026`,
 `other-reference-repo` (WPILib/AdvantageKit/Team 5817), or ORACLE source material, translated into
 FRC-flavored examples in the deck's existing format. Next up: `../lessons/` and `../exercises/`,
 interleaved per item.

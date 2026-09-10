@@ -15,7 +15,7 @@ Naming (Java 1a/2a vs. Java III/IV/V vs. something else) is deliberately left op
 capped things at two Java lessons because they teach live and a lecturer fills gaps in real
 time; that constraint doesn't apply to solo learners here.
 
-## Combined Learning Path — v14
+## Combined Learning Path — v15
 
 **This file is the source of truth.** Also viewable as a formatted page — the "Curriculum
 Ledger", source at `shockwave-curriculum/curriculum-ledger.html` (this is now the one
@@ -55,11 +55,17 @@ JAVA 1
         existing deck slide (java-1.js section 10), distinct from 3.1's not-yet-authored content — they just
         happen to share the same CSA source page (1.7.2 is the "Packages" subsection specifically)
 4   Using Objects & Calling Methods                  [header, no existing anchor]
-    4.1 Calling Class Methods                        CSA 1.10    [new]
-    4.2 Using the Math Class                         CSA 1.11    [new]
-    4.3 Objects – Instances of Classes                CSA 1.12    [new]
-    4.4 Creating and Initializing Objects: Constructors CSA 1.13  [new]
-    4.5 Calling Instance Methods                      CSA 1.14    [new]
+    4.1 Methods, Signatures and Parameters            CSA 1.9     [new] — genuinely missed on the first
+        pass: csawesome-2026's own file tagged this "already covered in the FRC deck," but the deck's
+        existing "Reusable Methods" slide (7.2) never actually teaches method signatures, parameters
+        vs. arguments, call-by-value, or overloading — just shows one example with a parameter in
+        passing. Caught while reviewing 2.1 during the Lessons-authoring pass; same class of mistake
+        as the earlier 1.12/1.13 mis-tagging (see v4 history above).
+    4.2 Calling Class Methods                        CSA 1.10    [new]
+    4.3 Using the Math Class                         CSA 1.11    [new]
+    4.4 Objects – Instances of Classes                CSA 1.12    [new]
+    4.5 Creating and Initializing Objects: Constructors CSA 1.13  [new]
+    4.6 Calling Instance Methods                      CSA 1.14    [new]
 5   Control Structures                                         [header]
     5.1 if Statements                                 CSA 2.3     [existing]
     5.2 For Loops                                      CSA 2.8     [existing]
