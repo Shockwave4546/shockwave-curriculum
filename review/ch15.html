@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.15 — Advanced Collections (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+table.cmp{width:100%;border-collapse:collapse;margin:0 0 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+table.cmp th,table.cmp td{border:1px solid var(--card-line);padding:8px 10px;text-align:left;}
+table.cmp th{background:var(--card);font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--ink-soft);font-size:11px;text-transform:uppercase;letter-spacing:0.03em;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.15 — Advanced Collections</h1>
+  <p class="sub">shockwave-curriculum · draft lesson, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lesson only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "15": {
+    title: "Advanced Collections (Set/Queue/Map)",
+    ref: "15 — Advanced Collections (Set/Queue/Map) (ORACLE 13.1-4)",
+    body: `
+      <p>Ch.9 covered <code class="inline">ArrayList</code> and a basic <code class="inline">HashMap</code>. Three more collection types round out the toolbox, each solving a problem the others don't: <strong>Set</strong> (no duplicates, ever), <strong>Queue</strong>/<strong>Deque</strong> (order of processing matters more than random access), and a deeper look at <strong>Map</strong> (iterating both keys and values together, and choosing an ordering).</p>
+      <h2>Set: No Duplicates, Ever</h2>
+      <p>A <code class="inline">Set</code> is a collection that flatly refuses duplicate elements — calling <code class="inline">add</code> with something already present just does nothing (and returns <code class="inline">false</code>), rather than adding a second copy:</p>
+      <pre class="code"><code><span class="t">Set</span>&lt;<span class="t">Integer</span>&gt; usedCanIds = <span class="k">new</span> <span class="t">HashSet</span>&lt;<span class="t">Integer</span>&gt;();
+usedCanIds.<span class="me">add</span>(<span class="n">5</span>);  <span class="c">// true — added</span>
+usedCanIds.<span class="me">add</span>(<span class="n">5</span>);  <span class="c">// false — already present, nothing changed</span></code></pre>
+      <p>That makes <code class="inline">Set</code> the natural tool for catching configuration conflicts — e.g. verifying no two devices on the robot were accidentally wired to the same CAN ID:</p>
+      <pre class="code"><code><span class="t">Set</span>&lt;<span class="t">Integer</span>&gt; seenIds = <span class="k">new</span> <span class="t">HashSet</span>&lt;<span class="t">Integer</span>&gt;();
+<span class="k">for</span> (<span class="k">int</span> id : allConfiguredCanIds)
+{
+    <span class="k">if</span> (!seenIds.<span class="me">add</span>(id)) <span class="c">// add() returns false if it was already there</span>
+    {
+        <span class="me">reportWarning</span>(<span class="s">"Duplicate CAN ID detected: "</span> + id);
+    }
+}</code></pre>
+      <p><code class="inline">HashSet</code> (fastest, no ordering guarantee) is the usual default; <code class="inline">LinkedHashSet</code> remembers insertion order; <code class="inline">TreeSet</code> keeps elements sorted. All three still refuse duplicates — they only differ in iteration order.</p>
+      <p><code class="inline">Set</code> also supports set algebra directly as methods: <code class="inline">s1.containsAll(s2)</code> (is <code class="inline">s2</code> a subset of <code class="inline">s1</code>?), <code class="inline">s1.addAll(s2)</code> (union), <code class="inline">s1.retainAll(s2)</code> (intersection — keep only what's in both), <code class="inline">s1.removeAll(s2)</code> (difference — remove anything also in <code class="inline">s2</code>).</p>
+      <h2>Queue: First-In, First-Out</h2>
+      <p>A <code class="inline">Queue</code> holds elements for later processing, normally in <strong>FIFO</strong> order (first-in-first-out) — think of a queue of autonomous routine steps waiting to run in the order they were scheduled. Every operation comes in two flavors: one throws an exception on failure, the other returns a safe placeholder value instead.</p>
+      <table class="cmp"><thead><tr><th>Operation</th><th>Throws on failure</th><th>Returns a placeholder</th></tr></thead><tbody>
+        <tr><td>Insert</td><td>add(e)</td><td>offer(e) (returns false)</td></tr>
+        <tr><td>Remove</td><td>remove()</td><td>poll() (returns null if empty)</td></tr>
+        <tr><td>Peek (don't remove)</td><td>element()</td><td>peek() (returns null if empty)</td></tr>
+      </tbody></table>
+      <pre class="code"><code><span class="t">Queue</span>&lt;<span class="t">String</span>&gt; pendingFaults = <span class="k">new</span> <span class="t">LinkedList</span>&lt;<span class="t">String</span>&gt;();
+pendingFaults.<span class="me">add</span>(<span class="s">"Camera 1 disconnected"</span>);
+pendingFaults.<span class="me">add</span>(<span class="s">"Low battery voltage"</span>);
+
+<span class="k">while</span> (!pendingFaults.isEmpty())
+{
+    System.out.<span class="me">println</span>(<span class="s">"Handling: "</span> + pendingFaults.<span class="me">poll</span>()); <span class="c">// removes and returns the oldest fault first</span>
+}</code></pre>
+      <p><code class="inline">poll()</code>/<code class="inline">peek()</code> are usually the safer default in real code — they hand back <code class="inline">null</code> instead of throwing when the queue happens to be empty, which is often a completely normal state (no faults right now) rather than an error.</p>
+      <h2>Deque: Both Ends at Once</h2>
+      <p>A <strong>Deque</strong> ("deck," double-ended queue) supports inserting and removing from <em>either</em> end, which means a single <code class="inline">Deque</code> can act as a FIFO queue, a LIFO stack, or both:</p>
+      <table class="cmp"><thead><tr><th>Operation</th><th>First (front)</th><th>Last (back)</th></tr></thead><tbody>
+        <tr><td>Insert</td><td>addFirst(e) / offerFirst(e)</td><td>addLast(e) / offerLast(e)</td></tr>
+        <tr><td>Remove</td><td>removeFirst() / pollFirst()</td><td>removeLast() / pollLast()</td></tr>
+        <tr><td>Examine</td><td>getFirst() / peekFirst()</td><td>getLast() / peekLast()</td></tr>
+      </tbody></table>
+      <p>A common use: an undo stack for the last few climb-sequence steps, where you only ever add/remove from one end (LIFO — last one added is the first one undone):</p>
+      <pre class="code"><code><span class="t">Deque</span>&lt;<span class="t">String</span>&gt; climbSteps = <span class="k">new</span> <span class="t">ArrayDeque</span>&lt;<span class="t">String</span>&gt;();
+climbSteps.<span class="me">addLast</span>(<span class="s">"Extend to high bar"</span>);
+climbSteps.<span class="me">addLast</span>(<span class="s">"Release from mid bar"</span>);
+
+<span class="t">String</span> lastStep = climbSteps.<span class="me">removeLast</span>(); <span class="c">// "Release from mid bar" — undo the most recent step</span></code></pre>
+      <p><code class="inline">ArrayDeque</code> is the standard general-purpose <code class="inline">Deque</code> implementation — generally faster than <code class="inline">LinkedList</code> for this purpose, with no capacity limit.</p>
+      <h2>Map, Revisited: Iterating Both Keys and Values</h2>
+      <p>Ch.9.3 covered <code class="inline">put</code>/<code class="inline">get</code> and looping over <code class="inline">keySet()</code>. <code class="inline">Map.entrySet()</code> gives every key <em>and</em> value together in one pass, avoiding a repeated <code class="inline">get()</code> call for each key:</p>
+      <pre class="code"><code><span class="t">Map</span>&lt;<span class="t">Integer</span>, <span class="t">Double</span>&gt; motorOffsets = <span class="k">new</span> <span class="t">HashMap</span>&lt;<span class="t">Integer</span>, <span class="t">Double</span>&gt;();
+motorOffsets.<span class="me">put</span>(<span class="n">5</span>, <span class="n">0.02</span>);
+motorOffsets.<span class="me">put</span>(<span class="n">6</span>, -<span class="n">0.01</span>);
+
+<span class="k">for</span> (<span class="t">Map</span>.<span class="t">Entry</span>&lt;<span class="t">Integer</span>, <span class="t">Double</span>&gt; entry : motorOffsets.<span class="me">entrySet</span>())
+{
+    System.out.<span class="me">println</span>(<span class="s">"CAN ID "</span> + entry.<span class="me">getKey</span>() + <span class="s">" -> offset "</span> + entry.<span class="me">getValue</span>());
+}</code></pre>
+      <p>Just like <code class="inline">Set</code>, a plain <code class="inline">HashMap</code> gives no ordering guarantee. Swapping the implementation type is enough to change that, with no other code changes needed:</p>
+      <pre class="code"><code><span class="t">Map</span>&lt;<span class="t">Integer</span>, <span class="t">Double</span>&gt; sorted = <span class="k">new</span> <span class="t">TreeMap</span>&lt;&gt;(motorOffsets);       <span class="c">// sorted by key</span>
+<span class="t">Map</span>&lt;<span class="t">Integer</span>, <span class="t">Double</span>&gt; byInsertOrder = <span class="k">new</span> <span class="t">LinkedHashMap</span>&lt;&gt;(motorOffsets); <span class="c">// insertion order</span></code></pre>
+      <p>This is the payoff of always declaring a variable by its interface type (<code class="inline">Map&lt;K, V&gt;</code>, <code class="inline">Set&lt;E&gt;</code>, <code class="inline">Queue&lt;E&gt;</code>) rather than its concrete implementation (<code class="inline">HashMap</code>, <code class="inline">HashSet</code>, <code class="inline">LinkedList</code>) — changing which concrete class gets constructed is a one-line change, because every line that <em>uses</em> the collection only ever depends on the interface.</p>
+    `,
+    pitfalls: [
+      "Assuming a <code class=\"inline\">HashSet</code> or <code class=\"inline\">HashMap</code> remembers insertion order. Neither does — reach for <code class=\"inline\">LinkedHashSet</code>/<code class=\"inline\">LinkedHashMap</code> if insertion order actually matters, or <code class=\"inline\">TreeSet</code>/<code class=\"inline\">TreeMap</code> if sorted order does.",
+      "Using <code class=\"inline\">remove()</code>/<code class=\"inline\">element()</code> on a queue that might be empty. Both throw when empty — prefer <code class=\"inline\">poll()</code>/<code class=\"inline\">peek()</code> unless an empty queue genuinely represents a bug that should crash loudly.",
+      "Declaring a collection variable by its concrete type instead of its interface. <code class=\"inline\">HashMap&lt;K,V&gt; m = new HashMap&lt;&gt;();</code> locks every line that touches <code class=\"inline\">m</code> to <code class=\"inline\">HashMap</code>'s specific behavior — declare it <code class=\"inline\">Map&lt;K,V&gt; m = new HashMap&lt;&gt;();</code> instead."
+    ],
+    takeaways: [
+      "<code class=\"inline\">Set</code> guarantees no duplicates; <code class=\"inline\">HashSet</code> is fastest with no ordering, <code class=\"inline\">LinkedHashSet</code> keeps insertion order, <code class=\"inline\">TreeSet</code> keeps sorted order.",
+      "<code class=\"inline\">Queue</code> processes elements FIFO by default; every operation has a throwing form (<code class=\"inline\">add</code>/<code class=\"inline\">remove</code>/<code class=\"inline\">element</code>) and a safe form (<code class=\"inline\">offer</code>/<code class=\"inline\">poll</code>/<code class=\"inline\">peek</code>) that returns a placeholder instead of throwing.",
+      "<code class=\"inline\">Deque</code> supports both ends at once, letting one type serve as either a queue or a stack; <code class=\"inline\">ArrayDeque</code> is the standard general-purpose implementation.",
+      "<code class=\"inline\">Map.entrySet()</code> iterates keys and values together; switching between <code class=\"inline\">HashMap</code>, <code class=\"inline\">TreeMap</code>, and <code class=\"inline\">LinkedHashMap</code> changes ordering with no other code changes.",
+      "Always declare collection variables by their interface type, not their concrete implementation — it's what makes swapping implementations a one-line change."
+    ],
+    prov: "other-reference-repo: oracle-java-tutorials/collections-interfaces/01-04 (ORACLE 13.1-4)"
+  }
+};
+
+let currentItem = "15";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">Ch.${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
