@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.4 — Using Objects &amp; Calling Methods (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.4 — Using Objects &amp; Calling Methods</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "4.1": {
+    title: "Methods, Signatures & Parameters",
+    ref: "4.1 — Methods, Signatures and Parameters (CSA 1.9)",
+    body: `
+      <h2>What a Method Is</h2>
+      <p>A <strong>method</strong> is a named block of code that runs when you call it. <code class="inline">System.out.println(...)</code> is a method call — you've been calling methods since Lesson 1.2 without needing to know how <code class="inline">println</code> is implemented internally. That's the whole benefit: you use a method by its name and what it does, not by reading its insides.</p>
+      <h2>Signature, Parameters, Arguments</h2>
+      <p>A method's <strong>signature</strong> is its name plus its parameter types — what you need to know to call it correctly.</p>
+      <pre class="code"><code><span class="k">public void</span> <span class="me">rampTo</span>(<span class="k">double</span> targetSpeed) { ... }</code></pre>
+      <p><code class="inline">targetSpeed</code> here is a <strong>parameter</strong> — a variable declared in the method's header, usable inside the method's body. When you actually call the method:</p>
+      <pre class="code"><code>drivetrain.<span class="me">rampTo</span>(<span class="n">0.8</span>);</code></pre>
+      <p><code class="inline">0.8</code> is the <strong>argument</strong> — the real value being passed in. "Parameter" and "argument" describe the same slot from two different sides: the parameter is the variable <em>in the method</em>; the argument is the value <em>at the call site</em>.</p>
+      <h2>Call by Value</h2>
+      <p>Java copies the argument's value into the parameter — <strong>call by value</strong>. If the method changes its own parameter internally, the original value the caller passed in is unaffected; only a copy went in.</p>
+      <h2>Overloading</h2>
+      <p>Two methods can share the same name if their parameter lists differ in number or type — this is <strong>overloading</strong>. <code class="inline">System.out.println()</code> is a real example: there's a version for no arguments, one for a <code class="inline">String</code>, one for an <code class="inline">int</code>, and more — Java picks the right one based on what you pass in.</p>
+      <pre class="code"><code><span class="k">void</span> println()          <span class="c">// no parameters</span>
+<span class="k">void</span> println(<span class="t">String</span> x)  <span class="c">// takes a String</span>
+<span class="k">void</span> println(<span class="k">int</span> x)     <span class="c">// takes an int</span></code></pre>
+    `,
+    pitfalls: [
+      "Mixing up \"parameter\" and \"argument.\" They're often used loosely as if interchangeable, but precisely: parameter = the variable in the method header, argument = the value at the call site.",
+      "Assuming a method can change the caller's original value. Call by value means the method only ever gets a copy — reassigning a parameter inside the method never affects the variable the caller passed in.",
+      "Wrong argument count or type. The compiler checks a call's arguments against the method's signature — mismatches (wrong count, wrong type, wrong order) won't compile."
+    ],
+    takeaways: [
+      "A method's signature is its name plus its parameter types.",
+      "A parameter is a variable in the method's own header; an argument is the actual value passed in at the call site.",
+      "Java uses call by value — a method receives a copy of each argument, not the original.",
+      "Overloading means multiple methods share a name but differ in their parameter lists; Java picks the matching one based on the call."
+    ],
+    prov: "csawesome-2026: unit-1-using-objects-and-methods/1.09-method-signatures.md (CSA 1.9)"
+  },
+  "4.2": {
+    title: "Calling Class Methods",
+    ref: "4.2 — Calling Class Methods (CSA 1.10)",
+    body: `
+      <h2>Class Methods (Static Methods)</h2>
+      <p>A method marked <code class="inline">static</code> belongs to the class itself, not to any object — called a <strong>class method</strong> or <strong>static method</strong>. <code class="inline">main</code> is always static. Call one using the class name and the dot operator:</p>
+      <pre class="code"><code><span class="k">double</span> distance = <span class="t">Math</span>.<span class="me">abs</span>(target - current);</code></pre>
+      <p>Inside the same class that defines the method, you can drop the class name and just call it directly.</p>
+      <h2>Void vs. Non-Void Methods</h2>
+      <p>A <code class="inline">void</code> method doesn't return anything — you call it purely for its effect (like printing, or setting a motor's speed). A <strong>non-void</strong> method computes and returns a value, which the caller must actually use:</p>
+      <pre class="code"><code><span class="k">public static int</span> <span class="me">square</span>(<span class="k">int</span> number)
+{
+    <span class="k">int</span> result = number * number;
+    <span class="k">return</span> result;
+}</code></pre>
+      <p><code class="inline">return</code> sends the value back to whoever called the method, and ends the method immediately — nothing after <code class="inline">return</code> runs.</p>
+      <pre class="code"><code><span class="k">int</span> y = <span class="me">square</span>(<span class="n">5</span>);        <span class="c">// stored in a variable</span>
+System.out.<span class="me">println</span>(<span class="me">square</span>(<span class="n">4</span>)); <span class="c">// used directly in an expression</span></code></pre>
+      <h2>Common Errors</h2>
+      <ul>
+        <li>Forgetting to do something with a non-void method's return value — it has to be stored or used, not just called and ignored.</li>
+        <li>A type mismatch between what a method returns and what you try to store it in (assigning a <code class="inline">double</code> return into an <code class="inline">int</code> variable won't compile).</li>
+        <li>Wrong argument count, order, or type at the call site.</li>
+      </ul>
+      <pre class="code"><code><span class="k">int</span> total = <span class="me">calculateChecksum</span>(data); <span class="c">// fine — assuming calculateChecksum returns an int</span>
+<span class="me">calculateChecksum</span>(data);             <span class="c">// compiles, but the returned value is silently thrown away</span></code></pre>
+    `,
+    pitfalls: [
+      "Calling a non-void method and doing nothing with the result. It still compiles — Java doesn't force you to use a return value, which makes this an easy mistake to miss.",
+      "Assigning a return value to the wrong type. A <code class=\"inline\">double</code>-returning method's result can't go straight into an <code class=\"inline\">int</code> variable without an explicit cast (Ch.2.4) — and casting one truncates the decimal, which may not be what you wanted."
+    ],
+    takeaways: [
+      "A <code class=\"inline\">static</code> method is a class method, called via the class name (or bare, from inside the same class).",
+      "A <code class=\"inline\">void</code> method returns nothing; a non-void method computes a value that must be stored or used.",
+      "<code class=\"inline\">return</code> sends a value back to the caller and ends the method immediately.",
+      "A non-void method's return value being ignored is a real, easy-to-miss bug — it still compiles."
+    ],
+    prov: "csawesome-2026: unit-1-using-objects-and-methods/1.10-calling-class-methods.md (CSA 1.10)"
+  },
+  "4.3": {
+    title: "Using the Math Class",
+    ref: "4.3 — Using the Math Class (CSA 1.11)",
+    body: `
+      <h2>Math's Static Methods</h2>
+      <p><code class="inline">Math</code> is a built-in class of static methods — no object, no <code class="inline">new</code>, just call it directly by its class name:</p>
+      <pre class="code"><code><span class="t">Math</span>.<span class="me">abs</span>(-<span class="n">4</span>);     <span class="c">// 4 — absolute value</span>
+<span class="t">Math</span>.<span class="me">pow</span>(<span class="n">2</span>, <span class="n">3</span>);   <span class="c">// 8.0 — 2 to the power of 3</span>
+<span class="t">Math</span>.<span class="me">sqrt</span>(<span class="n">9</span>);     <span class="c">// 3.0</span>
+<span class="t">Math</span>.<span class="me">random</span>();    <span class="c">// a double >= 0.0 and < 1.0</span></code></pre>
+      <p>These all return a value, so — same rule as the last lesson — you must actually use what they return.</p>
+      <h2>Random Numbers in a Range</h2>
+      <p><code class="inline">Math.random()</code> alone gives a <code class="inline">double</code> in <code class="inline">[0.0, 1.0)</code> — including 0.0, never reaching 1.0. That's rarely useful on its own; you stretch and shift it to get the range you actually want:</p>
+      <pre class="code"><code><span class="k">int</span> rnd = (<span class="k">int</span>)(<span class="t">Math</span>.<span class="me">random</span>() * <span class="n">10</span>);      <span class="c">// an int from 0-9 (10 possible values)</span>
+<span class="k">int</span> rnd2 = (<span class="k">int</span>)(<span class="t">Math</span>.<span class="me">random</span>() * <span class="n">10</span>) + <span class="n">1</span>; <span class="c">// an int from 1-10 (shifted up by 1)</span></code></pre>
+      <p>The general recipe: multiply by how many values you want, cast to <code class="inline">int</code> to drop the decimal, then add the minimum to shift the whole range up.</p>
+      <pre class="code"><code><span class="c">// A random autonomous delay between 1 and 4 seconds</span>
+<span class="k">double</span> delay = <span class="t">Math</span>.<span class="me">random</span>() * <span class="n">3.0</span> + <span class="n">1.0</span>; <span class="c">// [1.0, 4.0)</span>
+
+<span class="c">// A random starting position index, 0 through 2 (3 choices)</span>
+<span class="k">int</span> startPos = (<span class="k">int</span>)(<span class="t">Math</span>.<span class="me">random</span>() * <span class="n">3</span>);</code></pre>
+      <p>The parentheses matter: <code class="inline">(int)(Math.random() * 10)</code> casts the whole scaled expression; <code class="inline">(int)Math.random() * 10</code> casts <code class="inline">Math.random()</code> alone <em>first</em> — which truncates it to <code class="inline">0</code> every time, then multiplies by 10, always giving <code class="inline">0</code>.</p>
+    `,
+    pitfalls: [
+      "Forgetting the parentheses around the scaled expression. <code class=\"inline\">(int)Math.random() * 10</code> always evaluates to <code class=\"inline\">0</code> — the cast has to wrap the whole <code class=\"inline\">Math.random() * range</code> expression.",
+      "Off-by-one on the range size. For an inclusive range like 1-10, the range size is <code class=\"inline\">10</code>, not <code class=\"inline\">9</code> — count how many distinct values you actually want.",
+      "Ignoring the return value. <code class=\"inline\">Math.abs(x);</code> on its own line compiles but does nothing useful — the result has to be stored or used."
+    ],
+    takeaways: [
+      "<code class=\"inline\">Math</code> methods are static — call them as <code class=\"inline\">Math.methodName(...)</code>, no object needed.",
+      "<code class=\"inline\">Math.random()</code> returns a <code class=\"inline\">double</code> in <code class=\"inline\">[0.0, 1.0)</code> — 0.0 possible, 1.0 never reached.",
+      "To get a random int in a range: <code class=\"inline\">(int)(Math.random() * range) + min</code>, where <code class=\"inline\">range</code> is the count of possible values.",
+      "The parentheses around <code class=\"inline\">Math.random() * range</code> are required — casting only <code class=\"inline\">Math.random()</code> breaks the formula."
+    ],
+    prov: "csawesome-2026: unit-1-using-objects-and-methods/1.11-using-the-math-class.md (CSA 1.11)"
+  },
+  "4.4": {
+    title: "Objects — Instances of Classes",
+    ref: "4.4 — Objects – Instances of Classes (CSA 1.12)",
+    body: `
+      <h2>Class as Blueprint, Object as Instance</h2>
+      <p>A <strong>class</strong> is a blueprint; an <strong>object</strong> is one specific thing built from it — the way a cookie cutter (class) stamps out cookies (objects), all the same shape but each its own cookie. <code class="inline">TalonFX</code> is a class; <code class="inline">leftMotor</code> and <code class="inline">rightMotor</code> are two separate objects built from it.</p>
+      <pre class="code"><code><span class="t">TalonFX</span> leftMotor;
+<span class="t">TalonFX</span> rightMotor;</code></pre>
+      <p>A class also defines a new <em>type</em>, the same way <code class="inline">int</code> or <code class="inline">double</code> do — <code class="inline">TalonFX leftMotor;</code> declares a variable exactly like <code class="inline">int score;</code> does, just holding a <code class="inline">TalonFX</code> instead of a whole number.</p>
+      <h2>Attributes and Behaviors, Revisited</h2>
+      <p>Every object has:</p>
+      <ul>
+        <li><strong>Attributes</strong> — the data it holds (its CAN ID, its current speed).</li>
+        <li><strong>Behaviors</strong> — what it can do, defined as methods (<code class="inline">set()</code>, <code class="inline">getVelocity()</code>).</li>
+      </ul>
+      <p>The class defines <em>what</em> attributes and behaviors exist; each individual object has its <em>own</em> values for them. <code class="inline">leftMotor</code> and <code class="inline">rightMotor</code> are both <code class="inline">TalonFX</code> objects, but each has its own CAN ID and its own current speed.</p>
+      <h2>Reference Variables</h2>
+      <p>A variable like <code class="inline">leftMotor</code> doesn't hold the motor object directly — it holds a <strong>reference</strong> to it, like a tracking number pointing at where the real object lives in memory. This is different from a primitive variable (<code class="inline">int</code>, <code class="inline">double</code>), which holds its value directly with nothing in between.</p>
+      <p>You can create as many objects from one class as you need:</p>
+      <pre class="code"><code><span class="t">TalonFX</span> leftMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">1</span>);
+<span class="t">TalonFX</span> rightMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">2</span>);
+<span class="t">TalonFX</span> intakeMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">3</span>);</code></pre>
+      <p>Three separate objects, one class.</p>
+    `,
+    pitfalls: [
+      "Confusing the class name with an object's name. <code class=\"inline\">TalonFX</code> is always the class (capitalized, PascalCase); <code class=\"inline\">leftMotor</code> is a specific object (camelCase). Mixing these up is a common early error.",
+      "Assuming two objects of the same class share state. <code class=\"inline\">leftMotor</code> and <code class=\"inline\">rightMotor</code> are both <code class=\"inline\">TalonFX</code> objects, but changing one's speed has zero effect on the other — each object's attributes are entirely its own."
+    ],
+    takeaways: [
+      "A class is a blueprint; an object is one specific instance built from it.",
+      "A class defines a new type, just like <code class=\"inline\">int</code> or <code class=\"inline\">double</code> — a class variable declares a variable of that type.",
+      "Attributes are an object's data; behaviors are what it can do, defined as methods.",
+      "A reference variable holds a pointer to an object, not the object's data directly.",
+      "Many objects can be created from the same class, each with its own independent attribute values."
+    ],
+    prov: "csawesome-2026: unit-1-using-objects-and-methods/1.12-objects-instances-of-classes.md (CSA 1.12)"
+  },
+  "4.5": {
+    title: "Creating & Initializing Objects: Constructors",
+    ref: "4.5 — Creating and Initializing Objects: Constructors (CSA 1.13)",
+    body: `
+      <h2>Building an Object with new</h2>
+      <p>A <strong>constructor</strong> initializes a new object's attributes when it's created. To build one, use <code class="inline">new</code> followed by the class name — that's actually a call to the constructor:</p>
+      <pre class="code"><code><span class="t">TalonFX</span> leftMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">5</span>); <span class="c">// 5 is the CAN ID — argument order matters</span></code></pre>
+      <h2>Constructors Can Be Overloaded</h2>
+      <p>A class can offer more than one constructor — different ways to set up an object, distinguished by their parameter lists. This is the same <strong>overloading</strong> concept from methods (Lesson 4.1), applied to constructors:</p>
+      <pre class="code"><code><span class="t">Pose2d</span> start1 = <span class="k">new</span> <span class="t">Pose2d</span>();                       <span class="c">// no-argument constructor: defaults to (0, 0, facing 0°)</span>
+<span class="t">Pose2d</span> start2 = <span class="k">new</span> <span class="t">Pose2d</span>(<span class="n">1.0</span>, <span class="n">2.0</span>, <span class="k">new</span> <span class="t">Rotation2d</span>()); <span class="c">// x, y, and heading, explicitly</span></code></pre>
+      <p>Argument order matters — mixing up which number means what (is it x-then-y, or y-then-x?) produces a real, silent bug: the code compiles fine, but the object ends up with the wrong values.</p>
+      <h2>Object References and null</h2>
+      <p>A reference variable can be declared without pointing at any object yet — that's <code class="inline">null</code>, meaning "doesn't refer to anything."</p>
+      <pre class="code"><code><span class="t">TalonFX</span> intakeMotor = <span class="k">null</span>; <span class="c">// no object yet</span>
+intakeMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">7</span>); <span class="c">// now it does</span></code></pre>
+      <p>Calling a method on a <code class="inline">null</code> reference — one that was declared but never actually constructed — throws a <code class="inline">NullPointerException</code> at runtime (more on this in the next lesson).</p>
+      <h2>Constructor Signatures</h2>
+      <p>Just like methods, a constructor has a signature: its name (always the same as the class) plus its parameter types. Look up a library class's constructors in its documentation to see what arguments it expects and in what order.</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Pose2d</span> {
+    <span class="k">public</span> <span class="t">Pose2d</span>() { <span class="c">/* implementation not shown */</span> }
+    <span class="k">public</span> <span class="t">Pose2d</span>(<span class="k">double</span> x, <span class="k">double</span> y, <span class="t">Rotation2d</span> rotation) { <span class="c">/* implementation not shown */</span> }
+}</code></pre>
+    `,
+    pitfalls: [
+      "Forgetting <code class=\"inline\">new</code>. <code class=\"inline\">TalonFX leftMotor = TalonFX(5);</code> doesn't compile — creating an object always requires <code class=\"inline\">new</code>.",
+      "Mixing up argument order. A constructor taking <code class=\"inline\">(x, y, rotation)</code> called as <code class=\"inline\">(rotation, x, y)</code> either won't compile (wrong types) or, worse, compiles with the wrong values silently swapped.",
+      "Calling a method on an unconstructed reference. Declaring <code class=\"inline\">TalonFX m;</code> without ever assigning <code class=\"inline\">new TalonFX(...)</code> to it leaves <code class=\"inline\">m</code> as <code class=\"inline\">null</code> — calling <code class=\"inline\">m.set(0.5)</code> crashes with a <code class=\"inline\">NullPointerException</code>."
+    ],
+    takeaways: [
+      "<code class=\"inline\">new ClassName(arguments)</code> calls a constructor to build and initialize an object.",
+      "A class can have multiple overloaded constructors, differing in their parameter lists.",
+      "A reference variable can be <code class=\"inline\">null</code> — pointing at no object at all — until it's assigned a real one with <code class=\"inline\">new</code>.",
+      "Calling a method on a <code class=\"inline\">null</code> reference throws a <code class=\"inline\">NullPointerException</code>.",
+      "Constructor argument order must match the constructor's signature exactly."
+    ],
+    prov: "csawesome-2026: unit-1-using-objects-and-methods/1.13-creating-and-initializing-objects-constructors.md (CSA 1.13)"
+  },
+  "4.6": {
+    title: "Calling Instance Methods",
+    ref: "4.6 — Calling Instance Methods (CSA 1.14)",
+    body: `
+      <h2>Instance Methods vs. Static Methods</h2>
+      <p>Lesson 4.2 covered static (class) methods, called via the class name. An <strong>instance method</strong> is the opposite: it's always called on a specific object, and it reads or changes <em>that object's</em> attributes.</p>
+      <pre class="code"><code>leftMotor.<span class="me">set</span>(<span class="n">0.5</span>); <span class="c">// instance method — acts on leftMotor specifically, not TalonFX in general</span></code></pre>
+      <p><code class="inline">Math.sqrt(9)</code> doesn't care which object called it (there is no object) — it's pure computation. <code class="inline">leftMotor.set(0.5)</code> only makes sense applied to one specific motor.</p>
+      <h2>NullPointerException</h2>
+      <p>Calling a method on a reference that's <code class="inline">null</code> — declared but never actually built with <code class="inline">new</code> — throws a <code class="inline">NullPointerException</code> at runtime. This is one of the most common real bugs in object-oriented code:</p>
+      <pre class="code"><code><span class="t">TalonFX</span> intakeMotor = <span class="k">null</span>;
+intakeMotor.<span class="me">set</span>(<span class="n">0.5</span>); <span class="c">// crashes: intakeMotor doesn't refer to a real object yet</span></code></pre>
+      <h2>Methods With Arguments</h2>
+      <p>Just like the constructors from the last lesson, instance methods can take arguments:</p>
+      <pre class="code"><code>leftMotor.<span class="me">set</span>(<span class="n">0.5</span>);          <span class="c">// no extra behavior beyond the speed itself</span>
+elevator.<span class="me">moveToPosition</span>(<span class="n">24.0</span>); <span class="c">// 24.0 is the argument, saved into the method's parameter</span></code></pre>
+      <h2>Getters (Accessors)</h2>
+      <p>A method that just reports one of an object's attributes — no side effects, just returns a value — is a <strong>getter</strong> (formally, an accessor). By convention its name starts with <code class="inline">get</code>, and its return value must actually be used:</p>
+      <pre class="code"><code><span class="k">double</span> speed = leftMotor.<span class="me">getVelocity</span>(); <span class="c">// a getter — must use the returned value</span>
+System.out.<span class="me">println</span>(<span class="s">"Current speed: "</span> + leftMotor.<span class="me">getVelocity</span>());</code></pre>
+    `,
+    pitfalls: [
+      "Calling an instance method without an object. <code class=\"inline\">TalonFX.set(0.5)</code> doesn't make sense — <code class=\"inline\">set</code> needs a specific motor to act on; only <code class=\"inline\">leftMotor.set(0.5)</code> does.",
+      "Calling a method on a <code class=\"inline\">null</code> reference. The single most common source of <code class=\"inline\">NullPointerException</code> — make sure every object is actually constructed with <code class=\"inline\">new</code> before calling anything on it.",
+      "Ignoring a getter's return value. <code class=\"inline\">leftMotor.getVelocity();</code> alone does nothing useful — a getter exists specifically to report a value you then use."
+    ],
+    takeaways: [
+      "An instance method is called on a specific object and can read/change that object's own attributes; a static method belongs to the class itself.",
+      "Calling a method on a <code class=\"inline\">null</code> reference throws a <code class=\"inline\">NullPointerException</code> — one of the most common real bugs.",
+      "A getter (accessor) reports one of an object's attributes; its return value must be used, not ignored."
+    ],
+    prov: "csawesome-2026: unit-1-using-objects-and-methods/1.14-calling-instance-methods.md (CSA 1.14)"
+  }
+};
+
+let currentItem = "4.1";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
