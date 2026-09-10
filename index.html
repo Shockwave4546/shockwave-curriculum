@@ -1,13 +1,73 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Shockwave Curriculum</title>
-  <meta http-equiv="refresh" content="0; url=curriculum-ledger.html">
-  <link rel="canonical" href="curriculum-ledger.html">
-  <script>location.replace('curriculum-ledger.html');</script>
+<meta charset="utf-8">
+<title>Shockwave Curriculum</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+    --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08);
+    --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+    --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+      --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10);
+      --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+      --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;margin:0;padding:56px 24px;}
+  .wrap{max-width:640px;margin:0 auto;}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin:0 0 8px;}
+  p.sub{color:var(--ink-soft);font-size:15px;line-height:1.6;margin:0 0 36px;}
+  .card{display:block;background:var(--card);border:1px solid var(--card-line);border-radius:10px;padding:18px 20px;margin-bottom:14px;text-decoration:none;color:var(--ink);box-shadow:var(--shadow);}
+  .card:hover{border-color:var(--accent);}
+  .card .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  .card .title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;margin-bottom:4px;}
+  .card .desc{font-size:14px;color:var(--ink-soft);line-height:1.5;}
+  h2.section{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft);margin:32px 0 12px;}
+  .draftcard .lbl{color:var(--gold);}
+  .draftbanner{background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:8px;padding:12px 16px;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--gold);margin-bottom:14px;}
+</style>
 </head>
 <body>
-  <p>Redirecting to the <a href="curriculum-ledger.html">Curriculum Ledger</a>…</p>
+<div class="wrap">
+  <h1>Shockwave Curriculum</h1>
+  <p class="sub">An FRC-flavored Java curriculum, inspired by Mechanical Advantage (FRC 6328)'s lesson-deck approach.</p>
+
+  <a class="card" href="curriculum-ledger.html">
+    <div class="lbl">Table of Contents</div>
+    <div class="title">Curriculum Ledger</div>
+    <div class="desc">The full chapter/item outline, with source citations and existing/new status for every item.</div>
+  </a>
+
+  <h2 class="section">Content Under Review</h2>
+  <div class="draftbanner">🚧 Draft lessons &amp; exercises, chapter by chapter, as they're written. Feedback welcome.</div>
+
+  <a class="card draftcard" href="review/ch01.html">
+    <div class="lbl">Ch.1</div>
+    <div class="title">Getting Started</div>
+    <div class="desc">Why Java for FRC, plus intro to algorithms/programming/compilers.</div>
+  </a>
+
+  <a class="card draftcard" href="review/ch02.html">
+    <div class="lbl">Ch.2</div>
+    <div class="title">Variables &amp; Types</div>
+    <div class="desc">Variables, expressions, assignment, casting, compound operators.</div>
+  </a>
+</div>
 </body>
 </html>

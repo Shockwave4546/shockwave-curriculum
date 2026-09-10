@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.2 — Variables &amp; Types (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+
+.tabs{display:flex;gap:8px;margin-bottom:28px;border-bottom:1px solid var(--line);}
+.tab{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;padding:10px 4px;margin-right:18px;color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.on.lesson{color:var(--accent);border-bottom-color:var(--accent);}
+.tab.on.exercise{color:var(--gold);border-bottom-color:var(--gold);}
+
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:0 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+
+table.trace{width:100%;border-collapse:collapse;margin:0 0 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+table.trace th,table.trace td{border:1px solid var(--card-line);padding:8px 10px;text-align:left;}
+table.trace th{background:var(--card);font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--ink-soft);font-size:11px;text-transform:uppercase;letter-spacing:0.03em;}
+
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+
+details.solution{background:var(--card);border:1px solid var(--card-line);border-radius:8px;margin:24px 0;box-shadow:var(--shadow);}
+details.solution summary{cursor:pointer;list-style:none;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--gold);padding:14px 18px;display:flex;align-items:center;gap:8px;}
+details.solution summary::-webkit-details-marker{display:none;}
+details.solution summary::before{content:'▸';transition:transform .15s;}
+details.solution[open] summary::before{transform:rotate(90deg);}
+details.solution .solbody{padding:0 18px 18px;}
+
+.problembox{background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:8px;padding:18px 20px;margin-bottom:20px;}
+.problembox p{margin-bottom:0;}
+.problembox p + p{margin-top:12px;}
+
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.2 — Variables &amp; Types</h1>
+  <p class="sub">shockwave-curriculum · draft lessons &amp; exercises, under review.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Content and feedback both still in progress.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "2.1": {
+    title: "Variables & Data Types",
+    ref: "2.1 — Variables and Data Types (CSA 1.2)",
+    lesson: {
+      body: `
+        <h2>Primitive Types: a Small, Fixed List</h2>
+        <p>Java has exactly 8 <strong>primitive types</strong> — the only types built directly into the language. A primitive variable holds its value directly, with nothing more underneath it.</p>
+        <p>The ones you'll use constantly in FRC code:</p>
+        <ul>
+          <li><code class="inline">int</code> — a whole number, like <code class="inline">5</code> or <code class="inline">-12</code>. CAN IDs, ports, loop counters.</li>
+          <li><code class="inline">long</code> — a bigger whole number, for values too large for <code class="inline">int</code> (like a timestamp). Written with an <code class="inline">L</code>: <code class="inline">100L</code>.</li>
+          <li><code class="inline">double</code> — a decimal number, like <code class="inline">0.85</code>. Almost anything measured — speed, distance, voltage.</li>
+          <li><code class="inline">float</code> — a smaller, less precise decimal number. Written with an <code class="inline">f</code>: <code class="inline">1.5f</code>. Most FRC code (including WPILib itself) prefers <code class="inline">double</code> instead.</li>
+          <li><code class="inline">boolean</code> — only ever <code class="inline">true</code> or <code class="inline">false</code>.</li>
+        </ul>
+        <p>The rest exist too, but you'll rarely reach for them directly:</p>
+        <ul>
+          <li><code class="inline">byte</code>, <code class="inline">short</code> — smaller whole numbers than <code class="inline">int</code>. Rarely needed.</li>
+          <li><code class="inline">char</code> — one single character, like <code class="inline">'A'</code>. You won't use this much on its own, but it's worth knowing: this is what <code class="inline">String</code> is actually built from underneath.</li>
+        </ul>
+        <p>That's the full list — nothing else in Java is a primitive. <strong>Everything else is built out of these 8</strong>, most obviously <code class="inline">String</code>, which is really a sequence of <code class="inline">char</code>s glued together. Later, when you write your own classes (starting in Ch.7), those will be built by bundling primitives together — a robot subsystem might combine a <code class="inline">double</code> for speed, a <code class="inline">boolean</code> for "is it ready," and more, all wrapped into one object. Keep this in the back of your mind going forward: every new type you meet is either one of this fixed list, or something built on top of it.</p>
+        <h2>Declaring and Assigning</h2>
+        <p>To create a variable, write its type, then its name, then a semicolon:</p>
+        <pre class="code"><code><span class="k">int</span> motorSpeed;</code></pre>
+        <p><code class="inline">motorSpeed</code> now exists, but it doesn't hold a value yet. Give it one with <code class="inline">=</code>:</p>
+        <pre class="code"><code>motorSpeed = <span class="n">5</span>;</code></pre>
+        <p>Read that line as: <strong>motorSpeed gets assigned the value 5.</strong> Not "motorSpeed equals 5" — <code class="inline">=</code> in code isn't the same as <code class="inline">=</code> in math class. It's an instruction: take what's on the right, and store it in the box on the left.</p>
+        <p>Usually you do both steps at once:</p>
+        <pre class="code"><code><span class="k">int</span> motorSpeed = <span class="n">5</span>;</code></pre>
+        <p>Read this the same way: <strong>motorSpeed, of type int, is assigned the value 5.</strong></p>
+        <p>A variable declared inside a method body, like everything here, is called a <strong>local variable</strong> — it only exists inside that method. (Java has other kinds of variables too — you'll meet those once classes and methods are on the table, starting in Ch.7.)</p>
+        <h2>Naming Variables (camelCase)</h2>
+        <p>A name must start with a letter and can't contain spaces. Java's style — you'll see this in every piece of code from here on — is <strong>camelCase</strong>: start lowercase, then capitalize the first letter of each new word.</p>
+        <pre class="code"><code><span class="k">double</span> maxSpeed = <span class="n">0.85</span>;   <span class="c">// not max_speed, not MaxSpeed</span>
+<span class="k">boolean</span> isReady = <span class="k">false</span>;</code></pre>
+        <p>Pick a name that says what the value <em>is</em>. <code class="inline">speed</code> tells you something; <code class="inline">x</code> doesn't.</p>
+        <h2>Worked Example</h2>
+        <pre class="code"><code><span class="k">int</span> motorSpeed = <span class="n">5</span>;         <span class="c">// a whole number — no decimal needed here</span>
+<span class="k">double</span> maxOutput = <span class="n">0.85</span>;    <span class="c">// a percentage like 85% — needs a decimal</span>
+<span class="k">boolean</span> isReady = <span class="k">false</span>;    <span class="c">// only ever true or false</span>
+<span class="t">String</span> robotName = <span class="s">"Titan"</span>; <span class="c">// text, built out of primitives under the hood</span>
+
+System.out.<span class="me">println</span>(<span class="s">"Robot "</span> + robotName + <span class="s">" is set to speed "</span> + motorSpeed);</code></pre>
+      `,
+      pitfalls: [
+        "Never put a variable's name inside quotes. <code class=\"inline\">System.out.println(\"motorSpeed\")</code> prints the literal word <code class=\"inline\">motorSpeed</code>, not the number stored in it. Only actual words/sentences go inside <code class=\"inline\">\"\"</code>; variables get attached with <code class=\"inline\">+</code>.",
+        "Case matters. <code class=\"inline\">motorSpeed</code> and <code class=\"inline\">motorspeed</code> are two different variables to Java. This doesn't cause an error you'll notice right away — it just quietly breaks something.",
+        "Match the type to the value. If a value has a decimal point, it needs <code class=\"inline\">double</code>, not <code class=\"inline\">int</code> — otherwise Java throws away everything after the decimal point."
+      ],
+      takeaways: [
+        "Java has exactly 8 primitive types. <code class=\"inline\">int</code>, <code class=\"inline\">long</code>, <code class=\"inline\">double</code>, <code class=\"inline\">float</code>, <code class=\"inline\">boolean</code> are the common ones in FRC code; <code class=\"inline\">byte</code>, <code class=\"inline\">short</code>, <code class=\"inline\">char</code> exist but are rarely used directly.",
+        "Everything else (<code class=\"inline\">String</code>, and every class you'll write) is built out of these 8 — <code class=\"inline\">String</code> is a sequence of <code class=\"inline\">char</code>s.",
+        "A variable is a named box that holds a value, and that value can change.",
+        "<code class=\"inline\">=</code> means \"gets assigned,\" not \"equals.\"",
+        "A variable declared inside a method is a <strong>local variable</strong> — it only exists in that method. There are other kinds too, covered starting in Ch.7.",
+        "Variable names use camelCase and should describe what the value is."
+      ],
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.02-variables-and-data-types.md (CSA 1.2)"
+    },
+    exercise: {
+      problem: `<p><strong>Debug the Shooter Status Report.</strong> A teammate wrote this status-report code for the shooter subsystem, but it has bugs — some won't compile, some compile but print the wrong thing. Find and fix all of them before checking the solution.</p>`,
+      code: `<span class="k">public class</span> <span class="t">ShooterStatus</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        <span class="k">int</span> targetRPM = <span class="n">4500.0</span>;
+        <span class="k">double</span> currentRPM = <span class="n">4480</span>
+        <span class="k">boolean</span> isAtSpeed = <span class="n">1</span>;
+        <span class="k">var</span> name = <span class="s">"Shooter"</span>
+
+        System.out.<span class="me">print</span>(<span class="s">"Subsystem: "</span>);
+        System.out.<span class="me">println</span>(<span class="s">"name"</span>);
+        System.out.<span class="me">println</span>(<span class="s">"Target RPM: "</span> + targetRPM);
+        System.out.<span class="me">println</span>(<span class="s">"At speed? "</span> + isAtSpeed);
+    }
+}`,
+      hints: [
+        "One variable is declared with a type that can't hold the value being assigned to it.",
+        "Two lines are missing something every Java statement needs.",
+        "<code class=\"inline\">boolean</code> only ever holds two specific literal values — <code class=\"inline\">1</code> isn't one of them.",
+        "Look closely at the <code class=\"inline\">println(\"name\")</code> line — is <code class=\"inline\">name</code> inside or outside the quotes?"
+      ],
+      solutionCode: `<span class="k">public class</span> <span class="t">ShooterStatus</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        <span class="k">double</span> targetRPM = <span class="n">4500.0</span>;   <span class="c">// bug: was int, but 4500.0 is a double literal</span>
+        <span class="k">double</span> currentRPM = <span class="n">4480</span>;    <span class="c">// bug: missing semicolon</span>
+        <span class="k">boolean</span> isAtSpeed = <span class="k">false</span>;   <span class="c">// bug: boolean can only be true/false, not 1</span>
+        <span class="k">var</span> name = <span class="s">"Shooter"</span>;        <span class="c">// bug: missing semicolon</span>
+
+        System.out.<span class="me">print</span>(<span class="s">"Subsystem: "</span>);
+        System.out.<span class="me">println</span>(name);      <span class="c">// bug: "name" printed literal text; needed unquoted</span>
+        System.out.<span class="me">println</span>(<span class="s">"Target RPM: "</span> + targetRPM);
+        System.out.<span class="me">println</span>(<span class="s">"At speed? "</span> + isAtSpeed);
+    }
+}`,
+      solutionNote: "That's 5 bugs once you count the quoted-variable mistake separately from the missing semicolons — worth noticing that \"a few obvious bugs\" often hides one more once you trace through carefully.",
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.02-variables-and-data-types.md (CSA 1.2, Debugging Challenge pattern)"
+    }
+  },
+  "2.2": {
+    title: "Expressions & Output",
+    ref: "2.2 — Expressions and Output (CSA 1.3)",
+    lesson: {
+      body: `
+        <h2>Printing Output</h2>
+        <p>Two ways to print in Java:</p>
+        <ul>
+          <li><code class="inline">System.out.println(value)</code> — prints, then moves to a new line.</li>
+          <li><code class="inline">System.out.print(value)</code> — prints, and stays on the same line.</li>
+        </ul>
+        <pre class="code"><code>System.out.<span class="me">print</span>(<span class="s">"Score: "</span>);
+System.out.<span class="me">println</span>(<span class="n">24</span>);
+<span class="c">// Output: Score: 24</span></code></pre>
+        <h2>Math Expressions</h2>
+        <p><code class="inline">+ - * /</code> work the same way you'd expect, with one big exception: <strong>dividing two whole numbers throws away the decimal part.</strong></p>
+        <pre class="code"><code>System.out.<span class="me">println</span>(<span class="n">7</span> / <span class="n">2</span>); <span class="c">// prints 3, not 3.5</span></code></pre>
+        <p>This is called <strong>truncating division</strong>, and it's the single most common source of "wrong answer, no error message" bugs you'll run into. If you want the decimal part, at least one of the two numbers needs to be a <code class="inline">double</code>:</p>
+        <pre class="code"><code>System.out.<span class="me">println</span>(<span class="n">7.0</span> / <span class="n">2</span>); <span class="c">// prints 3.5</span></code></pre>
+        <h2>Order of Operations</h2>
+        <p>Same rules as math class: <code class="inline">*</code> and <code class="inline">/</code> happen before <code class="inline">+</code> and <code class="inline">-</code>. Parentheses override that.</p>
+        <pre class="code"><code>System.out.<span class="me">println</span>(<span class="n">2</span> + <span class="n">3</span> * <span class="n">2</span>);   <span class="c">// 8</span>
+System.out.<span class="me">println</span>((<span class="n">2</span> + <span class="n">3</span>) * <span class="n">2</span>); <span class="c">// 10</span></code></pre>
+        <h2>The Remainder Operator (%)</h2>
+        <p><code class="inline">%</code> gives you what's left over after dividing. <code class="inline">5 % 2</code> is <code class="inline">1</code>, because 2 fits into 5 twice, with 1 left over.</p>
+        <pre class="code"><code><span class="k">int</span> totalSeconds = <span class="n">150</span>;
+System.out.<span class="me">println</span>(totalSeconds / <span class="n">60</span>); <span class="c">// 2 — whole minutes</span>
+System.out.<span class="me">println</span>(totalSeconds % <span class="n">60</span>); <span class="c">// 30 — leftover seconds</span>
+<span class="c">// 150 seconds = 2 minutes, 30 seconds</span></code></pre>
+      `,
+      pitfalls: [
+        "Dividing two whole numbers and expecting a decimal. It truncates instead — check whether at least one side is a <code class=\"inline\">double</code>.",
+        "Dividing by zero. Whole-number division by <code class=\"inline\">0</code> crashes the program. Decimal division by <code class=\"inline\">0.0</code> doesn't crash, but gives a nonsense result (<code class=\"inline\">Infinity</code> or <code class=\"inline\">NaN</code>) — a sign something's wrong upstream."
+      ],
+      takeaways: [
+        "<code class=\"inline\">print</code> stays on the line; <code class=\"inline\">println</code> moves to a new one.",
+        "Dividing two whole numbers truncates the decimal part instead of rounding.",
+        "Use <code class=\"inline\">*</code>/<code class=\"inline\">/</code> before <code class=\"inline\">+</code>/<code class=\"inline\">-</code>, unless parentheses say otherwise.",
+        "<code class=\"inline\">%</code> gives the remainder after division — useful for splitting a total into two units (like seconds into minutes and seconds)."
+      ],
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.03-expressions-and-output.md (CSA 1.3)"
+    },
+    exercise: {
+      problem: `<p><strong>Fill In the Missing Operators.</strong> The scoring calculator below is missing an operator on some lines (shown as a blank). Figure out which operator belongs on each blank so the printed output matches the comment above it, then predict the exact output before checking the solution.</p>`,
+      code: `<span class="k">public class</span> <span class="t">AutonScoreCalculator</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        <span class="c">// Total points scored across 3 auton legs: 4, 4, and 6</span>
+        System.out.<span class="me">println</span>(<span class="n">4</span>  <span class="n">4</span>  <span class="n">6</span>);
+
+        <span class="c">// Average points per leg, as a whole number (int division — ok to truncate here)</span>
+        System.out.<span class="me">println</span>(<span class="n">14</span>  <span class="n">3</span>);
+
+        <span class="c">// Remainder when dividing legs completed (5) by legs required (3)</span>
+        System.out.<span class="me">println</span>(<span class="n">5</span>  <span class="n">3</span>);
+    }
+}`,
+      hints: [
+        "Line 1 needs two operators, not one — read the comment carefully.",
+        "Line 2's comment explicitly says truncation is fine here — that's a clue about which types are involved, not which operator.",
+        "\"Remainder when dividing\" is a direct description of one specific operator from this lesson."
+      ],
+      solutionCode: `<span class="k">public class</span> <span class="t">AutonScoreCalculator</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        <span class="c">// Total points scored across 3 auton legs: 4, 4, and 6</span>
+        System.out.<span class="me">println</span>(<span class="n">4</span> + <span class="n">4</span> + <span class="n">6</span>); <span class="c">// 14</span>
+
+        <span class="c">// Average points per leg, as a whole number (int division — ok to truncate here)</span>
+        System.out.<span class="me">println</span>(<span class="n">14</span> / <span class="n">3</span>); <span class="c">// 4 — truncated from 4.666..., which the comment says is fine</span>
+
+        <span class="c">// Remainder when dividing legs completed (5) by legs required (3)</span>
+        System.out.<span class="me">println</span>(<span class="n">5</span> % <span class="n">3</span>); <span class="c">// 2</span>
+    }
+}`,
+      solutionNote: "Output: 14, 4, 2. The middle one is the one worth double-checking your instinct on — 14 / 3 is genuinely 4, not 4.67 and not 5, because both operands are int literals.",
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.03-expressions-and-output.md (CSA 1.3, Pay Calculator challenge pattern)"
+    }
+  },
+  "2.3": {
+    title: "Assignment & Input",
+    ref: "2.3 — Assignment and Input (CSA 1.4)",
+    lesson: {
+      body: `
+        <h2>Assignment, One More Time</h2>
+        <p><code class="inline">=</code> always has one variable on the left, and a value (or a math expression) on the right. Read it as "gets assigned," not "equals."</p>
+        <pre class="code"><code><span class="k">int</span> score = <span class="n">10</span> * <span class="n">2</span> + <span class="n">5</span>; <span class="c">// score is assigned the value 25</span></code></pre>
+        <p>Copying one variable into another only copies the value at that moment — it doesn't link them together.</p>
+        <pre class="code"><code><span class="k">int</span> x = <span class="n">3</span>;
+<span class="k">int</span> y = <span class="n">2</span>;
+x = y;   <span class="c">// x is now assigned a copy of y's value: 2</span>
+y = <span class="n">5</span>;   <span class="c">// y changes — x is still 2, unaffected</span></code></pre>
+        <h2>Every Variable Needs a Value First</h2>
+        <p>You can't use a variable in an expression before it's been assigned something, and the value has to match the type:</p>
+        <pre class="code"><code><span class="k">int</span> x = <span class="n">1</span>;
+<span class="k">double</span> y = <span class="n">2.2</span>;
+x = <span class="n">2</span> * y;   <span class="c">// won't compile — 2 * y is a double, and x is an int</span></code></pre>
+        <p>The fix here isn't to force it — it's to make <code class="inline">x</code> a <code class="inline">double</code> in the first place, since that's what it's actually meant to hold.</p>
+        <h2>Updating a Value Using Itself</h2>
+        <p>A common pattern: change a variable based on its own current value.</p>
+        <pre class="code"><code><span class="k">int</span> step = <span class="n">0</span>;
+step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of step, then stores the new result back into it</span></code></pre>
+        <p>(Lesson 2.5 covers a shorthand for this: <code class="inline">step++</code>.)</p>
+        <h2>Where "Input" Comes From</h2>
+        <p>Some value comes from outside your code, gets stored in a variable, and your code reacts to it. On a robot, that's a joystick or a sensor, not typed text — but it's the same idea: the variable holds whatever value showed up, and the rest of the code doesn't need to change no matter what that value is.</p>
+        <pre class="code"><code><span class="k">double</span> throttle = <span class="n">0.6</span>; <span class="c">// stands in for "whatever value the controller sends"</span>
+<span class="k">double</span> output = throttle * maxSpeed;</code></pre>
+      `,
+      pitfalls: [
+        "Using a variable before it has a value. Java won't let this compile — it's a safety net, not an inconvenience.",
+        "Assuming <code class=\"inline\">y = x</code> keeps them linked. It copies the value once. Changing <code class=\"inline\">x</code> later does nothing to <code class=\"inline\">y</code>."
+      ],
+      takeaways: [
+        "Read <code class=\"inline\">=</code> as \"gets assigned,\" not \"equals.\"",
+        "Copying a variable's value into another does not link them — each is independent afterward.",
+        "A variable must have a value, of a matching type, before it's used in an expression.",
+        "<code class=\"inline\">step = step + 1</code> uses the old value first, then overwrites the variable.",
+        "\"Input\" is any value that comes from outside your code — a joystick reading, a sensor, or typed text."
+      ],
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.04-assignment-and-input.md (CSA 1.4)"
+    },
+    exercise: {
+      problem: `<p><strong>Swap the Primary and Backup Auto Paths.</strong> Your drive team wants to swap which autonomous path is "primary" and which is "backup" without losing either <code class="inline">String</code> value — but the code below has a bug: it overwrites <code class="inline">primaryPath</code> before saving it anywhere, so its original value is lost forever.</p>`,
+      code: `<span class="k">public class</span> <span class="t">AutoPathSwap</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        <span class="t">String</span> primaryPath = <span class="s">"3-Piece-Left"</span>;
+        <span class="t">String</span> backupPath = <span class="s">"1-Piece-Safe"</span>;
+
+        <span class="c">// BUG: this loses the original primaryPath value before backupPath can use it</span>
+        primaryPath = backupPath;
+        backupPath = primaryPath;
+
+        System.out.<span class="me">println</span>(<span class="s">"Primary: "</span> + primaryPath);
+        System.out.<span class="me">println</span>(<span class="s">"Backup: "</span> + backupPath);
+    }
+}`,
+      hints: [
+        "You cannot swap two variables in just 2 lines without losing one value along the way.",
+        "Introduce a third variable to hold one value while you overwrite it.",
+        "The order matters: save the value you're about to overwrite <em>before</em> you overwrite it, not after."
+      ],
+      solutionCode: `<span class="k">public class</span> <span class="t">AutoPathSwap</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        <span class="t">String</span> primaryPath = <span class="s">"3-Piece-Left"</span>;
+        <span class="t">String</span> backupPath = <span class="s">"1-Piece-Safe"</span>;
+
+        <span class="t">String</span> temp = primaryPath;  <span class="c">// 1. save primaryPath's original value before it's lost</span>
+        primaryPath = backupPath;   <span class="c">// 2. now safe to overwrite primaryPath</span>
+        backupPath = temp;          <span class="c">// 3. backupPath gets the saved original value</span>
+
+        System.out.<span class="me">println</span>(<span class="s">"Primary: "</span> + primaryPath); <span class="c">// "1-Piece-Safe"</span>
+        System.out.<span class="me">println</span>(<span class="s">"Backup: "</span> + backupPath);   <span class="c">// "3-Piece-Left"</span>
+    }
+}`,
+      solutionNote: "This 3-step pattern (save, overwrite, restore-from-save) is the standard swap idiom anywhere you need to exchange two values — it comes up again swapping array elements during a sort (see Ch.28).",
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.04-assignment-and-input.md (CSA 1.4, variable-swap Parsons activity pattern)"
+    }
+  },
+  "2.4": {
+    title: "Casting & Ranges of Values",
+    ref: "2.4 — Casting and Ranges of Values (CSA 1.5)",
+    lesson: {
+      body: `
+        <h2>Converting Between Types (Casting)</h2>
+        <p>Put <code class="inline">(int)</code> or <code class="inline">(double)</code> right before a value to convert it to that type on the spot:</p>
+        <pre class="code"><code>(<span class="k">double</span>) <span class="n">1</span> / <span class="n">3</span>   <span class="c">// 0.333... — the 1 becomes a double first, then divides</span>
+(<span class="k">int</span>) <span class="n">3.6</span>        <span class="c">// 3 — cuts off everything after the decimal point</span></code></pre>
+        <p><code class="inline">(int)</code> always cuts off the decimal — it never rounds. <code class="inline">(int) 3.9</code> is <code class="inline">3</code>, not <code class="inline">4</code>.</p>
+        <p>If you actually want to round, add <code class="inline">0.5</code> first, then cast:</p>
+        <pre class="code"><code><span class="k">int</span> rounded = (<span class="k">int</span>)(<span class="n">5.7</span> + <span class="n">0.5</span>); <span class="c">// 6 — this is rounding, not truncating</span></code></pre>
+        <h2>The Fix for Truncating Division</h2>
+        <p>Lesson 2.2 showed that dividing two whole numbers cuts off the decimal. Casting one of them fixes it — but only if the cast happens <em>before</em> the division:</p>
+        <pre class="code"><code><span class="k">int</span> total = <span class="n">17</span>;
+<span class="k">int</span> games = <span class="n">5</span>;
+
+<span class="k">double</span> average = (<span class="k">double</span>) total / games;   <span class="c">// correct: 3.4</span>
+<span class="k">double</span> wrong    = (<span class="k">double</span>) (total / games); <span class="c">// wrong: divides as whole numbers first (3), then casts: 3.0</span></code></pre>
+        <h2>Whole Numbers Have a Limit</h2>
+        <p>An <code class="inline">int</code> can only hold values in a fixed range (roughly ±2.1 billion). Go past that limit, and the number silently wraps around to a wrong value — no error, no warning.</p>
+        <pre class="code"><code>System.out.<span class="me">println</span>(<span class="t">Integer</span>.MAX_VALUE + <span class="n">1</span>); <span class="c">// wraps to the smallest possible int</span></code></pre>
+        <p>This is unlikely to come up in a match, but it's a real risk for a counter that keeps growing and is never reset.</p>
+        <h2>Decimals Have a Precision Limit Too</h2>
+        <p>A <code class="inline">double</code> can only store so many digits (about 14-15). Beyond that, the extra digits get quietly rounded off. This is why comparing two decimals with <code class="inline">==</code> is risky — two values that "should" be equal might differ by a tiny rounding amount.</p>
+      `,
+      pitfalls: [
+        "Casting after dividing instead of before. The division already happened as whole numbers by the time the cast runs — putting the cast in the wrong spot doesn't fix anything.",
+        "Assuming a cast rounds. <code class=\"inline\">(int)</code> cuts off the decimal. Rounding needs the add-0.5-then-cast trick."
+      ],
+      takeaways: [
+        "<code class=\"inline\">(int)</code> and <code class=\"inline\">(double)</code> convert a value's type on the spot; <code class=\"inline\">(int)</code> always cuts off decimals, never rounds.",
+        "To fix truncating division, cast one of the numbers <em>before</em> dividing — position matters.",
+        "<code class=\"inline\">int</code> values have a fixed range; going past it silently wraps to a wrong value.",
+        "<code class=\"inline\">double</code> values have a precision limit — tiny rounding differences can make <code class=\"inline\">==</code> unreliable."
+      ],
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.05-casting-and-ranges-of-values.md (CSA 1.5)"
+    },
+    exercise: {
+      problem: `<p><strong>"Why Is My Average Always 0?"</strong> A teammate is trying to compute the average vision-pipeline latency from 4 samples, but no matter what the 4 numbers are, this always prints <code class="inline">0</code>. Find the bug and fix it.</p>`,
+      code: `<span class="k">public class</span> <span class="t">LatencyAverage</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        <span class="k">int</span> sample1 = <span class="n">8</span>;
+        <span class="k">int</span> sample2 = <span class="n">12</span>;
+        <span class="k">int</span> sample3 = <span class="n">9</span>;
+        <span class="k">int</span> sample4 = <span class="n">3</span>;
+
+        <span class="k">int</span> total = sample1 + sample2 + sample3 + sample4; <span class="c">// 32</span>
+        <span class="k">int</span> count = <span class="n">4</span>;
+
+        <span class="k">double</span> average = total / count; <span class="c">// always prints 0 — why?</span>
+        System.out.<span class="me">println</span>(<span class="s">"Average latency: "</span> + average + <span class="s">" ms"</span>);
+    }
+}`,
+      hints: [
+        "average is correctly declared as a double — so why is it still wrong? Look at the right-hand side, not the variable itself.",
+        "What are the types of total and count? What type does total / count evaluate to, before it's ever assigned to anything?",
+        "Declaring the variable that receives a division as double does not change how the division itself is performed."
+      ],
+      solutionCode: `<span class="k">public class</span> <span class="t">LatencyAverage</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        <span class="k">int</span> sample1 = <span class="n">8</span>;
+        <span class="k">int</span> sample2 = <span class="n">12</span>;
+        <span class="k">int</span> sample3 = <span class="n">9</span>;
+        <span class="k">int</span> sample4 = <span class="n">3</span>;
+
+        <span class="k">int</span> total = sample1 + sample2 + sample3 + sample4; <span class="c">// 32</span>
+        <span class="k">int</span> count = <span class="n">4</span>;
+
+        <span class="k">double</span> average = (<span class="k">double</span>) total / count; <span class="c">// cast BEFORE dividing: 8.0</span>
+        System.out.<span class="me">println</span>(<span class="s">"Average latency: "</span> + average + <span class="s">" ms"</span>);
+    }
+}`,
+      solutionNote: "The bug: total / count is int / int, which truncates to 8 before that result is ever assigned into the double average. The fix casts total to double first, forcing the whole division to be computed as a double. Try it with total = 31 to see the difference: 31/4 truncates to 7, while (double) 31/4 correctly gives 7.75.",
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.05-casting-and-ranges-of-values.md (CSA 1.5, average-of-ints casting pattern)"
+    }
+  },
+  "2.5": {
+    title: "Compound Assignment Operators",
+    ref: "2.5 — Compound Assignment Operators (CSA 1.6)",
+    lesson: {
+      body: `
+        <h2>A Shortcut for "Update Using the Old Value"</h2>
+        <p><code class="inline">x = x + 1;</code> comes up so often that Java has a shortcut: <code class="inline">x += 1;</code>. Same idea works for every operator: <code class="inline">+= -= *= /= %=</code>.</p>
+        <pre class="code"><code>score += <span class="n">10</span>;   <span class="c">// same as: score = score + 10;</span>
+power *= <span class="n">0.5</span>;  <span class="c">// same as: power = power * 0.5;</span></code></pre>
+        <h2>Increment and Decrement</h2>
+        <p>Adding or subtracting exactly 1 is common enough to get its own shortcut: <code class="inline">++</code> and <code class="inline">--</code>.</p>
+        <pre class="code"><code>step++;   <span class="c">// same as step += 1, same as step = step + 1</span>
+timer--;</code></pre>
+        <h2>A Real Example: Ramping Up Power</h2>
+        <p>Instead of jumping straight to full power, increase it gradually, a little bit each time:</p>
+        <pre class="code"><code><span class="k">double</span> power = <span class="n">0.0</span>;
+<span class="k">double</span> rampRate = <span class="n">0.02</span>; <span class="c">// add 2% each time this runs</span>
+
+power += rampRate;
+<span class="k">if</span> (power > targetPower) {
+    power = targetPower; <span class="c">// stop it from going past the target</span>
+}</code></pre>
+        <p>That <code class="inline">if</code> check matters — without it, <code class="inline">power</code> would just keep climbing past where you wanted it to stop.</p>
+        <h2>Tracing Code by Hand</h2>
+        <p>Tracing means walking through code line by line, by hand, updating each variable as you go — a genuinely useful way to find bugs when just reading the code isn't enough.</p>
+        <pre class="code"><code><span class="k">int</span> step = <span class="n">0</span>;
+<span class="k">int</span> delta = <span class="n">5</span>;
+<span class="k">int</span> total = <span class="n">1</span>;
+
+step++;              <span class="c">// step: 1</span>
+delta -= <span class="n">3</span>;          <span class="c">// delta: 2</span>
+total = step + delta; <span class="c">// total: 1 + 2 = 3</span>
+step = total * <span class="n">2</span>;    <span class="c">// step: 3 * 2 = 6</span>
+delta %= <span class="n">2</span>;          <span class="c">// delta: 2 % 2 = 0</span>
+total--;             <span class="c">// total: 2</span></code></pre>
+        <p>Final values: <code class="inline">step = 6</code>, <code class="inline">delta = 0</code>, <code class="inline">total = 2</code>.</p>
+      `,
+      pitfalls: [
+        "Forgetting the clamp when ramping. <code class=\"inline\">power += rampRate</code> with no limit check will just keep climbing past your target.",
+        "Skipping ahead while tracing. Go one line at a time, in order — skipping ahead is how you miss the actual bug."
+      ],
+      takeaways: [
+        "<code class=\"inline\">+= -= *= /= %=</code> update a variable using its current value, then store the result back.",
+        "<code class=\"inline\">++</code> and <code class=\"inline\">--</code> are shortcuts for adding or subtracting exactly 1.",
+        "Ramping a motor's power up gradually is a real use of <code class=\"inline\">+=</code>, checked against a limit each time.",
+        "Tracing code by hand — one line, one value at a time — is a real debugging skill."
+      ],
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.06-compound-assignment-operators.md (CSA 1.6)"
+    },
+    exercise: {
+      problem: `<p><strong>Trace the Ramp.</strong> Below is a simplified motor-ramping loop, run for exactly 4 iterations (imagine the scheduler calling it 4 times, 20ms apart). Without running it, write a trace table tracking <code class="inline">currentPower</code> and <code class="inline">iterationsAtTarget</code> after each iteration. Then check your table against the solution.</p>`,
+      code: `<span class="k">double</span> currentPower = <span class="n">0.20</span>;
+<span class="k">double</span> targetPower = <span class="n">0.30</span>;
+<span class="k">double</span> rampRate = <span class="n">0.05</span>;
+<span class="k">int</span> iterationsAtTarget = <span class="n">0</span>;
+
+<span class="c">// --- one iteration of the loop, run 4 times total ---</span>
+currentPower += rampRate;
+<span class="k">if</span> (currentPower > targetPower) {
+    currentPower = targetPower;
+}
+<span class="k">if</span> (currentPower == targetPower) {
+    iterationsAtTarget++;
+}`,
+      hints: [
+        "Process one iteration completely (all 3 lines) before moving to the next — don't skip ahead.",
+        "The clamp only fires once currentPower has actually overshot — check the comparison carefully each time.",
+        "Once currentPower reaches targetPower exactly, does it ever change again on later iterations? Trace it and see."
+      ],
+      solutionCode: null,
+      solutionTable: {
+        headers: ["Iteration", "currentPower after +=", "Clamped?", "currentPower final", "iterationsAtTarget"],
+        rows: [
+          ["1", "0.25", "no (0.25 ≤ 0.30)", "0.25", "0"],
+          ["2", "0.30", "no (0.30 is not > 0.30)", "0.30", "1 (0.30 == 0.30)"],
+          ["3", "0.35", "yes → 0.30", "0.30", "2"],
+          ["4", "0.35", "yes → 0.30", "0.30", "3"]
+        ]
+      },
+      solutionNote: "Final values after 4 iterations: currentPower = 0.30, iterationsAtTarget = 3. The subtle part worth noticing: on iteration 2, currentPower reaches exactly 0.30 without ever triggering the clamp — the clamp's > comparison only fires on iteration 3, once addition has pushed it slightly past. This is exactly why the clamp exists as its own separate check, rather than assuming the ramp will \"naturally\" stop at the target.",
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.06-compound-assignment-operators.md (CSA 1.6, trace-table pattern)"
+    }
+  }
+};
+
+let currentItem = "2.1";
+let currentTab = "lesson";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; currentTab = 'lesson'; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  let html = `
+    <div class="tabs">
+      <div class="tab lesson ${currentTab === 'lesson' ? 'on' : ''}" data-tab="lesson">Lesson</div>
+      <div class="tab exercise ${currentTab === 'exercise' ? 'on' : ''}" data-tab="exercise">Exercise</div>
+    </div>
+  `;
+  if (currentTab === 'lesson'){
+    const l = it.lesson;
+    html += `
+      <div class="doc">
+        <h1 class="doctitle">${it.title}</h1>
+        <div class="refline">Outline ref: ${it.ref}</div>
+        <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+        ${l.body}
+        <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${l.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+        <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${l.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+        <div class="prov"><strong>Derived from</strong> ${l.prov}</div>
+      </div>
+    `;
+  } else {
+    const e = it.exercise;
+    html += `
+      <div class="doc">
+        <h1 class="doctitle">${it.title} — Exercise</h1>
+        <div class="refline">Outline ref: ${it.ref}</div>
+        <div class="statusline">&nbsp;</div>
+        <div class="problembox">${e.problem}</div>
+        <pre class="code"><code>${e.code}</code></pre>
+        <div class="pitfalls"><div class="lbl">Hints</div><ul>${e.hints.map(h => `<li>${h}</li>`).join('')}</ul></div>
+        <details class="solution">
+          <summary>Show Solution</summary>
+          <div class="solbody">
+            ${e.solutionCode ? `<pre class="code"><code>${e.solutionCode}</code></pre>` : ''}
+            ${e.solutionTable ? `<table class="trace"><thead><tr>${e.solutionTable.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${e.solutionTable.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>` : ''}
+            <p style="font-size:14px;line-height:1.6;color:var(--ink-soft);max-width:62ch;">${e.solutionNote}</p>
+          </div>
+        </details>
+        <div class="prov"><strong>Derived from</strong> ${e.prov}</div>
+      </div>
+    `;
+  }
+  host.innerHTML = html;
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => { currentTab = tab.dataset.tab; renderMain(); });
+  });
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.1 — Getting Started (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.chlabel{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft);padding:6px 10px 8px;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+.item.noncode .iref{color:var(--ink-soft);}
+
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+
+.tabs{display:flex;gap:8px;margin-bottom:28px;border-bottom:1px solid var(--line);}
+.tab{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;padding:10px 4px;margin-right:18px;color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.on.lesson{color:var(--accent);border-bottom-color:var(--accent);}
+.tab.on.exercise{color:var(--gold);border-bottom-color:var(--gold);}
+
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:0 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+
+details.solution{background:var(--card);border:1px solid var(--card-line);border-radius:8px;margin:24px 0;box-shadow:var(--shadow);}
+details.solution summary{cursor:pointer;list-style:none;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--gold);padding:14px 18px;display:flex;align-items:center;gap:8px;}
+details.solution summary::-webkit-details-marker{display:none;}
+details.solution summary::before{content:'▸';transition:transform .15s;}
+details.solution[open] summary::before{transform:rotate(90deg);}
+details.solution .solbody{padding:0 18px 18px;}
+
+.problembox{background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:8px;padding:18px 20px;margin-bottom:20px;}
+.problembox p{margin-bottom:0;}
+.problembox p + p{margin-top:12px;}
+
+.emptynote{color:var(--ink-soft);font-size:15px;line-height:1.7;}
+
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.1 — Getting Started</h1>
+  <p class="sub">shockwave-curriculum · draft lessons &amp; exercises, under review.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Content and feedback both still in progress.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "1.1": {
+    title: "Why Java for FRC?",
+    ref: "1.1 — Why Java for FRC?",
+    noLesson: true,
+    note: "This item is the deck's original motivational slide (existing, pulled verbatim) — no CSA source, so no Lesson/Exercise applies here."
+  },
+  "1.2": {
+    title: "Intro to Algorithms, Programming & Compilers",
+    ref: "1.2 — Intro to Algorithms, Programming and Compilers (CSA 1.1)",
+    lesson: {
+      body: `
+        <h2>Algorithms</h2>
+        <p>An algorithm is just a set of ordered steps to solve a problem — a recipe, directions to a house, and a Java program are all algorithms. Steps run in order, one at a time — this is called <strong>sequencing</strong>.</p>
+        <p>Before writing real code, it helps to plan the steps first: in plain English, a diagram, or <strong>pseudocode</strong> (simplified fake-code written on paper, not run by anything). Getting the steps straight on paper first is what turns a half-formed idea into code that actually works.</p>
+        <h2>Your First Java Program</h2>
+        <p>Every Java program lives inside a <code class="inline">class</code>, and every class you run needs a <code class="inline">main</code> method — that's where the program starts running.</p>
+        <pre class="code"><code><span class="k">public class</span> <span class="t">MyClass</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        System.out.<span class="me">println</span>(<span class="s">"Hi there!"</span>);
+    }
+}</code></pre>
+        <p>Every open curly brace <code class="inline">{</code> needs a matching close <code class="inline">}</code>. The file itself has to be named the same as the class — <code class="inline">MyClass.java</code> for <code class="inline">public class MyClass</code>.</p>
+        <h2>Every Statement Ends With a Semicolon</h2>
+        <p>Each individual instruction is a <strong>statement</strong>, and every statement ends with <code class="inline">;</code> — think of it like a period ending a sentence.</p>
+        <pre class="code"><code>System.out.<span class="me">println</span>(<span class="s">"Hi there!"</span>);</code></pre>
+        <p>Miss it, and the program won't compile. This is one of the most common mistakes when you're starting out — expect it, don't stress about it.</p>
+        <p>Not everything ends in <code class="inline">;</code>. A line that opens a block, like the <code class="inline">class</code> or <code class="inline">main</code> line above, has no semicolon before its <code class="inline">{</code>.</p>
+        <h2>Compiling: How Your Code Actually Runs</h2>
+        <p>Computers don't understand Java directly. A <strong>compiler</strong> checks your code for mistakes and translates it into something the computer can run. If it finds a mistake, it stops and tells you — that's a <strong>syntax error</strong>.</p>
+        <p>For this course, you have two ways to write and run your code:</p>
+        <ul>
+          <li>Use your own IDE, like <strong>VS Code</strong> with the Java extension — genuinely how most FRC teams write real robot code, so it's good practice either way. Write and run it there, then copy your finished code into this course's checker when an exercise asks for it.</li>
+          <li>Use this course's built-in checker directly — no copying needed. This part of the course is still being built, so it's not ready yet.</li>
+        </ul>
+        <p>For now, the first option is what actually works: write and run your code in a real IDE (or an online one, like <strong>Replit</strong>), then paste the result in when an exercise asks for it. <em>(This section will get an update once the built-in checker exists.)</em></p>
+        <h2>Keywords and Naming</h2>
+        <p>Words like <code class="inline">public</code>, <code class="inline">class</code>, and <code class="inline">void</code> are <strong>keywords</strong> — reserved words with a fixed meaning in Java. Keywords are always lowercase.</p>
+        <p>Everything else — every name you pick yourself — follows one of three styles:</p>
+        <ul>
+          <li><strong>lowerCamelCase</strong> — variables and methods start lowercase, then capitalize each new word: <code class="inline">motorSpeed</code>, <code class="inline">calculateTotal()</code>.</li>
+          <li><strong>PascalCase</strong> (also called UpperCamelCase) — classes and interfaces capitalize every word, including the first: <code class="inline">System</code>, <code class="inline">String</code>, or a class you write yourself like <code class="inline">Drivetrain</code>.</li>
+          <li><strong>SCREAMING_SNAKE_CASE</strong> — constants (values that never change) are all uppercase with underscores between words: <code class="inline">MAX_SPEED</code>, <code class="inline">PI</code>. You'll see this style starting in Ch.23.</li>
+        </ul>
+        <p>That's why <code class="inline">System.out.println(...)</code> looks the way it does: <code class="inline">System</code> is a class, so it's PascalCase. <code class="inline">println</code> is a method — here it's just one word, so there's no second word to capitalize, but it still starts lowercase like every method name does.</p>
+        <h2>Syntax Errors vs. Run-Time Errors</h2>
+        <ul>
+          <li>A <strong>syntax error</strong> is caught by the compiler, before your program ever runs — a missing <code class="inline">;</code>, an unmatched <code class="inline">{</code> or <code class="inline">"</code>.</li>
+          <li>A <strong>run-time error</strong> happens while the program is running, after it already compiled — like dividing by zero.</li>
+        </ul>
+        <p>Both are normal. Finding and fixing errors is called <strong>debugging</strong> — informally, an error is a "bug." If you're stuck, explaining your code line-by-line out loud — even to an inanimate object, a real technique called "rubber duck debugging" — often reveals the problem before you finish explaining it.</p>
+        <h2>Comments</h2>
+        <p><code class="inline">//</code> starts a comment that runs to the end of the line; <code class="inline">/* ... */</code> comments out everything in between, even across multiple lines. The compiler ignores comments completely — they exist to explain your code to yourself and your teammates.</p>
+        <pre class="code"><code><span class="c">// this line is ignored by the compiler</span>
+<span class="k">int</span> score = <span class="n">10</span>; <span class="c">// so is this part, after the //</span></code></pre>
+      `,
+      pitfalls: [
+        "Missing a semicolon. The single most common first error — check the end of the line the compiler points at, and the line just before it.",
+        "Mismatched capitalization. <code class=\"inline\">System</code> is capitalized (it's a class); <code class=\"inline\">public</code>, <code class=\"inline\">class</code>, <code class=\"inline\">void</code> are not (they're keywords). Java is case-sensitive everywhere.",
+        "Trusting the error's line number completely. The compiler tells you where it noticed the problem, which is sometimes a line or two after where the actual mistake is."
+      ],
+      takeaways: [
+        "An algorithm is an ordered set of steps, run one at a time (sequencing) — you already use these outside of code.",
+        "Planning steps in plain English or pseudocode before coding turns a half-formed idea into working code.",
+        "Every Java program has a <code class=\"inline\">class</code>, and a <code class=\"inline\">main</code> method where it starts running.",
+        "Every statement ends with <code class=\"inline\">;</code>.",
+        "Three naming styles: lowerCamelCase (variables/methods), PascalCase (classes/interfaces), SCREAMING_SNAKE_CASE (constants).",
+        "A compiler checks your code and translates it to run; a syntax error is a mistake it catches before your program ever runs.",
+        "Write and run code in a real IDE (like VS Code) or an online one, then paste it in when an exercise asks for it.",
+        "<code class=\"inline\">//</code> and <code class=\"inline\">/* */</code> are comments — the compiler ignores them completely."
+      ],
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.01-introduction-to-algorithms-programming-and-compilers.md (CSA 1.1)"
+    },
+    exercise: {
+      problem: `<p><strong>Fix the First Program.</strong> This program is supposed to print two lines, but it won't compile. Find every mistake and fix it. Write your code in a real IDE (or an online one) first, get it running, then check it against the solution below.</p>`,
+      code: `<span class="k">public class</span> <span class="t">Greeting</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        System.out.<span class="me">println</span>(<span class="s">"Welcome to the team!"</span>)
+        system.out.<span class="me">println</span>(<span class="s">"Let's write some Java."</span>);
+    }
+}`,
+      hints: [
+        "Every statement needs something at the end of it — check both lines.",
+        "Java is case-sensitive. Is every word spelled with the capitalization Java expects?",
+        "Every opening quote <code class=\"inline\">\"</code> needs a matching closing quote."
+      ],
+      solutionCode: `<span class="k">public class</span> <span class="t">Greeting</span>
+{
+    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
+    {
+        System.out.<span class="me">println</span>(<span class="s">"Welcome to the team!"</span>);       <span class="c">// was missing a semicolon</span>
+        System.out.<span class="me">println</span>(<span class="s">"Let's write some Java."</span>);      <span class="c">// "system" -> "System"</span>
+    }
+}`,
+      solutionNote: "Two separate mistakes were hiding in that second line — a capitalization error (system instead of System) and a missing closing quote in the original. This is normal: the compiler stops at the first error it finds, so fixing one bug sometimes reveals another one right behind it.",
+      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.01-introduction-to-algorithms-programming-and-compilers.md (CSA 1.1, Debugging Challenge pattern)"
+    }
+  }
+};
+
+let currentItem = "1.2";
+let currentTab = "lesson";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '') + (it.noLesson ? ' noncode' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; currentTab = 'lesson'; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+
+  if (it.noLesson){
+    host.innerHTML = `<div class="doc"><h1 class="doctitle">${it.title}</h1><div class="refline">Outline ref: ${it.ref}</div><p class="emptynote" style="margin-top:24px;">${it.note}</p></div>`;
+    return;
+  }
+
+  let html = `
+    <div class="tabs">
+      <div class="tab lesson ${currentTab === 'lesson' ? 'on' : ''}" data-tab="lesson">Lesson</div>
+      <div class="tab exercise ${currentTab === 'exercise' ? 'on' : ''}" data-tab="exercise">Exercise</div>
+    </div>
+  `;
+  if (currentTab === 'lesson'){
+    const l = it.lesson;
+    html += `
+      <div class="doc">
+        <h1 class="doctitle">${it.title}</h1>
+        <div class="refline">Outline ref: ${it.ref}</div>
+        <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+        ${l.body}
+        <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${l.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+        <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${l.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+        <div class="prov"><strong>Derived from</strong> ${l.prov}</div>
+      </div>
+    `;
+  } else {
+    const e = it.exercise;
+    html += `
+      <div class="doc">
+        <h1 class="doctitle">${it.title} — Exercise</h1>
+        <div class="refline">Outline ref: ${it.ref}</div>
+        <div class="statusline">&nbsp;</div>
+        <div class="problembox">${e.problem}</div>
+        <pre class="code"><code>${e.code}</code></pre>
+        <div class="pitfalls"><div class="lbl">Hints</div><ul>${e.hints.map(h => `<li>${h}</li>`).join('')}</ul></div>
+        <details class="solution">
+          <summary>Show Solution</summary>
+          <div class="solbody">
+            ${e.solutionCode ? `<pre class="code"><code>${e.solutionCode}</code></pre>` : ''}
+            <p style="font-size:14px;line-height:1.6;color:var(--ink-soft);max-width:62ch;">${e.solutionNote}</p>
+          </div>
+        </details>
+        <div class="prov"><strong>Derived from</strong> ${e.prov}</div>
+      </div>
+    `;
+  }
+  host.innerHTML = html;
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => { currentTab = tab.dataset.tab; renderMain(); });
+  });
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
