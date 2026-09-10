@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.5 — Control Structures (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.5 — Control Structures</h1>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lessons only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "5.1-5.2": {
+    title: "Control Structures: if Statements & For Loops",
+    ref: "5.1 (if Statements, CSA 2.3) + 5.2 (For Loops, CSA 2.8)",
+    body: `
+      <h2>if Statements: One-Way and Two-Way Selection</h2>
+      <p>An <code class="inline">if</code> statement runs its body only when a boolean condition is true:</p>
+      <pre class="code"><code><span class="k">if</span> (joystick.<span class="me">getRawButton</span>(<span class="n">1</span>)) {
+    intake.<span class="me">spin</span>(<span class="n">0.5</span>);
+}</code></pre>
+      <p>Add an <code class="inline">else</code> for a second branch that runs when the condition is false:</p>
+      <pre class="code"><code><span class="k">if</span> (joystick.<span class="me">getRawButton</span>(<span class="n">1</span>)) {
+    intake.<span class="me">spin</span>(<span class="n">0.5</span>);
+} <span class="k">else</span> {
+    intake.<span class="me">stop</span>();
+}</code></pre>
+      <p>Always use curly braces, even for a single statement — Java doesn't require them, but skipping them is exactly how the classic "which statement is actually inside the if" bug happens.</p>
+      <h2>The Classic = vs == Mistake</h2>
+      <p>One <code class="inline">=</code> assigns a value; two <code class="inline">==</code> test whether a value equals something. Writing <code class="inline">if (isCold = true)</code> inside a condition compiles (it's a legal assignment expression) but silently does the wrong thing — it assigns <code class="inline">true</code> to <code class="inline">isCold</code> and the condition is always true, regardless of what <code class="inline">isCold</code> was before.</p>
+      <h2>For Loops: Three Parts, One Line</h2>
+      <p>A <code class="inline">for</code> loop bundles the three steps of a loop — initialize, test, update — into one header:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i < sensors.length; i++) {
+    <span class="k">if</span> (sensors[i].<span class="me">isFaulty</span>()) {
+        <span class="me">report</span>(sensors[i]);
+    }
+}</code></pre>
+      <p>The three parts are always separated by semicolons, in this order: initialize the loop variable, test it, update it. Starting at <code class="inline">0</code> pairs naturally with <code class="inline">&lt;</code>; starting at <code class="inline">1</code> pairs naturally with <code class="inline">&lt;=</code> — pick whichever matches how many times you actually want to run.</p>
+    `,
+    pitfalls: [
+      "Missing curly braces. Without them, only the very next line is actually part of the if/loop body — everything after it runs unconditionally, every time.",
+      "<code class=\"inline\">=</code> instead of <code class=\"inline\">==</code> in a condition. A real, silent bug — the code compiles and the condition is always true.",
+      "Off-by-one in a for loop's bound. <code class=\"inline\">i < sensors.length</code> visits every valid index; <code class=\"inline\">i <= sensors.length</code> runs one iteration too many and reads past the end."
+    ],
+    takeaways: [
+      "An <code class=\"inline\">if</code> runs its body only when its condition is true; an <code class=\"inline\">else</code> gives it a second branch for when it's false.",
+      "Always use curly braces around a conditional or loop body.",
+      "<code class=\"inline\">==</code> tests equality; <code class=\"inline\">=</code> assigns. Confusing them compiles but silently breaks the logic.",
+      "A <code class=\"inline\">for</code> loop's header has three parts — initialize, test, update — always in that order, separated by semicolons."
+    ],
+    prov: "Deck context: mechacoder-test/src/lessons/java-1.js, slide 5 (\"CONTROL STRUCTURES\")"
+  },
+  "5.3": {
+    title: "Algorithms with Selection and Repetition",
+    ref: "5.3 — Algorithms with Selection and Repetition (CSA 2.1)",
+    body: `
+      <h2>The Three Building Blocks</h2>
+      <p>Every algorithm, no matter how complex, is built from just three ingredients:</p>
+      <ul>
+        <li><strong>Sequence</strong> — steps run in order, one after another.</li>
+        <li><strong>Selection</strong> — branch based on a true/false decision (<code class="inline">if</code>/<code class="inline">else</code>).</li>
+        <li><strong>Repetition</strong> — repeat a block until some condition is met (loops).</li>
+      </ul>
+      <p>That's genuinely it. Every autonomous routine, every teleop control loop, every piece of robot code you'll ever write is some combination of these three.</p>
+      <h2>Planning Before Coding</h2>
+      <p>For anything beyond a couple of lines, it helps to plan the steps before writing real Java — in plain English, a diagram, or <strong>pseudocode</strong> (informal step-by-step notes that aren't real code, but capture the sequence/selection/repetition structure). This is the same idea from Lesson 1.2, applied to a bigger problem.</p>
+      <p>Pseudocode for a simple autonomous routine:</p>
+      <pre class="code"><code>Drive forward until the distance sensor reads &lt; 12 inches
+If a game piece is detected, run the intake
+Otherwise, back up and try a different path</code></pre>
+      <p>Only after the steps are clear does it make sense to translate each line into real Java.</p>
+    `,
+    pitfalls: [
+      "Skipping the planning step for a multi-branch routine. Jumping straight to code for anything with several conditions or a loop is exactly how logic errors sneak in — a wrong branch order, a missed case.",
+      "Assuming \"selection\" only means <code class=\"inline\">if</code>. Any true/false branching decision counts, including the conditions inside loops."
+    ],
+    takeaways: [
+      "Every algorithm is built from sequence, selection, and repetition — nothing else is needed.",
+      "Pseudocode (informal step-by-step notes) is a real planning tool, not busywork — use it before writing real code for anything with multiple branches or a loop."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.01-algorithms-with-selection-and-repetition.md (CSA 2.1)"
+  },
+  "5.4": {
+    title: "Boolean Expressions",
+    ref: "5.4 — Boolean Expressions (CSA 2.2)",
+    body: `
+      <h2>Relational Operators</h2>
+      <p>Six operators compare values and always produce <code class="inline">true</code> or <code class="inline">false</code>:</p>
+      <pre class="code"><code>==   <span class="c">// equals</span>
+!=   <span class="c">// does not equal</span>
+&lt;    <span class="c">// less than</span>
+&gt;    <span class="c">// greater than</span>
+&lt;=   <span class="c">// less than or equal to</span>
+&gt;=   <span class="c">// greater than or equal to</span></code></pre>
+      <pre class="code"><code><span class="k">double</span> battery = <span class="n">11.8</span>;
+System.out.<span class="me">println</span>(battery &lt; <span class="n">12.0</span>);  <span class="c">// true — low battery</span>
+System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</span>); <span class="c">// false</span></code></pre>
+      <h2>Equality: Primitives vs. Objects</h2>
+      <p><code class="inline">==</code> on primitives (<code class="inline">int</code>, <code class="inline">double</code>, <code class="inline">boolean</code>) compares the actual values — exactly what you'd expect. <code class="inline">==</code> on objects compares whether two variables refer to the <em>same object in memory</em>, not whether their contents look the same. Two separately-built <code class="inline">TalonFX</code> objects with identical settings are still two different objects — <code class="inline">==</code> between them is <code class="inline">false</code>. (Object equality gets its own full treatment in Ch.6, once Strings are introduced.)</p>
+      <h2>Divisibility with the Remainder Operator</h2>
+      <p><code class="inline">%</code> (from Ch.2) is how you test whether a number divides evenly into another:</p>
+      <pre class="code"><code>(number % 2 == 0)  <span class="c">// true if number is even</span>
+(number % 2 != 0)  <span class="c">// true if number is odd</span>
+(number % x == 0)  <span class="c">// true if number is evenly divisible by x</span></code></pre>
+    `,
+    pitfalls: [
+      "Using <code class=\"inline\">==</code> on objects expecting a content comparison. It checks \"same object,\" not \"same values\" — two different but identical-looking objects compare unequal.",
+      "Testing oddness with <code class=\"inline\">num % 2 == 1</code>. This looks right but fails for negative odd numbers (their remainder is <code class=\"inline\">-1</code>, not <code class=\"inline\">1</code>). Use <code class=\"inline\">num % 2 != 0</code> instead — it works for both signs."
+    ],
+    takeaways: [
+      "Relational operators (<code class=\"inline\">== != < > <= >=</code>) always produce a boolean result.",
+      "<code class=\"inline\">==</code> on primitives compares values; <code class=\"inline\">==</code> on objects compares identity (same object), not content.",
+      "<code class=\"inline\">%</code> tests divisibility — <code class=\"inline\">num % 2 == 0</code> for even, <code class=\"inline\">num % 2 != 0</code> for odd (not <code class=\"inline\">== 1</code>, which breaks on negatives)."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.02-boolean-expressions.md (CSA 2.2)"
+  },
+  "5.5": {
+    title: "Nested if Statements",
+    ref: "5.5 — Nested if Statements (CSA 2.4)",
+    body: `
+      <h2>Multiway Selection with else if</h2>
+      <p>Chain <code class="inline">else if</code> to pick between three or more paths — only the first true branch runs:</p>
+      <pre class="code"><code><span class="k">if</span> (distance &lt; <span class="n">1.0</span>) {
+    state = IntakeState.CLOSE;
+} <span class="k">else if</span> (distance &lt; <span class="n">3.0</span>) {
+    state = IntakeState.MID;
+} <span class="k">else</span> {
+    state = IntakeState.FAR;
+}</code></pre>
+      <p>A trailing plain <code class="inline">else</code> (no condition) catches everything not already matched — it's optional, but leaving it off means "do nothing" is a real possible outcome.</p>
+      <h2>Chained vs. Separate ifs</h2>
+      <p><code class="inline">else if</code> connects the branches together — only one of them ever runs. Writing separate, unconnected <code class="inline">if</code> statements instead is a different (and often wrong) thing entirely, because <em>all</em> of them get checked independently:</p>
+      <pre class="code"><code><span class="c">// Connected — only one branch runs</span>
+<span class="k">if</span> (score &gt;= <span class="n">90</span>) { grade = <span class="s">"A"</span>; }
+<span class="k">else if</span> (score &gt;= <span class="n">80</span>) { grade = <span class="s">"B"</span>; }
+<span class="k">else</span> { grade = <span class="s">"C"</span>; }
+
+<span class="c">// NOT connected — multiple could run, overwriting each other</span>
+<span class="k">if</span> (score &gt;= <span class="n">90</span>) { grade = <span class="s">"A"</span>; }
+<span class="k">if</span> (score &gt;= <span class="n">80</span>) { grade = <span class="s">"B"</span>; } <span class="c">// a 95 would hit this too, overwriting "A" with "B"!</span></code></pre>
+      <h2>The Dangling Else</h2>
+      <p>When ifs are nested without braces, an <code class="inline">else</code> always attaches to the <em>closest</em> unmatched <code class="inline">if</code> — regardless of indentation. If that's not what you meant, braces fix it:</p>
+      <pre class="code"><code><span class="k">if</span> (sunny) {
+    <span class="k">if</span> (hot) {
+        goToBeach();
+    }
+} <span class="k">else</span> <span class="c">// now belongs to the OUTER if, thanks to the braces</span>
+{
+    bringUmbrella();
+}</code></pre>
+    `,
+    pitfalls: [
+      "Using separate <code class=\"inline\">if</code>s instead of <code class=\"inline\">else if</code>. Separate ifs are each checked independently — a later one can silently overwrite what an earlier one just set.",
+      "Relying on indentation instead of braces. Java ignores indentation entirely; only <code class=\"inline\">{ }</code> actually determines which <code class=\"inline\">if</code> an <code class=\"inline\">else</code> belongs to."
+    ],
+    takeaways: [
+      "<code class=\"inline\">else if</code> chains pick exactly one branch — the first condition that's true, and nothing after it.",
+      "Unconnected, separate <code class=\"inline\">if</code> statements are checked independently and can overwrite each other's results.",
+      "An <code class=\"inline\">else</code> always attaches to the nearest unmatched <code class=\"inline\">if</code> — braces are the only reliable way to control this."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.04-nested-if-statements.md (CSA 2.4)"
+  },
+  "5.6": {
+    title: "Compound Boolean Expressions",
+    ref: "5.6 — Compound Boolean Expressions (CSA 2.5)",
+    body: `
+      <h2>And, Or, Not</h2>
+      <p>Combine conditions with <code class="inline">&amp;&amp;</code> (and), <code class="inline">||</code> (or), and <code class="inline">!</code> (not):</p>
+      <pre class="code"><code><span class="k">if</span> (armReady && intakeReady) {
+    scoreCommand.<span class="me">schedule</span>();
+}</code></pre>
+      <p><code class="inline">&amp;&amp;</code> needs both sides true; <code class="inline">||</code> needs just one (or both). <code class="inline">!</code> flips a boolean's value.</p>
+      <h2>Short-Circuit Evaluation</h2>
+      <p>Java stops checking as soon as the answer is already known — it never evaluates more than it needs to:</p>
+      <ul>
+        <li>In <code class="inline">a && b</code>: if <code class="inline">a</code> is false, <code class="inline">b</code> is never even checked — the whole thing is already false.</li>
+        <li>In <code class="inline">a || b</code>: if <code class="inline">a</code> is true, <code class="inline">b</code> is never checked — the whole thing is already true.</li>
+      </ul>
+      <p>This isn't just an optimization — it's a real safety pattern:</p>
+      <pre class="code"><code><span class="k">if</span> (sensor != <span class="k">null</span> && sensor.<span class="me">isFaulty</span>()) {
+    <span class="me">report</span>(sensor);
+}</code></pre>
+      <p>If <code class="inline">sensor</code> is <code class="inline">null</code>, the left side is false, so <code class="inline">&amp;&amp;</code> never evaluates <code class="inline">sensor.isFaulty()</code> — which would otherwise throw a <code class="inline">NullPointerException</code>. The order here matters: the null check has to come <em>first</em>.</p>
+      <h2>Operator Precedence</h2>
+      <p><code class="inline">!</code> binds tightest, then <code class="inline">&amp;&amp;</code>, then <code class="inline">||</code> — parentheses override all of it and make intent explicit:</p>
+      <pre class="code"><code><span class="k">if</span> (!ready || !armed) { ... }        <span class="c">// ! applies to each individually</span>
+<span class="k">if</span> (!(ready && armed)) { ... }       <span class="c">// different! ! applies to the whole expression</span></code></pre>
+    `,
+    pitfalls: [
+      "Putting the null check on the wrong side. <code class=\"inline\">sensor.isFaulty() && sensor != null</code> checks the faulty status first — if <code class=\"inline\">sensor</code> is <code class=\"inline\">null</code>, it crashes before the null check ever runs. The null check must come first for short-circuiting to protect you.",
+      "Assuming <code class=\"inline\">!(a && b)</code> is the same as <code class=\"inline\">!a && !b</code>. It's not — that's a real logic error (the correct equivalent, De Morgan's Law, comes in the next lesson)."
+    ],
+    takeaways: [
+      "<code class=\"inline\">&&</code> requires both sides true; <code class=\"inline\">||</code> requires at least one; <code class=\"inline\">!</code> flips a boolean.",
+      "Short-circuit evaluation skips the right side once the left side already determines the result — order a null-check first specifically to exploit this.",
+      "<code class=\"inline\">!</code> has higher precedence than <code class=\"inline\">&&</code>, which has higher precedence than <code class=\"inline\">||</code>; use parentheses when the default grouping isn't what you mean."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.05-compound-boolean-expressions.md (CSA 2.5)"
+  },
+  "5.7": {
+    title: "Comparing Boolean Expressions (De Morgan's Laws)",
+    ref: "5.7 — Comparing Boolean Expressions (De Morgan's Laws) (CSA 2.6)",
+    body: `
+      <h2>De Morgan's Laws</h2>
+      <p>Negating a compound condition flips both the operator and each individual comparison:</p>
+      <pre class="code"><code>!(a && b)  is equivalent to  !a || !b
+!(a || b)  is equivalent to  !a && !b</code></pre>
+      <p>A simple way to remember it: push the <code class="inline">!</code> inward, and flip <code class="inline">&&</code> to <code class="inline">||</code> (or <code class="inline">||</code> to <code class="inline">&&</code>) as it moves in.</p>
+      <h2>Flipping Relational Operators Under Negation</h2>
+      <p>The same idea applies to relational operators — negating a comparison flips its sign:</p>
+      <pre class="code"><code>!(c == d)  is  c != d
+!(c &lt; d)   is  c &gt;= d
+!(c &gt; d)   is  c &lt;= d</code></pre>
+      <p>Putting both rules together: <code class="inline">!(x < 3 && y > 2)</code> becomes <code class="inline">!(x < 3) || !(y > 2)</code>, which simplifies further to <code class="inline">(x >= 3 || y <= 2)</code>.</p>
+      <h2>Why Bother Simplifying</h2>
+      <p><code class="inline">!(ready && armed)</code> and <code class="inline">!ready || !armed</code> always evaluate to the same result — but the second one reads more directly as "either one isn't ready" instead of "it's not true that both are ready." Simplifying a negated condition often makes the code's actual intent clearer.</p>
+      <h2>A Preview: Comparing Objects</h2>
+      <p><code class="inline">==</code> on objects (a preview from Lesson 5.4) compares whether two variables point at the <em>same</em> object, not whether their contents match. This matters for <code class="inline">String</code>s specifically, which get their own full treatment in Ch.6 — for now, the short version: use <code class="inline">.equals()</code> to compare what two objects actually contain, and reserve <code class="inline">==</code>/<code class="inline">!=</code> for checking against <code class="inline">null</code>.</p>
+    `,
+    pitfalls: [
+      "Forgetting to flip the operator, not just add a <code class=\"inline\">!</code>. <code class=\"inline\">!(x < 3)</code> is <code class=\"inline\">x >= 3</code>, not <code class=\"inline\">x !< 3</code> (which isn't valid Java) and not <code class=\"inline\">x > 3</code> (which misses the equal case).",
+      "Applying De Morgan's Law only to one side. Both the operator (<code class=\"inline\">&&</code>/<code class=\"inline\">||</code>) and both individual comparisons flip — doing only one produces a wrong, non-equivalent expression."
+    ],
+    takeaways: [
+      "<code class=\"inline\">!(a && b)</code> is equivalent to <code class=\"inline\">!a || !b</code>; <code class=\"inline\">!(a || b)</code> is equivalent to <code class=\"inline\">!a && !b</code>.",
+      "Negating a relational operator flips its sign: <code class=\"inline\"><</code> becomes <code class=\"inline\">>=</code>, <code class=\"inline\">></code> becomes <code class=\"inline\"><=</code>, <code class=\"inline\">==</code> becomes <code class=\"inline\">!=</code>.",
+      "Simplifying a negated condition often makes its intent easier to read, even though it's logically equivalent either way.",
+      "<code class=\"inline\">==</code> on objects checks identity, not content — <code class=\"inline\">.equals()</code> (covered fully in Ch.6) is for comparing what's actually inside."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.06-comparing-boolean-expressions-de-morgan-s-laws.md (CSA 2.6)"
+  },
+  "5.8": {
+    title: "While Loops",
+    ref: "5.8 — While Loops (CSA 2.7)",
+    body: `
+      <h2>The Three Steps of a Loop</h2>
+      <p>A <code class="inline">while</code> loop repeats its body as long as a condition holds, checked <em>before</em> every pass, including the first:</p>
+      <pre class="code"><code><span class="k">int</span> attempts = <span class="n">0</span>;             <span class="c">// 1. initialize</span>
+<span class="k">while</span> (attempts &lt; <span class="n">3</span> && !connected) { <span class="c">// 2. test</span>
+    connected = <span class="me">tryConnect</span>();
+    attempts++;                <span class="c">// 3. update</span>
+}</code></pre>
+      <p>Every loop needs these same three steps — initialize the loop variable, test it, update it inside the loop. A <code class="inline">for</code> loop (Lesson 5.1-5.2) just packs all three into one header line; a <code class="inline">while</code> loop spreads them out, which is more natural when the "update" isn't a simple counter.</p>
+      <h2>Infinite Loops</h2>
+      <p>Forget step 3 and the condition never changes — the loop runs forever:</p>
+      <pre class="code"><code><span class="k">int</span> i = <span class="n">0</span>;
+<span class="k">while</span> (i &lt; <span class="n">10</span>) {
+    System.out.<span class="me">println</span>(i); <span class="c">// i never changes — this never stops</span>
+}</code></pre>
+      <p>An infinite loop on a robot doesn't just print forever — it can freeze the whole robot's control loop, since nothing after it ever gets a chance to run.</p>
+      <h2>When to Reach for while Instead of for</h2>
+      <p><code class="inline">for</code> fits naturally when you already know the number of iterations. <code class="inline">while</code> fits better when you're waiting for a <em>condition</em>, not counting to a number — like waiting for a sensor to settle, or retrying a connection a limited number of times:</p>
+      <pre class="code"><code><span class="k">while</span> (!gyro.<span class="me">isConnected</span>() && attempts &lt; <span class="n">5</span>) {
+    attempts++;
+}</code></pre>
+    `,
+    pitfalls: [
+      "Forgetting to update the loop variable. The single most common cause of an infinite loop — every <code class=\"inline\">while</code> loop needs something inside it that eventually makes the condition false.",
+      "A condition that's false from the very first check. If the condition never holds, the loop body never runs at all — not even once. Double-check the loop variable's starting value against the condition."
+    ],
+    takeaways: [
+      "Every loop needs three steps: initialize, test, update — <code class=\"inline\">while</code> just doesn't bundle them into one line like <code class=\"inline\">for</code> does.",
+      "A <code class=\"inline\">while</code> loop's condition is checked before every pass, including the first — if it starts false, the body never runs.",
+      "Forgetting to update the loop variable is the classic cause of an infinite loop, which can freeze a robot's control code.",
+      "<code class=\"inline\">while</code> fits naturally when you're waiting for a condition rather than counting a known number of iterations."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.07-while-loops.md (CSA 2.7)"
+  },
+  "5.9": {
+    title: "Implementing Selection and Iteration Algorithms",
+    ref: "5.9 — Implementing Selection and Iteration Algorithms (CSA 2.9)",
+    body: `
+      <p>A handful of loop-and-selection patterns come up constantly. Once you recognize them, you'll see the same shape everywhere.</p>
+      <h2>The Accumulator Pattern</h2>
+      <p>Build up a running total across a loop: initialize before the loop, update inside it, use the result after.</p>
+      <pre class="code"><code><span class="k">double</span> sum = <span class="n">0</span>;
+<span class="k">for</span> (<span class="k">double</span> sample : visionLatencies) {
+    sum += sample; <span class="c">// accumulate</span>
+}
+<span class="k">double</span> average = sum / visionLatencies.<span class="me">size</span>();</code></pre>
+      <h2>Min/Max with an if Inside a Loop</h2>
+      <p>Track the smallest or largest value seen so far by pairing an accumulator with an <code class="inline">if</code> inside the loop:</p>
+      <pre class="code"><code><span class="k">double</span> max = <span class="t">Double</span>.MIN_VALUE;
+<span class="k">for</span> (<span class="k">double</span> sample : visionLatencies) {
+    <span class="k">if</span> (sample &gt; max) {
+        max = sample; <span class="c">// running max</span>
+    }
+}</code></pre>
+      <h2>Frequency Counting</h2>
+      <p>Count how many values in a sequence meet some criterion, using a counter incremented inside a conditional:</p>
+      <pre class="code"><code><span class="k">int</span> faultyCount = <span class="n">0</span>;
+<span class="k">for</span> (<span class="t">Sensor</span> sensor : sensors) {
+    <span class="k">if</span> (sensor.<span class="me">isFaulty</span>()) {
+        faultyCount++;
+    }
+}</code></pre>
+      <h2>Simulating Probability with Math.random()</h2>
+      <p><code class="inline">Math.random() < p</code> is true with probability <code class="inline">p</code> — a real way to simulate an event that happens some percentage of the time (useful for testing code against randomized simulated sensor noise, for instance):</p>
+      <pre class="code"><code><span class="k">if</span> (<span class="t">Math</span>.<span class="me">random</span>() &lt; <span class="n">0.1</span>) <span class="c">// roughly 10% of the time</span>
+{
+    <span class="me">simulateSensorGlitch</span>();
+}</code></pre>
+    `,
+    pitfalls: [
+      "Initializing an accumulator with the wrong starting value. A sum starts at <code class=\"inline\">0</code>; a max should start at the smallest possible value (<code class=\"inline\">Double.MIN_VALUE</code> or similar) so the very first real value always replaces it.",
+      "Putting the accumulator update outside the loop. It has to be inside the loop body to actually accumulate across every iteration."
+    ],
+    takeaways: [
+      "The accumulator pattern: initialize before the loop, update inside it, use the result after.",
+      "Min/max tracking pairs an accumulator with an <code class=\"inline\">if</code> inside the loop, comparing each new value against the best one seen so far.",
+      "Frequency counting increments a counter inside a conditional, once per matching iteration.",
+      "<code class=\"inline\">Math.random() < p</code> simulates an event with probability <code class=\"inline\">p</code>."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.09-implementing-selection-and-iteration-algorithms.md (CSA 2.9)"
+  },
+  "5.10": {
+    title: "Nested Iteration",
+    ref: "5.10 — Nested Iteration (CSA 2.11)",
+    body: `
+      <h2>A Loop Inside a Loop</h2>
+      <p>Nesting one loop inside another means the inner loop runs to completion for <em>every single pass</em> of the outer one:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; <span class="n">8</span>; row++) {
+    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; <span class="n">8</span>; col++) {
+        visionGrid[row][col] = <span class="me">sampleCell</span>(row, col);
+    }
+}</code></pre>
+      <p>For each value of <code class="inline">row</code>, the inner loop runs all the way through every <code class="inline">col</code> value before the outer loop advances to the next <code class="inline">row</code>. The inner loop restarts from scratch each time.</p>
+      <h2>Why This Matters</h2>
+      <p>Nested loops are the natural shape for anything grid-like: scanning a 2D vision frame, checking every pair of sensors against each other, or generating a table of test cases. (2D arrays, which pair naturally with nested loops, get their own full chapter — Ch.10.)</p>
+    `,
+    pitfalls: [
+      "Reusing the same loop variable name for both loops. <code class=\"inline\">for (int i ...)</code> nested inside another <code class=\"inline\">for (int i ...)</code> won't compile — the inner declaration shadows/conflicts with the outer one in the same scope. Use distinct names (<code class=\"inline\">row</code>/<code class=\"inline\">col</code>, <code class=\"inline\">i</code>/<code class=\"inline\">j</code>).",
+      "Assuming the inner loop's variable persists across outer iterations. It doesn't — a loop variable declared in the <code class=\"inline\">for</code> header is freshly initialized every time that loop starts, including every restart of an inner loop."
+    ],
+    takeaways: [
+      "A loop nested inside another runs completely, every single time the outer loop takes one step.",
+      "Nested loops are the standard shape for anything grid-shaped — rows and columns, pairs of items, tables of test cases.",
+      "Use distinct loop variable names for nested loops (<code class=\"inline\">row</code>/<code class=\"inline\">col</code>, not <code class=\"inline\">i</code>/<code class=\"inline\">i</code>)."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.11-nested-iteration.md (CSA 2.11)"
+  },
+  "5.11": {
+    title: "Informal Runtime Analysis of Loops",
+    ref: "5.11 — Informal Runtime Analysis of Loops (CSA 2.12)",
+    body: `
+      <h2>Counting Iterations Without Running the Code</h2>
+      <p>You can predict exactly how many times a loop runs just by reading its header:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">3</span>; i &lt; <span class="n">7</span>; i++) { ... } <span class="c">// runs 6 - 3 + 1 = 4 times</span></code></pre>
+      <p>The formula: <code class="inline">largest value the loop variable reaches − smallest value + 1</code>. For a <code class="inline">&lt;</code> bound, the largest value is one less than the limit; for <code class="inline">&lt;=</code>, it's the limit itself.</p>
+      <h2>Nested Loops Multiply</h2>
+      <p>A nested loop's total iteration count is outer iterations × inner iterations:</p>
+      <pre class="code"><code><span class="c">// 5 outer passes × 10 inner passes = 50 total iterations</span>
+<span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; <span class="n">5</span>; row++)
+    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; <span class="n">10</span>; col++) { ... }</code></pre>
+      <h2>Why This Matters</h2>
+      <p>Being able to predict a loop's iteration count without running it is a real debugging tool — if a loop is running way more (or fewer) times than expected, tracing through this formula by hand usually finds the off-by-one or the wrong bound immediately, faster than adding print statements and re-running.</p>
+    `,
+    pitfalls: [
+      "Forgetting to subtract 1 for a <code class=\"inline\">&lt;</code> bound. <code class=\"inline\">i < 7</code> starting at <code class=\"inline\">3</code> reaches <code class=\"inline\">3, 4, 5, 6</code> — four values, not seven minus three.",
+      "Multiplying the wrong two numbers for a nested loop. It's outer-count × inner-count-per-outer-pass, not outer-count + inner-count."
+    ],
+    takeaways: [
+      "A loop's iteration count is <code class=\"inline\">largest reachable value − smallest value + 1</code>.",
+      "Nested loops multiply: total iterations = outer count × inner count.",
+      "Counting iterations by hand is a fast way to catch an off-by-one bug before it turns into a mysterious runtime problem."
+    ],
+    prov: "csawesome-2026: unit-2-selection-and-iteration/2.12-informal-runtime-analysis-of-loops.md (CSA 2.12)"
+  }
+};
+
+let currentItem = "5.1-5.2";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
