@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ch.12 — Exceptions &amp; try/catch (Under Review)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f5f8; --ink:#1b1f2a; --ink-soft:#565f72; --line:rgba(37,53,89,0.14);
+  --accent:#2f6feb; --accent-soft:rgba(47,111,235,0.08); --accent-line:rgba(47,111,235,0.28);
+  --gold:#a8690f; --gold-soft:rgba(168,105,15,0.09); --gold-line:rgba(168,105,15,0.30);
+  --card:#ffffff; --card-line:rgba(37,53,89,0.10); --shadow:0 1px 2px rgba(20,30,60,0.04),0 8px 24px rgba(20,30,60,0.05);
+  --code-bg:#11141c; --code-text:#c8d3e8; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#569cd6; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#6a9955; --vsc-me:#dcdcaa;
+  --banner-bg:rgba(168,105,15,0.10); --banner-line:rgba(168,105,15,0.30);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+    --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+    --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+    --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+    --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161c; --ink:#e7e9f0; --ink-soft:#9aa3b8; --line:rgba(255,255,255,0.12);
+  --accent:#7aa8ff; --accent-soft:rgba(122,168,255,0.10); --accent-line:rgba(122,168,255,0.30);
+  --gold:#e0a34a; --gold-soft:rgba(224,163,74,0.10); --gold-line:rgba(224,163,74,0.32);
+  --card:#1b1e26; --card-line:rgba(255,255,255,0.08); --shadow:0 1px 2px rgba(0,0,0,0.3),0 8px 24px rgba(0,0,0,0.35);
+  --banner-bg:rgba(224,163,74,0.10); --banner-line:rgba(224,163,74,0.32);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:260px;flex-shrink:0;height:100%;overflow-y:auto;border-right:1px solid var(--line);padding:22px 12px;}
+#sidebar h1{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);margin:0 10px 3px;}
+#sidebar .sub{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-soft);margin:0 10px 18px;line-height:1.5;}
+#sidebar .back{display:block;font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--accent);margin:0 10px 16px;text-decoration:none;}
+#sidebar .back:hover{text-decoration:underline;}
+.item{padding:9px 10px;border-radius:7px;cursor:pointer;border-left:2px solid transparent;margin-bottom:2px;}
+.item:hover{background:var(--accent-soft);}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent);}
+.item .iref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);display:block;}
+.item .ititle{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;}
+#main{flex:1;height:100%;overflow-y:auto;}
+#maininner{max-width:700px;margin:0 auto;padding:40px 32px 100px;}
+#banner{background:var(--banner-bg);border-bottom:1px solid var(--banner-line);padding:10px 32px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);}
+#banner strong{font-weight:700;}
+.doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:24px 0 6px;text-wrap:balance;}
+.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
+.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
+.doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
+.doc h2:first-of-type{margin-top:8px;}
+.doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
+.doc ul{margin:0 0 16px;padding-left:22px;}
+.doc li{font-size:15px;line-height:1.65;margin-bottom:8px;max-width:62ch;}
+.doc strong{font-weight:600;color:var(--ink);}
+.doc em{font-style:italic;}
+.doc code.inline{font-family:'JetBrains Mono',monospace;font-size:0.86em;background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px;}
+.pitfalls{background:var(--card);border:1px solid var(--card-line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 20px;margin:0 0 20px;box-shadow:var(--shadow);}
+.pitfalls .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pitfalls ul{margin:0;padding-left:20px;}
+.pitfalls li{font-size:14px;line-height:1.6;margin-bottom:8px;}
+.takeaways{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:8px;padding:16px 20px;margin:0 0 8px;}
+.takeaways .lbl{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.takeaways ul{margin:0;padding-left:20px;}
+.takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
+pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
+pre.code code{display:block;white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+.prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
+.prov strong{color:var(--accent);font-weight:500;}
+::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
+  <h1>Ch.12 — Exceptions</h1>
+  <p class="sub">shockwave-curriculum · draft lesson, under review. Exercises paused pending outside input on exercise types.</p>
+  <div id="itemlist"></div>
+</div>
+<div id="main">
+  <div id="banner">🚧 <strong>Draft — under review.</strong> Lesson only for now.</div>
+  <div id="maininner"></div>
+</div>
+
+<script>
+const DATA = {
+  "12": {
+    title: "Exceptions & try/catch",
+    ref: "12 — Exceptions & try/catch (ORACLE 11.1-16)",
+    body: `
+      <h2>What an Exception Is</h2>
+      <p>An <strong>exception</strong> is an "exceptional event" — something that disrupts a program's normal flow while it runs (a file that doesn't exist, an array index that's out of range, dividing by zero). When an error occurs, the method creates an <strong>exception object</strong> describing what went wrong and hands it to the Java runtime — this is called <strong>throwing</strong> the exception.</p>
+      <p>The runtime then searches back up the <strong>call stack</strong> (the chain of methods that led to this point) looking for an <strong>exception handler</strong> — a block of code able to deal with that type of exception. The first matching handler it finds is said to <strong>catch</strong> the exception. If nothing on the whole call stack can handle it, the runtime terminates the program: on a robot, an uncaught exception in <code class="inline">periodic()</code> is exactly what turns the Driver Station's "Robot Code" indicator red.</p>
+      <h2>try / catch</h2>
+      <p>A <code class="inline">try</code> block wraps code that might throw; a <code class="inline">catch</code> block that follows it handles a specific exception type if one occurs:</p>
+      <pre class="code"><code><span class="k">try</span>
+{
+    config = <span class="me">loadFromFile</span>(<span class="s">"tuning.json"</span>);
+}
+<span class="k">catch</span> (<span class="t">IOException</span> e)
+{
+    <span class="c">// Recover: fall back to defaults</span>
+    config = <span class="t">Config</span>.<span class="me">defaults</span>();
+    <span class="me">reportWarning</span>(<span class="s">"Using default tuning"</span>);
+}</code></pre>
+      <p>If <code class="inline">loadFromFile</code> throws an <code class="inline">IOException</code>, execution jumps straight into the matching <code class="inline">catch</code> block — the rest of the <code class="inline">try</code> block is skipped. If no exception occurs, the <code class="inline">catch</code> block never runs at all.</p>
+      <p>A <code class="inline">try</code> can have multiple <code class="inline">catch</code> blocks, checked in order, for handling different exception types differently:</p>
+      <pre class="code"><code><span class="k">try</span>
+{
+    camera = <span class="k">new</span> <span class="t">UsbCamera</span>(<span class="s">"Camera 1"</span>, <span class="n">0</span>);
+}
+<span class="k">catch</span> (<span class="t">VideoException</span> e)
+{
+    <span class="me">reportWarning</span>(<span class="s">"Camera unavailable — skipping vision this match"</span>);
+}
+<span class="k">catch</span> (<span class="t">IllegalArgumentException</span> e)
+{
+    <span class="me">reportWarning</span>(<span class="s">"Bad camera config — check the port number"</span>);
+}</code></pre>
+      <h2>finally</h2>
+      <p>An optional <code class="inline">finally</code> block, after all the <code class="inline">catch</code> blocks, always runs — whether an exception was thrown or not, and even if the <code class="inline">catch</code> block itself returns early. It's the right place for cleanup that must happen no matter what (closing a file, releasing a resource):</p>
+      <pre class="code"><code><span class="t">Scanner</span> scan = <span class="k">null</span>;
+<span class="k">try</span>
+{
+    scan = <span class="k">new</span> <span class="t">Scanner</span>(<span class="k">new</span> <span class="t">File</span>(<span class="s">"auto_config.csv"</span>));
+    <span class="c">// ... read the file ...</span>
+}
+<span class="k">catch</span> (<span class="t">FileNotFoundException</span> e)
+{
+    <span class="me">reportWarning</span>(<span class="s">"Missing auto_config.csv — using default route"</span>);
+}
+<span class="k">finally</span>
+{
+    <span class="k">if</span> (scan != <span class="k">null</span>)
+    {
+        scan.<span class="me">close</span>(); <span class="c">// runs whether the try succeeded, failed, or even returned early</span>
+    }
+}</code></pre>
+      <h2>Checked vs. Unchecked Exceptions</h2>
+      <p>Java splits exceptions into two kinds, and the difference matters for what the compiler demands of you:</p>
+      <ul>
+        <li><strong>Checked exceptions</strong> (like <code class="inline">IOException</code>) — the compiler forces you to either <code class="inline">catch</code> them or declare them with a <code class="inline">throws</code> clause. They represent problems a caller could reasonably be expected to recover from.</li>
+        <li><strong>Unchecked exceptions</strong> (<code class="inline">RuntimeException</code> and its subclasses — <code class="inline">NullPointerException</code>, <code class="inline">ArrayIndexOutOfBoundsException</code>, <code class="inline">ArithmeticException</code>) — the compiler does not require handling them at all, though you're always allowed to. They almost always represent a genuine programming bug (a null you forgot to check, an index you miscalculated) rather than something the caller can meaningfully recover from at runtime.</li>
+      </ul>
+      <p>Guideline from the language's own designers: <em>if a client can reasonably be expected to recover from a problem, make it checked; if a client can't do anything useful about it, make it unchecked.</em> This is also why CSA covers unchecked-exception concepts (NullPointerException, ArrayIndexOutOfBoundsException) as topics in their own right, without ever teaching the <code class="inline">try</code>/<code class="inline">catch</code> mechanism itself — the AP exam doesn't test it.</p>
+      <h2>The throws Clause</h2>
+      <p>If a method doesn't want to handle a checked exception itself, it can instead declare that it might throw one, pushing the decision up to whoever calls it:</p>
+      <pre class="code"><code><span class="k">public void</span> <span class="me">writeList</span>() <span class="k">throws</span> <span class="t">IOException</span>
+{
+    <span class="t">PrintWriter</span> out = <span class="k">new</span> <span class="t">PrintWriter</span>(<span class="k">new</span> <span class="t">FileWriter</span>(<span class="s">"OutFile.txt"</span>));
+    <span class="c">// ...</span>
+    out.<span class="me">close</span>();
+}</code></pre>
+      <p><code class="inline">throws</code> goes after the parameter list, before the method body's opening brace. Unchecked exceptions never need to appear in a <code class="inline">throws</code> clause (though nothing stops you from listing one).</p>
+      <h2>The throw Statement</h2>
+      <p>Any code — yours, a library's, or the Java runtime itself — can trigger an exception with the <code class="inline">throw</code> statement, given any object that's a <code class="inline">Throwable</code> (or a subclass):</p>
+      <pre class="code"><code><span class="k">public void</span> <span class="me">setTargetAngle</span>(<span class="k">double</span> degrees)
+{
+    <span class="k">if</span> (degrees &lt; <span class="n">0</span> || degrees &gt; <span class="n">180</span>)
+    {
+        <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"Angle out of range: "</span> + degrees);
+    }
+    <span class="k">this</span>.targetAngle = degrees;
+}</code></pre>
+      <p>Every exception type in Java descends from <code class="inline">Throwable</code>. Its two direct children are <code class="inline">Error</code> (serious JVM-level failures — not something ordinary code catches or throws) and <code class="inline">Exception</code> (everything an ordinary program throws and catches), and <code class="inline">RuntimeException</code> is the branch of <code class="inline">Exception</code> reserved for unchecked exceptions.</p>
+    `,
+    pitfalls: [
+      "Catch-and-ignore. An empty <code class=\"inline\">catch</code> block silently swallows a real problem — at minimum, log or report it (<code class=\"inline\">reportWarning(...)</code> above), even if there's nothing more to do.",
+      "Catching to \"fix\" a bug instead of fixing it. Wrapping buggy code in <code class=\"inline\">try</code>/<code class=\"inline\">catch</code> to suppress a <code class=\"inline\">NullPointerException</code> hides the actual mistake instead of correcting it — reserve catching for genuinely recoverable situations, not programming errors.",
+      "Forgetting <code class=\"inline\">finally</code> runs even on an early <code class=\"inline\">return</code> inside <code class=\"inline\">try</code>/<code class=\"inline\">catch</code>. Cleanup code that must always run belongs in <code class=\"inline\">finally</code>, not duplicated at the end of every branch."
+    ],
+    takeaways: [
+      "Throwing an exception creates an object describing the problem and hands it to the runtime, which searches the call stack for a matching handler; an unhandled exception crashes the program.",
+      "<code class=\"inline\">try</code> wraps risky code; one or more <code class=\"inline\">catch</code> blocks handle specific exception types; an optional <code class=\"inline\">finally</code> block always runs, for cleanup.",
+      "Checked exceptions (like <code class=\"inline\">IOException</code>) must be caught or declared with <code class=\"inline\">throws</code>; unchecked exceptions (<code class=\"inline\">RuntimeException</code> and its subclasses) don't require either, since they usually signal a real bug rather than a recoverable situation.",
+      "<code class=\"inline\">throw someObject;</code> triggers an exception yourself, given any <code class=\"inline\">Throwable</code>.",
+      "Never catch-and-ignore — recover meaningfully, or at least report the problem."
+    ],
+    prov: "other-reference-repo: oracle-java-tutorials/exceptions/01, 03, 09, 10, 13 (ORACLE 11.1-16) · Deck context: mechacoder-test/src/lessons/java-1.js, slide 11 (\"Exceptions & try/catch\")"
+  }
+};
+
+let currentItem = "12";
+
+function renderList(){
+  const host = document.getElementById('itemlist');
+  host.innerHTML = '';
+  Object.keys(DATA).forEach(key => {
+    const it = DATA[key];
+    const el = document.createElement('div');
+    el.className = 'item' + (key === currentItem ? ' on' : '');
+    el.innerHTML = `<span class="iref">Ch.${key}</span><span class="ititle">${it.title}</span>`;
+    el.addEventListener('click', () => { currentItem = key; renderList(); renderMain(); });
+    host.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const it = DATA[currentItem];
+  const host = document.getElementById('maininner');
+  host.innerHTML = `
+    <div class="doc">
+      <h1 class="doctitle">${it.title}</h1>
+      <div class="refline">Outline ref: ${it.ref}</div>
+      <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+      ${it.body}
+      <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${it.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
+      <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${it.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div class="prov"><strong>Derived from</strong> ${it.prov}</div>
+    </div>
+  `;
+  document.getElementById('main').scrollTop = 0;
+}
+
+renderList();
+renderMain();
+</script>
+</body>
+</html>
