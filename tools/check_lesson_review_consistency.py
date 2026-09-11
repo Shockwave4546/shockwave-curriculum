@@ -23,11 +23,16 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 from html import unescape
 
 
 def strip_tags(s):
-    s = re.sub(r'<[^>]+>', '', s)
+    # A tag starts with `<` immediately followed by `/` or a letter. Requiring that (instead
+    # of bare `<[^>]+>`) keeps this from misreading a raw, unescaped `<`/`<=` operator left in
+    # source code (e.g. `i < sensors.length`) as a tag opener and eating everything up to the
+    # next real `>` -- a real bug that was producing false "differs" reports on ch04/05/07/09.
+    s = re.sub(r'<(?:/|(?=[a-zA-Z]))[^>]*>', '', s)
     return unescape(s)
 
 
@@ -36,7 +41,10 @@ def normalize_code(s):
 
 
 def norm_text(s):
-    s = re.sub(r'\*\*|`', '', s)
+    # Strip markdown emphasis markers (**bold** and *italic*, one or two asterisks) and
+    # backticks -- review.html's plain-text fields render as plain text, so lesson.md's
+    # markdown syntax around a word is a formatting difference, not a content one.
+    s = re.sub(r'\*\*?|`', '', s)
     s = re.sub(r'\s+', ' ', s).strip()
     return s
 
@@ -104,30 +112,76 @@ def compare(lesson, review):
         if len(la) != len(ra):
             issues.append(f"{label}S COUNT differs: lesson has {len(la)}, review has {len(ra)}")
         else:
+            # Full-string compare -- the previous 40-char-prefix check missed real drift
+            # past that point (a systematic pattern: review dropped a clarifying example or
+            # parenthetical past the first ~40 chars of many pitfalls/takeaways).
             for i, (a, b) in enumerate(zip(la, ra)):
-                if a[:40] != b[:40]:
-                    issues.append(f"{label} #{i+1} may differ:\n    lesson: {a[:150]}\n    review: {b[:150]}")
+                if a != b:
+                    issues.append(f"{label} #{i+1} differs:\n    lesson: {a}\n    review: {b}")
 
     return issues
 
 
+def find_data_object(html):
+    """Finds `const DATA = { ... };` and returns the object literal text (braces included).
+
+    A regex that lazily matches up to the first `\\n};` breaks on chapters whose lesson body
+    embeds a code sample that itself ends a line with `};` (e.g. a Java 2D array literal, as
+    in ch10/ch19) -- it stops at that fake end instead of the real one. This scans brace depth
+    char-by-char instead, skipping over string/backtick literal contents so braces inside
+    embedded HTML/code text don't get counted as structural.
+    """
+    marker = "const DATA = "
+    start = html.find(marker)
+    if start == -1 or html[start + len(marker)] != '{':
+        return None
+
+    i = start + len(marker)
+    obj_start = i
+    depth = 0
+    in_string = None
+    escaped = False
+    for i in range(obj_start, len(html)):
+        c = html[i]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif c == '\\':
+                escaped = True
+            elif c == in_string:
+                in_string = None
+        elif c in ('"', "'", '`'):
+            in_string = c
+        elif c == '{':
+            depth += 1
+        elif c == '}':
+            depth -= 1
+            if depth == 0:
+                return html[obj_start:i + 1]
+    return None
+
+
 def extract_review_data(review_html_path):
-    """Uses Node to eval the `const DATA = {...}` object out of the review HTML (it's a JS
-    template-literal object, not JSON, so it can't be parsed with json.loads directly)."""
-    result = subprocess.run(
-        ["node", "-e", f"""
-        const fs = require('fs');
-        const html = fs.readFileSync('{review_html_path}', 'utf8');
-        const m = html.match(/const DATA = (\\{{[\\s\\S]*?\\n\\}});/);
-        if (!m) {{ console.error('DATA object not found'); process.exit(1); }}
-        // eval is safe here: this only ever runs against review/*.html files this repo
-        // owns and authored (never external/untrusted input), and the DATA object uses
-        // JS template-literal backticks, so it isn't valid JSON -- JSON.parse can't read it.
-        const DATA = eval('(' + m[1] + ')');
-        console.log(JSON.stringify(DATA));
-        """],
-        capture_output=True, text=True
-    )
+    """Extracts the `const DATA = {...}` object literal from the review HTML and uses Node to
+    evaluate it (it's a JS object literal with unquoted keys and template-literal backtick
+    strings, not JSON, so it can't be parsed with json.loads directly)."""
+    with open(review_html_path) as f:
+        html = f.read()
+
+    data_text = find_data_object(html)
+    if data_text is None:
+        print(f"DATA object not found in {review_html_path}", file=sys.stderr)
+        sys.exit(1)
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.js', delete=False) as tf:
+        tf.write(f"const DATA = ({data_text});\nconsole.log(JSON.stringify(DATA));\n")
+        temp_path = tf.name
+
+    try:
+        result = subprocess.run(["node", temp_path], capture_output=True, text=True)
+    finally:
+        os.unlink(temp_path)
+
     if result.returncode != 0:
         print(f"Failed to extract DATA from {review_html_path}: {result.stderr}", file=sys.stderr)
         sys.exit(1)
@@ -157,7 +211,11 @@ def main():
     total_issues = 0
     for lesson_file in lesson_files:
         basename = os.path.basename(lesson_file)
-        num = basename.split('-')[0]
+        # A filename can cover two combined lesson numbers (e.g. "8.1-8.2-constructors-and-
+        # this.md" -> review key "8.1-8.2") -- split('-')[0] alone would only grab "8.1" and
+        # falsely report the combined entry as missing from review DATA.
+        m = re.match(r'^\d+\.\d+(?:-\d+\.\d+)?', basename)
+        num = m.group(0) if m else basename.split('-')[0]
 
         lesson = parse_lesson_md(lesson_file)
         if num not in review_data:

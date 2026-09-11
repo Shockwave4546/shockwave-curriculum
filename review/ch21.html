@@ -159,15 +159,15 @@ const DATA = {
       <pre class="code"><code><span class="t">Command</span> auto = <span class="t">AutoFactory</span>.<span class="me">createAuto</span>(chooser.<span class="me">getSelected</span>()); <span class="c">// built from whatever the driver station selected</span></code></pre>
     `,
     pitfalls: [
-      "Returning a concrete class instead of an interface. <code class=\"inline\">public static RealDrivetrain createDrivetrain()</code> locks callers into one specific implementation — return the interface type instead.",
-      "Duplicating the same real-vs-sim <code class=\"inline\">if</code> check in multiple places. The whole point of a factory is centralizing that decision in one method.",
-      "Confusing a factory with a constructor. A factory method is just a regular <code class=\"inline\">static</code> method — it can validate arguments, return a cached instance, or pick any subtype; a constructor always returns a new instance of its own exact class."
+      "Returning a concrete class instead of an interface. <code class=\"inline\">public static RealDrivetrain createDrivetrain()</code> locks callers into one specific implementation — return the interface type (<code class=\"inline\">Drivetrain</code>) so the real choice stays hidden inside the factory.",
+      "Duplicating the same real-vs-sim <code class=\"inline\">if</code> check in multiple places. The whole point of a factory is centralizing that decision in one method — scattering <code class=\"inline\">RobotBase.isReal()</code> checks throughout the codebase defeats the purpose.",
+      "Confusing a factory with a constructor. A factory method is just a regular <code class=\"inline\">static</code> method — it can validate arguments, return a cached instance, or pick any subtype, none of which a constructor is free to do (a constructor always returns a new instance of its own exact class)."
     ],
     takeaways: [
       "A static factory method returns an object in place of a direct constructor call, with a descriptive name, the option to return a cached instance, and the freedom to choose the actual concrete type internally.",
       "Its most common FRC use: centralizing real-vs-simulated (or comp-bot-vs-practice-bot) selection logic in one place, so callers only ever depend on an interface.",
       "Factories generalize beyond hardware — anything selected by a condition (an autonomous mode, a config option) is a natural fit.",
-      "Always return the interface type from a factory method, not a specific concrete class."
+      "Always return the interface type from a factory method, not a specific concrete class, so the actual implementation choice stays hidden from callers."
     ],
     prov: "other-reference-repo: team-5817-training/design-patterns/factory.md (T5817 30.2) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 7 (\"Static Factories\")"
   }

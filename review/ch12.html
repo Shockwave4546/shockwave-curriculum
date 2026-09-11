@@ -174,11 +174,11 @@ const DATA = {
     `,
     pitfalls: [
       "Catch-and-ignore. An empty <code class=\"inline\">catch</code> block silently swallows a real problem — at minimum, log or report it (<code class=\"inline\">reportWarning(...)</code> above), even if there's nothing more to do.",
-      "Catching to \"fix\" a bug instead of fixing it. Wrapping buggy code in <code class=\"inline\">try</code>/<code class=\"inline\">catch</code> to suppress a <code class=\"inline\">NullPointerException</code> hides the actual mistake instead of correcting it — reserve catching for genuinely recoverable situations, not programming errors.",
+      "Catching to \"fix\" a bug instead of fixing it. Wrapping buggy code in <code class=\"inline\">try</code>/<code class=\"inline\">catch</code> to suppress a <code class=\"inline\">NullPointerException</code> hides the actual mistake instead of correcting it — reserve catching for genuinely recoverable situations (a missing file, an unreachable camera), not programming errors.",
       "Forgetting <code class=\"inline\">finally</code> runs even on an early <code class=\"inline\">return</code> inside <code class=\"inline\">try</code>/<code class=\"inline\">catch</code>. Cleanup code that must always run belongs in <code class=\"inline\">finally</code>, not duplicated at the end of every branch."
     ],
     takeaways: [
-      "Throwing an exception creates an object describing the problem and hands it to the runtime, which searches the call stack for a matching handler; an unhandled exception crashes the program.",
+      "Throwing an exception creates an object describing the problem and hands it to the runtime, which searches the call stack for a matching handler; an unhandled exception crashes the program (a red \"Robot Code\" indicator, on a robot).",
       "<code class=\"inline\">try</code> wraps risky code; one or more <code class=\"inline\">catch</code> blocks handle specific exception types; an optional <code class=\"inline\">finally</code> block always runs, for cleanup.",
       "Checked exceptions (like <code class=\"inline\">IOException</code>) must be caught or declared with <code class=\"inline\">throws</code>; unchecked exceptions (<code class=\"inline\">RuntimeException</code> and its subclasses) don't require either, since they usually signal a real bug rather than a recoverable situation.",
       "<code class=\"inline\">throw someObject;</code> triggers an exception yourself, given any <code class=\"inline\">Throwable</code>.",

@@ -121,12 +121,12 @@ feederMotor.<span class="me">set</span>(IntakeConstants.kRollerSpeed);</code></p
       <p>None of DRY, YAGNI, or SOLID are FRC-specific or even Java-specific — they're widely-used vocabulary across the whole software industry, which is exactly the "common language" benefit Ch.14 opened with. Being able to say "this violates single responsibility" or "that's YAGNI" communicates a specific, well-understood critique in a few words, to any programmer familiar with these terms — not just people who've read this particular curriculum.</p>
     `,
     pitfalls: [
-      "Applying DRY so aggressively that unrelated code gets forced together. Two pieces of code that look similar today, for unrelated reasons, don't necessarily belong in one shared abstraction.",
-      "Treating YAGNI as an excuse to never plan ahead. It argues against building unneeded flexibility <em>now</em> — the IO-Layer Pattern (Ch.20) is worth its overhead precisely because simulation and hardware-swapping are real, common needs.",
+      "Applying DRY so aggressively that unrelated code gets forced together. Two pieces of code that happen to look similar today, but for unrelated reasons, don't necessarily belong in one shared abstraction — premature DRY-ing can create awkward, tangled dependencies between things that should stay separate.",
+      "Treating YAGNI as an excuse to never plan ahead. YAGNI argues against building unneeded flexibility <em>now</em> — it doesn't mean ignoring architecture altogether; the IO-Layer Pattern (Ch.20) is worth its overhead in FRC precisely because simulation and hardware-swapping are real, common needs, not speculative ones.",
       "Only remembering the \"S\" of SOLID. The deck's own shorthand (\"one class, one responsibility\") is genuinely just Single Responsibility — SOLID names four more distinct principles beyond that one."
     ],
     takeaways: [
-      "DRY: don't duplicate logic or values — a single source of truth means one place to fix or change something.",
+      "DRY: don't duplicate logic or values — a single source of truth (a constant, a shared method, a superclass) means one place to fix or change something.",
       "YAGNI: don't build abstraction or flexibility for a need that doesn't exist yet — every layer of indirection has a real cost, worth paying only once it's actually needed.",
       "SOLID is five separate principles — Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion — each already demonstrated somewhere in this curriculum's FRC examples.",
       "These principles are industry-standard vocabulary, not FRC- or Java-specific — naming them precisely is itself a form of the \"common language\" benefit patterns provide (Ch.14)."

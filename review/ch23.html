@@ -103,9 +103,9 @@ const DATA = {
 {
     <span class="k">private boolean</span> hasGamePiece;             <span class="c">// CLASS scope — visible to every method in Intake</span>
 
-    <span class="k">public void</span> <span class="me">setState</span>(<span class="k">boolean</span> detected)    <span class="c">// 'detected' is a parameter — METHOD scope</span>
+    <span class="k">public void</span> <span class="me">setState</span>(<span class="k">boolean</span> detected)    <span class="c">// detected is a parameter — METHOD scope</span>
     {
-        <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; <span class="n">3</span>; i++)           <span class="c">// 'i' is a loop variable — BLOCK scope</span>
+        <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; <span class="n">3</span>; i++)           <span class="c">// i is a loop variable — BLOCK scope</span>
         {
             <span class="k">boolean</span> sample = detected;        <span class="c">// BLOCK scope — only exists inside this loop's braces</span>
         }
@@ -124,7 +124,7 @@ const DATA = {
     {
         <span class="k">int</span> sample = i;
     }
-    System.out.<span class="me">println</span>(sample); <span class="c">// COMPILE ERROR — 'sample' only existed inside the loop's braces</span>
+    System.out.<span class="me">println</span>(sample); <span class="c">// COMPILE ERROR — sample only existed inside the loop's braces</span>
     <span class="k">return</span> <span class="s">"done"</span>;
 }</code></pre>
       <p>Parameters follow the same rule: a constructor's parameter only exists for that constructor call, and isn't reachable from any other method in the class — including <code class="inline">toString()</code> or any other method that seems related.</p>
@@ -137,7 +137,7 @@ const DATA = {
     <span class="me">@Override</span>
     <span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>()
     {
-        <span class="t">String</span> name = <span class="s">"unknown"</span>;  <span class="c">// this local variable shadows the instance variable 'name'</span>
+        <span class="t">String</span> name = <span class="s">"unknown"</span>;  <span class="c">// this local variable shadows the instance variable name</span>
         <span class="k">return</span> name;              <span class="c">// returns "unknown", NOT the instance variable's real value</span>
     }
 }</code></pre>
@@ -157,14 +157,14 @@ const DATA = {
     pitfalls: [
       "Trying to use a loop or block-scoped variable after its block ends. It stops existing the instant the enclosing <code class=\"inline\">{}</code> closes — declare it at method scope instead if it needs to survive past the block.",
       "Assuming a shadowed local variable is the instance variable. Inside a method with a same-named local variable/parameter, the local one always wins — use <code class=\"inline\">this.fieldName</code> to reach the instance variable explicitly.",
-      "Confusing <code class=\"inline\">final</code> with true immutability. <code class=\"inline\">final</code> only prevents reassigning a reference — the object it refers to can still have its own internal state changed."
+      "Confusing <code class=\"inline\">final</code> with true immutability. <code class=\"inline\">final</code> only prevents reassigning a reference — the object it refers to can still have its own internal state changed, unless that object's own class was specifically designed to be immutable."
     ],
     takeaways: [
       "A variable's scope — class, method, or block — is set by the nearest enclosing <code class=\"inline\">{}</code> around its declaration; using it outside that scope doesn't compile.",
       "Local variables and parameters exist only for their method/constructor call; instance variables exist for the whole object, reachable from every method regardless of access modifier.",
-      "A local variable or parameter sharing a name with an instance variable shadows it inside that method — <code class=\"inline\">this.fieldName</code> reaches the real instance variable when that happens.",
+      "A local variable or parameter sharing a name with an instance variable shadows it inside that method — <code class=\"inline\">this.fieldName</code> is how to reach the real instance variable when that happens.",
       "<code class=\"inline\">final</code> allows exactly one assignment to a variable — for object references, it locks the reference, not necessarily the referenced object's internal state.",
-      "True immutability is a stronger, separate guarantee from <code class=\"inline\">final</code> — and it's what makes classes like <code class=\"inline\">Pose2d</code> safe to share and reason about."
+      "True immutability (an object whose state can never change after construction) is a stronger, separate guarantee from <code class=\"inline\">final</code> — and it's what makes classes like <code class=\"inline\">Pose2d</code> safe to share and reason about."
     ],
     prov: "csawesome-2026: unit-3-class-creation/3.08-scope-and-access.md (CSA 3.8) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 9 (\"Encapsulation & Final\") — final TalonFX/Pose2d example"
   }

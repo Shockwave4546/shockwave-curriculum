@@ -9,10 +9,9 @@ markdown). Both files were originally authored together, in the same commit, wit
 content — but they're two independently-maintained copies from that point on. Any later
 edit to one (a wording tweak, a rendering fix) does not propagate to the other.
 
-This is a real, confirmed risk, not a hypothetical one: `review/ch25.html` was hand-edited
-twice after its initial commit (fixing a quote-rendering bug in a code comment) without the
-matching change ever landing in `lessons/ch25-command-based-programming/25.7-*.md` — see
-`tools/check_lesson_review_consistency.py`'s Ch.25 findings below.
+This is a real, confirmed risk, not a hypothetical one — see "Full reconciliation" below:
+a corpus-wide sweep found real drift in 16 of 28 chapters, including the two chapters
+(Ch.1, Ch.25) previously believed fully clean.
 
 ## The check
 
@@ -23,7 +22,8 @@ matching change ever landing in `lessons/ch25-command-based-programming/25.7-*.m
   Pitfalls" and "Key Takeaways", which are separate `DATA` fields in review, not body
   headings
 - **Code blocks** — byte-exact after stripping markdown fences / HTML tags, in order
-- **Pitfalls** and **Takeaways** — count, and a loose text match
+- **Pitfalls** and **Takeaways** — count, and a full exact text match (see "Checker bugs
+  found and fixed" — this used to silently compare only the first 40 characters)
 
 Run it from the repo root:
 
@@ -34,21 +34,51 @@ python3 tools/check_lesson_review_consistency.py 25
 It exits non-zero if it finds anything, so it's safe to use in a check/CI step later if
 wanted.
 
-## Known findings (Ch.25, as of this check)
+## Checker bugs found and fixed (2026-09-11)
 
-Three real issues, not false positives:
+Running this across every chapter (not just one at a time, as it had only ever been used
+before) surfaced four real bugs in the checker itself, all now fixed:
 
-1. **25.2** — the lesson has 6 code blocks; review has only 3. Review compressed the
-   Sequential/Parallel/Race composition examples into inline one-liners inside a bullet
-   list instead of showing them as the lesson's three separate full code blocks — a real
-   loss of detail in review vs. the lesson.
-2. **25.6** — Takeaway #1 is trimmed in review: it drops the lesson's `(a button, a sensor,
-   an arbitrary check)` parenthetical.
-3. **25.7** — Code block #4 differs by a single detail: the lesson's comment reads
-   `// implicitly requires this`; review reads `// implicitly requires 'this'`. Traced via
-   `git log` to a deliberate one-off fix applied only to review.html (it was originally an
-   italicized `<i>this</i>` tag that rendered oddly, fixed by quoting it instead) — the fix
-   never made it back into the lesson `.md`.
+1. **DATA-object extraction regex stopped early.** The old regex looked for the first
+   `\n};` after `const DATA = {`. If a lesson's code sample itself contained a line ending
+   in `};` (e.g. a Java array literal, as in Ch.10 and Ch.19), the regex matched that
+   instead of the real end of the object — crashing the checker on those two chapters.
+   Fixed by replacing the regex with a brace-depth scanner that skips over string/backtick
+   content, so it always finds the true matching closing brace.
+2. **`strip_tags` misread raw operators as HTML tags.** Its regex, `<[^>]+>`, strips
+   anything between `<` and the next `>` — which also matches a raw, unescaped `<` or `<=`
+   left in source code (e.g. `i < sensors.length`), eating everything up to the next real
+   `>` and silently truncating the comparison text. This produced false "differs" reports
+   on several chapters where review.html was actually correct. Fixed by requiring a tag to
+   start with `<` followed immediately by `/` or a letter.
+3. **Pitfall/takeaway comparison only checked the first 40 characters.** `a[:40] != b[:40]`
+   masked most of the real drift in the corpus — reviews that kept a pitfall/takeaway's
+   first sentence but dropped everything after it (a clarifying clause or example) read as
+   identical. Fixed to a full-string compare, which is what actually surfaced the
+   corpus-wide drift described below.
+4. **Combined-lesson filenames were parsed wrong.** A lesson file covering two numbered
+   lessons (e.g. `8.1-8.2-constructors-and-this.md`, keyed as `"8.1-8.2"` in review's
+   `DATA`) was reduced to just `"8.1"` by naive `basename.split('-')[0]`, so the checker
+   reported the combined entry as entirely missing from review — it wasn't; the lookup key
+   was wrong. Fixed with a regex that keeps the full `N.N-N.N` prefix when present.
+
+`norm_text` was also extended to strip single-`*` markdown italics (previously only `**`
+bold was stripped) — Ch.1 and Ch.14 both use `*word*` emphasis in lesson `.md` prose that
+renders as plain text in review's plain-string fields; that's a formatting difference, not
+a content one.
+
+## Full reconciliation (2026-09-11)
+
+With all four bugs fixed, a sweep of all 28 chapters found 137 real issues across 16
+chapters (05, 07, 09, 12, 15, 17–28) — overwhelmingly the same shape: a pitfall or takeaway
+keeps its first sentence in review.html but drops a trailing clarifying clause or concrete
+example present in the lesson `.md`. This pattern was present even in Ch.1 and Ch.25 (the
+chapters this project had used as its "already verified" baseline), so it reads as a
+systematic authoring habit for review.html, not a one-off mistake. Every flagged issue was
+resolved by editing `review/chNN.html` to match the lesson `.md` verbatim (never the
+reverse — `lessons/*.md` stays canonical). Chapters 9 and 25 additionally had missing whole
+`<h2>` sections and code blocks (not just wording) that had to be re-added, not just
+reworded. All 28 chapters now report `TOTAL ISSUES: 0`.
 
 ## Checking the narrated-lesson scripts too
 
@@ -68,14 +98,22 @@ lesson's beats — it doesn't matter which beat, or whether it's split across se
 python3 tools/check_script_code.py <lesson.md> <narrated-lesson.html>
 ```
 
-Confirmed clean on Ch.1 (`1.2-intro-to-algorithms-programming-and-compilers.md` vs.
-`1.2-narrated-lesson.html`): all 3 lesson code blocks found verbatim in the rebuilt beats.
-This was the direct answer to "are narrated scripts checked, and should they be" — they
-weren't, until this tool existed; now they can be, and should be run after building or
-editing any narrated lesson's beats.
+This tool shared the same `strip_tags` bug described above (bug #2) — fixed the same way,
+same day.
 
-Prose (pitfalls, takeaways, section coverage) still needs a human pass — that part doesn't
-reduce to an exact-match check the way code does.
+Confirmed clean on Ch.1 (`1.2-...md` vs. `1.2-narrated-lesson.html`) and on all 7 of Ch.25's
+lessons (`25.1-...md` through `25.7-...md` vs. their `25.N-narrated-lesson.html`): every
+lesson code block is found verbatim in the built beats. Run after building or editing any
+narrated lesson's beats.
+
+Prose (pitfalls, takeaways, section coverage) is a deliberate exception, not an oversight:
+narration beats are written as short, spoken-delivery paraphrases of a lesson's pitfalls and
+takeaways on purpose (e.g. audio needs "this fights the entire declarative philosophy"
+where the lesson's fuller prose reads "the goal is to describe *what* happens, and let the
+scheduler handle *when*"). That's unrelated to the review.html drift pattern above — review
+is supposed to mirror the lesson faithfully; narration is supposed to adapt it for spoken
+delivery. Don't try to make narration prose pass a verbatim check; only its code blocks are
+held to that standard.
 
 ## What "closely matching" means going forward
 

@@ -108,7 +108,7 @@ const DATA = {
     intake.<span class="me">stop</span>();
 }</code></pre>
       <p>Always use curly braces, even for a single statement — Java doesn't require them, but skipping them is exactly how the classic "which statement is actually inside the if" bug happens.</p>
-      <h2>The Classic = vs == Mistake</h2>
+      <h2>The Classic = vs. == Mistake</h2>
       <p>One <code class="inline">=</code> assigns a value; two <code class="inline">==</code> test whether a value equals something. Writing <code class="inline">if (isCold = true)</code> inside a condition compiles (it's a legal assignment expression) but silently does the wrong thing — it assigns <code class="inline">true</code> to <code class="inline">isCold</code> and the condition is always true, regardless of what <code class="inline">isCold</code> was before.</p>
       <h2>For Loops: Three Parts, One Line</h2>
       <p>A <code class="inline">for</code> loop bundles the three steps of a loop — initialize, test, update — into one header:</p>
@@ -296,8 +296,12 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
       <p>Putting both rules together: <code class="inline">!(x < 3 && y > 2)</code> becomes <code class="inline">!(x < 3) || !(y > 2)</code>, which simplifies further to <code class="inline">(x >= 3 || y <= 2)</code>.</p>
       <h2>Why Bother Simplifying</h2>
       <p><code class="inline">!(ready && armed)</code> and <code class="inline">!ready || !armed</code> always evaluate to the same result — but the second one reads more directly as "either one isn't ready" instead of "it's not true that both are ready." Simplifying a negated condition often makes the code's actual intent clearer.</p>
+      <pre class="code"><code><span class="k">if</span> (!ready || !armed) {
+    <span class="me">abort</span>();
+}</code></pre>
       <h2>A Preview: Comparing Objects</h2>
       <p><code class="inline">==</code> on objects (a preview from Lesson 5.4) compares whether two variables point at the <em>same</em> object, not whether their contents match. This matters for <code class="inline">String</code>s specifically, which get their own full treatment in Ch.6 — for now, the short version: use <code class="inline">.equals()</code> to compare what two objects actually contain, and reserve <code class="inline">==</code>/<code class="inline">!=</code> for checking against <code class="inline">null</code>.</p>
+      <pre class="code"><code><span class="k">if</span> (sensor != <span class="k">null</span> && sensor.<span class="me">isFaulty</span>()) { ... } <span class="c">// == used correctly, against null</span></code></pre>
     `,
     pitfalls: [
       "Forgetting to flip the operator, not just add a <code class=\"inline\">!</code>. <code class=\"inline\">!(x < 3)</code> is <code class=\"inline\">x >= 3</code>, not <code class=\"inline\">x !< 3</code> (which isn't valid Java) and not <code class=\"inline\">x > 3</code> (which misses the equal case).",

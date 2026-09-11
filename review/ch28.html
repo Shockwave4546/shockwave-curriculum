@@ -166,15 +166,15 @@ const DATA = {
       <p>Doubling the data size costs linear search twice the work, but only costs binary search <em>one more comparison</em>. This growth-rate distinction — O(n) vs. O(log n) in formal terms — is why sorted, frequently-searched data is worth keeping sorted specifically so binary search stays available.</p>
     `,
     pitfalls: [
-      "Running binary search on unsorted data. It will return wrong or missing results — its correctness depends entirely on the data already being sorted.",
+      "Running binary search on unsorted data. It will return wrong or missing results — binary search's entire correctness depends on the data already being sorted.",
       "Assuming binary search requires integers. It works on anything with a well-defined ordering — Strings via compareTo, for instance.",
-      "Forgetting the loop-ending condition. A search for something not present must still terminate once the range is exhausted (left > right)."
+      "Forgetting the loop-ending condition. Binary search's while (left <= right) stops the moment the range is exhausted (left > right) — a search for something not present must still terminate, not loop forever."
     ],
     takeaways: [
       "Linear search checks every element in order; its worst case (not found) requires checking all n elements.",
-      "Binary search only works on sorted data, but eliminates half the remaining range with each comparison — roughly log₂(n) comparisons worst case.",
+      "Binary search only works on sorted data, but eliminates half the remaining range with each comparison — roughly log₂(n) comparisons worst case, vastly faster for large data sets.",
       "Use .equals()/compareTo() for String comparisons in either algorithm, never ==/&lt;/&gt;.",
-      "The gap between linear and binary search's growth rates is exactly why sorted data is worth maintaining when it's searched often."
+      "The gap between linear and binary search's growth rates is exactly why sorted data (Lesson 28.2 covers how to get it that way) is worth maintaining when it's searched often."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.14-searching-algorithms.md (CSA 4.14)"
   },
@@ -230,13 +230,13 @@ const DATA = {
       </tbody></table>
     `,
     pitfalls: [
-      "Starting selection sort's inner loop at index 0 instead of j + 1. That re-scans (and can undo) already-correctly-placed elements.",
-      "Stopping insertion sort's outer loop one element too early. It must run through the entire array, or the last element never gets inserted.",
-      "Assuming either algorithm's runtime depends on input order the same way. Selection sort's cost is fixed; insertion sort's genuinely isn't."
+      "Starting selection sort's inner loop at index 0 instead of j + 1. That re-scans (and can undo) already-correctly-placed elements from earlier passes.",
+      "Stopping insertion sort's outer loop one element too early. The loop must run through the entire array (j < length), not length - 1, or the very last element never gets inserted into its sorted position.",
+      "Assuming either algorithm's runtime depends on input order the same way. Selection sort's cost is fixed regardless of order; insertion sort's genuinely isn't — that's the entire point of calling it adaptive."
     ],
     takeaways: [
       "Selection sort repeatedly finds the minimum of the remaining unsorted portion and swaps it into place — same cost regardless of initial order.",
-      "Insertion sort inserts each element into its correct position among already-sorted elements to its left — adaptive, much faster on nearly-sorted data.",
+      "Insertion sort inserts each element into its correct position among already-sorted elements to its left, shifting as needed — adaptive, much faster on nearly-sorted data.",
       "Both run roughly n² in the worst case, but real-world performance can differ significantly depending on how sorted the input already is.",
       "Sorted data unlocks binary search (Lesson 28.1) — one reason sorting matters beyond just readability."
     ],
@@ -284,13 +284,13 @@ factorial(3) returns 3 * factorial(2) = 3 * 2 = 6</code></pre>
     `,
     pitfalls: [
       "Forgetting the base case entirely. Without one, every recursive method is really just neverEnd() in disguise — infinite recursion and a crash.",
-      "A recursive call that doesn't actually shrink the problem. If the argument doesn't move closer to the base case, the recursion never terminates.",
-      "Confusing \"recursion is elegant here\" with \"recursion is required here.\" Simple linear traversal is usually clearer and more efficient as a loop."
+      "A recursive call that doesn't actually shrink the problem. If the argument passed to the next call doesn't move closer to the base case, the recursion never terminates, even with a base case defined.",
+      "Confusing \"recursion is elegant here\" with \"recursion is required here.\" Simple linear traversal (an array, a String) is usually clearer and more efficient as a loop — recursion earns its keep on genuinely branching structures."
     ],
     takeaways: [
-      "Recursion is a method calling itself — repetition, like a loop, but structured around self-calls.",
-      "Every correct recursive method needs a base case and a recursive call that moves toward it.",
-      "Each recursive call gets its own independent local variables/parameters, tracked via the call stack.",
+      "Recursion is a method calling itself — repetition, like a loop, but structured around self-calls instead of a loop construct.",
+      "Every correct recursive method needs a base case (stops the recursion) and a recursive call that moves toward it.",
+      "Each recursive call gets its own independent local variables/parameters, tracked via the call stack — tracing means writing out each call, then substituting values back up from the base case.",
       "Recursion is most valuable for branching (\"tree\") structures — a simple for loop remains the better tool for flat, linear ones."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.16-recursion.md (CSA 4.16)"
@@ -356,14 +356,14 @@ Merge:  { 3, 5, 43, 86 }</code></pre>
       <p>Binary search exists in both forms — a good concrete reminder of Lesson 28.3's point that many algorithms can be written either way. Iteration is usually preferred in real code (no risk of <code class="inline">StackOverflowError</code>, generally a bit more efficient) — but a recursive version can be more compact and can make a divide-and-conquer structure much more natural to express.</p>
     `,
     pitfalls: [
-      "Forgetting either base case in recursive binary search. Both \"found it\" and \"range exhausted\" are needed — missing the exhausted-range check risks infinite recursion.",
-      "Merging without first ensuring both halves are actually sorted. Merge sort's merge step assumes its two inputs are already individually sorted.",
-      "Assuming recursive is always \"better\" than iterative, or vice versa. Each has real tradeoffs — the right choice depends on the algorithm and data size."
+      "Forgetting either base case in recursive binary search. Both the \"found it\" and \"range exhausted\" cases are needed — missing the exhausted-range check risks infinite recursion on a not-found search.",
+      "Merging without first ensuring both halves are actually sorted. Merge sort's merge step assumes its two inputs are already individually sorted — that's exactly what the recursive calls before it guarantee.",
+      "Assuming recursive is always \"better\" than iterative, or vice versa. Each has real tradeoffs (stack depth risk vs. code clarity) — the right choice depends on the specific algorithm and data size."
     ],
     takeaways: [
-      "Recursive binary search replaces loop-tracked bounds with a shrinking range passed as parameters, needing two base cases: a match, or an exhausted range.",
-      "Merge sort is a recursive, divide-and-conquer sort: split in half, recursively sort each half, then merge the sorted halves back together.",
-      "Merge sort scales better than selection/insertion sort on large data (n log n vs. n²), regardless of the input's initial order.",
+      "Recursive binary search replaces loop-tracked bounds with a shrinking range passed as parameters, and needs two base cases: a match, or an exhausted range.",
+      "Merge sort is a recursive, divide-and-conquer sort: split in half, recursively sort each half (base case: 1 element), then merge the sorted halves back together.",
+      "Merge sort scales better than selection/insertion sort on large data (n log n vs. n²), and its performance doesn't depend on the input's initial order.",
       "The same algorithm can often be written iteratively or recursively — the choice is a real tradeoff, not a universal \"better\" answer either way."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.17-recursive-searching-and-sorting.md (CSA 4.17)"

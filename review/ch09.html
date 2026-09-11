@@ -135,7 +135,7 @@ driveMotors[<span class="n">0</span>].<span class="me">set</span>(<span class="n
       "<code class=\"inline\">new type[size]</code> creates an array with every element at its type's default; an initializer list creates and fills it in one step.",
       "<code class=\"inline\">length</code> is a field (no parentheses); the last valid index is <code class=\"inline\">length - 1</code>.",
       "Parallel arrays keep related data in sync by index.",
-      "An array of objects still requires constructing each element individually."
+      "An array of objects still requires constructing each element individually — the array itself doesn't build the objects for you."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.03-array-creation-and-access.md (CSA 4.3)"
   },
@@ -255,12 +255,12 @@ subsystemStatus.<span class="me">put</span>(<span class="s">"Shooter"</span>, <s
     pitfalls: [
       "Off-by-one on the loop bound. <code class=\"inline\">i <= values.length</code> runs one iteration too many and throws <code class=\"inline\">ArrayIndexOutOfBoundsException</code>; the correct bound is always <code class=\"inline\">i < values.length</code>.",
       "Expecting a for-each loop to change array values. <code class=\"inline\">for (double v : values) { v = 0.0; }</code> compiles, runs, and does absolutely nothing to the real array.",
-      "Returning \"not found\" too early in a search. A search loop must check every element before concluding something isn't present."
+      "Returning \"not found\" too early in a search. A search loop must check every element before concluding something isn't present — returning false from inside the loop on the first non-match only ever checks the first element."
     ],
     takeaways: [
       "Traversing an array means looping through it, index by index, with the loop bound written against <code class=\"inline\">.length</code>.",
       "Arrays are objects — a method that changes array elements changes the caller's real array too.",
-      "The for-each loop is simpler when you don't need the index and won't modify elements.",
+      "The for-each loop (<code class=\"inline\">for (type v : array)</code>) is simpler when you don't need the index and won't modify elements.",
       "For-each cannot modify primitive array elements or provide the index — use an indexed loop for those."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.04-array-traversals.md (CSA 4.4)"
@@ -292,6 +292,11 @@ subsystemStatus.<span class="me">put</span>(<span class="s">"Shooter"</span>, <s
     }
     <span class="k">return false</span>; <span class="c">// only after checking every element</span>
 }</code></pre>
+      <h2>Looping Back to Front</h2>
+      <p>Same shape, just counting down:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = values.length - <span class="n">1</span>; i &gt;= <span class="n">0</span>; i--) {
+    <span class="c">// process values[i], starting from the end</span>
+}</code></pre>
       <h2>"At Least One" / "All" / "Count"</h2>
       <pre class="code"><code><span class="c">// at least one has the property</span>
 <span class="k">for</span> (<span class="k">double</span> v : values) { <span class="k">if</span> (isFaulty(v)) <span class="k">return true</span>; }
@@ -304,16 +309,19 @@ subsystemStatus.<span class="me">put</span>(<span class="s">"Shooter"</span>, <s
 <span class="c">// count how many have the property</span>
 <span class="k">int</span> count = <span class="n">0</span>;
 <span class="k">for</span> (<span class="k">double</span> v : values) { <span class="k">if</span> (isFaulty(v)) count++; }</code></pre>
-      <h2>Duplicates and Reversing</h2>
-      <pre class="code"><code><span class="c">// duplicates anywhere — nested loop over every pair</span>
-<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; values.length; i++) {
+      <h2>Duplicates</h2>
+      <p>Adjacent only — a single loop comparing neighbors:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; values.length - <span class="n">1</span>; i++) {
+    <span class="k">if</span> (values[i] == values[i + <span class="n">1</span>]) <span class="k">return true</span>;
+}</code></pre>
+      <p>Anywhere in the array — a nested loop comparing every pair:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; values.length; i++) {
     <span class="k">for</span> (<span class="k">int</span> j = i + <span class="n">1</span>; j &lt; values.length; j++) {
         <span class="k">if</span> (values[i] == values[j]) <span class="k">return true</span>;
     }
-}
-
-<span class="c">// reversing — swap from both ends toward the middle</span>
-<span class="k">int</span> start = <span class="n">0</span>, end = values.length - <span class="n">1</span>;
+}</code></pre>
+      <h2>Reversing (Swap From Both Ends)</h2>
+      <pre class="code"><code><span class="k">int</span> start = <span class="n">0</span>, end = values.length - <span class="n">1</span>;
 <span class="k">while</span> (start &lt; end) {
     <span class="k">double</span> temp = values[start];
     values[start] = values[end];
@@ -322,12 +330,12 @@ subsystemStatus.<span class="me">put</span>(<span class="s">"Shooter"</span>, <s
 }</code></pre>
     `,
     pitfalls: [
-      "Seeding min/max with <code class=\"inline\">0</code> instead of the first element. If every real value is negative, <code class=\"inline\">0</code> is a wrong starting point that never gets replaced correctly.",
+      "Seeding min/max with <code class=\"inline\">0</code> instead of the first element. If every real value is negative (or all above some baseline), <code class=\"inline\">0</code> is a wrong starting point that never gets replaced correctly.",
       "Returning \"not found\" from inside the loop. Only a match should return early; \"not found\" has to wait until the loop has checked every element.",
-      "Comparing <code class=\"inline\">values[i]</code> to <code class=\"inline\">values[i+1]</code> all the way to the last index. The adjacent-duplicate loop must stop at <code class=\"inline\">length - 2</code>."
+      "Comparing <code class=\"inline\">values[i]</code> to <code class=\"inline\">values[i+1]</code> all the way to the last index. This reads one past the end — the adjacent-duplicate loop must stop at <code class=\"inline\">length - 2</code> (i.e., bound the loop by <code class=\"inline\">i < values.length - 1</code>)."
     ],
     takeaways: [
-      "Sum/average, min/max, search, and property-counting are all the same basic shape: a loop plus a little state.",
+      "Sum/average, min/max, search, and property-counting are all the same basic shape: a loop plus a little state (an accumulator, a running best, a counter, or an early return).",
       "A search for \"not found\" must check every element before concluding absence; a search for a match can return the instant it's found.",
       "Adjacent-duplicate checks are a single loop; any-pair duplicate checks need a nested loop.",
       "Reversing in place swaps from both ends toward the middle using a temporary variable."
@@ -360,7 +368,7 @@ subsystemStatus.<span class="me">put</span>(<span class="s">"Shooter"</span>, <s
     `,
     pitfalls: [
       "Adding/removing inside a for-each loop. Throws <code class=\"inline\">ConcurrentModificationException</code> — switch to an indexed <code class=\"inline\">for</code> or <code class=\"inline\">while</code> loop if the list's size needs to change mid-traversal.",
-      "Incrementing the index unconditionally after a <code class=\"inline\">remove</code>. This skips the element that shifted into the just-vacated slot.",
+      "Incrementing the index unconditionally after a <code class=\"inline\">remove</code>. This skips the element that shifted into the just-vacated slot — only advance the index when you didn't remove anything that pass.",
       "Using <code class=\"inline\">&lt;=</code> against <code class=\"inline\">.size()</code>. Same off-by-one risk as arrays — the last valid index is <code class=\"inline\">size() - 1</code>."
     ],
     takeaways: [
@@ -387,12 +395,13 @@ subsystemStatus.<span class="me">put</span>(<span class="s">"Shooter"</span>, <s
       <p>For <code class="inline">ArrayList&lt;Integer&gt;</code> (or any object type), comparing with <code class="inline">==</code> checks identity, not value — use <code class="inline">.equals()</code> instead:</p>
       <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; nums.size(); i++) {
     <span class="k">for</span> (<span class="k">int</span> j = i + <span class="n">1</span>; j &lt; nums.size(); j++) {
-        <span class="k">if</span> (nums.get(i).<span class="me">equals</span>(nums.get(j))) { <span class="c">// .equals(), not ==</span>
+        <span class="k">if</span> (nums.get(i).<span class="me">equals</span>(nums.get(j))) <span class="c">// .equals(), not ==</span>
+        {
             <span class="k">return true</span>;
         }
     }
 }</code></pre>
-      <h2>Rotating (In Place)</h2>
+      <h2>Rotating (In Place, with get/set)</h2>
       <pre class="code"><code><span class="k">public static void</span> <span class="me">rotateRight</span>(<span class="t">ArrayList</span>&lt;<span class="t">Double</span>&gt; nums) {
     <span class="k">double</span> last = nums.get(nums.size() - <span class="n">1</span>);
     <span class="k">for</span> (<span class="k">int</span> i = nums.size() - <span class="n">1</span>; i &gt; <span class="n">0</span>; i--) {
@@ -407,13 +416,13 @@ subsystemStatus.<span class="me">put</span>(<span class="s">"Shooter"</span>, <s
 <span class="c">// autoTimes.get(i) is the recorded time for autoNames.get(i)</span></code></pre>
     `,
     pitfalls: [
-      "Comparing objects with <code class=\"inline\">==</code> instead of <code class=\"inline\">.equals()</code>. This is the single most common ArrayList-specific mistake.",
-      "Using array syntax (<code class=\"inline\">[]</code>) out of habit. <code class=\"inline\">nums[i]</code> doesn't compile on an <code class=\"inline\">ArrayList</code>.",
-      "Forgetting <code class=\"inline\">.size()</code> changes as you add/remove."
+      "Comparing objects with <code class=\"inline\">==</code> instead of <code class=\"inline\">.equals()</code>. This is the single most common ArrayList-specific mistake — <code class=\"inline\">nums.get(i) == nums.get(j)</code> checks whether they're the same object, which is unreliable even for boxed Integers.",
+      "Using array syntax (<code class=\"inline\">[]</code>) out of habit. <code class=\"inline\">nums[i]</code> doesn't compile on an <code class=\"inline\">ArrayList</code> — it's always get/set.",
+      "Forgetting <code class=\"inline\">.size()</code> changes as you add/remove. A loop bound computed once before a series of removals can end up stale."
     ],
     takeaways: [
-      "Every array algorithm pattern transfers directly to <code class=\"inline\">ArrayList</code> — just swap <code class=\"inline\">[i]</code>/<code class=\"inline\">.length</code> for <code class=\"inline\">get(i)</code>/<code class=\"inline\">.size()</code>.",
-      "Compare <code class=\"inline\">ArrayList</code> elements with <code class=\"inline\">.equals()</code>, not <code class=\"inline\">==</code>, when the element type is an object (including boxed numbers).",
+      "Every array algorithm pattern (accumulator, min/max, search, property checks, duplicates, rotate, reverse) transfers directly to <code class=\"inline\">ArrayList</code> — just swap <code class=\"inline\">[i]</code>/<code class=\"inline\">.length</code> for <code class=\"inline\">get(i)</code>/<code class=\"inline\">.size()</code>.",
+      "Compare <code class=\"inline\">ArrayList</code> elements with <code class=\"inline\">.equals()</code>, not <code class=\"inline\">==</code>, when the element type is an object (including boxed numbers like Integer).",
       "Parallel <code class=\"inline\">ArrayList</code>s keep related data in sync by index, same as parallel arrays."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.10-implementing-arraylist-algorithms.md (CSA 4.10)"
@@ -451,6 +460,12 @@ scan.<span class="me">close</span>(); <span class="c">// always close when done<
 <span class="t">String</span> routeName = fields[<span class="n">0</span>];       <span class="c">// "3-Piece-Left"</span>
 <span class="k">double</span> routeTime = <span class="t">Double</span>.<span class="me">parseDouble</span>(fields[<span class="n">1</span>]); <span class="c">// "14.2" -> 14.2</span>
 <span class="t">String</span> alliance = fields[<span class="n">2</span>];        <span class="c">// "BlueAlliance"</span></code></pre>
+      <h2>Reading Into an Array or ArrayList</h2>
+      <p>If you know the line count in advance, an array works; otherwise, <code class="inline">ArrayList</code> (Ch.9.2) avoids needing to know the size up front:</p>
+      <pre class="code"><code><span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt; configLines = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt;();
+<span class="k">while</span> (scan.hasNext()) {
+    configLines.<span class="me">add</span>(scan.<span class="me">nextLine</span>());
+}</code></pre>
       <h2>Reading Into Objects</h2>
       <p>Rather than working with raw <code class="inline">String[]</code> rows, define a class matching the file's columns and build one object per row:</p>
       <pre class="code"><code><span class="t">ArrayList</span>&lt;<span class="t">AutoRoute</span>&gt; routes = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">AutoRoute</span>&gt;();
@@ -462,13 +477,13 @@ scan.<span class="me">close</span>(); <span class="c">// always close when done<
     pitfalls: [
       "Forgetting <code class=\"inline\">throws IOException</code> (or a try/catch). Java won't compile file-reading code unless you've acknowledged that opening the file might fail.",
       "Forgetting to <code class=\"inline\">close()</code> the scanner. A small leak that adds up in a program that opens many files.",
-      "Trying to parse a header row as data. The first line of a CSV is often column names, not values — skip it before parsing rows as real data."
+      "Trying to parse a header row as data. The first line of a CSV is often column names, not values — skip it (e.g. <code class=\"inline\">if (i == 0) scan.nextLine();</code>) before parsing rows as real data."
     ],
     takeaways: [
-      "<code class=\"inline\">File</code> represents the file; <code class=\"inline\">Scanner</code> reads from it — both can throw exceptions Java requires you to acknowledge.",
+      "<code class=\"inline\">File</code> represents the file; <code class=\"inline\">Scanner</code> reads from it — both can throw exceptions if the file can't be opened, which Java requires you to acknowledge (<code class=\"inline\">throws IOException</code>, or try/catch).",
       "<code class=\"inline\">hasNext()</code> combined with a <code class=\"inline\">while</code> loop is the standard pattern for reading an entire file, line by line.",
       "<code class=\"inline\">String.split(\",\")</code> breaks a CSV line into fields.",
-      "Reading rows into custom objects is cleaner than working with raw split arrays once the data has real structure."
+      "Reading rows into custom objects (one object per line) is cleaner than working with raw split arrays once the data has real structure."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.06-using-text-files.md (CSA 4.6)"
   }

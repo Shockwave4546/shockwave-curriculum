@@ -122,6 +122,10 @@ const DATA = {
       <h2>Encapsulation: Why Instance Variables Are private</h2>
       <p><code class="inline">public</code> and <code class="inline">private</code> control who can access something. <code class="inline">public</code> means any other class can reach it; <code class="inline">private</code> restricts access to code inside that same class only.</p>
       <p>Instance variables should almost always be <code class="inline">private</code> — this is <strong>encapsulation</strong>: the class's internal data is hidden, and other code can only interact with it through the methods the class chooses to expose. This matters in practice: if <code class="inline">currentSpeed</code> were <code class="inline">public</code>, any other subsystem could set it directly, bypassing whatever safety logic the <code class="inline">Intake</code> class's own methods enforce (a ramp limit, a max-speed clamp). Keeping it <code class="inline">private</code> means the <em>only</em> way to change it is through <code class="inline">Intake</code>'s own methods, which can enforce those rules every time.</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span>
+{
+    <span class="k">private double</span> currentSpeed; <span class="c">// only Intake's own code can touch this directly</span>
+}</code></pre>
       <h2>Putting It Together</h2>
       <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span>
 {

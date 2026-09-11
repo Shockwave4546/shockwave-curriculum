@@ -117,9 +117,9 @@ const DATA = {
       <p>Before writing <code class="inline">Robot.java</code>, sketching out "what are the nouns" for an actual robot — <code class="inline">Drivetrain</code>, <code class="inline">Intake</code>, <code class="inline">Shooter</code>, <code class="inline">Climber</code> — and roughly what data/behavior each needs, is exactly the kind of upfront design this lesson describes. It's the same thinking that led to the <code class="inline">Subsystem</code> abstraction in Ch.17 and Ch.20 in the first place.</p>
     `,
     pitfalls: [
-      "Skipping design entirely and writing code directly. Even a rough five-minute sketch catches structural mistakes far more cheaply than discovering them later.",
-      "Confusing data abstraction with encapsulation. They're related but distinct: data abstraction is about naming data without exposing its representation; encapsulation (Ch.7/23) is the mechanism that enforces it.",
-      "Assuming procedural abstraction only matters for long methods. Even a short method benefits from a name that documents intent."
+      "Skipping design entirely and writing code directly. Even a rough five-minute sketch of \"what classes do I need, what does each own\" catches structural mistakes far more cheaply than discovering them after a class already has fifteen unrelated responsibilities.",
+      "Confusing data abstraction with encapsulation. They're related but distinct: data abstraction is about naming data without exposing its representation; encapsulation (Ch.7/23) is the specific mechanism (private fields, public accessors) that enforces it.",
+      "Assuming procedural abstraction only matters for long methods. Even a short method benefits — naming a two-line calculation calculateShooterRPM(distance) documents intent in a way the raw calculation alone never does."
     ],
     takeaways: [
       "Object-oriented design starts by identifying the nouns in a problem description — they're usually the classes a program needs.",
@@ -145,13 +145,13 @@ const DATA = {
       <p>As software takes on more autonomous decision-making — self-driving cars being the most commonly cited example — genuinely hard ethical questions arise: who's responsible when an autonomous system has to make a split-second decision with real consequences? These aren't questions with a clean technical answer, but they're worth being aware of as automation (including AI-assisted coding itself) becomes a bigger part of how software gets built.</p>
     `,
     pitfalls: [
-      "Treating \"it compiled\" as equivalent to \"it's reliable.\" Reliability requires actually testing behavior under realistic (and edge-case) conditions.",
-      "Reusing code without checking its license or attribution requirements. Even easily-copied code may carry real legal obligations.",
-      "Assuming design choices are ethically neutral. A default behavior, a permission granted too broadly, or an untested edge case can carry real consequences."
+      "Treating \"it compiled\" as equivalent to \"it's reliable.\" Compiling successfully only means the code is syntactically valid — reliability requires actually testing behavior under realistic (and edge-case) conditions.",
+      "Reusing code without checking its license or attribution requirements. Even code that's technically easy to copy-paste may carry real legal obligations about attribution or reuse terms.",
+      "Assuming design choices are ethically neutral. A default behavior, a permission granted too broadly, or an untested edge case can carry real consequences for whoever the software ultimately affects."
     ],
     takeaways: [
       "System reliability means performing correctly under real, tested conditions — not just \"it worked once.\"",
-      "Software's real-world impact can be beneficial or harmful, often beyond its original intended use — especially concrete for FRC, where code directly controls physical hardware.",
+      "Software's real-world impact can be beneficial or harmful, often in ways beyond its original intended use — this is especially concrete for FRC, where code directly controls physical hardware.",
       "Reusing code carries real legal/licensing obligations — open-source code is free to use (under its license terms), other code generally requires explicit permission.",
       "Increasingly autonomous software (AI included) raises genuine ethical questions worth being aware of, even without a clean technical answer."
     ],

@@ -16,7 +16,11 @@ from html import unescape
 
 
 def strip_tags(s):
-    return unescape(re.sub(r'<[^>]+>', '', s))
+    # A tag starts with `<` immediately followed by `/` or a letter -- same fix as
+    # check_lesson_review_consistency.py's strip_tags, for the same reason: a bare
+    # `<[^>]+>` misreads a raw, unescaped `<`/`<=` operator in code (e.g. `i < len`) as a
+    # tag opener and eats everything up to the next real `>`.
+    return unescape(re.sub(r'<(?:/|(?=[a-zA-Z]))[^>]*>', '', s))
 
 
 def norm(s):

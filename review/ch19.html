@@ -138,15 +138,15 @@ const DATA = {
       <p>An interface can also declare <strong>static methods</strong> — utility methods associated with the interface itself, not with any implementing object, called directly on the interface name rather than through an instance.</p>
     `,
     pitfalls: [
-      "Forgetting to implement every abstract method an interface declares. A class that leaves even one required method unimplemented fails to compile.",
-      "Confusing <code class=\"inline\">extends</code> and <code class=\"inline\">implements</code>. A class <code class=\"inline\">extends</code> exactly one class, but can <code class=\"inline\">implements</code> any number of interfaces.",
-      "Assuming every interface method needs to be written from scratch. Default methods come \"for free\" — only override one if the default behavior isn't what you want."
+      "Forgetting to implement every abstract method an interface declares. A class that leaves even one required method unimplemented fails to compile — every non-default, non-static method is a firm requirement.",
+      "Confusing <code class=\"inline\">extends</code> and <code class=\"inline\">implements</code>. A class <code class=\"inline\">extends</code> exactly one class, but can <code class=\"inline\">implements</code> any number of interfaces — these are two entirely separate mechanisms.",
+      "Assuming every interface method needs to be written from scratch. Default methods (like the empty ones in <code class=\"inline\">IntakeIO</code> above) come \"for free\" — only override one if the default behavior isn't what you want."
     ],
     takeaways: [
       "An interface is a contract: method signatures with no implementation (default/static methods aside), specifying <em>what</em> a class can do, not <em>how</em>.",
-      "A class agrees to an interface's contract with <code class=\"inline\">implements</code>, and can implement any number of interfaces at once.",
-      "An interface is a real type — variables, parameters, arrays, and collections can all be declared against it.",
-      "A <code class=\"inline\">default</code> method provides a real implementation directly in the interface, letting implementing classes inherit it without writing their own."
+      "A class agrees to an interface's contract with <code class=\"inline\">implements</code>, and can implement any number of interfaces at once — unlike the single-superclass limit of <code class=\"inline\">extends</code>.",
+      "An interface is a real type — variables, parameters, arrays, and collections can all be declared against it, holding any object whose class implements it.",
+      "A <code class=\"inline\">default</code> method provides a real implementation directly in the interface, letting implementing classes inherit it without writing their own — the mechanism behind adding new interface methods without breaking existing code."
     ],
     prov: "other-reference-repo: oracle-java-tutorials/interfaces/01-06 (ORACLE 15.1-6) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 6 (\"Interfaces as Contracts\") — IntakeIO example"
   },
@@ -203,13 +203,13 @@ const DATA = {
       <p><code class="inline">intake::stop</code> reads as "the <code class="inline">stop</code> method, called on <code class="inline">intake</code>" — Java fills in the call automatically, with whatever arguments the functional interface's method expects. Method references exist purely as a shorthand for a lambda that does nothing but forward to an existing method.</p>
     `,
     pitfalls: [
-      "Writing parameter types into a lambda. <code class=\"inline\">(Person p) -&gt; p.getAge()</code> — while technically legal — is unusual style; letting the compiler infer the type is the normal convention.",
-      "Forgetting <code class=\"inline\">return</code> in a multi-statement lambda body. A single-expression lambda auto-returns its value, but a <code class=\"inline\">{ }</code> block body needs an explicit <code class=\"inline\">return</code>.",
-      "Reaching for a method reference when the lambda does more than forward one call. A method reference only replaces a lambda that does nothing but call one existing method."
+      "Writing parameter types into a lambda. <code class=\"inline\">(Person p) -&gt; p.getAge()</code> — while technically legal — is unusual style; letting the compiler infer the type (<code class=\"inline\">p -&gt; p.getAge()</code>) is the normal convention, since the functional interface already pins down what type <code class=\"inline\">p</code> has to be.",
+      "Forgetting <code class=\"inline\">return</code> in a multi-statement lambda body. A single-expression lambda auto-returns its value, but a <code class=\"inline\">{ }</code> block body needs an explicit <code class=\"inline\">return</code>, exactly like a regular method.",
+      "Reaching for a method reference when the lambda does more than forward one call. <code class=\"inline\">() -&gt; { intake.stop(); logEvent(\"stopped\"); }</code> genuinely needs a lambda — a method reference only replaces a lambda that does nothing but call one existing method."
     ],
     takeaways: [
       "A lambda expression is a compact way to implement a functional interface (an interface with exactly one abstract method) inline, without writing a class.",
-      "Syntax: <code class=\"inline\">(parameters) -&gt; expression</code> (or a braced block for multi-statement bodies); parameter types are inferred.",
+      "Syntax: <code class=\"inline\">(parameters) -&gt; expression</code> (or <code class=\"inline\">{ statements; return value; }</code> for a multi-statement body); parameter types are inferred, and parentheses can be dropped for a single parameter.",
       "<code class=\"inline\">Runnable</code>, <code class=\"inline\">DoubleSupplier</code>, and <code class=\"inline\">BooleanSupplier</code> are common ready-made functional interfaces WPILib code uses constantly.",
       "A method reference (<code class=\"inline\">object::method</code>) is exact shorthand for a lambda that does nothing but call one existing method."
     ],

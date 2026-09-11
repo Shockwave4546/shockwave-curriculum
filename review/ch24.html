@@ -140,12 +140,12 @@ visionPose.<span class="me">ifPresent</span>(pose -&gt; estimator.<span class="m
     `,
     pitfalls: [
       "Calling <code class=\"inline\">.get()</code> without checking first. This throws on an empty <code class=\"inline\">Optional</code>, defeating the entire purpose of using one.",
-      "Using <code class=\"inline\">Optional</code> for every field or parameter, out of habit. It's meant for genuinely optional results (especially return values) — not a blanket replacement for every reference type.",
+      "Using <code class=\"inline\">Optional</code> for every field or parameter, out of habit. It's meant for genuinely optional results (especially return values) — not a blanket replacement for every reference type in a program.",
       "Passing a <code class=\"inline\">null</code> to <code class=\"inline\">Optional.of(...)</code>. That throws immediately — use <code class=\"inline\">Optional.ofNullable(...)</code> instead when the value genuinely might be <code class=\"inline\">null</code>."
     ],
     takeaways: [
       "<code class=\"inline\">Optional&lt;T&gt;</code> makes \"this might not have a value\" visible directly in a method's return type, instead of relying on an invisible, easy-to-forget <code class=\"inline\">null</code> check.",
-      "Create one with <code class=\"inline\">Optional.empty()</code>, <code class=\"inline\">Optional.of(value)</code> (throws if null), or <code class=\"inline\">Optional.ofNullable(value)</code> (safe either way).",
+      "Create one with <code class=\"inline\">Optional.empty()</code>, <code class=\"inline\">Optional.of(value)</code> (throws if value is null), or <code class=\"inline\">Optional.ofNullable(value)</code> (safe either way).",
       "Handle both cases with <code class=\"inline\">ifPresent(...)</code>, <code class=\"inline\">orElse(fallback)</code>, or <code class=\"inline\">orElseThrow(...)</code> — never call bare <code class=\"inline\">.get()</code> without checking first.",
       "<code class=\"inline\">filter</code> and <code class=\"inline\">map</code> let you chain a couple of extra conditions/transformations without falling back into nested <code class=\"inline\">if</code> checks."
     ],

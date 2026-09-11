@@ -164,13 +164,13 @@ const DATA = {
     `,
     pitfalls: [
       "Forgetting <code class=\"inline\">return this;</code> in a builder method. Without it, the method returns <code class=\"inline\">void</code>, and chaining the next call fails to compile.",
-      "Making the target class's constructor <code class=\"inline\">public</code> alongside the builder. That defeats the pattern's purpose — the real constructor should stay <code class=\"inline\">private</code>.",
-      "Reaching for a builder on a simple, 2-3-parameter class. That's exactly the case the pattern isn't meant for."
+      "Making the target class's constructor <code class=\"inline\">public</code> alongside the builder. That defeats the pattern's purpose — callers should only ever construct the object through the builder, which is why the real constructor stays <code class=\"inline\">private</code>.",
+      "Reaching for a builder on a simple, 2-3-parameter class. That's exactly the case the pattern isn't meant for — the extra ceremony isn't worth it there."
     ],
     takeaways: [
-      "The Builder Pattern separates step-by-step construction from a class's actual usage, avoiding \"constructor hell.\"",
+      "The Builder Pattern separates step-by-step construction from a class's actual usage, avoiding \"constructor hell\" (many same-typed or optional parameters).",
       "A builder is a nested <code class=\"inline\">static</code> class collecting settings via named, chainable methods (each returning <code class=\"inline\">this</code> — a fluent interface), finishing with <code class=\"inline\">build()</code>.",
-      "The target class's real constructor is <code class=\"inline\">private</code>, taking the finished builder and copying its values into <code class=\"inline\">final</code> fields.",
+      "The target class's real constructor is <code class=\"inline\">private</code>, taking the finished builder and copying its values into <code class=\"inline\">final</code> fields — producing an immutable, safely-configured result.",
       "Real WPILib classes (<code class=\"inline\">TrajectoryConfig</code>, command groups) already use this same chaining idea.",
       "Skip the builder for simple classes with few, always-required parameters — a constructor or static factory (Ch.21) is simpler there."
     ],

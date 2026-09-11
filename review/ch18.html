@@ -133,19 +133,19 @@ const DATA = {
 {
     <span class="k">public void</span> <span class="me">rename</span>(<span class="t">String</span> newName)
     {
-        <span class="me">setName</span>(newName); <span class="c">// must go through the inherited setter — direct access to 'name' isn't legal here</span>
+        <span class="me">setName</span>(newName); <span class="c">// must go through the inherited setter — direct access to \`name\` isn't legal here</span>
     }
 }</code></pre>
     `,
     pitfalls: [
-      "Mismatching the signature and expecting an override anyway. Changing the parameter list makes it an overload, not an override — the original method is still inherited unchanged, sitting alongside the new one.",
-      "Forgetting <code class=\"inline\">@Override</code>. Skipping it doesn't break anything when the signature is right, but it removes the compiler's safety net against typos.",
-      "Trying to differ only by return type. That doesn't compile — it's neither a valid override nor a valid overload."
+      "Mismatching the signature and expecting an override anyway. Changing the parameter list (even by adding one parameter) makes it an overload, not an override — the original method is still inherited unchanged, sitting alongside the new one.",
+      "Forgetting <code class=\"inline\">@Override</code>. Skipping it doesn't break anything when the signature is right, but it removes the compiler's safety net against typos — always include it when overriding.",
+      "Trying to differ only by return type. <code class=\"inline\">public int stop()</code> next to a superclass's <code class=\"inline\">public void stop()</code> doesn't compile — that's neither a valid override nor a valid overload."
     ],
     takeaways: [
-      "Overriding replaces an inherited method with a new version in the subclass, using the <em>exact same</em> signature.",
-      "<code class=\"inline\">@Override</code> isn't required, but should always be used — it turns a signature typo into a compile error.",
-      "Overloading is different: same name, same class, different parameter list.",
+      "Overriding replaces an inherited method with a new version in the subclass, using the <em>exact same</em> signature (name, parameters, return type).",
+      "<code class=\"inline\">@Override</code> isn't required, but should always be used — it turns a signature typo into a compile error instead of a silent, unrelated new method.",
+      "Overloading is different: same name, same class, different parameter list — not to be confused with overriding.",
       "Two methods can never differ only in return type.",
       "Inherited getters/setters remain the only way to reach a superclass's private fields, even from within the subclass."
     ],
@@ -193,9 +193,9 @@ const DATA = {
       <p><code class="inline">super.someMethod()</code> only changes which version of <em>that specific call</em> runs — it doesn't change how any other method call inside the same method resolves. Any call made without <code class="inline">super</code> still dispatches based on the object's actual runtime type, even from inside inherited code. This is why a <code class="inline">super.methodOne()</code> call that internally calls another method still ends up running the <em>subclass's</em> override of that other method, not the superclass's — the override "wins" everywhere except the one spot <code class="inline">super</code> explicitly overrides it.</p>
     `,
     pitfalls: [
-      "Forgetting <code class=\"inline\">super.method()</code> must be called explicitly — it never happens automatically the way <code class=\"inline\">super()</code> does for constructors.",
-      "Confusing the two <code class=\"inline\">super</code> forms. <code class=\"inline\">super(...)</code> only calls a constructor, as the first line; <code class=\"inline\">super.method()</code> calls a named method, anywhere in a method body.",
-      "Assuming <code class=\"inline\">super.method()</code> changes every call inside that method to use the superclass's versions. It only affects the one call written with <code class=\"inline\">super</code>."
+      "Forgetting <code class=\"inline\">super.method()</code> must be called explicitly — it never happens automatically the way <code class=\"inline\">super()</code> does for constructors. Overriding a method completely discards the superclass's version unless the override calls <code class=\"inline\">super.method()</code> itself.",
+      "Confusing the two <code class=\"inline\">super</code> forms. <code class=\"inline\">super(...)</code> (no method name) only ever calls a constructor, and only as a constructor's first line; <code class=\"inline\">super.method()</code> calls a named method, and can appear anywhere inside a method body.",
+      "Assuming <code class=\"inline\">super.method()</code> changes every call inside that method to use the superclass's versions. It only affects the one call written with <code class=\"inline\">super</code> — any other method call inside that same superclass method still resolves against the object's real runtime type."
     ],
     takeaways: [
       "<code class=\"inline\">super.method()</code> explicitly calls the superclass's version of a method, letting a subclass extend rather than fully replace inherited behavior.",
@@ -237,14 +237,14 @@ s.<span class="me">stop</span>(); <span class="c">// the compiler only confirms 
       <p>Polymorphic dispatch only applies to regular (instance) methods. A <code class="inline">static</code> method call is resolved entirely by the declared type, at compile time — there's no runtime lookup involved at all, since static methods belong to the class itself, not to any particular object.</p>
     `,
     pitfalls: [
-      "Assuming the compiler checks the actual type. It never does — a method call fails to compile even when the real object genuinely has that method, if the declared type doesn't.",
-      "Forgetting that runtime dispatch is what actually decides which override runs. The declared type only gates whether the code compiles.",
-      "Expecting polymorphism to apply to static methods. Static calls are resolved by declared type alone, with no runtime dispatch."
+      "Assuming the compiler checks the actual type. It never does — <code class=\"inline\">message.indexOf(\"h\")</code> fails to compile even when the real object genuinely has that method, because the compiler only ever consults the declared type.",
+      "Forgetting that runtime dispatch is what actually decides which override runs. The declared type only gates <em>whether the code compiles</em> — which specific version executes is always decided by the real, actual object type.",
+      "Expecting polymorphism to apply to static methods. Static method calls are resolved by declared type alone, with no runtime dispatch — they don't participate in overriding the way instance methods do."
     ],
     takeaways: [
       "Polymorphism means the method that runs depends on an object's actual runtime type, not its variable's declared type.",
       "The compiler only checks the declared type for whether a method call is legal; the JVM decides which overridden version actually runs based on the real, actual type.",
-      "This is why a <code class=\"inline\">Subsystem</code>-typed array or method parameter can transparently work with any subclass — one piece of code, many possible real behaviors.",
+      "This is why a <code class=\"inline\">Subsystem</code>-typed array or method parameter can transparently work with <code class=\"inline\">Intake</code>, <code class=\"inline\">Climber</code>, <code class=\"inline\">Shooter</code>, or any other subclass — one piece of code, many possible real behaviors.",
       "Static methods don't participate in this — they're resolved entirely by declared type, at compile time."
     ],
     prov: "csawesome-2026: unit-5-inheritance-optional/5.06-polymorphism.md (CSA 5.6) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 5 — TalonFX/SparkMax-as-MotorController example"

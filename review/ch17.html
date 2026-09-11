@@ -137,8 +137,8 @@ const DATA = {
     takeaways: [
       "<code class=\"inline\">extends</code> declares inheritance: the subclass gains the superclass's fields and methods.",
       "A class can only <code class=\"inline\">extends</code> one superclass; omitting <code class=\"inline\">extends</code> implicitly means extending <code class=\"inline\">Object</code>.",
-      "Use inheritance only for a genuine is-a relationship — verify with the substitution test.",
-      "has-a (association) is the right model when is-a doesn't genuinely apply."
+      "Use inheritance only for a genuine is-a relationship — verify with the substitution test (does the subclass make sense wherever the superclass is expected?).",
+      "has-a (association: one class simply holding a reference to another) is the right model when is-a doesn't genuinely apply."
     ],
     prov: "csawesome-2026: unit-5-inheritance-optional/5.01-inheritance-superclass-subclass.md (CSA 5.1) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 4 (\"Inheritance & Abstractions\")"
   },
@@ -164,7 +164,7 @@ const DATA = {
 
     <span class="k">public</span> <span class="me">Intake</span>(<span class="t">String</span> name)
     {
-        <span class="k">super</span>(name);          <span class="c">// runs Subsystem's constructor, setting the private 'name' field</span>
+        <span class="k">super</span>(name);          <span class="c">// runs Subsystem's constructor, setting the private \`name\` field</span>
         hasGamePiece = <span class="k">false</span>;  <span class="c">// Intake's own field</span>
     }
 }</code></pre>
@@ -178,8 +178,8 @@ const DATA = {
     `,
     pitfalls: [
       "Trying to assign a superclass's private field directly. <code class=\"inline\">this.name = name;</code> inside <code class=\"inline\">Intake</code>'s constructor doesn't compile if <code class=\"inline\">name</code> is <code class=\"inline\">private</code> in <code class=\"inline\">Subsystem</code> — only <code class=\"inline\">super(name)</code> can reach it.",
-      "Forgetting <code class=\"inline\">super(...)</code> must be the first statement. A subclass constructor calling <code class=\"inline\">super(...)</code> after other statements doesn't compile.",
-      "Assuming a no-argument <code class=\"inline\">super()</code> always works. If the superclass has no no-argument constructor, Java can't insert an implicit call — the subclass must explicitly call <code class=\"inline\">super(...)</code> with matching arguments."
+      "Forgetting <code class=\"inline\">super(...)</code> must be the first statement. A subclass constructor calling <code class=\"inline\">super(...)</code> after other statements doesn't compile — it must be the very first line, since the superclass has to finish initializing before the subclass's own code can safely run.",
+      "Assuming a no-argument <code class=\"inline\">super()</code> always works. If the superclass has no no-argument constructor (only ones taking parameters), Java can't insert an implicit call — the subclass must explicitly call <code class=\"inline\">super(...)</code> with matching arguments."
     ],
     takeaways: [
       "Constructors are never inherited — only a <code class=\"inline\">super(...)</code> call can run the superclass's constructor logic to initialize its own (even private) fields.",
@@ -221,8 +221,8 @@ allSubsystems.<span class="me">add</span>(<span class="k">new</span> <span class
       <p>When a method typed against the superclass is called on an object that's actually a subclass instance, Java runs <em>that object's</em> actual version of the method — decided by its real runtime type, not the variable's declared type. This is the foundation of <strong>polymorphism</strong>, covered in full in Lesson 18.3 — for now, the key idea is just that a <code class="inline">Subsystem</code>-typed variable holding an <code class="inline">Intake</code> object still calls <code class="inline">Intake</code>'s own overridden methods, if it has any.</p>
     `,
     pitfalls: [
-      "Trying to assign a superclass object to a subclass-typed variable. <code class=\"inline\">Intake i = new Subsystem(...);</code> is a compile error — not every <code class=\"inline\">Subsystem</code> is an <code class=\"inline\">Intake</code>.",
-      "Thinking a <code class=\"inline\">Subsystem[]</code> array can only hold plain <code class=\"inline\">Subsystem</code> objects. It can hold any mix of <code class=\"inline\">Subsystem</code> and its subclasses.",
+      "Trying to assign a superclass object to a subclass-typed variable. <code class=\"inline\">Intake i = new Subsystem(...);</code> is a compile error — not every <code class=\"inline\">Subsystem</code> is an <code class=\"inline\">Intake</code>. This only ever works the other direction (superclass variable, subclass object).",
+      "Thinking a <code class=\"inline\">Subsystem[]</code> array can only hold plain <code class=\"inline\">Subsystem</code> objects. It can hold any mix of <code class=\"inline\">Subsystem</code> and its subclasses — that flexibility is the entire point of typing the array against the superclass.",
       "Forgetting which method version actually runs. Even though a variable is declared <code class=\"inline\">Subsystem</code>, calling a method on it runs the object's <em>real</em> class's version — not necessarily <code class=\"inline\">Subsystem</code>'s own."
     ],
     takeaways: [
@@ -281,8 +281,8 @@ allSubsystems.<span class="me">add</span>(<span class="k">new</span> <span class
       <p>Overriding <code class="inline">equals</code> again in a subclass of a class that's already overridden it is genuinely difficult to get right, and easy to accidentally break <strong>symmetry</strong>. If <code class="inline">Intake</code> (subclass of <code class="inline">Subsystem</code>) overrode <code class="inline">equals</code> to <em>also</em> compare <code class="inline">hasGamePiece</code>, then <code class="inline">genericSubsystem.equals(intakeObj)</code> would call <code class="inline">Subsystem</code>'s <code class="inline">equals</code> (comparing only <code class="inline">name</code>), while <code class="inline">intakeObj.equals(genericSubsystem)</code> would call <code class="inline">Intake</code>'s <code class="inline">equals</code> — which checks <code class="inline">other instanceof Intake</code> and returns <code class="inline">false</code>, since a plain <code class="inline">Subsystem</code> isn't an <code class="inline">Intake</code>. The two calls disagree, breaking the symmetry rule. The general guideline: only one class in a hierarchy should provide a real <code class="inline">equals</code> override.</p>
     `,
     pitfalls: [
-      "Writing <code class=\"inline\">equals(Subsystem other)</code> instead of <code class=\"inline\">equals(Object other)</code>. That's overloading a new method, not overriding <code class=\"inline\">Object</code>'s.",
-      "Forgetting the <code class=\"inline\">instanceof</code> check before casting. Casting <code class=\"inline\">other</code> without checking first throws <code class=\"inline\">ClassCastException</code> if it's an unrelated type.",
+      "Writing <code class=\"inline\">equals(Subsystem other)</code> instead of <code class=\"inline\">equals(Object other)</code>. That's overloading a new method, not overriding <code class=\"inline\">Object</code>'s — code calling <code class=\"inline\">.equals()</code> on a <code class=\"inline\">Subsystem</code>-typed variable would still use <code class=\"inline\">Object</code>'s original version.",
+      "Forgetting the <code class=\"inline\">instanceof</code> check before casting. Casting <code class=\"inline\">other</code> to your class without checking first throws <code class=\"inline\">ClassCastException</code> if <code class=\"inline\">other</code> turns out to be some unrelated type.",
       "Overriding <code class=\"inline\">equals</code> again further down an inheritance hierarchy. This tends to violate symmetry — safest to let only one class in the hierarchy own the <code class=\"inline\">equals</code> override."
     ],
     takeaways: [

@@ -129,8 +129,8 @@ const DATA = {
       <p>Commands are <strong>recursively composable</strong> — a complex robot action (like "intake a game piece, then aim the shooter, then fire") can be built out of several small, simple commands combined together, and that composite is itself just another command, usable anywhere a command is expected. Lesson 25.2 covers this in depth.</p>
     `,
     pitfalls: [
-      "Writing large amounts of imperative logic directly in <code class=\"inline\">Robot.java</code>. This works against the entire declarative philosophy command-based is built on.",
-      "Forgetting that commands need declared requirements. A command that touches a subsystem without declaring it as a requirement bypasses the resource-management system entirely.",
+      "Writing large amounts of imperative logic directly in <code class=\"inline\">Robot.java</code>. This works against the entire declarative philosophy command-based is built on — the goal is to describe what happens, and let the scheduler handle when.",
+      "Forgetting that commands need declared requirements. A command that touches a subsystem without declaring it as a requirement bypasses the resource-management system entirely, risking two commands fighting over the same hardware.",
       "Assuming command-based is the only valid way to write robot code. It isn't — but it's the pattern this curriculum focuses on, since it's what WPILib itself is built to support."
     ],
     takeaways: [
@@ -204,15 +204,15 @@ command.<span class="me">withTimeout</span>(<span class="n">5</span>);          
       <p>A composition inherits the union of every component's requirements — a sequence that uses the intake, then the indexer, then the shooter reserves all three subsystems for the composition's entire duration, not just while each is actively in use.</p>
     `,
     pitfalls: [
-      "Scheduling a command that's already inside a composition. This throws and crashes the program — a command in a composition can't also be independently scheduled.",
-      "Writing a full custom <code class=\"inline\">Command</code> subclass for something a factory already covers. The built-in factories cover the overwhelming majority of real cases with far less code.",
-      "Forgetting that a sequential composition needs every step to actually finish. If one command never returns <code class=\"inline\">isFinished() == true</code>, every command after it in the sequence never runs."
+      "Scheduling a command that's already inside a composition. Once a command is part of a composition, it can't also be independently scheduled — attempting to do so throws and crashes the program, since the same command instance would be running from two places at once.",
+      "Writing a full custom <code class=\"inline\">Command</code> subclass for something a factory already covers. The built-in factories (<code class=\"inline\">runOnce</code>, <code class=\"inline\">run</code>, <code class=\"inline\">startEnd</code>, <code class=\"inline\">waitUntil</code>, etc.) cover the overwhelming majority of real cases with far less code.",
+      "Forgetting that a sequential composition needs every step to actually finish. If one command in a sequence never calls its <code class=\"inline\">isFinished()</code> true, every command after it in the sequence never runs."
     ],
     takeaways: [
-      "A <code class=\"inline\">Command</code>'s behavior is defined by four lifecycle methods: <code class=\"inline\">initialize()</code>, <code class=\"inline\">execute()</code>, <code class=\"inline\">isFinished()</code>, <code class=\"inline\">end(interrupted)</code>.",
+      "A <code class=\"inline\">Command</code>'s behavior is defined by four lifecycle methods: <code class=\"inline\">initialize()</code>, <code class=\"inline\">execute()</code>, <code class=\"inline\">isFinished()</code>, <code class=\"inline\">end(interrupted)</code> — all default to reasonable no-ops.",
       "<code class=\"inline\">addRequirements(...)</code> declares which subsystems a command needs, backing the scheduler's resource-conflict prevention.",
       "Built-in factories (<code class=\"inline\">runOnce</code>, <code class=\"inline\">run</code>, <code class=\"inline\">startEnd</code>, <code class=\"inline\">waitSeconds</code>, <code class=\"inline\">waitUntil</code>, <code class=\"inline\">FunctionalCommand</code>) cover almost every use case without writing a custom class.",
-      "Compositions (sequential, parallel, race) combine commands into bigger ones, and are themselves ordinary commands — usable recursively."
+      "Compositions (sequential, parallel, race) combine commands into bigger ones, and are themselves ordinary commands — usable recursively, nested as deep as needed."
     ],
     prov: "other-reference-repo: wpilib/command-based/02-commands.md, 03-command-compositions.md (WPILIB 20.2-3)"
   },
@@ -234,14 +234,14 @@ command.<span class="me">withTimeout</span>(<span class="n">5</span>);          
       <p>Subsystem <code class="inline">periodic()</code> methods run <em>before</em> triggers are polled and commands execute, each loop — so a subsystem's periodic logic (like updating odometry) is always based on the previous loop's final state, and any command reading that subsystem's state this loop sees it freshly updated. This ordering is part of why command-based code behaves predictably: the sequence is the same, every single loop, without exception.</p>
     `,
     pitfalls: [
-      "Forgetting to call <code class=\"inline\">CommandScheduler.getInstance().run()</code> in <code class=\"inline\">robotPeriodic()</code>. Without this one line, nothing in the entire command-based framework does anything.",
-      "Assuming a command's <code class=\"inline\">initialize()</code> runs exactly when the scheduler's <code class=\"inline\">run()</code> is called. It actually runs the moment the command is scheduled — during Step 2.",
-      "Expecting a canceled command's <code class=\"inline\">end()</code> to report <code class=\"inline\">interrupted = false</code>. A forcibly interrupted command always gets <code class=\"inline\">end(true)</code>."
+      "Forgetting to call <code class=\"inline\">CommandScheduler.getInstance().run()</code> in <code class=\"inline\">robotPeriodic()</code>. Without this one line, nothing in the entire command-based framework does anything — commands never execute, triggers never fire.",
+      "Assuming a command's <code class=\"inline\">initialize()</code> runs exactly when the scheduler's <code class=\"inline\">run()</code> is called. It actually runs the moment the command is scheduled — which for a trigger-bound command happens during Step 2 of whichever loop the trigger condition first becomes true.",
+      "Expecting a canceled command's <code class=\"inline\">end()</code> to report <code class=\"inline\">interrupted = false</code>. A command that's forcibly interrupted (by a conflicting command, or an explicit cancel) always gets <code class=\"inline\">end(true)</code> — only a command that finishes on its own via <code class=\"inline\">isFinished()</code> gets <code class=\"inline\">end(false)</code>."
     ],
     takeaways: [
-      "The <code class=\"inline\">CommandScheduler</code> is a singleton that must be run explicitly (<code class=\"inline\">CommandScheduler.getInstance().run()</code>, from <code class=\"inline\">robotPeriodic()</code>).",
-      "Each iteration runs in a fixed order: subsystem <code class=\"inline\">periodic()</code>, poll triggers, execute/finish scheduled commands, schedule default commands.",
-      "Requirement conflicts are resolved by interruption behavior: default cancels the already-running command, unless set to <code class=\"inline\">kCancelIncoming</code>.",
+      "The <code class=\"inline\">CommandScheduler</code> is a singleton that must be run explicitly (<code class=\"inline\">CommandScheduler.getInstance().run()</code>, from <code class=\"inline\">robotPeriodic()</code>) — without this call, the framework does nothing.",
+      "Each iteration runs in a fixed order: subsystem <code class=\"inline\">periodic()</code> methods, then poll triggers for new commands, then execute/finish already-scheduled commands, then schedule any subsystem's default command if it's free.",
+      "Requirement conflicts are resolved by interruption behavior: the default cancels the already-running command in favor of the new one, unless that behavior is set to <code class=\"inline\">kCancelIncoming</code>.",
       "This fixed, predictable run order is a big part of why command-based code behaves consistently loop after loop."
     ],
     prov: "other-reference-repo: wpilib/command-based/08-command-scheduler.md (WPILIB 20.8)"
@@ -275,8 +275,8 @@ command.<span class="me">withTimeout</span>(<span class="n">5</span>);          
       <p>Having a named state is only half the picture — a state machine also needs logic that reads the current state and decides what to do (and when to move to a different state). That's the subject of Lesson 25.5.</p>
     `,
     pitfalls: [
-      "Reaching for several independent booleans instead of one enum. This lets impossible/contradictory combinations exist in the code, even though only one is ever supposed to be true.",
-      "Forgetting a state machine needs an initial value. <code class=\"inline\">currentState</code> should always be initialized to a real starting state — an uninitialized state variable is a <code class=\"inline\">null</code> waiting to cause a <code class=\"inline\">NullPointerException</code>."
+      "Reaching for several independent booleans instead of one enum. This lets impossible/contradictory combinations exist in the code, even though only one is ever supposed to be true — an enum makes that mistake structurally impossible.",
+      "Forgetting a state machine needs an initial value. <code class=\"inline\">currentState</code> should always be initialized to a real starting state (like <code class=\"inline\">IDLE</code>) — an uninitialized state variable is a <code class=\"inline\">null</code> waiting to cause a <code class=\"inline\">NullPointerException</code> (Ch.12/13) the first time anything reads it."
     ],
     takeaways: [
       "Tracking \"what state am I in\" with multiple independent booleans allows impossible combinations and doesn't scale.",
@@ -321,13 +321,13 @@ command.<span class="me">withTimeout</span>(<span class="n">5</span>);          
       <p><code class="inline">periodic()</code> runs every single scheduler loop, which is exactly the cadence a state machine needs — checking "should I transition now?" once per loop is what makes a sensor-triggered transition (like the intake noticing a game piece) responsive in real time, rather than only checked occasionally.</p>
     `,
     pitfalls: [
-      "Forgetting <code class=\"inline\">break;</code> in a <code class=\"inline\">switch</code> (Ch.5). Without it, execution falls through into the next case's code.",
-      "Putting transition logic in the wrong <code class=\"inline\">case</code>. A transition condition checked inside the wrong state's case either never triggers, or triggers behavior meant for a different state.",
-      "Mutating the state field from outside <code class=\"inline\">periodic()</code>. Scattering <code class=\"inline\">currentState = ...</code> assignments across multiple methods makes the whole state machine harder to reason about."
+      "Forgetting <code class=\"inline\">break;</code> in a <code class=\"inline\">switch</code> (Ch.5). Without it, execution falls through into the next <code class=\"inline\">case</code>'s code — a <code class=\"inline\">switch</code>-based state machine with a missing <code class=\"inline\">break</code> can silently run the wrong state's behavior on top of the intended one.",
+      "Putting transition logic in the wrong <code class=\"inline\">case</code>. A transition condition checked inside the wrong state's case either never triggers, or triggers behavior meant for a different state entirely.",
+      "Mutating the state field from outside <code class=\"inline\">periodic()</code>. Scattering <code class=\"inline\">currentState = ...</code> assignments across multiple methods makes it much harder to reason about when and why transitions actually happen — keeping all transition logic inside the one <code class=\"inline\">switch</code> in <code class=\"inline\">periodic()</code> keeps the whole state machine's behavior in one place."
     ],
     takeaways: [
-      "A <code class=\"inline\">switch</code> over the state enum, inside <code class=\"inline\">periodic()</code>, is the natural place to both run each state's behavior and check for transitions.",
-      "A transition is just a plain reassignment of the state field — the important part is placing it inside the correct state's case, gated on the right condition.",
+      "A <code class=\"inline\">switch</code> over the state enum, inside <code class=\"inline\">periodic()</code>, is the natural place to both run each state's behavior and check for transitions to a different state.",
+      "A transition is just a plain reassignment of the state field — the important part is placing it inside the correct state's <code class=\"inline\">case</code>, gated on the right real-world condition.",
       "Running this logic in <code class=\"inline\">periodic()</code> (called every scheduler loop) is what makes transitions responsive to sensors and other real-time signals.",
       "Missing a <code class=\"inline\">break;</code> is the single most common bug in a switch-based state machine."
     ],
@@ -368,13 +368,13 @@ driverController.<span class="me">x</span>().<span class="me">and</span>(driverC
       <pre class="code"><code>exampleButton.<span class="me">debounce</span>(<span class="n">0.1</span>).<span class="me">onTrue</span>(<span class="k">new</span> <span class="t">ExampleCommand</span>()); <span class="c">// ignores flickers under 0.1s</span></code></pre>
     `,
     pitfalls: [
-      "Expecting <code class=\"inline\">onTrue</code> to re-fire while a button stays held. It only fires once, on the transition — use <code class=\"inline\">whileTrue</code> for continuous behavior while held.",
-      "Confusing a <code class=\"inline\">Trigger</code>'s boolean condition with the command it's bound to. A <code class=\"inline\">Trigger</code> is just a wrapped condition.",
-      "Not debouncing a noisy digital sensor. A sensor near its trip point can rapidly flicker, causing repeated unwanted scheduling."
+      "Expecting <code class=\"inline\">onTrue</code> to re-fire while a button stays held. It only fires once, on the transition from false to true — for continuous behavior while held, use <code class=\"inline\">whileTrue</code>.",
+      "Confusing a <code class=\"inline\">Trigger</code>'s boolean condition with the command it's bound to. A <code class=\"inline\">Trigger</code> is just a wrapped condition; binding methods (<code class=\"inline\">onTrue</code>, <code class=\"inline\">whileTrue</code>, etc.) are what actually connect it to a command.",
+      "Not debouncing a noisy digital sensor. A sensor near its trip point can rapidly flicker true/false, causing repeated unwanted scheduling — <code class=\"inline\">debounce(...)</code> exists specifically for this."
     ],
     takeaways: [
       "A <code class=\"inline\">Trigger</code> wraps any boolean condition (a button, a sensor, an arbitrary check) so a command can be bound to it once, declaratively.",
-      "<code class=\"inline\">onTrue</code>/<code class=\"inline\">onFalse</code> fire once on a transition; <code class=\"inline\">whileTrue</code>/<code class=\"inline\">whileFalse</code> schedule while the condition holds and cancel when it changes.",
+      "<code class=\"inline\">onTrue</code>/<code class=\"inline\">onFalse</code> fire once on a transition; <code class=\"inline\">whileTrue</code>/<code class=\"inline\">whileFalse</code> schedule for as long as the condition holds and cancel the moment it changes.",
       "Triggers compose with <code class=\"inline\">and()</code>, <code class=\"inline\">or()</code>, <code class=\"inline\">negate()</code> — same boolean logic as Ch.5.",
       "Binding methods return the same trigger, so multiple bindings can be chained onto one trigger.",
       "<code class=\"inline\">debounce(...)</code> filters out rapid flickering near a condition's trip point."
@@ -472,14 +472,14 @@ driverController.<span class="me">x</span>().<span class="me">and</span>(driverC
 }</code></pre>
     `,
     pitfalls: [
-      "Declaring subsystems as global/static fields for easy access. This defeats the resource-management system's whole purpose.",
-      "Forgetting to cancel the autonomous command in <code class=\"inline\">teleopInit()</code>. Without it, an unfinished autonomous command can keep running (and keep its requirements locked) into teleop.",
-      "Scattering constants across many files instead of one <code class=\"inline\">Constants</code> class. Changing one tunable value should mean editing exactly one line."
+      "Declaring subsystems as global/static fields for easy access. This defeats the resource-management system's whole purpose — pass subsystems explicitly (dependency injection) instead.",
+      "Forgetting to cancel the autonomous command in <code class=\"inline\">teleopInit()</code>. Without it, an unfinished autonomous command can keep running (and keep its subsystem requirements locked) into teleop.",
+      "Scattering constants across many files instead of one <code class=\"inline\">Constants</code> class. Changing one tunable value (like an intake speed) should mean editing exactly one line, not hunting across the codebase."
     ],
     takeaways: [
-      "A standard command-based project has <code class=\"inline\">Robot</code> (thin), <code class=\"inline\">RobotContainer</code> (real setup), <code class=\"inline\">Constants</code> (all tunables), and <code class=\"inline\">Subsystems</code>/<code class=\"inline\">Commands</code> directories.",
+      "A standard command-based project has <code class=\"inline\">Robot</code> (thin, mostly boilerplate), <code class=\"inline\">RobotContainer</code> (real setup, subsystems, bindings), <code class=\"inline\">Constants</code> (all tunables), and <code class=\"inline\">Subsystems</code>/<code class=\"inline\">Commands</code> directories.",
       "<code class=\"inline\">Robot.robotPeriodic()</code> must call <code class=\"inline\">CommandScheduler.getInstance().run()</code> — nothing works without this line.",
-      "Subsystems stay <code class=\"inline\">private</code> in <code class=\"inline\">RobotContainer</code>; other code reaches them only by dependency injection, never as globals.",
+      "Subsystems stay <code class=\"inline\">private</code> in <code class=\"inline\">RobotContainer</code>; other code reaches them only by dependency injection, never as globals — this is what preserves the scheduler's resource-management guarantees.",
       "Choose how to define a reusable command based on its shape: instance factory (single subsystem), static factory (multiple subsystems), or a full class (real internal state or complex logic)."
     ],
     prov: "other-reference-repo: wpilib/command-based/04-subsystems.md (WPILIB 20.4), 06-structuring-command-based-project.md (WPILIB 20.6), 07-organizing-command-based.md (WPILIB 20.7)"

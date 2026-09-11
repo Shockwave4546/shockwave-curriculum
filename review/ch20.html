@@ -134,7 +134,7 @@ const DATA = {
       <p><code class="inline">Intake</code> (the subsystem) accepts an <code class="inline">IntakeIO</code> in its constructor and stores it — every call from then on goes through that reference, polymorphically (Lesson 18.3) dispatching to whichever implementation was actually supplied.</p>
       <h2>Inputs Flow Through a Loggable Object</h2>
       <p>Outputs (commands like <code class="inline">setVoltage</code>) are simple, one-way method calls. Inputs are handled more carefully, since they need to be logged <em>and</em> later replayable: each IO interface defines an accompanying inputs class holding public fields for every value that comes off the hardware, plus methods (<code class="inline">toLog</code>/<code class="inline">fromLog</code>) for saving and restoring that data from a log file:</p>
-      <pre class="code"><code>io.<span class="me">updateInputs</span>(inputs);                         <span class="c">// pull fresh data from the IO layer into 'inputs'</span>
+      <pre class="code"><code>io.<span class="me">updateInputs</span>(inputs);                         <span class="c">// pull fresh data from the IO layer into inputs</span>
 <span class="t">Logger</span>.<span class="me">processInputs</span>(<span class="s">"Intake"</span>, inputs);          <span class="c">// send it to the logging framework (or restore it, during replay)</span></code></pre>
       <p>The rest of the subsystem then reads from the <code class="inline">inputs</code> object — never straight from the IO layer — for a critical reason: every piece of code within one loop cycle sees the exact same cached values, so a replay from the log looks byte-for-byte identical to what really happened on the field.</p>
       <h2>The General Pattern Behind This: Ports and Adapters</h2>
@@ -146,7 +146,7 @@ const DATA = {
       "Treating the IO layer as optional overhead on a small subsystem. It's genuinely more files and more ceremony — but the payoff (simulation, replay, decoupled testing) is exactly why competitive FRC codebases use it anyway."
     ],
     takeaways: [
-      "The IO-Layer Pattern separates a subsystem's hardware access into its own interface, so the subsystem's own logic never touches real hardware APIs directly.",
+      "The IO-Layer Pattern separates a subsystem's hardware access into its own interface (the \"IO\" layer), so the subsystem's own logic never touches real hardware APIs directly.",
       "One interface, multiple implementations (real hardware vs. simulated), chosen once at construction — everything else dispatches polymorphically through the shared interface.",
       "Inputs flow through a dedicated, loggable object (<code class=\"inline\">updateInputs</code> + <code class=\"inline\">toLog</code>/<code class=\"inline\">fromLog</code>), so a match's exact inputs can be replayed later with identical results.",
       "This is FRC's specific application of the general Hexagonal Architecture (Ports and Adapters) pattern: core logic depends only on a port (interface), never on a specific adapter (implementation)."
