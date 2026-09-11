@@ -116,6 +116,7 @@ pre.code code{display:block; white-space:pre;}
 }
 .caption .quote{color:var(--accent); margin-right:6px; font-weight:700;}
 .caption.live{color:var(--ink);}
+.caption[hidden]{display:none;}
 
 .controls{
   display:flex; align-items:center; gap:14px;
@@ -137,6 +138,8 @@ pre.code code{display:block; white-space:pre;}
   font-family:'Space Grotesk',sans-serif; font-size:12px; padding:6px 10px; cursor:pointer; max-width:130px;
 }
 .hint{font-size:11px; color:var(--ink-faint); text-align:center; padding:10px 20px 16px; font-family:'JetBrains Mono',monospace;}
+.ctrlbtn.ccbtn{width:auto; min-width:38px; padding:0 8px;}
+.ctrlbtn.ccbtn.off{opacity:0.4;}
 ::selection{background:var(--accent-soft);}
 </style>
 
@@ -169,6 +172,9 @@ pre.code code{display:block; white-space:pre;}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM4 6l11 6L4 18z"/></svg>
     </button>
     <div class="progress" id="progress"><div class="fill" id="progressFill"></div></div>
+    <button class="ctrlbtn ccbtn" id="btnCC" title="Hide captions">
+      <svg width="20" height="14" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="1" width="28" height="18" rx="3.5"/><text x="15" y="14.5" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">CC</text></svg>
+    </button>
       </div>
   <div class="hint" id="hint">Space = play/pause · ← → = prev/next</div>
   <audio id="narrator" preload="none"></audio>
@@ -362,6 +368,8 @@ const progressFill = document.getElementById('progressFill');
 const btnPlay = document.getElementById('btnPlay');
 const hint = document.getElementById('hint');
 const narrator = document.getElementById('narrator');
+const btnCC = document.getElementById('btnCC');
+let captionsOn = true;
 
 const INTER_BEAT_PAUSE_MS = 1500;
 
@@ -430,6 +438,12 @@ function setPlaying(val){
 }
 
 document.getElementById('btnPlay').addEventListener('click', () => setPlaying(!playing));
+btnCC.addEventListener('click', () => {
+  captionsOn = !captionsOn;
+  captionEl.hidden = !captionsOn;
+  btnCC.classList.toggle('off', !captionsOn);
+  btnCC.title = captionsOn ? 'Hide captions' : 'Show captions';
+});
 document.getElementById('btnPrev').addEventListener('click', goPrev);
 document.getElementById('btnNext').addEventListener('click', goNext);
 document.getElementById('btnRestart').addEventListener('click', () => {
