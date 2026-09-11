@@ -41,10 +41,38 @@ Result: **200 OK**, valid MP3.
 ```xml
 <speak version='1.0' xml:lang='en-US'>
   <voice xml:lang='en-US' name='en-US-JennyNeural'>
-    Your narration text goes here.
+    <prosody rate='-8%'>Your narration text goes here.</prosody>
   </voice>
 </speak>
 ```
+
+The `<prosody rate='-8%'>` wrapper slows playback slightly — full-speed neural voices read a
+touch fast for teaching narration. Adjust the percentage if it still feels off in either
+direction.
+
+## Writing narration text: never put literal symbols in it
+
+**Never type a literal underscore, slash, or other symbol character in narration text —
+always spell it out phonetically.** The TTS engine reads literal characters exactly as
+written, not as a human would say them out loud.
+
+This bit us once already: Ch.1's recap beat had `SCREAMING_SNAKE_CASE` and `//` typed
+literally, and the voice read the underscore and slashes out loud between each word,
+sounding robotic and wrong — even though a different beat earlier in the same file spelled
+the same term out correctly (`SCREAMING SNAKE CASE`, `Two slashes`). The inconsistency is
+what caused it: one beat got it right, the recap didn't, because the recap text was written
+separately and the symbol snuck back in.
+
+Before generating audio for a beat, check its narration text for:
+- Underscores (`_`) → spell out `underscore`, or replace with a space if the whole term is
+  meant to sound like separate words (`SCREAMING_SNAKE_CASE` → `SCREAMING SNAKE CASE`)
+- Slashes (`//`, `/* */`) → spell out (`two slashes`, `slash-star, star-slash`)
+- Braces, arrows, and other code symbols (`{`, `}`, `->`, `::`) → describe them in words
+  (`curly brace`, `arrow`)
+- Dots in code (`MyClass.java`) → spell out `dot` (`MyClass dot java`)
+
+A quick `grep -n "_\|//\|/\*"` (or similar) over the narration JSON before synthesizing
+catches most of these before they cost an extra round of audio generation.
 
 ## Reusable script pattern
 
