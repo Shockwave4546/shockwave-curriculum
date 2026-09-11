@@ -187,10 +187,17 @@ const DATA = {
       <h2>Command Compositions: Building Bigger Actions From Smaller Ones</h2>
       <p>A <strong>command composition</strong> combines several commands into one — and since a composition is itself a <code class="inline">Command</code>, compositions can be nested arbitrarily deep. Three shapes matter most:</p>
       <ul>
-        <li><strong>Sequential</strong> — runs each command in order, finishing when the last one finishes: <code class="inline">fooCommand.andThen(barCommand)</code></li>
-        <li><strong>Parallel</strong> — runs several commands at once, finishing once <em>all</em> finish: <code class="inline">Commands.parallel(a, b, c)</code></li>
-        <li><strong>Race</strong> — runs several commands at once, finishing as soon as <em>any one</em> finishes (interrupting the rest): <code class="inline">Commands.race(a, b, c)</code></li>
+        <li><strong>Sequential</strong> — runs each command in order, finishing when the last one finishes:</li>
       </ul>
+      <pre class="code"><code>fooCommand.<span class="me">andThen</span>(barCommand); <span class="c">// runs fooCommand, then barCommand</span></code></pre>
+      <ul>
+        <li><strong>Parallel</strong> — runs several commands at once, finishing once <em>all</em> of them finish:</li>
+      </ul>
+      <pre class="code"><code><span class="t">Commands</span>.<span class="me">parallel</span>(twoSecCommand, oneSecCommand, threeSecCommand); <span class="c">// finishes after 3 seconds</span></code></pre>
+      <ul>
+        <li><strong>Race</strong> — runs several commands at once, finishing as soon as <em>any one</em> of them finishes (interrupting the rest):</li>
+      </ul>
+      <pre class="code"><code><span class="t">Commands</span>.<span class="me">race</span>(twoSecCommand, oneSecCommand, threeSecCommand); <span class="c">// finishes after 1 second</span></code></pre>
       <p>Two useful decorators add extra end conditions to any command:</p>
       <pre class="code"><code>command.<span class="me">until</span>(limitSwitch::get); <span class="c">// ends early if the limit switch trips</span>
 command.<span class="me">withTimeout</span>(<span class="n">5</span>);          <span class="c">// ends after 5 seconds no matter what</span></code></pre>
@@ -366,7 +373,7 @@ driverController.<span class="me">x</span>().<span class="me">and</span>(driverC
       "Not debouncing a noisy digital sensor. A sensor near its trip point can rapidly flicker, causing repeated unwanted scheduling."
     ],
     takeaways: [
-      "A <code class=\"inline\">Trigger</code> wraps any boolean condition so a command can be bound to it once, declaratively.",
+      "A <code class=\"inline\">Trigger</code> wraps any boolean condition (a button, a sensor, an arbitrary check) so a command can be bound to it once, declaratively.",
       "<code class=\"inline\">onTrue</code>/<code class=\"inline\">onFalse</code> fire once on a transition; <code class=\"inline\">whileTrue</code>/<code class=\"inline\">whileFalse</code> schedule while the condition holds and cancel when it changes.",
       "Triggers compose with <code class=\"inline\">and()</code>, <code class=\"inline\">or()</code>, <code class=\"inline\">negate()</code> — same boolean logic as Ch.5.",
       "Binding methods return the same trigger, so multiple bindings can be chained onto one trigger.",
@@ -450,7 +457,7 @@ driverController.<span class="me">x</span>().<span class="me">and</span>(driverC
 {
     <span class="k">public</span> <span class="t">Command</span> <span class="me">runIntakeCommand</span>()
     {
-        <span class="k">return this</span>.<span class="me">startEnd</span>(() -&gt; <span class="k">this</span>.<span class="me">set</span>(<span class="n">1.0</span>), () -&gt; <span class="k">this</span>.<span class="me">set</span>(<span class="n">0.0</span>)); <span class="c">// implicitly requires 'this'</span>
+        <span class="k">return this</span>.<span class="me">startEnd</span>(() -&gt; <span class="k">this</span>.<span class="me">set</span>(<span class="n">1.0</span>), () -&gt; <span class="k">this</span>.<span class="me">set</span>(<span class="n">0.0</span>)); <span class="c">// implicitly requires this</span>
     }
 }</code></pre>
       <pre class="code"><code><span class="k">public class</span> <span class="t">AutoRoutines</span>

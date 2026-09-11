@@ -1,0 +1,182 @@
+<meta charset="utf-8">
+<title>{{PAGE_TITLE}}</title>
+<style>
+:root{
+  --bg:#0b0d13; --bg-raised:#12151d; --bg-screen:#0e1016;
+  --ink:#eef0f6; --ink-soft:#9aa3ba; --ink-faint:#5b6479;
+  --accent:#f2b84b; --accent-soft:rgba(242,184,75,0.14); --accent-line:rgba(242,184,75,0.35);
+  --blue:#6ea8fe; --blue-soft:rgba(110,168,254,0.14);
+  --line:rgba(255,255,255,0.09); --line-soft:rgba(255,255,255,0.05);
+  --code-bg:#0a0c12; --code-line:rgba(120,150,255,0.14);
+  --vsc-kw:#6ea8fe; --vsc-ty:#4ec9b0; --vsc-st:#ce9178; --vsc-nu:#b5cea8; --vsc-cm:#7c8aa8; --vsc-me:#dcdcaa;
+  --shadow:0 20px 60px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Space Grotesk',-apple-system,sans-serif;
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:28px 16px;
+}
+.player{
+  width:100%; max-width:920px;
+  display:flex; flex-direction:column; gap:0;
+  border-radius:18px; overflow:hidden;
+  background:var(--bg-raised);
+  box-shadow:var(--shadow);
+  border:1px solid var(--line);
+}
+.playerbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px; border-bottom:1px solid var(--line);
+}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.brand .label{font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft);}
+.brand .title{font-size:13px; font-weight:700; color:var(--ink);}
+.scenecount{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-faint);}
+
+.screen{
+  position:relative;
+  aspect-ratio:16/9;
+  background:
+    radial-gradient(120% 140% at 15% -10%, rgba(110,168,254,0.10), transparent 55%),
+    radial-gradient(100% 120% at 100% 110%, rgba(242,184,75,0.08), transparent 55%),
+    var(--bg-screen);
+  display:flex; align-items:center; justify-content:center;
+  padding:40px; overflow:hidden;
+}
+.screeninner{width:100%; max-width:640px; opacity:0; transform:translateY(10px); animation:beatIn 0.5s ease forwards;}
+@keyframes beatIn{ to{ opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce){ .screeninner{animation:none; opacity:1; transform:none;} }
+
+.scr-eyebrow{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); margin-bottom:10px;}
+.scr-title h1{font-size:clamp(28px,4.4vw,42px); font-weight:700; line-height:1.15; margin:0 0 10px; text-wrap:balance;}
+.scr-title .scr-sub{font-size:16px; color:var(--ink-soft); margin:0; max-width:46ch;}
+
+.scr-h2{font-size:20px; font-weight:700; margin:0 0 18px; color:var(--ink);}
+.scr-bullets ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+.scr-bullets li{
+  display:flex; align-items:flex-start; gap:12px;
+  font-size:16px; line-height:1.5; color:var(--ink);
+  padding:12px 16px; background:var(--bg-raised); border:1px solid var(--line); border-radius:10px;
+  opacity:0; animation:bulletIn 0.4s ease forwards;
+}
+.scr-bullets li:nth-child(1){animation-delay:0.02s;}
+.scr-bullets li:nth-child(2){animation-delay:0.08s;}
+.scr-bullets li:nth-child(3){animation-delay:0.14s;}
+.scr-bullets li:nth-child(4){animation-delay:0.2s;}
+@keyframes bulletIn{ from{opacity:0; transform:translateX(-8px);} to{opacity:1; transform:translateX(0);} }
+.scr-bullets .num{
+  flex-shrink:0; width:24px; height:24px; border-radius:7px; background:var(--accent-soft); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
+}
+.scr-bullets strong{color:var(--accent);}
+
+.scr-steps{display:flex; flex-direction:column; gap:8px;}
+.scr-steps .step{display:flex; align-items:center; gap:12px; font-size:15px; color:var(--ink-soft);}
+.scr-steps .step .n{font-family:'JetBrains Mono',monospace; color:var(--blue); font-weight:700; font-size:13px; width:20px;}
+.scr-steps .arrow{color:var(--ink-faint); font-size:13px; margin-left:22px;}
+.scr-steps .label{margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-faint); letter-spacing:0.04em;}
+
+pre.code{
+  background:var(--code-bg); border:1px solid var(--code-line); border-radius:12px;
+  padding:20px 22px; margin:0; overflow-x:auto;
+  font-family:'JetBrains Mono',monospace; font-size:14.5px; line-height:1.75;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+}
+pre.code code{display:block; white-space:pre;}
+.k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm); font-style:italic;} .me{color:var(--vsc-me);}
+.hl{background:var(--accent-soft); border-radius:4px; padding:0 2px; box-shadow:0 0 0 1px var(--accent-line); color:var(--accent) !important;}
+
+.scr-diagram{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;}
+.dbox{
+  padding:16px 20px; border-radius:10px; border:1px solid rgba(255,255,255,0.16); background:var(--bg-raised);
+  font-family:'JetBrains Mono',monospace; font-size:13.5px; text-align:center; color:var(--ink); min-width:120px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.35);
+}
+.dbox.active{border-color:var(--accent); background:var(--accent-soft); color:var(--accent); font-weight:700;}
+.dbox.err{border-color:#ff6e6e; background:rgba(255,110,110,0.14); color:#ff9b9b; font-weight:700;}
+.darrow{color:var(--ink-soft); font-size:20px; font-weight:700;}
+
+.scr-naming{display:flex; flex-direction:column; gap:14px;}
+.namerow{display:flex; align-items:center; gap:16px; padding:14px 18px; background:var(--bg-raised); border:1px solid rgba(255,255,255,0.14); border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.3);}
+.namerow code{font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:600;}
+.namerow .nlabel{font-size:12px; color:var(--ink-faint); margin-left:auto; text-align:right;}
+
+.scr-recap ul{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.scr-recap li{font-size:13.5px; line-height:1.5; color:var(--ink-soft); padding:10px 12px; background:var(--bg-raised); border:1px solid rgba(255,255,255,0.14); border-radius:8px;}
+.scr-recap .check{color:var(--accent); margin-right:6px;}
+
+.caption{
+  min-height:64px; display:flex; align-items:center;
+  padding:16px 24px; background:var(--bg); border-top:1px solid var(--line);
+  font-size:15px; line-height:1.5; color:var(--ink-soft);
+}
+.caption .quote{color:var(--accent); margin-right:6px; font-weight:700;}
+.caption.live{color:var(--ink);}
+.caption[hidden]{display:none;}
+
+.controls{
+  display:flex; align-items:center; gap:14px;
+  padding:14px 20px; background:var(--bg-raised); border-top:1px solid var(--line);
+}
+.ctrlbtn{
+  width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--bg-screen); color:var(--ink);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; flex-shrink:0;
+  transition:background 0.15s, border-color 0.15s;
+}
+.ctrlbtn:hover{background:var(--accent-soft); border-color:var(--accent-line); color:var(--accent);}
+.ctrlbtn.play{width:46px; height:46px; background:var(--accent); border-color:var(--accent); color:#1a1204; font-size:16px;}
+.ctrlbtn.play:hover{filter:brightness(1.08);}
+.progress{flex:1; height:5px; background:var(--line); border-radius:3px; position:relative; cursor:pointer; overflow:hidden;}
+.progress .fill{position:absolute; inset:0 auto 0 0; width:0%; background:var(--accent); border-radius:3px; transition:width 0.25s ease;}
+.progress .dots{position:absolute; inset:0; display:flex; align-items:center;}
+.voicewrap select{
+  background:var(--bg-screen); color:var(--ink-soft); border:1px solid var(--line); border-radius:7px;
+  font-family:'Space Grotesk',sans-serif; font-size:12px; padding:6px 10px; cursor:pointer; max-width:130px;
+}
+.hint{font-size:11px; color:var(--ink-faint); text-align:center; padding:10px 20px 16px; font-family:'JetBrains Mono',monospace;}
+.ctrlbtn.ccbtn{width:auto; min-width:38px; padding:0 8px;}
+.ctrlbtn.ccbtn.off{opacity:0.4;}
+::selection{background:var(--accent-soft);}
+</style>
+
+<div class="player">
+  <div class="playerbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <div class="label">shockwave curriculum · live</div>
+      <div class="title">{{PLAYERBAR_TITLE}}</div>
+    </div>
+    <div class="scenecount" id="scenecount">1 / {{TOTAL_BEATS}}</div>
+  </div>
+
+  <div class="screen"><div class="screeninner" id="screenInner"></div></div>
+
+  <div class="caption" id="caption"><span class="quote">&ldquo;</span><span id="captionText">Press play to start the lesson.</span></div>
+
+  <div class="controls">
+    <button class="ctrlbtn" id="btnRestart" title="Restart">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+    </button>
+    <button class="ctrlbtn" id="btnPrev" title="Previous">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM20 6L9 12l11 6z"/></svg>
+    </button>
+    <button class="ctrlbtn play" id="btnPlay" title="Play / Pause">
+      <svg id="iconPlay" width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="iconPause" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+    </button>
+    <button class="ctrlbtn" id="btnNext" title="Next">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM4 6l11 6L4 18z"/></svg>
+    </button>
+    <div class="progress" id="progress"><div class="fill" id="progressFill"></div></div>
+    <button class="ctrlbtn ccbtn" id="btnCC" title="Hide captions">
+      <svg width="20" height="14" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="1" width="28" height="18" rx="3.5"/><text x="15" y="14.5" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">CC</text></svg>
+    </button>
+      </div>
+  <div class="hint" id="hint">Space = play/pause · ← → = prev/next</div>
+  <audio id="narrator" preload="none"></audio>
+</div>
+
