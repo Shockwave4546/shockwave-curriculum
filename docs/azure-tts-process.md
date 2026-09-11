@@ -82,7 +82,7 @@ Adapt this for a new chapter — swap `OUTDIR` and the list of `synth` calls at 
 #!/bin/bash
 set -e
 
-OUTDIR="/home/cjoe/dev/shockwave-curriculum/presentations/chXX-audio"
+OUTDIR="/home/cjoe/dev/shockwave-curriculum/narrated-lessons/chXX-audio"
 ENDPOINT="https://westus3.tts.speech.microsoft.com/cognitiveservices/v1"
 VOICE="en-US-JennyNeural"
 mkdir -p "$OUTDIR"
@@ -133,7 +133,7 @@ ls -la "$OUTDIR"
 
 Timing: all 17 Ch.1 clips generated in under a minute — this is fast, no need to route it through an MCP agent.
 
-## Wiring audio into the presentation artifact
+## Wiring audio into the narrated-lesson artifact
 
 The Claude Artifact asset store (`upload_asset`) does **not** accept bare audio formats (`.mp3` is rejected — whitelist is `png, jpg, jpeg, gif, webp, svg, mp4, webm, pdf, woff2, woff, ttf, otf, csv, md, markdown, json, txt`).
 

@@ -1,6 +1,6 @@
 # Voice options
 
-Azure Speech voice candidates explored for narrating presentations, kept so this doesn't
+Azure Speech voice candidates explored for narrating lessons, kept so this doesn't
 need to be re-derived next time we want to add more options. Samples live in
 `docs/voice-samples/` (same narration line for every candidate, so they're directly
 comparable). Regeneration recipe: [azure-tts-process.md](azure-tts-process.md).
@@ -47,6 +47,6 @@ Azure adds voices fairly often.
 
 ## Rotation idea (open question, not yet decided)
 
-Considering rotating different voices across presentations rather than using one voice for
-everything — undecided whether that's per-presentation, per-chapter, or per group of
+Considering rotating different voices across narrated lessons rather than using one voice for
+everything — undecided whether that's per-lesson, per-chapter, or per group of
 consecutive chapters. Revisit once more chapters exist to see how it feels in practice.
