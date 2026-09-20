@@ -33,6 +33,10 @@ sources into a fuller, sourced outline, ready for an eventual lesson-writing pas
   names, existing/new status, source citations only — no rationale/prose, that all lives in
   `OUTLINE.md`). Synced from `OUTLINE.md` one-way: edit the outline first, then mirror the
   change here and republish. See the top of `OUTLINE.md` for the full sync-workflow rule.
+- **`docs/exercise-authoring-conventions.md`** — the rules for authoring `examples/` (worked
+  examples) and `exercises/` (Multiple Choice + Micro-Parsons) content: the complexity rubric,
+  the Micro-Parsons fragment-count rule, and a record of specific corrections made and why —
+  read this before authoring new chapters' worked examples or exercises.
 
 ## Current stage (as of 2026-09-09, outline v11)
 
