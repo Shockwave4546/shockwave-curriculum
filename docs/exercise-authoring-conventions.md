@@ -174,3 +174,28 @@ Ch.3-adjacent content that introduces "a library class" as the example.
   designed yet — only the beginner-tier MC/Micro-Parsons format above exists so far.
 - This convention doc covers Ch.1-9 (the beginner tier). Extend it here, don't start a new
   doc, if/when Ch.10+ worked examples or exercises are authored.
+
+## Piston local dev environment (set up 2026-09-20, not yet wired into any exercise)
+
+A working self-hosted Piston instance already exists on Joe's dev machine — nothing here
+is designed or wired into exercises yet, but the execution backend the advanced tier will
+need is running and verified:
+
+- Rootful Podman (`sudo podman run --privileged`), not rootless — required for Piston's
+  isolate-based sandboxing to get real host capabilities. Confirmed working with actual
+  code execution, not just theory.
+- Container name `piston_api`, data volume at `~/piston-data`, API on `localhost:2000`.
+- Custom Java packages installed (Piston's stock repo only ships Java 15.0.2, far short of
+  what WPILib needs): **17.0.16** (2026 season, Temurin) and **25.0.1** (2027 season,
+  Temurin — the team's actual near-term target since 2026 already ran). Both verified with
+  real `execute` calls (`"language":"java","version":"17.0.16"` or `"25.0.1"`).
+- Package build source lives in `~/dev/piston-src` (a clone of upstream
+  `engineer-man/piston`, local commit only, not pushed). Ready-to-deploy built package
+  binaries + install instructions are in `~/dev/piston-packages/README.md` — reuse these
+  directly on the eventual Azure VM instead of rebuilding.
+- Scope decided so far, not yet built: compile-only checking for WPILib/vendor-library
+  exercises (no hardware simulation); full compile+run (Piston's native behavior) for
+  plain-Java exercises with no outside libraries. WPILib/REVLib/AdvantageKit jars aren't
+  wired into either Java package yet — next step when this work resumes.
+- Full architecture context (VM sizing, Entra ID gating, gateway design) is in Joe's Azure
+  planning session, not duplicated here.
