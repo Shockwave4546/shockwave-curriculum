@@ -125,8 +125,20 @@ const DATA = {
   "1.1": {
     title: "Why Java for FRC?",
     ref: "1.1 — Why Java for FRC?",
-    noLesson: true,
-    note: "This item is the deck's original motivational slide (existing, pulled verbatim) — intro only, no exercise. Full text now lives in <code class=\"inline\">lessons/ch01-why-java-for-frc/1.1-why-java-for-frc.md</code> (this review page's generic Lesson/Exercise template assumes pitfalls, takeaways, and an exercise, none of which apply to a one-slide intro)."
+    status: "existing — deck's original motivational slide, pulled verbatim (intro only, no exercise)",
+    noExercise: true,
+    lesson: {
+      body: `
+        <p>Java is one of the most popular languages in the world, and the standard for most FRC teams.</p>
+        <ul>
+          <li><strong>Static Typing:</strong> Catch errors at compile-time before they reach the robot.</li>
+          <li><strong>Object-Oriented:</strong> Perfect for modeling physical systems like motors and sensors.</li>
+          <li><strong>Performance:</strong> The JVM (Java Virtual Machine) is fast enough for real-time control loops.</li>
+          <li><strong>Ecosystem:</strong> Access to WPILib, thousands of libraries, and years of documentation.</li>
+        </ul>
+      `,
+      prov: "mechacoder-full-deck.html: &ldquo;// 2. WHY JAVA&rdquo; slide (existing, pulled verbatim) — no CSA source, no exercise; 1.2 is where the real lesson content starts."
+    }
   },
   "1.2": {
     title: "Intro to Algorithms, Programming & Compilers",
@@ -250,22 +262,23 @@ function renderMain(){
     return;
   }
 
+  const showExercise = !it.noExercise;
   let html = `
     <div class="tabs">
       <div class="tab lesson ${currentTab === 'lesson' ? 'on' : ''}" data-tab="lesson">Lesson</div>
-      <div class="tab exercise ${currentTab === 'exercise' ? 'on' : ''}" data-tab="exercise">Exercise</div>
+      ${showExercise ? `<div class="tab exercise ${currentTab === 'exercise' ? 'on' : ''}" data-tab="exercise">Exercise</div>` : ''}
     </div>
   `;
-  if (currentTab === 'lesson'){
+  if (currentTab === 'lesson' || !showExercise){
     const l = it.lesson;
     html += `
       <div class="doc">
         <h1 class="doctitle">${it.title}</h1>
         <div class="refline">Outline ref: ${it.ref}</div>
-        <div class="statusline">Status: new — authored lesson (fuller depth than the teaser slide)</div>
+        <div class="statusline">Status: ${it.status || 'new — authored lesson (fuller depth than the teaser slide)'}</div>
         ${l.body}
-        <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${l.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
-        <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${l.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
+        ${l.pitfalls ? `<div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${l.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>` : ''}
+        ${l.takeaways ? `<div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${l.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>` : ''}
         <div class="prov"><strong>Derived from</strong> ${l.prov}</div>
       </div>
     `;
