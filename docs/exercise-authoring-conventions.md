@@ -111,6 +111,19 @@ more than once; don't reuse an intermediate version from git history):
    were verified by actually compiling and running the reconstructed program (JDK, no
    external dependencies) rather than just diffing text — worth doing whenever a JDK is
    available, since it catches errors text-diffing alone would miss.
+6. **If two or more fragments are genuinely order-independent relative to each other**
+   (e.g. two unrelated variable declarations, neither reading the other), declare it
+   explicitly with a `**Interchangeable:** (letter, letter, ...)` line right after
+   `**Answer:**` — e.g. `**Interchangeable:** (a, i)`. Multiple independent groups can each
+   get their own parenthesized set on the same line. This isn't optional cosmetic
+   detail — the interactive academy app grades a student's own ordering against the
+   Answer sequence exactly, position by position; an order-independent pair left
+   undeclared gets marked wrong for a legitimately correct answer the moment a student
+   picks the other valid order. Only declare a group when swapping those specific
+   fragments truly doesn't change program behavior — don't declare one just because a
+   fragment's exact position "feels" flexible; verify it the same mechanical way as the
+   Answer sequence itself (reassemble with the swap applied and confirm it still compiles
+   and behaves identically).
 
 Corrections made while converging on this rule (kept here so the *reasoning* survives,
 not just the current state):
@@ -168,12 +181,113 @@ Ch.3-adjacent content that introduces "a library class" as the example.
   hardcoded value standing in for a sensor/joystick reading instead (as
   `examples/ch02-variables-and-types/2.3-assignment-and-input.md` already does).
 
+## Coding exercises (advanced tier, Piston-checked)
+
+Designed 2026-09-22, not yet authored for any chapter or wired into the app — see "What's
+still open" below. Applies to Ch.10+ `exercises/chNN-*/N.N-*.md` files as an optional
+third `## Coding` section alongside the existing `## Multiple Choice` and
+`## Micro-Parsons` sections — not a separate file or tree. Present only for lessons that
+get this tier; MC/Micro-Parsons keep existing independently (per the Academy app's
+already-locked plan, all three sub-types can coexist on one lesson's Exercises step).
+
+### Grading mode: pick per-lesson, not by chapter number
+
+Two shapes, chosen by what the **lesson's own unit of work** is — never by simple
+"early vs. late chapter" chronology. Checked against how established practice platforms
+actually do this (CodingBat's own [authoring guide](https://codingbat.com/authoring.html),
+LeetCode, Exercism): full-program stdin/stdout grading is mostly an online-judge
+(competitive-programming) pattern, not what skill-building platforms use — they default to
+a fixed method signature with hidden test cases. That's the default here too, but only
+where it fits the lesson:
+
+- **Harness (method-signature, hidden test cases)** — default for Ch.10-13 (2D arrays,
+  enums, exceptions, gotchas) and Ch.27-28 (algorithms): every one of these lessons' own
+  unit of work is one method. Student is given a fixed signature and writes only the body;
+  hidden test cases call it and check the return value. Isolates the one concept being
+  tested without unrelated I/O ceremony — the same principle as this doc's own
+  worked-example complexity rubric (don't stack more moving parts than the lesson itself
+  demonstrates). Note Ch.27-28 land late but are still harness-shaped — the split is by
+  lesson content, not position in the book.
+- **Full-program/full-class (compile+run, or compile-only)** — default for Ch.14-26's
+  design-pattern chapters (inheritance, polymorphism, interfaces, builder, encapsulation,
+  Optional, command-based, etc.): these lessons' own unit of work is a class's structure,
+  not one method's return value. Student submits a complete program/class, matching the
+  "always show a full program" convention already used everywhere else in this course (MC/
+  Micro-Parsons Answer keys).
+
+A lesson can override its chapter's default if its own content clearly calls for the other
+shape — an author judgment call per lesson, not a rigid table.
+
+### Compile-only vs. compile+run
+
+- **Compile-only**: for exercises whose class genuinely needs real WPILib/vendor API
+  surface (verified against actual library source — same rule as the "Real vs. invented
+  API names" section above) where hardware/simulation isn't available under Piston. Ch.25
+  (Command-Based Programming) is the one confirmed case today. Grading is binary — does it
+  compile against the real jar — not logic-correctness; pair with an MC or Micro-Parsons
+  question in the same file if the lesson also needs a correctness check, since
+  compile-only can't provide one on its own.
+- **Compile+run**: everything else — full execution, real pass/fail against test cases.
+- Custom classes standing in for the student's own robot code (`DriveMotor`, `Shooter`,
+  etc.) don't need real WPILib jars just because the scenario is robot-flavored — only
+  genuine library API usage does, per the existing convention above.
+
+### Java version
+
+Pin every Coding exercise to **Java 25.0.1** (2027 season — the team's near-term target
+per "Piston local dev environment" below, chosen over 17.0.16/2026 since that season has
+already run). Not configurable per-exercise; a version bump is a curriculum-wide decision.
+
+### Harness-mode authoring format
+
+Add to the `## Coding` section:
+
+- **Method signature** — exact, e.g. `public static int sumEvens(int[] values)`. Fixed;
+  the student can't change it, since the harness calls it by this exact name/signature.
+- **Starter scaffold** — the class + method stub shown to the student, e.g.:
+  ```java
+  public class Solution {
+      public static int sumEvens(int[] values) {
+          // TODO
+      }
+  }
+  ```
+- **Test cases** — `args`, `expected`, and a `visible` flag per case. Follow CodingBat's
+  own rule (confirmed from their authoring guide): show 2-3 example cases in the Problem
+  text so the student can reason about expected behavior, then add at least 2 **hidden**
+  cases — same logic, different values. Hidden cases exist specifically to stop a student
+  from special-casing against the visible inputs instead of solving the real problem;
+  never introduce new logic only in a hidden case.
+
+### Full-program-mode authoring format
+
+Add to the `## Coding` section:
+
+- **Problem statement**, same as harness mode.
+- **Scenario(s)** — one or more named `{stdin, expected stdout}` pairs, same visible/
+  hidden split and rationale as harness mode.
+- Compare expected stdout after trimming trailing whitespace/newlines only — don't require
+  exact byte-for-byte formatting beyond that; minor `println` formatting differences aren't
+  the concept being tested.
+
+### What's still open (deferred, not part of this design)
+
+- The runtime mechanics — constructing the wrapper class that injects a harness-mode
+  method body, calling Piston's `execute` API, parsing per-test-case pass/fail out of
+  stdout — is app-side implementation work for `shockwave-programming-academy`, not
+  decided here. This convention only defines what content authors write; it must contain
+  everything that future code needs (signature, scaffold, test cases) to build that
+  mechanically.
+- No Coding-tier exercise has been authored yet for any chapter — Ch.10 is the natural
+  first candidate whenever this work resumes.
+- WPILib/REVLib jars still aren't wired into the Piston Java packages (see below); needed
+  before any compile-only exercise can actually run.
+
 ## Open items
 
-- The advanced-tier exercise type (text-submit, checked live against Piston) hasn't been
-  designed yet — only the beginner-tier MC/Micro-Parsons format above exists so far.
-- This convention doc covers Ch.1-9 (the beginner tier). Extend it here, don't start a new
-  doc, if/when Ch.10+ worked examples or exercises are authored.
+- This convention doc covers Ch.1-9 (beginner tier, MC/Micro-Parsons) and the Coding
+  advanced tier's design (above, Ch.10+). Extend it here, don't start a new doc, if/when
+  Ch.10+ worked examples or exercises are actually authored.
 
 ## Piston local dev environment (set up 2026-09-20, not yet wired into any exercise)
 
