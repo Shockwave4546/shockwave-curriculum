@@ -2,6 +2,10 @@ import base64
 import json
 import os
 import subprocess
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
+from tts_helpers import wrap_acronyms_for_ssml
 
 TEMPLATE_DIR = os.path.dirname(os.path.abspath(__file__))
 ENDPOINT = "https://westus3.tts.speech.microsoft.com/cognitiveservices/v1"
@@ -19,10 +23,11 @@ def get_speech_key():
 
 
 def synth(text, voice, outfile, speech_key):
+    ssml_text = wrap_acronyms_for_ssml(text)
     ssml = (
         "<speak version='1.0' xml:lang='en-US'>"
         f"<voice xml:lang='en-US' name='{voice}'>"
-        f"<prosody rate='{RATE}'>{text}</prosody>"
+        f"<prosody rate='{RATE}'>{ssml_text}</prosody>"
         "</voice>"
         "</speak>"
     )
