@@ -111,11 +111,12 @@ Every narrated-lesson page pauses briefly between beats rather than snapping str
 next one — three tiers, all in the shared `template_logic.js` (and copied into each already-
 built lesson's own `<script>` block, since each page is a standalone file):
 
-- **`CONTINUATION_PAUSE_MS`** (350ms) — used when the next beat is marked `continues: true`,
-  i.e. it's revealing one more item in the same list or building up the same code block one
-  line at a time (the four "why FRC" bullets, a class gaining a method beat by beat). Fast,
-  because it's one continuous thought.
-- **`BIG_PAUSE_MS`** (800ms) — the default, for a genuine topic change.
+- **`CONTINUATION_PAUSE_MS`** (2026-09-23: bumped 350ms → **600ms**) — used when the next beat
+  is marked `continues: true`, i.e. it's revealing one more item in the same list or building
+  up the same code block one line at a time (the four "why FRC" bullets, a class gaining a
+  method beat by beat). Faster than the default tier, because it's one continuous thought.
+- **`BIG_PAUSE_MS`** (2026-09-23: bumped 800ms → **1300ms**) — the default, for a genuine
+  topic change.
 - **Code-reading bonus** — on top of `BIG_PAUSE_MS`, `codeReadingExtraMs()` scans the beat
   that just finished narrating for `<pre class="code">` blocks, counts their (tag-stripped)
   characters, and adds roughly 12ms per character, capped at `CODE_READING_MS_CAP` (2500ms) so
@@ -127,6 +128,23 @@ built lesson's own `<script>` block, since each page is a standalone file):
 Mark a beat `continues: true` only when it's genuinely a continuation of the immediately
 prior one (same list, same code block being built up) — everything else should get the full
 topic-change treatment, code bonus included.
+
+**Why the bump:** Joe flagged Ch.2's Kokoro-narrated lessons as feeling rushed compared to
+Ch.1 (Azure). Root cause turned out to be narration *speed*, not pause timing — Azure's build
+applies an explicit `<prosody rate='-8%'>` slowdown (see the SSML example above) that the
+Kokoro pipeline never had an equivalent for, so Kokoro chapters ran at the model's native
+1.0x speed. Fixed alongside this pause bump — see `kokoro-tts-process.md`'s pause-timing
+section for the matching Kokoro-side `SPEED` constant. Bumping the shared pause constants
+here affects *every* narrated lesson, Azure and Kokoro alike, regardless of that speed fix.
+
+**Rollout status (2026-09-23): tested on Ch.2.1 only, not yet applied to the other 44
+Kokoro-built lessons.** The shared source (`template_logic.js`, `kokoro_builder.py`) has the
+new values and Ch.2.1's audio has been re-synthesized to match — Joe confirmed it still felt
+a little rushed after the first pause bump (800/350 → 1000/450) and asked for more, hence the
+second bump to 1300/600 captured above. He has not yet confirmed the *current* (1300/600 +
+0.92 speed) combination is right, and the other 44 lessons still have their original
+800ms/350ms pause timing and 1.0x speed baked into their built HTML — get an explicit go-ahead
+on the current Ch.2.1 result before re-running the batch build to bring the rest in line.
 
 ## Building a new chapter: use `narrated-lessons/_build/`, not a one-off script
 

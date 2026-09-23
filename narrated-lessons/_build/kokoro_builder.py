@@ -6,6 +6,7 @@ import subprocess
 TEMPLATE_DIR = os.path.dirname(os.path.abspath(__file__))
 HYPERFRAMES_CLI = os.path.expanduser("~/dev/hyperframes-test/packages/cli/bin/hyperframes.mjs")
 KOKORO_VENV_PYTHON = os.path.expanduser("~/dev/tools/tts-kokoro-venv/bin/python")
+SPEED = 0.92  # matches the Azure pipeline's <prosody rate='-8%'> slowdown
 
 
 def synth(text, voice, outfile_mp3):
@@ -15,7 +16,7 @@ def synth(text, voice, outfile_mp3):
     once base64-embedded (confirmed in the Ch.1 A/B test)."""
     wav_path = outfile_mp3.rsplit(".", 1)[0] + ".tmp.wav"
     result = subprocess.run(
-        ["node", HYPERFRAMES_CLI, "tts", text, "-o", wav_path, "-v", voice, "--json"],
+        ["node", HYPERFRAMES_CLI, "tts", text, "-o", wav_path, "-v", voice, "-s", str(SPEED), "--json"],
         env={**os.environ, "HYPERFRAMES_PYTHON": KOKORO_VENV_PYTHON},
         capture_output=True, text=True
     )

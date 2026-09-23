@@ -10,6 +10,19 @@ on Azure since they're already built — this is for everything built from here 
 batch pipeline described below. Ch.14-28 (Java II + Advanced Java Topics) still need
 narration scripts written and synthesized — same process, just not done yet.
 
+**2026-09-23 — narration speed was NOT actually the same as Azure, despite the "everything
+else stays the same" section below.** Azure's build applies `<prosody rate='-8%'>` (see
+azure-tts-process.md); the Kokoro pipeline had no speed argument at all, so every Kokoro
+chapter ran at the model's native 1.0x — noticeably faster than Ch.1/Ch.25 (Azure). Fixed:
+`kokoro_builder.py` now has a `SPEED = 0.92` constant passed as `hyperframes tts --speed`,
+matching Azure's slowdown. **Rollout status: fixed in source + re-synthesized for Ch.2.1
+only, as a test case** (paired with the pause-timing bump — see azure-tts-process.md's
+"Beat-to-beat pause timing" section, since that changed at the same time and needs its own
+confirmation). The other 44 already-built Kokoro lessons still have their original 1.0x-speed
+audio. Get explicit go-ahead on the Ch.2.1 result (both the speed and the pause values)
+before batch-re-running the rest — that means re-synthesizing audio for all 45 lessons, not
+a free config flip.
+
 ## Setup
 
 - **CLI:** `@hyperframes/cli` (sibling repo `~/dev/hyperframes-test/packages/cli`, its own

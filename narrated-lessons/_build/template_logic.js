@@ -13,8 +13,8 @@ const narrator = document.getElementById('narrator');
 const btnCC = document.getElementById('btnCC');
 let captionsOn = false;
 
-const BIG_PAUSE_MS = 800;
-const CONTINUATION_PAUSE_MS = 350;
+const BIG_PAUSE_MS = 1300;
+const CONTINUATION_PAUSE_MS = 600;
 const CODE_READING_MS_PER_CHAR = 12;
 const CODE_READING_MS_CAP = 2500;
 
