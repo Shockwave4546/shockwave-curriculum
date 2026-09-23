@@ -6,6 +6,10 @@ Ch.2 onward after a direct A/B test against the existing Azure pipeline
 ([azure-tts-process.md](azure-tts-process.md)) on Ch.1's own script. Ch.1 and Ch.25 stay
 on Azure since they're already built — this is for everything built from here forward.
 
+**Status (2026-09-22): Ch.2-13 (Java I) fully built** — 45 lessons, 492 beats, via the
+batch pipeline described below. Ch.14-28 (Java II + Advanced Java Topics) still need
+narration scripts written and synthesized — same process, just not done yet.
+
 ## Setup
 
 - **CLI:** `@hyperframes/cli` (sibling repo `~/dev/hyperframes-test/packages/cli`, its own
@@ -117,7 +121,8 @@ Java I → Java II seam (Ch.13/14) rather than mid-track.
 | 14 | Jessica *(deliberate same-gender pair, Java I/II boundary)* | | 28 | Heart |
 
 Each voice lands 4-5 times across the 26 Kokoro-narrated chapters — reasonably balanced,
-not a strict round-robin count.
+not a strict round-robin count. Ch.2-13 are built as of 2026-09-22; Ch.14-28 are assigned
+here but not yet scripted or synthesized.
 
 ## Everything else stays the same as Azure
 
@@ -126,5 +131,24 @@ templates (including the already-fixed body-flex-centering CSS bug), the code-ve
 requirement checked by `tools/check_script_code.py`, and the base64-embedding approach for
 wiring audio into the built HTML page are all unchanged — see
 [azure-tts-process.md](azure-tts-process.md) for those, they're TTS-provider-agnostic.
-Only the synthesis call itself (`builder.py`'s Azure `curl` request) needs a Kokoro
-equivalent when a new chapter's build script is written.
+
+**The Kokoro synthesis equivalent now exists:** `narrated-lessons/_build/kokoro_builder.py`
+mirrors `builder.py`'s `build_lesson()` signature exactly — same beat-list input, same
+template/HTML assembly, same base64-embedding — only `synth()` differs (shells out to the
+local `hyperframes tts` CLI instead of Azure's REST endpoint, then transcodes the resulting
+`.wav` to `.mp3` via `ffmpeg` to avoid the ~7x size bloat wav causes once embedded).
+
+**Building a new chapter's audio:** write its `narrated-lessons/_build/chNN/lesson_N_M.py`
+beat scripts as usual (see [azure-tts-process.md](azure-tts-process.md)'s "Building a new
+chapter" section — that part is unchanged), then run them through
+`narrated-lessons/_build/build_kokoro_batch.py --only <chapter numbers>` rather than
+writing individual `build_N_M.py` driver files — that script is a manifest-driven loop
+(chapter → voice → glob the chapter's real `lessons/*.md` files → import the matching
+`.py` script → build), written this way on purpose once the scale stopped making
+one-driver-per-lesson worth it (45 lessons would've meant 45 near-identical boilerplate
+files). It re-derives each lesson's real `itemNum` from its actual `lessons/*.md` filename
+(not from the `.py` script's own name), which matters for combined-number lessons like
+`5.1-5.2` — get this wrong and the built file silently won't match what the live app's
+`narratedUrl` check looks for. Pass `--skip-existing` to make repeated runs cheap (skips
+already-built HTML files), and it also skips re-synthesizing any beat whose `.mp3` already
+exists on disk, so an interrupted run resumes for free.
