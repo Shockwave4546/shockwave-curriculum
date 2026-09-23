@@ -1,7 +1,9 @@
-# The Builder Pattern
+---
+outlineRef: "22 — The Builder Pattern (T5817 30.1)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 22 — The Builder Pattern (T5817 30.1)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# The Builder Pattern
 
 ## The Problem: "Constructor Hell"
 

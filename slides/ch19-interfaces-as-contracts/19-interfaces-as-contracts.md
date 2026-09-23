@@ -1,7 +1,9 @@
-# Interfaces as Contracts
+---
+outlineRef: "Ch.19 — Interfaces as Contracts (ORACLE 15.1-6)"
+status: "existing — pulled verbatim from the deck"
+---
 
-**Outline ref:** Ch.19 — Interfaces as Contracts (ORACLE 15.1-6)
-**Status:** existing — pulled verbatim from the deck
+# Interfaces as Contracts
 
 ```html
 <div class="inner">

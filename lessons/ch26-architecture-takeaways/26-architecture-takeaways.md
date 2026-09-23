@@ -1,7 +1,9 @@
-# Architecture Takeaways
+---
+outlineRef: "26 — Architecture Takeaways (DRY/YAGNI/SOLID) (no citation — deck-original content; neither WPILib nor T5817 teach these as named general principles)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 26 — Architecture Takeaways (DRY/YAGNI/SOLID) (no citation — deck-original content; neither WPILib nor T5817 teach these as named general principles)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Architecture Takeaways
 
 Java II opened (Ch.14) with why patterns matter at all. This closing chapter names the general software-engineering principles that everything since — inheritance, interfaces, the IO-Layer Pattern, factories, builders, command-based itself — has actually been demonstrating in FRC-specific form. These aren't FRC-specific or Java-specific ideas; they're widely known across the software industry, which is exactly why they're worth naming explicitly.
 

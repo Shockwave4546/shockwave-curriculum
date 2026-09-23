@@ -1,7 +1,9 @@
-# Exceptions & try/catch
+---
+outlineRef: "Ch.12 — Exceptions & try/catch (ORACLE 11.1-16)"
+status: "existing — pulled verbatim from the deck"
+---
 
-**Outline ref:** Ch.12 — Exceptions & try/catch (ORACLE 11.1-16)
-**Status:** existing — pulled verbatim from the deck
+# Exceptions & try/catch
 
 ```html
 <div>

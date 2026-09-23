@@ -1,7 +1,9 @@
-# Interfaces as Contracts
+---
+outlineRef: "19 — Interfaces as Contracts (ORACLE 15.1-6)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 19 — Interfaces as Contracts (ORACLE 15.1-6)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Interfaces as Contracts
 
 ## What vs. How
 

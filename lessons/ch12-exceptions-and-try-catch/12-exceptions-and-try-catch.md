@@ -1,7 +1,9 @@
-# Exceptions & try/catch
+---
+outlineRef: "12 — Exceptions & try/catch (ORACLE 11.1-16)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 12 — Exceptions & try/catch (ORACLE 11.1-16)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Exceptions & try/catch
 
 ## What an Exception Is
 

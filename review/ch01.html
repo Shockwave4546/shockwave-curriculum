@@ -63,8 +63,6 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .tab.on.exercise{color:var(--gold);border-bottom-color:var(--gold);}
 
 .doc h1.doctitle{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);margin:0 0 6px;text-wrap:balance;}
-.doc .refline{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:2px;}
-.doc .statusline{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--ink-soft);margin-bottom:28px;font-style:normal;}
 .doc h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--ink);margin:32px 0 12px;text-wrap:balance;}
 .doc h2:first-of-type{margin-top:8px;}
 .doc p{font-size:16px;line-height:1.7;margin:0 0 16px;max-width:64ch;}
@@ -85,7 +83,7 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .takeaways li{font-size:14px;line-height:1.6;margin-bottom:7px;}
 
 pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
-pre.code code{display:block;white-space:pre;}
+pre.code code{display:block;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;}
 .k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
 
 .prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
@@ -258,7 +256,7 @@ function renderMain(){
   const host = document.getElementById('maininner');
 
   if (it.noLesson){
-    host.innerHTML = `<div class="doc"><h1 class="doctitle">${it.title}</h1><div class="refline">Outline ref: ${it.ref}</div><p class="emptynote" style="margin-top:24px;">${it.note}</p></div>`;
+    host.innerHTML = `<div class="doc"><h1 class="doctitle">${it.title}</h1><p class="emptynote" style="margin-top:24px;">${it.note}</p></div>`;
     return;
   }
 
@@ -274,8 +272,6 @@ function renderMain(){
     html += `
       <div class="doc">
         <h1 class="doctitle">${it.title}</h1>
-        <div class="refline">Outline ref: ${it.ref}</div>
-        <div class="statusline">Status: ${it.status || 'new — authored lesson (fuller depth than the teaser slide)'}</div>
         ${l.body}
         ${l.pitfalls ? `<div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${l.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>` : ''}
         ${l.takeaways ? `<div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${l.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>` : ''}
@@ -287,8 +283,6 @@ function renderMain(){
     html += `
       <div class="doc">
         <h1 class="doctitle">${it.title} — Exercise</h1>
-        <div class="refline">Outline ref: ${it.ref}</div>
-        <div class="statusline">&nbsp;</div>
         <div class="problembox">${e.problem}</div>
         <pre class="code"><code>${e.code}</code></pre>
         <div class="pitfalls"><div class="lbl">Hints</div><ul>${e.hints.map(h => `<li>${h}</li>`).join('')}</ul></div>

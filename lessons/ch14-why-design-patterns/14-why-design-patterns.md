@@ -1,7 +1,9 @@
-# Why Design Patterns?
+---
+outlineRef: "14 — Why Design Patterns? (no citation — deck-original content)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 14 — Why Design Patterns? (no citation — deck-original content)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Why Design Patterns?
 
 ## What This Chapter Starts
 

@@ -1,7 +1,9 @@
-# Writing Your Own Generics
+---
+outlineRef: "16 — Writing Your Own Generics (ORACLE 14.1-5)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 16 — Writing Your Own Generics (ORACLE 14.1-5)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Writing Your Own Generics
 
 `List<String>`, `Map<Integer, Double>`, `ArrayList<TalonFX>` — every collection since Ch.9 has *used* a generic type someone else wrote. This chapter is about writing your own.
 

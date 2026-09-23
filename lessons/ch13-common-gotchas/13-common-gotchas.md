@@ -1,7 +1,9 @@
-# Common Gotchas
+---
+outlineRef: "13 — Common Gotchas (no citation — deck-original content)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 13 — Common Gotchas (no citation — deck-original content)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Common Gotchas
 
 This chapter is a quick-reference checklist, not new material — each item below is taught in full elsewhere in this curriculum. Its job is to put the most common real mistakes side by side, since they tend to resurface long after the lesson that first covered them. **Note:** this list is expected to grow once real code-review and exercise practice surfaces more of the mistakes people actually make — it currently only covers what the original deck flagged.
 

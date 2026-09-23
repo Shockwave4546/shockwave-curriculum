@@ -1,7 +1,9 @@
-# Advanced Collections (Set/Queue/Map)
+---
+outlineRef: "15 — Advanced Collections (Set/Queue/Map) (ORACLE 13.1-4)"
+status: "new — authored lesson"
+---
 
-**Outline ref:** 15 — Advanced Collections (Set/Queue/Map) (ORACLE 13.1-4)
-**Status:** new — authored lesson
+# Advanced Collections (Set/Queue/Map)
 
 Ch.9 covered `ArrayList` and a basic `HashMap`. Three more collection types round out the toolbox, each solving a problem the others don't: **`Set`** (no duplicates, ever), **`Queue`**/**`Deque`** (order of processing matters more than random access), and a deeper look at **`Map`** (iterating both keys and values together, and choosing an ordering).
 

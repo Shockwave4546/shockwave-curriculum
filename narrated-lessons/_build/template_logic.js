@@ -11,7 +11,7 @@ const btnPlay = document.getElementById('btnPlay');
 const hint = document.getElementById('hint');
 const narrator = document.getElementById('narrator');
 const btnCC = document.getElementById('btnCC');
-let captionsOn = true;
+let captionsOn = false;
 
 const BIG_PAUSE_MS = 800;
 const CONTINUATION_PAUSE_MS = 350;

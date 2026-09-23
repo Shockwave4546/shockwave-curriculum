@@ -1,7 +1,9 @@
-# The IO-Layer Pattern
+---
+outlineRef: "20 — The IO-Layer Pattern (ADVKIT 40.1-11, JDP 50.1)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 20 — The IO-Layer Pattern (ADVKIT 40.1-11, JDP 50.1)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# The IO-Layer Pattern
 
 Everything Ch.17-19 built — inheritance, polymorphism, and especially interfaces as contracts — comes together here in a real, widely-used FRC architecture pattern: keeping hardware access completely separate from the logic that uses it.
 

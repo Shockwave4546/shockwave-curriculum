@@ -1,7 +1,9 @@
-# Writing Your Own Generics
+---
+outlineRef: "Ch.16 — Writing Your Own Generics (ORACLE 14.1-5)"
+status: "existing — pulled verbatim from the deck"
+---
 
-**Outline ref:** Ch.16 — Writing Your Own Generics (ORACLE 14.1-5)
-**Status:** existing — pulled verbatim from the deck
+# Writing Your Own Generics
 
 ```html
 <div class="inner">

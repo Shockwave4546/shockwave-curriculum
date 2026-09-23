@@ -121,7 +121,7 @@ def main():
             try:
                 build_lesson(
                     page_title=f'Ch.{item_num} — {title}',
-                    playerbar_title=f'SHOCKWAVE CURRICULUM · Live · Ch.{ch} — {CHAPTER_NAMES[ch]}',
+                    playerbar_title=f'Ch.{ch} — {CHAPTER_NAMES[ch]}',
                     beats=beats,
                     voice=voice,
                     audio_dir=audio_dir,

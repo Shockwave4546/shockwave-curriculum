@@ -1,7 +1,9 @@
-# The IO-Layer Pattern
+---
+outlineRef: "Ch.20 — The IO-Layer Pattern (ADVKIT 40.1-11, JDP 50.1)"
+status: "existing — pulled verbatim from the deck"
+---
 
-**Outline ref:** Ch.20 — The IO-Layer Pattern (ADVKIT 40.1-11, JDP 50.1)
-**Status:** existing — pulled verbatim from the deck
+# The IO-Layer Pattern
 
 ```html
 <div class="inner">

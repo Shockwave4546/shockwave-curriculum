@@ -1,7 +1,9 @@
-# Optional: Avoiding Null Pointer Exceptions
+---
+outlineRef: "24 — Optional: Avoiding Null Pointer Exceptions (ORACLE 16.1) — renamed from \"Optional: Maybe a Value\" to disambiguate from optional method parameters; the deck's actual slide heading is unchanged"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 24 — Optional: Avoiding Null Pointer Exceptions (ORACLE 16.1) — renamed from "Optional: Maybe a Value" to disambiguate from optional method parameters; the deck's actual slide heading is unchanged
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Optional: Avoiding Null Pointer Exceptions
 
 ## The Null Problem
 

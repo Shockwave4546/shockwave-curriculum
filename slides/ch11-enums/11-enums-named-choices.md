@@ -1,7 +1,9 @@
-# Enums: Named Choices
+---
+outlineRef: "Ch.11 — Enums: Named Choices (ORACLE 10.1)"
+status: "existing — pulled verbatim from the deck"
+---
 
-**Outline ref:** Ch.11 — Enums: Named Choices (ORACLE 10.1)
-**Status:** existing — pulled verbatim from the deck
+# Enums: Named Choices
 
 ```html
 <div>

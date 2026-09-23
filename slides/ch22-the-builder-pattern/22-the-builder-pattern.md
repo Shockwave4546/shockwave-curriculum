@@ -1,7 +1,9 @@
-# The Builder Pattern
+---
+outlineRef: "Ch.22 — The Builder Pattern (T5817 30.1)"
+status: "existing — pulled verbatim from the deck"
+---
 
-**Outline ref:** Ch.22 — The Builder Pattern (T5817 30.1)
-**Status:** existing — pulled verbatim from the deck
+# The Builder Pattern
 
 ```html
 <div class="inner">

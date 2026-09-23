@@ -1,9 +1,9 @@
-# Common Gotchas
+---
+outlineRef: "Ch.13 — Common Gotchas"
+status: "existing — pulled verbatim from the deck. Slide-only chapter (see `OUTLINE.md`'s \"Slide-only chapters\" section) — likely thinner than it should be; flagged for expansion once real practice/exercise content surfaces more gotchas."
+---
 
-**Outline ref:** Ch.13 — Common Gotchas
-**Status:** existing — pulled verbatim from the deck. Slide-only chapter (see `OUTLINE.md`'s
-"Slide-only chapters" section) — likely thinner than it should be; flagged for expansion once
-real practice/exercise content surfaces more gotchas.
+# Common Gotchas
 
 ```html
 <div>

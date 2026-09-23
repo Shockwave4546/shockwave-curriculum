@@ -1,7 +1,9 @@
-# Static Factories
+---
+outlineRef: "21 — Static Factories (T5817 30.2)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 21 — Static Factories (T5817 30.2)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Static Factories
 
 ## Why Not Just `new`?
 

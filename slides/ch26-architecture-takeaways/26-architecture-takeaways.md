@@ -1,9 +1,9 @@
-# Architecture Takeaways
+---
+outlineRef: "Ch.26 — Architecture Takeaways (DRY/YAGNI/SOLID)"
+status: "existing — pulled verbatim from the deck. Slide-only chapter (see `OUTLINE.md`'s \"Slide-only chapters\" section) — checked against all 6 external sources in use, none teach these as named general principles."
+---
 
-**Outline ref:** Ch.26 — Architecture Takeaways (DRY/YAGNI/SOLID)
-**Status:** existing — pulled verbatim from the deck. Slide-only chapter (see `OUTLINE.md`'s
-"Slide-only chapters" section) — checked against all 6 external sources in use, none teach these
-as named general principles.
+# Architecture Takeaways
 
 ```html
 <div class="inner">

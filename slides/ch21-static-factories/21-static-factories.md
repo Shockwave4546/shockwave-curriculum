@@ -1,7 +1,9 @@
-# Static Factories
+---
+outlineRef: "Ch.21 — Static Factories (T5817 30.2)"
+status: "existing — pulled verbatim from the deck"
+---
 
-**Outline ref:** Ch.21 — Static Factories (T5817 30.2)
-**Status:** existing — pulled verbatim from the deck
+# Static Factories
 
 ```html
 <div class="inner">

@@ -1,10 +1,9 @@
-# Why Design Patterns?
+---
+outlineRef: "Ch.14 — Why Design Patterns?"
+status: "existing — pulled verbatim from the deck. Slide-only chapter (see `OUTLINE.md`'s \"Slide-only chapters\" section) — checked against all 6 external sources in use, none teach this as a dedicated lesson; see `OUTLINE.md`'s \"Background notes for Ch.14\" for non-citable AI-search notes to draw on whenever this gets real depth."
+---
 
-**Outline ref:** Ch.14 — Why Design Patterns?
-**Status:** existing — pulled verbatim from the deck. Slide-only chapter (see `OUTLINE.md`'s
-"Slide-only chapters" section) — checked against all 6 external sources in use, none teach this
-as a dedicated lesson; see `OUTLINE.md`'s "Background notes for Ch.14" for non-citable AI-search
-notes to draw on whenever this gets real depth.
+# Why Design Patterns?
 
 ```html
 <div class="inner">

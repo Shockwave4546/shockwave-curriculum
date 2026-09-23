@@ -1,7 +1,9 @@
-# Advanced Collections
+---
+outlineRef: "Ch.15 — Advanced Collections (ORACLE 13.1-4)"
+status: "existing — pulled verbatim from the deck"
+---
 
-**Outline ref:** Ch.15 — Advanced Collections (ORACLE 13.1-4)
-**Status:** existing — pulled verbatim from the deck
+# Advanced Collections
 
 ```html
 <div class="inner">

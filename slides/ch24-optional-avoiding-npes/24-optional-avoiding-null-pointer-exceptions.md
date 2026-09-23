@@ -1,10 +1,9 @@
-# Optional: Maybe a Value
+---
+outlineRef: "Ch.24 — Optional: Avoiding Null Pointer Exceptions (ORACLE 16.1)"
+status: "existing — pulled verbatim from the deck. The deck's actual slide heading is still \"Optional: Maybe a Value\" — the outline-level rename to \"Optional: Avoiding Null Pointer Exceptions\" is a curriculum-label-only change; `mechacoder-test` stays frozen, never edited directly."
+---
 
-**Outline ref:** Ch.24 — Optional: Avoiding Null Pointer Exceptions (ORACLE 16.1)
-**Status:** existing — pulled verbatim from the deck. The deck's actual slide heading is still
-"Optional: Maybe a Value" — the outline-level rename to "Optional: Avoiding Null Pointer
-Exceptions" is a curriculum-label-only change; `mechacoder-test` stays frozen, never edited
-directly.
+# Optional: Maybe a Value
 
 ```html
 <div class="inner">

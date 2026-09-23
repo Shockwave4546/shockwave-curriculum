@@ -1,7 +1,9 @@
-# Enums: Named Choices
+---
+outlineRef: "11 — Enums: Named Choices (ORACLE 10.1)"
+status: "new — authored lesson (fuller depth than the teaser slide)"
+---
 
-**Outline ref:** 11 — Enums: Named Choices (ORACLE 10.1)
-**Status:** new — authored lesson (fuller depth than the teaser slide)
+# Enums: Named Choices
 
 ## Why Enums Exist
 

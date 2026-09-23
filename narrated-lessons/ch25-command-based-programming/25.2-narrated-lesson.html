@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Command-Based II, Live</title>
+<title>Command-Based II</title>
 <style>
 :root{
   --bg:#0b0d13; --bg-raised:#12151d; --bg-screen:#0e1016;
@@ -17,7 +17,7 @@ body{
   background:var(--bg); color:var(--ink);
   font-family:'Space Grotesk',-apple-system,sans-serif;
   min-height:100vh;
-  padding:28px 16px;
+  padding:14px 16px;
 }
 .player{
   width:100%; max-width:920px; margin:0 auto;
@@ -29,7 +29,7 @@ body{
 }
 .playerbar{
   display:flex; align-items:center; justify-content:space-between;
-  padding:14px 20px; border-bottom:1px solid var(--line);
+  padding:10px 20px; border-bottom:1px solid var(--line);
 }
 .brand{display:flex; align-items:center; gap:10px;}
 .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
@@ -39,28 +39,29 @@ body{
 
 .screen{
   position:relative;
-  aspect-ratio:16/9;
+  min-height:240px;
+  max-height:calc(100vh - 220px);
   background:
     radial-gradient(120% 140% at 15% -10%, rgba(110,168,254,0.10), transparent 55%),
     radial-gradient(100% 120% at 100% 110%, rgba(242,184,75,0.08), transparent 55%),
     var(--bg-screen);
   display:flex; align-items:center; justify-content:center;
-  padding:40px; overflow:hidden;
+  padding:20px; overflow-y:auto; overflow-x:hidden;
 }
-.screeninner{width:100%; max-width:640px; opacity:0; transform:translateY(10px); animation:beatIn 0.5s ease forwards;}
+.screeninner{container-type:inline-size; width:100%; max-width:640px; opacity:0; transform:translateY(10px); animation:beatIn 0.5s ease forwards;}
 @keyframes beatIn{ to{ opacity:1; transform:translateY(0); } }
 @media (prefers-reduced-motion: reduce){ .screeninner{animation:none; opacity:1; transform:none;} }
 
 .scr-eyebrow{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); margin-bottom:10px;}
-.scr-title h1{font-size:clamp(28px,4.4vw,42px); font-weight:700; line-height:1.15; margin:0 0 10px; text-wrap:balance;}
+.scr-title h1{font-size:clamp(28px,6.5cqw,42px); font-weight:700; line-height:1.15; margin:0 0 10px; text-wrap:balance;}
 .scr-title .scr-sub{font-size:16px; color:var(--ink-soft); margin:0; max-width:46ch;}
 
 .scr-h2{font-size:20px; font-weight:700; margin:0 0 18px; color:var(--ink);}
-.scr-bullets ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+.scr-bullets ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
 .scr-bullets li{
   display:flex; align-items:flex-start; gap:12px;
   font-size:16px; line-height:1.5; color:var(--ink);
-  padding:12px 16px; background:var(--bg-raised); border:1px solid var(--line); border-radius:10px;
+  padding:9px 14px; background:var(--bg-raised); border:1px solid var(--line); border-radius:10px;
   opacity:0; animation:bulletIn 0.4s ease forwards;
 }
 .scr-bullets li:nth-child(1){animation-delay:0.02s;}
@@ -82,7 +83,7 @@ body{
 
 pre.code{
   background:var(--code-bg); border:1px solid var(--code-line); border-radius:12px;
-  padding:20px 22px; margin:0; overflow-x:auto;
+  padding:14px 16px; margin:0; overflow-x:auto;
   font-family:'JetBrains Mono',monospace; font-size:14.5px; line-height:1.75;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
 }
@@ -92,7 +93,7 @@ pre.code code{display:block; white-space:pre;}
 
 .scr-diagram{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;}
 .dbox{
-  padding:16px 20px; border-radius:10px; border:1px solid rgba(255,255,255,0.16); background:var(--bg-raised);
+  padding:12px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.16); background:var(--bg-raised);
   font-family:'JetBrains Mono',monospace; font-size:13.5px; text-align:center; color:var(--ink); min-width:120px;
   box-shadow:0 4px 14px rgba(0,0,0,0.35);
 }
@@ -100,18 +101,18 @@ pre.code code{display:block; white-space:pre;}
 .dbox.err{border-color:#ff6e6e; background:rgba(255,110,110,0.14); color:#ff9b9b; font-weight:700;}
 .darrow{color:var(--ink-soft); font-size:20px; font-weight:700;}
 
-.scr-naming{display:flex; flex-direction:column; gap:14px;}
-.namerow{display:flex; align-items:center; gap:16px; padding:14px 18px; background:var(--bg-raised); border:1px solid rgba(255,255,255,0.14); border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.3);}
+.scr-naming{display:flex; flex-direction:column; gap:8px;}
+.namerow{display:flex; align-items:center; gap:16px; padding:10px 16px; background:var(--bg-raised); border:1px solid rgba(255,255,255,0.14); border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.3);}
 .namerow code{font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:600;}
 .namerow .nlabel{font-size:12px; color:var(--ink-faint); margin-left:auto; text-align:right;}
 
-.scr-recap ul{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-.scr-recap li{font-size:13.5px; line-height:1.5; color:var(--ink-soft); padding:10px 12px; background:var(--bg-raised); border:1px solid rgba(255,255,255,0.14); border-radius:8px;}
+.scr-recap ul{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:6px;}
+.scr-recap li{font-size:13.5px; line-height:1.5; color:var(--ink-soft); padding:8px 10px; background:var(--bg-raised); border:1px solid rgba(255,255,255,0.14); border-radius:8px;}
 .scr-recap .check{color:var(--accent); margin-right:6px;}
 
 .caption{
-  min-height:64px; display:flex; align-items:center;
-  padding:16px 24px; background:var(--bg); border-top:1px solid var(--line);
+  min-height:44px; display:flex; align-items:center;
+  padding:10px 24px; background:var(--bg); border-top:1px solid var(--line);
   font-size:15px; line-height:1.5; color:var(--ink-soft);
 }
 .caption .quote{color:var(--accent); margin-right:6px; font-weight:700;}
@@ -120,7 +121,7 @@ pre.code code{display:block; white-space:pre;}
 
 .controls{
   display:flex; align-items:center; gap:14px;
-  padding:14px 20px; background:var(--bg-raised); border-top:1px solid var(--line);
+  padding:8px 20px; background:var(--bg-raised); border-top:1px solid var(--line);
 }
 .ctrlbtn{
   width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--bg-screen); color:var(--ink);
@@ -137,7 +138,7 @@ pre.code code{display:block; white-space:pre;}
   background:var(--bg-screen); color:var(--ink-soft); border:1px solid var(--line); border-radius:7px;
   font-family:'Space Grotesk',sans-serif; font-size:12px; padding:6px 10px; cursor:pointer; max-width:130px;
 }
-.hint{font-size:11px; color:var(--ink-faint); text-align:center; padding:10px 20px 16px; font-family:'JetBrains Mono',monospace;}
+.hint{font-size:11px; color:var(--ink-faint); text-align:center; padding:6px 20px 8px; font-family:'JetBrains Mono',monospace;}
 .ctrlbtn.ccbtn{width:auto; min-width:38px; padding:0 8px;}
 .ctrlbtn.ccbtn.off{opacity:0.4;}
 ::selection{background:var(--accent-soft);}
@@ -147,7 +148,7 @@ pre.code code{display:block; white-space:pre;}
   <div class="playerbar">
     <div class="brand">
       <div class="dot"></div>
-      <div class="label">shockwave curriculum · live</div>
+      <div class="label">shockwave curriculum</div>
       <div class="title">Ch.25 — Commands &amp; Command Compositions</div>
     </div>
     <div class="scenecount" id="scenecount">1 / 12</div>
@@ -155,7 +156,7 @@ pre.code code{display:block; white-space:pre;}
 
   <div class="screen"><div class="screeninner" id="screenInner"></div></div>
 
-  <div class="caption" id="caption"><span class="quote">&ldquo;</span><span id="captionText">Press play to start the lesson.</span></div>
+  <div class="caption" id="caption" hidden><span class="quote">&ldquo;</span><span id="captionText">Press play to start the lesson.</span></div>
 
   <div class="controls">
     <button class="ctrlbtn" id="btnRestart" title="Restart">
@@ -172,7 +173,7 @@ pre.code code{display:block; white-space:pre;}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM4 6l11 6L4 18z"/></svg>
     </button>
     <div class="progress" id="progress"><div class="fill" id="progressFill"></div></div>
-    <button class="ctrlbtn ccbtn" id="btnCC" title="Hide captions">
+    <button class="ctrlbtn ccbtn off" id="btnCC" title="Show captions">
       <svg width="20" height="14" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="1" width="28" height="18" rx="3.5"/><text x="15" y="14.5" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle">CC</text></svg>
     </button>
       </div>
@@ -308,7 +309,7 @@ const btnPlay = document.getElementById('btnPlay');
 const hint = document.getElementById('hint');
 const narrator = document.getElementById('narrator');
 const btnCC = document.getElementById('btnCC');
-let captionsOn = true;
+let captionsOn = false;
 
 const BIG_PAUSE_MS = 800;
 const CONTINUATION_PAUSE_MS = 350;
