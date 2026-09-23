@@ -16,11 +16,19 @@ from html import unescape
 
 
 def strip_tags(s):
-    # A tag starts with `<` immediately followed by `/` or a letter -- same fix as
-    # check_lesson_review_consistency.py's strip_tags, for the same reason: a bare
-    # `<[^>]+>` misreads a raw, unescaped `<`/`<=` operator in code (e.g. `i < len`) as a
-    # tag opener and eats everything up to the next real `>`.
-    return unescape(re.sub(r'<(?:/|(?=[a-zA-Z]))[^>]*>', '', s))
+    # Only `<pre ...>`/`<code>`/`<span ...>` (and their closing tags) ever appear inside a
+    # beat's code block -- that's the whole vocabulary the builder ever emits here, verified
+    # against every existing narrated-lesson HTML in this repo. A closed vocabulary, not a
+    # generic "<' + letter" heuristic, is required: Java generics like `ArrayList<String>`
+    # are indistinguishable from a minimal HTML tag by shape alone (both are `<`, letters,
+    # `>`), and the old generic-letter heuristic silently stripped `<String>` out of any
+    # source .md code block using generics -- while the screen HTML's own `<String>` came
+    # from an HTML-escaped `&lt;String&gt;` and was never touched by the regex, only
+    # unescaped afterward -- producing a false "missing code block" report the first time a
+    # chapter's code actually used generics (Ch.9, ArrayList<...>/HashMap<...>). Bare
+    # `<`/`<=` comparison operators in code (e.g. `i < len`) are unaffected either way, since
+    # neither `pre`/`code`/`span` nor their closing forms can match a bare operator.
+    return unescape(re.sub(r'</?(?:pre|code|span)(?:\s[^>]*)?>', '', s))
 
 
 def norm(s):
