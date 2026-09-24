@@ -6,7 +6,7 @@ import subprocess
 TEMPLATE_DIR = os.path.dirname(os.path.abspath(__file__))
 HYPERFRAMES_CLI = os.path.expanduser("~/dev/hyperframes-test/packages/cli/bin/hyperframes.mjs")
 KOKORO_VENV_PYTHON = os.path.expanduser("~/dev/tools/tts-kokoro-venv/bin/python")
-SPEED = 0.92  # matches the Azure pipeline's <prosody rate='-8%'> slowdown
+SPEED = 0.88  # matches the Azure pipeline's <prosody rate='-8%'> slowdown, then slowed further per feedback
 
 
 def synth(text, voice, outfile_mp3):
