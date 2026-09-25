@@ -5,8 +5,9 @@ Checks that lessons/chNN-*/N.N-*.md and review/chNN.html stay in sync.
 review/chNN.html duplicates each lesson's content by hand (title, body HTML, pitfalls,
 takeaways) inside a JS `DATA` object -- it is NOT generated from the markdown, so the two
 can drift whenever one gets edited without the other. This script diffs them: heading
-order, code blocks (byte-exact after stripping HTML/markdown formatting), pitfalls, and
-takeaways.
+order, code blocks, pitfalls, and takeaways -- all after stripping HTML/markdown
+formatting AND collapsing whitespace, so it catches wording/text drift but NOT
+whitespace-only drift (indentation, brace style/placement) -- check those by eye.
 
 Usage:
     python3 check_lesson_review_consistency.py <chapter-number>

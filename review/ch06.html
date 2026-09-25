@@ -96,9 +96,9 @@ const DATA = {
     body: `
       <h2>Strings Are Objects</h2>
       <p><code class="inline">String</code> is a class, part of <code class="inline">java.lang</code> (no import needed). Like any class, you can create one with <code class="inline">new</code>, or with the shorter <strong>string literal</strong> syntax:</p>
-      <pre class="code"><code><span class="t">String</span> autoName = <span class="k">new</span> <span class="t">String</span>(<span class="s">"BlueAlliance-Left"</span>); <span class="c">// rarely used</span>
-<span class="t">String</span> autoName = <span class="s">"BlueAlliance-Left"</span>;              <span class="c">// the normal way</span></code></pre>
-      <p>Both create a <code class="inline">String</code> object; the literal form is what you'll use almost always.</p>
+      <pre class="code"><code><span class="t">String</span> autoNameA = <span class="k">new</span> <span class="t">String</span>(<span class="s">"BlueAlliance-Left"</span>); <span class="c">// rarely used — explicit new</span>
+<span class="t">String</span> autoNameB = <span class="s">"BlueAlliance-Left"</span>;              <span class="c">// the normal way — a literal</span></code></pre>
+      <p>Both create a <code class="inline">String</code> object holding the same text; the literal form (<code class="inline">autoNameB</code>'s style) is what you'll use almost always. (They're written here as two separately-named variables just to compare the syntax side by side — normally you'd pick one style and use it.)</p>
       <h2>Strings Are Immutable</h2>
       <p>Once a <code class="inline">String</code> is created, its characters can never change. Every method that looks like it "modifies" a string actually returns a brand-new one, leaving the original untouched:</p>
       <pre class="code"><code><span class="t">String</span> name = <span class="s">"Titan"</span>;
@@ -109,8 +109,14 @@ name = name.<span class="me">toUpperCase</span>(); <span class="c">// this is ho
       <pre class="code"><code><span class="t">String</span> status = <span class="s">"Auto: "</span> + autoName + <span class="s">", step "</span> + <span class="n">3</span>; <span class="c">// the int 3 converts automatically</span></code></pre>
       <p>Watch the order when mixing <code class="inline">+</code> with numbers — it's evaluated left to right, so <code class="inline">"Score: " + 1 + 2</code> gives <code class="inline">"Score: 12"</code> (each number appends as text in turn), not <code class="inline">"Score: 3"</code>. Use parentheses — <code class="inline">"Score: " + (1 + 2)</code> — to force the addition first.</p>
       <h2>Index and Length</h2>
-      <p>Each character has a position, or <strong>index</strong>, starting at 0. <code class="inline">length()</code> returns the total character count — the last valid index is always <code class="inline">length() - 1</code>. There's no bracket notation like an array's (<code class="inline">autoName[0]</code> isn't valid Java) — getting a single character means using <code class="inline">substring</code>, covered next.</p>
-      <p>Accessing an index outside <code class="inline">0</code> to <code class="inline">length() - 1</code> throws an <code class="inline">IndexOutOfBoundsException</code>.</p>
+      <p>Each character has a position, or <strong>index</strong>, starting at 0. <code class="inline">length()</code> returns the total character count — the last valid index is always <code class="inline">length() - 1</code>. There's no bracket notation like an array's (<code class="inline">autoName[0]</code> isn't valid Java) — getting a single character means using <code class="inline">substring</code> or <code class="inline">charAt</code>, covered next.</p>
+      <p>Accessing an index outside <code class="inline">0</code> to <code class="inline">length() - 1</code> throws a <code class="inline">StringIndexOutOfBoundsException</code> (a kind of <code class="inline">IndexOutOfBoundsException</code>).</p>
+      <h2>charAt and char</h2>
+      <p><code class="inline">substring(i, i + 1)</code> gets a single character back as a one-character <code class="inline">String</code>. <code class="inline">charAt(i)</code> is the more direct way — it returns that one character as a <code class="inline">char</code>, a primitive type (Ch.2.1), not a <code class="inline">String</code>:</p>
+      <pre class="code"><code><span class="k">char</span> first = autoName.<span class="me">charAt</span>(<span class="n">0</span>);            <span class="c">// 'B' — a char, single-quoted</span>
+<span class="t">String</span> firstAsString = autoName.<span class="me">substring</span>(<span class="n">0</span>, <span class="n">1</span>); <span class="c">// "B" — a String, double-quoted</span></code></pre>
+      <p>Because <code class="inline">char</code> is a primitive, compare two <code class="inline">char</code> values with <code class="inline">==</code>, not <code class="inline">.equals()</code> — the opposite of the rule for <code class="inline">String</code>:</p>
+      <pre class="code"><code><span class="k">if</span> (autoName.<span class="me">charAt</span>(<span class="n">0</span>) == <span class="s">'B'</span>) <span class="c">// correct for char — == is fine here</span></code></pre>
       <h2>The Core String Methods</h2>
       <pre class="code"><code><span class="t">String</span> autoName = <span class="s">"BlueAlliance-Left"</span>;
 autoName.<span class="me">length</span>();          <span class="c">// 17</span>
@@ -119,6 +125,25 @@ autoName.<span class="me">substring</span>(<span class="n">13</span>);     <span
 autoName.<span class="me">indexOf</span>(<span class="s">"Left"</span>);   <span class="c">// 13 — or -1 if not found</span>
 autoName.<span class="me">equals</span>(<span class="s">"BlueAlliance-Left"</span>); <span class="c">// true — compares actual characters</span></code></pre>
       <p><code class="inline">substring(i, i + 1)</code> is the standard way to get just the single character at index <code class="inline">i</code>.</p>
+      <h2>Other Everyday String Methods</h2>
+      <p>Several more <code class="inline">String</code> methods come up constantly in real code:</p>
+      <ul>
+        <li><code class="inline">equalsIgnoreCase(other)</code> — like <code class="inline">.equals()</code>, but treats upper/lowercase as the same</li>
+        <li><code class="inline">compareTo(other)</code> — negative/zero/positive — alphabetical order relative to <code class="inline">other</code></li>
+        <li><code class="inline">contains(text)</code> — <code class="inline">true</code> if <code class="inline">text</code> appears anywhere inside</li>
+        <li><code class="inline">startsWith(text)</code> / <code class="inline">endsWith(text)</code> — <code class="inline">true</code> if the string begins/ends with <code class="inline">text</code></li>
+        <li><code class="inline">isEmpty()</code> / <code class="inline">isBlank()</code> — <code class="inline">true</code> if length is 0 / if it's empty or all whitespace</li>
+        <li><code class="inline">trim()</code> / <code class="inline">strip()</code> — a copy with leading/trailing whitespace removed</li>
+        <li><code class="inline">replace(old, new)</code> — a copy with every occurrence of <code class="inline">old</code> swapped for <code class="inline">new</code></li>
+        <li><code class="inline">split(regex)</code> — breaks the string apart into a <code class="inline">String[]</code> around a separator</li>
+      </ul>
+      <pre class="code"><code><span class="s">"  R2-1622  "</span>.<span class="me">trim</span>();                    <span class="c">// "R2-1622"</span>
+<span class="s">"BlueAlliance"</span>.<span class="me">contains</span>(<span class="s">"Alliance"</span>);     <span class="c">// true</span>
+<span class="s">"Left"</span>.<span class="me">equalsIgnoreCase</span>(<span class="s">"LEFT"</span>);         <span class="c">// true</span></code></pre>
+      <p>A <code class="inline">String</code> variable can be <code class="inline">null</code> — a reference (Ch.7) pointing at no object at all. Calling a method <em>on</em> a <code class="inline">null</code> String throws a <code class="inline">NullPointerException</code>. If you're comparing against a value that might be <code class="inline">null</code>, put a known-non-null literal first: <code class="inline">"Left".equals(status)</code> never throws even if <code class="inline">status</code> is <code class="inline">null</code>, but <code class="inline">status.equals("Left")</code> does.</p>
+      <p><code class="inline">String.format(...)</code> (and <code class="inline">System.out.printf(...)</code>, which prints the formatted result directly) builds a formatted string from a pattern: <code class="inline">%.2f</code> for a number to 2 decimal places, <code class="inline">%d</code> for an integer, <code class="inline">%s</code> for a string.</p>
+      <pre class="code"><code><span class="t">String</span> msg = <span class="t">String</span>.<span class="me">format</span>(<span class="s">"Speed: %.2f, Cycle: %d"</span>, <span class="n">0.755</span>, <span class="n">3</span>);
+<span class="c">// "Speed: 0.76, Cycle: 3"</span></code></pre>
       <h2>.equals(), Not ==</h2>
       <p><code class="inline">==</code> on a <code class="inline">String</code> checks whether two variables point at the <em>same object</em> — not whether their text matches. Use <code class="inline">.equals()</code> to compare actual content:</p>
       <pre class="code"><code><span class="t">String</span> a = <span class="k">new</span> <span class="t">String</span>(<span class="s">"Left"</span>);
@@ -127,7 +152,7 @@ System.out.<span class="me">println</span>(a == b);       <span class="c">// fal
 System.out.<span class="me">println</span>(a.<span class="me">equals</span>(b));  <span class="c">// true — same characters</span></code></pre>
     `,
     pitfalls: [
-      "Using <code class=\"inline\">==</code> to compare string content. It compiles, runs, and gives the wrong answer far more often than it errors — always use <code class=\"inline\">.equals()</code> for strings.",
+      "Using <code class=\"inline\">==</code> to compare string content. It always compiles and runs — <code class=\"inline\">==</code> never errors on strings. It can even seem to work at first, since identical string literals are often the very same object — but it silently fails on strings built at runtime (<code class=\"inline\">substring</code>, concatenation, input). Always use <code class=\"inline\">.equals()</code> for strings.",
       "Forgetting a string method's result has to be used. <code class=\"inline\">autoName.toUpperCase();</code> alone does nothing — strings are immutable, so the result must be captured (<code class=\"inline\">autoName = autoName.toUpperCase();</code>) or it's lost.",
       "Off-by-one in <code class=\"inline\">substring</code>. The <code class=\"inline\">to</code> index in <code class=\"inline\">substring(from, to)</code> is exclusive — <code class=\"inline\">substring(0, 4)</code> gives 4 characters (indices 0-3), not 5."
     ],
@@ -135,7 +160,8 @@ System.out.<span class="me">println</span>(a.<span class="me">equals</span>(b));
       "<code class=\"inline\">String</code> is a class; string literals (<code class=\"inline\">\"text\"</code>) are the normal way to create one.",
       "Strings are immutable — every \"modifying\" method returns a new string instead of changing the original.",
       "<code class=\"inline\">+</code>/<code class=\"inline\">+=</code> concatenate, auto-converting non-string values to text.",
-      "<code class=\"inline\">length()</code>, <code class=\"inline\">substring()</code>, <code class=\"inline\">indexOf()</code> are the core methods, all indexed from 0.",
+      "<code class=\"inline\">length()</code>, <code class=\"inline\">substring()</code>, <code class=\"inline\">indexOf()</code>, <code class=\"inline\">charAt()</code> are the core methods, all indexed from 0. <code class=\"inline\">charAt()</code> returns a <code class=\"inline\">char</code> (compare with <code class=\"inline\">==</code>); <code class=\"inline\">substring()</code> returns a <code class=\"inline\">String</code> (compare with <code class=\"inline\">.equals()</code>).",
+      "<code class=\"inline\">equalsIgnoreCase</code>, <code class=\"inline\">contains</code>, <code class=\"inline\">trim</code>/<code class=\"inline\">strip</code>, <code class=\"inline\">replace</code>, <code class=\"inline\">split</code>, and <code class=\"inline\">String.format</code> cover most everyday text work; a <code class=\"inline\">null</code> String throws <code class=\"inline\">NullPointerException</code> if you call a method on it.",
       "Use <code class=\"inline\">.equals()</code> to compare string content — <code class=\"inline\">==</code> only checks whether two variables reference the same object."
     ],
     prov: "csawesome-2026: unit-1-using-objects-and-methods/1.15-strings.md (CSA 1.15)"
@@ -148,34 +174,39 @@ System.out.<span class="me">println</span>(a.<span class="me">equals</span>(b));
       <p>A <code class="inline">for</code> loop is the standard way to visit every character of a string — start at 0, stop before <code class="inline">length()</code>:</p>
       <pre class="code"><code><span class="t">String</span> autoName = <span class="s">"BlueAlliance-Left"</span>;
 <span class="k">int</span> dashCount = <span class="n">0</span>;
-<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; autoName.<span class="me">length</span>(); i++) {
-    <span class="k">if</span> (autoName.<span class="me">substring</span>(i, i + <span class="n">1</span>).<span class="me">equals</span>(<span class="s">"-"</span>)) {
+<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; autoName.<span class="me">length</span>(); i++)
+{
+    <span class="k">if</span> (autoName.<span class="me">substring</span>(i, i + <span class="n">1</span>).<span class="me">equals</span>(<span class="s">"-"</span>))
+    {
         dashCount++;
     }
 }</code></pre>
       <p>Use a <code class="inline">for</code> loop when you know you want to check every character. Use a <code class="inline">while</code> loop instead when you're searching for something and don't know in advance how many characters you'll need to check — see the find-and-replace pattern below.</p>
       <h2>Find and Replace with indexOf + substring</h2>
       <p>A <code class="inline">while</code> loop paired with <code class="inline">indexOf</code> repeatedly finds and processes one match at a time, until none remain:</p>
-      <pre class="code"><code><span class="t">String</span> name = <span class="s">"Alli1ance"</span>;
+      <pre class="code"><code><span class="t">String</span> name = <span class="s">"A11iance"</span>;
 <span class="k">int</span> i = <span class="n">0</span>;
-<span class="k">while</span> (name.<span class="me">indexOf</span>(<span class="s">"1"</span>) &gt;= <span class="n">0</span>) {
+<span class="k">while</span> (name.<span class="me">indexOf</span>(<span class="s">"1"</span>) &gt;= <span class="n">0</span>)
+{
     i = name.<span class="me">indexOf</span>(<span class="s">"1"</span>);
     <span class="t">String</span> firstPart = name.<span class="me">substring</span>(<span class="n">0</span>, i);
     <span class="t">String</span> lastPart = name.<span class="me">substring</span>(i + <span class="n">1</span>);
     name = firstPart + <span class="s">"l"</span> + lastPart; <span class="c">// replace the "1" with "l"</span>
 }</code></pre>
-      <p>Each pass finds the <em>next</em> occurrence, because the string was already reassigned — the search always runs against the current (updated) value of <code class="inline">name</code>.</p>
+      <p>This loop runs twice: the first pass turns <code class="inline">"A11iance"</code> into <code class="inline">"Al1iance"</code>, and the second turns that into <code class="inline">"Alliance"</code>. Each pass finds the <em>next</em> occurrence, because the string was already reassigned — the search always runs against the current (updated) value of <code class="inline">name</code>.</p>
       <h2>Building a New String</h2>
       <p>Since strings are immutable, "building" one really means starting with an empty string and concatenating onto it inside a loop:</p>
       <pre class="code"><code><span class="t">String</span> reversed = <span class="s">""</span>;
-<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; autoName.<span class="me">length</span>(); i++) {
+<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; autoName.<span class="me">length</span>(); i++)
+{
     <span class="t">String</span> letter = autoName.<span class="me">substring</span>(i, i + <span class="n">1</span>);
     reversed = letter + reversed; <span class="c">// prepend — builds the string backwards</span>
 }</code></pre>
+      <p>In real code, two shortcuts save you from hand-writing these patterns: <code class="inline">name.replace("1", "l")</code> does the entire find-and-replace loop above in one call (every occurrence, no manual <code class="inline">indexOf</code> loop), and <code class="inline">StringBuilder</code> is built for exactly this kind of repeated concatenation — <code class="inline">new StringBuilder(autoName).reverse().toString()</code> reverses a string in one line, and <code class="inline">append(...)</code> avoids creating a new <code class="inline">String</code> object on every pass the way <code class="inline">+=</code> does.</p>
     `,
     pitfalls: [
       "Starting a string-scanning loop at 1 instead of 0. The first character is always at index 0 — starting at 1 skips it.",
-      "Using <code class=\"inline\">&lt;=</code> instead of <code class=\"inline\">&lt;</code> against <code class=\"inline\">length()</code>. <code class=\"inline\">i &lt;= autoName.length()</code> reads one index past the end and throws <code class=\"inline\">IndexOutOfBoundsException</code>.",
+      "Using <code class=\"inline\">&lt;=</code> instead of <code class=\"inline\">&lt;</code> against <code class=\"inline\">length()</code>. <code class=\"inline\">i &lt;= autoName.length()</code> reads one index past the end and throws <code class=\"inline\">StringIndexOutOfBoundsException</code>.",
       "An infinite loop in a find-and-replace pattern. If the replacement text itself still contains the thing you're searching for, <code class=\"inline\">indexOf</code> finds it again forever — make sure each pass genuinely reduces what's left to find."
     ],
     takeaways: [

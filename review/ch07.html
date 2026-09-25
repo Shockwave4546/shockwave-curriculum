@@ -95,7 +95,7 @@ const DATA = {
     ref: "7.1 — Anatomy of a Java Class (CSA 3.3)",
     body: `
       <h2>The Three Anatomical Parts</h2>
-      <p>Every class you write has the same three main parts, in this order:</p>
+      <p>Every class you write has the same three main parts, conventionally written in this order (Java doesn't enforce the order, and a class doesn't have to have a constructor at all — with none written, Java supplies an empty default one, covered in Ch.8):</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span>
 {
     <span class="c">// 1. instance variables — the data each object owns</span>
@@ -151,7 +151,7 @@ const DATA = {
       "Skipping the design step. Jumping straight to code without first asking \"what does this class need to know about itself\" tends to produce classes with the wrong data, discovered only after writing several methods around it."
     ],
     takeaways: [
-      "Every class has the same three parts, in order: instance variables, constructors, methods.",
+      "Every class has the same three parts, conventionally in this order: instance variables, constructors, methods — Java doesn't enforce the order, and a class with no constructor gets an empty default one (Ch.8).",
       "Instance variables are per-object — each object gets its own independent copies.",
       "Instance variables should be <code class=\"inline\">private</code>; methods that are meant to be used by other classes are <code class=\"inline\">public</code>. This is encapsulation.",
       "Design a class by first asking what data it needs to represent, before writing any code."
@@ -179,7 +179,7 @@ const DATA = {
 {
     <span class="k">return</span> currentSpeed;
 }</code></pre>
-      <p>You don't need a getter for every instance variable — only the ones other code genuinely needs to read.</p>
+      <p>You don't need a getter for every instance variable — only the ones other code genuinely needs to read. A getter for a <code class="inline">boolean</code> field is conventionally named <code class="inline">is...</code> or <code class="inline">has...</code> instead of <code class="inline">get...</code> (matching a <code class="inline">boolean</code> field itself, like <code class="inline">isDeployed</code> or <code class="inline">hasGamePiece</code> from Lesson 7.1) — e.g. <code class="inline">isDeployed()</code>, not <code class="inline">getIsDeployed()</code>.</p>
       <h2>Setters (Mutators)</h2>
       <p>A <strong>setter</strong> is the write-side equivalent: a <code class="inline">void</code> method, named starting with <code class="inline">set</code>, taking one parameter — the new value — and assigning it to the instance variable.</p>
       <pre class="code"><code><span class="k">public void</span> <span class="me">setCurrentSpeed</span>(<span class="k">double</span> newSpeed)
@@ -188,24 +188,48 @@ const DATA = {
 }</code></pre>
       <p>Think just as hard before writing a setter as before writing a getter. Not every instance variable should be freely settable from outside — sometimes the class should only change its own data through a specific method (like <code class="inline">spin(speed)</code> above) that also enforces some rule, rather than through a bare setter that lets anyone assign anything.</p>
       <h2>toString</h2>
-      <p><code class="inline">toString</code> is a special method Java calls automatically whenever it needs to turn an object into text — including every time you <code class="inline">System.out.println(someObject)</code> or concatenate an object with <code class="inline">+</code>.</p>
-      <pre class="code"><code><span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>()
+      <p><code class="inline">toString</code> is a special method Java calls automatically whenever it needs to turn an object into text — including every time you <code class="inline">System.out.println(someObject)</code> or concatenate an object with <code class="inline">+</code>. Every class actually already has a <code class="inline">toString</code> (inherited — Ch.17); writing your own <strong>overrides</strong> it with something more useful, which is why the method's name and signature (no parameters, returns <code class="inline">String</code>) have to match exactly (<code class="inline">@Override</code> makes that explicit — also Ch.17).</p>
+      <pre class="code"><code><span class="c">// assumes 7.1's full Intake, with isDeployed added</span>
+<span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>()
 {
     <span class="k">return</span> <span class="s">"Intake[speed="</span> + currentSpeed + <span class="s">", deployed="</span> + isDeployed + <span class="s">"]"</span>;
 }</code></pre>
       <p>Without a <code class="inline">toString</code>, printing an object directly gives an unhelpful default (something like <code class="inline">Intake@1a2b3c</code>) — writing your own gives every <code class="inline">System.out.println(myIntake)</code> a genuinely useful message instead.</p>
       <h2>Method Parameters, Revisited</h2>
       <p>Same call-by-value rule from Ch.4.1: a primitive parameter (<code class="inline">double speed</code>) gets a copy. Changing it inside the method never affects the caller's original variable.</p>
+      <h2>Where Variables Live</h2>
+      <p>Every variable you've written falls into one of three kinds, based on where it's declared:</p>
+      <ul>
+        <li><strong>Instance variables</strong> — declared inside the class, outside any method (Lesson 7.1). One copy per object; it lives as long as the object does.</li>
+        <li><strong>Parameters</strong> — declared in a method's (or constructor's) parameter list. It lives only for that one call — created when the call starts, gone the instant it returns.</li>
+        <li><strong>Local variables</strong> — declared inside a method's body, or inside a block like an <code class="inline">if</code> or a loop. It lives only inside the block where it's declared — once that block ends, the variable is gone.</li>
+      </ul>
+      <p>Where a variable can be <em>used</em> is its <strong>scope</strong>; how long it <em>exists</em> is its <strong>lifetime</strong>. A local variable declared inside an <code class="inline">if</code> block doesn't exist outside that block — reading it afterward is a compile error, not a runtime surprise.</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span>
+{
+    <span class="c">// currentSpeed is an instance variable — lives as long as the Intake object does</span>
+    <span class="k">private double</span> currentSpeed;
+
+    <span class="c">// targetSpeed is a parameter — lives only during this one call to spin()</span>
+    <span class="k">public void</span> <span class="me">spin</span>(<span class="k">double</span> targetSpeed)
+    {
+        <span class="c">// clamped is a local variable — lives only inside spin()</span>
+        <span class="k">double</span> clamped = targetSpeed;
+        currentSpeed = clamped;
+    } <span class="c">// clamped and targetSpeed both cease to exist here</span>
+}</code></pre>
+      <p>A parameter or local variable can have the <em>same name</em> as an instance variable — inside that method, the closer one (the parameter/local) "wins," which is called <strong>shadowing</strong>. Ch.8 covers this in full, once you've seen a constructor use it on purpose.</p>
     `,
     pitfalls: [
       "Writing a getter or setter for every instance variable reflexively. Only write one when something outside the class genuinely needs to read or change that specific value — a setter in particular can undermine whatever rules the class's own methods were meant to enforce.",
       "Forgetting <code class=\"inline\">toString</code> and being surprised by ugly default output. If you're going to print an object for debugging or status, <code class=\"inline\">toString</code> is worth the two minutes it takes to write."
     ],
     takeaways: [
-      "Getters return an instance variable's value (no parameters); setters assign a new value (one parameter, <code class=\"inline\">void</code> return).",
+      "Getters return an instance variable's value (no parameters, conventionally <code class=\"inline\">get...</code> or <code class=\"inline\">is.../has...</code> for a <code class=\"inline\">boolean</code>); setters assign a new value (one parameter, <code class=\"inline\">void</code> return).",
       "Not every instance variable needs a getter or setter — only add one when something outside the class actually needs it.",
-      "<code class=\"inline\">toString</code> is called automatically whenever Java needs to convert an object to text — write your own for useful debug output.",
-      "Method parameters follow the same call-by-value rule as before: primitives are copied."
+      "<code class=\"inline\">toString</code> is called automatically whenever Java needs to convert an object to text — write your own for useful debug output (it overrides the one every class inherits, Ch.17).",
+      "Method parameters follow the same call-by-value rule as before: primitives are copied.",
+      "Instance variables, parameters, and local variables each have their own scope (where they're visible) and lifetime (how long they exist) — a parameter or local variable can shadow an instance variable of the same name (Ch.8)."
     ],
     prov: "csawesome-2026: unit-3-class-creation/3.05-methods-how-to-write-them.md (CSA 3.5)"
   },
@@ -245,6 +269,7 @@ const DATA = {
     config = <span class="k">new</span> <span class="t">MotorConfig</span>(initConfig.<span class="me">getRampRate</span>(), initConfig.<span class="me">getCurrentLimit</span>());
 }</code></pre>
       <p>Now changing the original <code class="inline">initConfig</code> object afterward has zero effect on <code class="inline">Subsystem</code>'s own copy.</p>
+      <p>Notice <code class="inline">name</code> (a <code class="inline">String</code>) needed no defensive copy above — <code class="inline">String</code> is immutable (Ch.6), so there's no "reaching in and changing it later" to defend against; only a <em>mutable</em> object reference (like <code class="inline">MotorConfig</code>, which has setters) needs one. Also watch for a <code class="inline">null</code> argument: <code class="inline">initConfig.getRampRate()</code> throws a <code class="inline">NullPointerException</code> if <code class="inline">initConfig</code> itself is <code class="inline">null</code> — a defensive copy still has to handle (or explicitly rule out) that case.</p>
       <h2>Returning an Object Reference</h2>
       <p>The same rule applies in reverse: a method that returns an object returns a reference to the <em>real</em> object, not a copy. If that object is mutable, whoever calls the getter can reach in and change it:</p>
       <pre class="code"><code><span class="k">public</span> <span class="t">MotorConfig</span> <span class="me">getConfig</span>()
@@ -255,7 +280,8 @@ const DATA = {
 c.<span class="me">setRampRate</span>(<span class="n">0.5</span>); <span class="c">// this actually changes subsystem's real config!</span></code></pre>
       <p>If that's not what you want, return a defensive copy from the getter too.</p>
       <h2>Chaining Method Calls</h2>
-      <p>Calling a method directly on another method's return value — <code class="inline">subsystem.getConfig().getRampRate()</code> — is called chaining. It only works if you know exactly what type each method in the chain returns, since the next method has to actually exist on that type.</p>
+      <p>Calling a method directly on another method's return value — <code class="inline">subsystem.getConfig().getRampRate()</code> — is called chaining. It only compiles if the first call's <em>declared return type</em> actually has the second method — <code class="inline">getConfig()</code>'s return type is <code class="inline">MotorConfig</code>, and <code class="inline">MotorConfig</code> has a <code class="inline">getRampRate()</code>, so the chain is valid; the compiler checks this, not the programmer.</p>
+      <blockquote><p><strong>One <code class="inline">public</code> class per file.</strong> A <code class="inline">.java</code> file can hold several classes (like <code class="inline">MotorConfig</code> and <code class="inline">Subsystem</code> above), but at most one of them can be <code class="inline">public</code>, and (with a normal <code class="inline">javac</code> compile) a <code class="inline">public</code> class's name must match the file name exactly (<code class="inline">Subsystem</code> must live in <code class="inline">Subsystem.java</code>) — that's a compile error otherwise, not just a style rule. A class with no modifier at all (like both shown here) is fine too — see 7.4 for what that means for access. When a file has a <code class="inline">main</code> method, put the class containing it <strong>first</strong> in the file: running it directly with <code class="inline">java File.java</code> (no separate compile step, 1.2) runs the <em>first</em> class's <code class="inline">main</code>, not necessarily the one matching the file name — true on both Java 25 and Java 17, so this one rule covers both.</p></blockquote>
     `,
     pitfalls: [
       "Assuming storing a passed-in object automatically makes an independent copy. It doesn't — only the reference is copied, so the stored object is the exact same one the caller still has.",
@@ -266,7 +292,8 @@ c.<span class="me">setRampRate</span>(<span class="n">0.5</span>); <span class="
       "An object can be another object's instance variable — a \"has-a\" relationship.",
       "Passing or returning an object copies its reference, not the object itself — both sides then point at the same object.",
       "If the object is mutable and you don't want outside code able to change it later, make a defensive copy — on the way in (constructor/setter) and/or on the way out (getter).",
-      "Chaining method calls (<code class=\"inline\">a.getX().getY()</code>) requires knowing exactly what type each call in the chain returns."
+      "Chaining method calls (<code class=\"inline\">a.getX().getY()</code>) compiles only if each call's declared return type actually has the next method in the chain.",
+      "A file can hold several classes but only one <code class=\"inline\">public</code> one; put the class with <code class=\"inline\">main</code> first so <code class=\"inline\">java File.java</code> runs it, on both Java 25 and Java 17."
     ],
     prov: "csawesome-2026: unit-3-class-creation/3.06-methods-passing-and-returning-references-of-an-object.md (CSA 3.6)"
   },
@@ -279,12 +306,16 @@ c.<span class="me">setRampRate</span>(<span class="n">0.5</span>); <span class="
       <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
 {
     <span class="k">public static int</span> instanceCount = <span class="n">0</span>; <span class="c">// one shared copy for ALL Subsystem objects</span>
+    <span class="c">// (kept public here for brevity, so the examples below can read/write it directly —</span>
+    <span class="c">// in real code a static field is usually private, with a static getter, same as an</span>
+    <span class="c">// instance field, Ch.7.2)</span>
 
     <span class="k">public</span> <span class="me">Subsystem</span>()
     {
         instanceCount++; <span class="c">// every constructor call increments the ONE shared counter</span>
     }
 }</code></pre>
+      <p>Read or write a <code class="inline">static</code> member through the <strong>class name</strong>, not through an object — <code class="inline">Subsystem.instanceCount</code>, not <code class="inline">someSubsystem.instanceCount</code>. Accessing it through an object variable actually compiles (Java allows it), but it's misleading: it reads as if each object had its own <code class="inline">instanceCount</code>, when there's really only ever the one, shared copy.</p>
       <h2>Static Code Can't Touch Instance Data Directly</h2>
       <p>A static method can access other static members freely, but it <em>cannot</em> reach an instance variable or call an instance method — because static code runs without any particular object in hand, and instance data only exists per-object.</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
@@ -297,7 +328,9 @@ c.<span class="me">setRampRate</span>(<span class="n">0.5</span>); <span class="
     }
 }</code></pre>
       <p>The fix, if a static method genuinely needs instance data, is to pass in an actual object as a parameter:</p>
-      <pre class="code"><code><span class="k">public static void</span> <span class="me">printSpeed</span>(<span class="t">Subsystem</span> s)
+      <pre class="code"><code><span class="c">// inside Subsystem — private access to another Subsystem's field is allowed</span>
+<span class="c">// here because it's still the same class, just a different object (Ch.7.1)</span>
+<span class="k">public static void</span> <span class="me">printSpeed</span>(<span class="t">Subsystem</span> s)
 {
     System.out.<span class="me">println</span>(s.currentSpeed); <span class="c">// fine — reading a specific object's data</span>
 }</code></pre>
@@ -305,6 +338,7 @@ c.<span class="me">setRampRate</span>(<span class="n">0.5</span>); <span class="
       <p>A <code class="inline">static</code> variable is shared by every object of the class — changing it from one object's constructor or method affects what every other object sees, since there's only ever one copy.</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
 {
+    <span class="c">// public for brevity here too — see the note above</span>
     <span class="k">public static double</span> maxObservedCurrent = <span class="n">0</span>;
 
     <span class="k">public</span> <span class="me">Subsystem</span>(<span class="k">double</span> current)
@@ -320,6 +354,12 @@ c.<span class="me">setRampRate</span>(<span class="n">0.5</span>); <span class="
       <p><code class="inline">final</code> makes a variable's value unchangeable after it's set — used for true constants, conventionally named in all caps:</p>
       <pre class="code"><code><span class="k">public static final double</span> MAX_SPEED = <span class="n">1.0</span>;</code></pre>
       <p>Trying to reassign a <code class="inline">final</code> variable later is a compile error.</p>
+      <p>A common pattern: gather a class's constants into their own class, so other code reads them as <code class="inline">Constants.MAX_SPEED</code> instead of scattering <code class="inline">public static final</code> fields across whatever class happens to use them first:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Constants</span>
+{
+    <span class="k">public static final double</span> MAX_SPEED = <span class="n">1.0</span>;
+    <span class="k">public static final int</span> MAX_CURRENT_AMPS = <span class="n">40</span>;
+}</code></pre>
     `,
     pitfalls: [
       "Trying to read an instance variable from a static method. It doesn't compile — static code has no specific object to read from, unless one is explicitly passed in as a parameter.",
@@ -329,7 +369,8 @@ c.<span class="me">setRampRate</span>(<span class="n">0.5</span>); <span class="
       "<code class=\"inline\">static</code> members belong to the class itself — one shared copy, independent of how many objects exist.",
       "Static code cannot access instance variables or instance methods directly — it needs an actual object passed in to do that.",
       "A static variable's value is shared across every object of the class — useful for running totals, counts, or maximums.",
-      "<code class=\"inline\">final</code> marks a variable as an unchangeable constant, conventionally named in ALL_CAPS."
+      "Access a <code class=\"inline\">static</code> member through the class name (<code class=\"inline\">Subsystem.instanceCount</code>), not through an object — an object reference compiles but is misleading.",
+      "<code class=\"inline\">final</code> marks a variable as an unchangeable constant, conventionally named in ALL_CAPS; a dedicated <code class=\"inline\">Constants</code> class is a common place to collect them."
     ],
     prov: "csawesome-2026: unit-3-class-creation/3.07-class-static-variables-and-methods.md (CSA 3.7)"
   }

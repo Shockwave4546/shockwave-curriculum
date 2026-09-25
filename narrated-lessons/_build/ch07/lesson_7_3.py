@@ -49,7 +49,7 @@ BEATS = [
     <span class="c">// not the same object</span>
     config = <span class="k">new</span> <span class="t">MotorConfig</span>(initConfig.getRampRate(), initConfig.getCurrentLimit());
 }</code></pre>''',
-        "speak": "If you don't want outside code able to reach in and change your object's data after the fact, make a defensive copy instead of storing the reference you were handed. This builds a brand new Motor Config, with the same values, but it's a different object entirely. Now, changing the original initConfig later has zero effect on the Subsystem's own copy.",
+        "speak": "If you don't want outside code able to reach in and change your object's data after the fact, make a defensive copy instead of storing the reference you were handed. This builds a brand new Motor Config, with the same values, but it's a different object entirely. Now, changing the original initConfig later has zero effect on the Subsystem's own copy. Notice name, a String, needed no defensive copy at all, Strings are immutable, so there's nothing to defend against there, only a mutable object reference actually needs this. And watch for a null argument, calling a method on a null initConfig throws a Null Pointer Exception, a real defensive copy has to account for that too.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">public</span> <span class="t">MotorConfig</span> getConfig()
@@ -66,9 +66,16 @@ c.setRampRate(<span class="n">0.5</span>); <span class="c">// this actually chan
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Chaining Method Calls</h2><ul>
       <li><span class="num">1</span><span>Calling a method directly on another method's return value is called <strong>chaining</strong>.</span></li>
-      <li><span class="num">2</span><span>It only works if you know exactly what type each method in the chain returns.</span></li>
+      <li><span class="num">2</span><span>It only compiles if each call's declared return type actually has the next method.</span></li>
     </ul></div>''',
-        "speak": "One more useful idea while we're here: chaining. Calling a method directly on another method's return value, like grabbing a subsystem's config and immediately asking it for its ramp rate in one line, is called chaining. It only compiles if you know exactly what type each method along the chain actually returns, the next method in line has to genuinely exist on that type.",
+        "speak": "One more useful idea while we're here: chaining. Calling a method directly on another method's return value, like grabbing a subsystem's config and immediately asking it for its ramp rate in one line, is called chaining. It only compiles if the first call's declared return type actually has the next method in the chain, get config returns Motor Config, and Motor Config has a get ramp rate, so this one's valid, the compiler checks this, not the programmer.",
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">One public Class Per File</h2><ul>
+      <li><span class="num">1</span><span>A file can hold several classes, but at most one can be <strong>public</strong>.</span></li>
+      <li><span class="num">2</span><span>Put the class with <strong>main</strong> first &mdash; java File.java runs the first class, on both Java 25 and Java 17.</span></li>
+    </ul></div>''',
+        "speak": "One more housekeeping rule, now that we're writing multiple classes in one file. A file can hold several classes, but only one of them can be public, and with a normal compile, that public class's name has to match the file name. When a file has a main method, put that class first in the file, running it directly with java File dot java runs the first class's main, not necessarily the one matching the file name, and that's true on both Java 25 and Java 17, so this one rule covers both versions.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
@@ -83,8 +90,9 @@ c.setRampRate(<span class="n">0.5</span>); <span class="c">// this actually chan
       <li><span class="check">&#10003;</span>An object can be another object's instance variable &mdash; a has-a relationship.</li>
       <li><span class="check">&#10003;</span>Passing or returning an object copies its reference, not the object itself.</li>
       <li><span class="check">&#10003;</span>A defensive copy protects a mutable object, on the way in and/or on the way out.</li>
-      <li><span class="check">&#10003;</span>Chaining method calls requires knowing exactly what type each call returns.</li>
+      <li><span class="check">&#10003;</span>Chaining method calls compiles only if each call's declared return type has the next method.</li>
+      <li><span class="check">&#10003;</span>Only one public class per file; put the one with main first, for both Java 25 and Java 17.</li>
     </ul></div>''',
-        "speak": "So, to recap. An object can be another object's instance variable, that's a has-a relationship. Passing or returning an object copies its reference, not the object itself, so both sides end up pointing at the same thing. A defensive copy protects a mutable object from outside changes, whether you make it on the way in, through a constructor, or on the way out, through a getter. And chaining method calls requires knowing exactly what type each call in the chain actually returns. Next up, lesson 7.4, where we look at data that belongs to the class itself, not to any one object.",
+        "speak": "So, to recap. An object can be another object's instance variable, that's a has-a relationship. Passing or returning an object copies its reference, not the object itself, so both sides end up pointing at the same thing. A defensive copy protects a mutable object from outside changes, whether you make it on the way in, through a constructor, or on the way out, through a getter, though an immutable object like a String never needs one. Chaining method calls compiles only if each call's declared return type actually has the next method in the chain. And a file can only have one public class, so put the class with main first, which works on both Java 25 and Java 17. Next up, lesson 7.4, where we look at data that belongs to the class itself, not to any one object.",
     },
 ]

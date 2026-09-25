@@ -34,7 +34,7 @@ BEATS = [
         "continues": True,
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">String</span> name = <span class="s">"Alli1ance"</span>;
+        "screen": '''<pre class="code"><code><span class="t">String</span> name = <span class="s">"A11iance"</span>;
 <span class="k">int</span> i = <span class="n">0</span>;
 <span class="k">while</span> (name.indexOf(<span class="s">"1"</span>) &gt;= <span class="n">0</span>)
 {
@@ -43,7 +43,7 @@ BEATS = [
     <span class="t">String</span> lastPart = name.substring(i + <span class="n">1</span>);
     name = firstPart + <span class="s">"l"</span> + lastPart; <span class="c">// replace the "1" with "l"</span>
 }</code></pre>''',
-        "speak": "Here's find-and-replace, pairing a while loop with index of. As long as index of still finds a match, keep going. Each pass, split the string into the part before the match and the part after it, then glue them back together with the replacement text in between.",
+        "speak": "Here's find-and-replace, pairing a while loop with index of. As long as index of still finds a match, keep going. Each pass, split the string into the part before the match and the part after it, then glue them back together with the replacement text in between. This loop runs twice: the first pass turns A11iance into Al1iance, and the second turns that into Alliance.",
     },
     {
         "screen": '''<div class="scr-diagram">
@@ -63,7 +63,7 @@ BEATS = [
     <span class="t">String</span> letter = autoName.substring(i, i + <span class="n">1</span>);
     reversed = letter + reversed; <span class="c">// prepend — builds the string backwards</span>
 }</code></pre>''',
-        "speak": "Since strings can't be changed in place, building one really means starting from an empty string and concatenating onto it inside a loop. Here's a nice trick, to reverse a string, prepend each letter instead of appending it, put the new letter in front of what's already been built, and the whole thing comes out backwards.",
+        "speak": "Since strings can't be changed in place, building one really means starting from an empty string and concatenating onto it inside a loop. Here's a nice trick, to reverse a string, prepend each letter instead of appending it, put the new letter in front of what's already been built, and the whole thing comes out backwards. In real code, you'd often reach for a shortcut instead of hand-writing these loops: dot replace does an entire find-and-replace in one call, and StringBuilder, with append and reverse, is built for exactly this kind of repeated concatenation.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
@@ -71,7 +71,7 @@ BEATS = [
       <li><span class="check">!</span>Using less-than-or-equal instead of less-than against length &mdash; that reads one index past the end.</li>
       <li><span class="check">!</span>An infinite loop in find-and-replace, if the replacement text still contains what you searched for.</li>
     </ul></div>''',
-        "speak": "A few pitfalls to watch for. Don't start a string-scanning loop at 1, the first character is always at index 0, and starting at 1 quietly skips it. Don't use less-than-or-equal-to against length, only strictly less-than, one index past the end throws an Index Out Of Bounds Exception. And watch for an infinite loop in a find-and-replace pattern, if what you're replacing something with still contains the thing you searched for, index of will keep finding it forever.",
+        "speak": "A few pitfalls to watch for. Don't start a string-scanning loop at 1, the first character is always at index 0, and starting at 1 quietly skips it. Don't use less-than-or-equal-to against length, only strictly less-than, one index past the end throws a String Index Out Of Bounds Exception. And watch for an infinite loop in a find-and-replace pattern, if what you're replacing something with still contains the thing you searched for, index of will keep finding it forever.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>

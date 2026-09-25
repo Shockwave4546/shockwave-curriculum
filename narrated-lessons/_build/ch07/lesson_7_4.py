@@ -11,13 +11,16 @@ BEATS = [
         "screen": '''<pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
 {
     <span class="k">public static int</span> instanceCount = <span class="n">0</span>; <span class="c">// one shared copy for ALL Subsystem objects</span>
+    <span class="c">// (kept public here for brevity, so the examples below can read/write it directly —</span>
+    <span class="c">// in real code a static field is usually private, with a static getter, same as an</span>
+    <span class="c">// instance field, Ch.7.2)</span>
 
     <span class="k">public</span> Subsystem()
     {
         instanceCount++; <span class="c">// every constructor call increments the ONE shared counter</span>
     }
 }</code></pre>''',
-        "speak": "Here's static in action. instanceCount belongs to the Subsystem class itself, not to any particular Subsystem object. Every time any Subsystem gets constructed, anywhere in the program, that same one shared counter goes up.",
+        "speak": "Here's static in action. instanceCount belongs to the Subsystem class itself, not to any particular Subsystem object. Every time any Subsystem gets constructed, anywhere in the program, that same one shared counter goes up. It's left public here just to keep the examples short, in real code a static field is usually private with a static getter, same idea as an instance field. And you read or write a static member through the class name, Subsystem dot instanceCount, not through an object, going through an object still compiles, but it's misleading, since it reads like each object has its own copy, when really there's just the one.",
     },
     {
         "screen": '''<div class="scr-diagram">
@@ -43,7 +46,9 @@ BEATS = [
         "speak": "Here's the flip side, and it's important. A static method can freely use other static members, but it cannot reach an instance variable, or call an instance method, directly. Why? Static code runs without any particular object in hand, and instance data only exists per object. This exact line will not compile, current speed belongs to some specific Subsystem, and print Static has no idea which one.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">public static void</span> printSpeed(<span class="t">Subsystem</span> s)
+        "screen": '''<pre class="code"><code><span class="c">// inside Subsystem — private access to another Subsystem's field is allowed</span>
+<span class="c">// here because it's still the same class, just a different object (Ch.7.1)</span>
+<span class="k">public static void</span> printSpeed(<span class="t">Subsystem</span> s)
 {
     System.out.println(s.currentSpeed); <span class="c">// fine — reading a specific object's data</span>
 }</code></pre>''',
@@ -52,6 +57,7 @@ BEATS = [
     {
         "screen": '''<pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
 {
+    <span class="c">// public for brevity here too — see the note above</span>
     <span class="k">public static double</span> maxObservedCurrent = <span class="n">0</span>;
 
     <span class="k">public</span> Subsystem(<span class="k">double</span> current)
@@ -69,6 +75,14 @@ BEATS = [
         "speak": "final makes a variable's value unchangeable once it's set, and that's what you reach for to declare a true constant, conventionally named in all caps with underscores between words, here, a public, static, final double, Max underscore Speed, set once to 1.0. Trying to reassign a final variable later on is a compile error, not a runtime surprise, Java catches it immediately.",
     },
     {
+        "screen": '''<pre class="code"><code><span class="k">public class</span> <span class="t">Constants</span>
+{
+    <span class="k">public static final double</span> MAX_SPEED = <span class="n">1.0</span>;
+    <span class="k">public static final int</span> MAX_CURRENT_AMPS = <span class="n">40</span>;
+}</code></pre>''',
+        "speak": "A common pattern: gather a class's constants into their own dedicated class, so other code reads them as Constants dot Max Speed, instead of scattering public static final fields across whatever class happens to use them first.",
+    },
+    {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
       <li><span class="check">!</span>Trying to read an instance variable from a static method &mdash; it doesn't compile.</li>
       <li><span class="check">!</span>Expecting a static variable to have a separate copy per object &mdash; it doesn't, that's exactly what makes it useful.</li>
@@ -80,8 +94,9 @@ BEATS = [
       <li><span class="check">&#10003;</span>static members belong to the class itself &mdash; one shared copy.</li>
       <li><span class="check">&#10003;</span>Static code cannot access instance data directly &mdash; it needs an object passed in.</li>
       <li><span class="check">&#10003;</span>A static variable's value is shared across every object of the class.</li>
-      <li><span class="check">&#10003;</span>final marks an unchangeable constant, conventionally named in ALL CAPS.</li>
+      <li><span class="check">&#10003;</span>Access a static member through the class name, not an object &mdash; the object form compiles but misleads.</li>
+      <li><span class="check">&#10003;</span>final marks an unchangeable constant, conventionally named in ALL CAPS; a Constants class is a common place to collect them.</li>
     </ul></div>''',
-        "speak": "So, to recap. static members belong to the class itself, one single shared copy, no matter how many objects exist. Static code cannot access instance variables or instance methods directly, it needs an actual object handed in first. A static variable's value is shared across every object of the class, useful for running totals, counts, or maximums. And final marks a variable as an unchangeable constant, conventionally named in all caps with underscores. That wraps up Chapter 7. Next up, Chapter 8, constructors and this, in much more depth.",
+        "speak": "So, to recap. static members belong to the class itself, one single shared copy, no matter how many objects exist. Static code cannot access instance variables or instance methods directly, it needs an actual object handed in first. A static variable's value is shared across every object of the class, useful for running totals, counts, or maximums. Access a static member through the class name, not through an object, the object form still compiles but it's misleading. And final marks a variable as an unchangeable constant, conventionally named in all caps with underscores, often collected together in their own Constants class. That wraps up Chapter 7. Next up, Chapter 8, constructors and this, in much more depth.",
     },
 ]

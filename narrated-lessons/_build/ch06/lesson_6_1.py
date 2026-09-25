@@ -8,9 +8,9 @@ BEATS = [
         "speak": "Welcome to Chapter 6. You've been using String since your very first program, but we've never actually looked at what it is under the hood. Turns out it's a full class, with its own rules, and one big one: once you create a string, it can never change.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">String</span> autoName = <span class="k">new</span> <span class="t">String</span>(<span class="s">"BlueAlliance-Left"</span>); <span class="c">// rarely used</span>
-<span class="t">String</span> autoName = <span class="s">"BlueAlliance-Left"</span>;              <span class="c">// the normal way</span></code></pre>''',
-        "speak": "String is a class, part of Java's core library, no import needed. Like any class, you can build one with new, but there's also a shortcut, a string literal, just the text in quotes. Both lines here create a real string object. The literal form on the second line is what you'll use almost every time.",
+        "screen": '''<pre class="code"><code><span class="t">String</span> autoNameA = <span class="k">new</span> <span class="t">String</span>(<span class="s">"BlueAlliance-Left"</span>); <span class="c">// rarely used — explicit new</span>
+<span class="t">String</span> autoNameB = <span class="s">"BlueAlliance-Left"</span>;              <span class="c">// the normal way — a literal</span></code></pre>''',
+        "speak": "String is a class, part of Java's core library, no import needed. Like any class, you can build one with new, but there's also a shortcut, a string literal, just the text in quotes. Both lines here create a string object holding the same text, shown with two different variable names just to compare the syntax side by side. The literal form, autoName B's style, is what you'll use almost every time.",
     },
     {
         "screen": '''<pre class="code"><code><span class="t">String</span> name = <span class="s">"Titan"</span>;
@@ -35,9 +35,15 @@ name = name.toUpperCase(); <span class="c">// this is how you actually keep the 
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Index and Length</h2><ul>
       <li><span class="num">1</span><span>Each character has a position, called an <strong>index</strong>, starting at 0.</span></li>
       <li><span class="num">2</span><span><strong>length()</strong> returns the total character count &mdash; the last valid index is always length() minus 1.</span></li>
-      <li><span class="num">3</span><span>There's no bracket notation like an array's &mdash; getting one character means using substring.</span></li>
+      <li><span class="num">3</span><span>There's no bracket notation like an array's &mdash; getting one character means using substring or charAt.</span></li>
     </ul></div>''',
-        "speak": "Every character in a string has a position, an index, and indexes always start at 0, not 1. The length method tells you the total character count, and that means the last valid index is always the length, minus 1. Unlike an array, there's no bracket shortcut to grab a single character directly, you can't write autoName followed by an index in square brackets, that's not valid Java for a string. Getting a single character means using substring instead, which is exactly what's up next. And a quick warning: reaching for an index outside 0 up through length minus 1 throws an Index Out Of Bounds Exception.",
+        "speak": "Every character in a string has a position, an index, and indexes always start at 0, not 1. The length method tells you the total character count, and that means the last valid index is always the length, minus 1. Unlike an array, there's no bracket shortcut to grab a single character directly, you can't write autoName followed by an index in square brackets, that's not valid Java for a string. Getting a single character means using substring or charAt instead, which is exactly what's up next. And a quick warning: reaching for an index outside 0 up through length minus 1 throws a String Index Out Of Bounds Exception, a kind of Index Out Of Bounds Exception.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">char</span> first = autoName.charAt(<span class="n">0</span>);            <span class="c">// 'B' — a char, single-quoted</span>
+<span class="t">String</span> firstAsString = autoName.substring(<span class="n">0</span>, <span class="n">1</span>); <span class="c">// "B" — a String, double-quoted</span></code></pre>
+<pre class="code"><code><span class="k">if</span> (autoName.charAt(<span class="n">0</span>) == <span class="s">'B'</span>) <span class="c">// correct for char — == is fine here</span></code></pre>''',
+        "speak": "Sub string of i, i plus 1 gets you a single character back, but it's wrapped up as a one-character String. char At is the more direct way, it returns that one character as a char, a primitive type, not a String. And because char is a primitive, you compare two char values with double equals, not dot equals, which is the exact opposite of the rule for String.",
     },
     {
         "screen": '''<pre class="code"><code><span class="t">String</span> autoName = <span class="s">"BlueAlliance-Left"</span>;
@@ -49,6 +55,17 @@ autoName.equals(<span class="s">"BlueAlliance-Left"</span>); <span class="c">// 
         "speak": "Those are the core string methods, all together. Length gives you the character count. Sub string with two numbers gives you the characters from the first index up to, but not including, the second, so sub string 0 to 4 gives you 4 characters, indices 0 through 3. Sub string with just one number gives you everything from that index to the end. Index of searches for some text and tells you where it starts, or gives you negative 1 if it's not there at all. And sub string of i, i plus 1 is the standard trick for pulling out just the single character at position i.",
     },
     {
+        "screen": '''<pre class="code"><code><span class="s">"  R2-1622  "</span>.trim();                    <span class="c">// "R2-1622"</span>
+<span class="s">"BlueAlliance"</span>.contains(<span class="s">"Alliance"</span>);     <span class="c">// true</span>
+<span class="s">"Left"</span>.equalsIgnoreCase(<span class="s">"LEFT"</span>);         <span class="c">// true</span></code></pre>''',
+        "speak": "A handful of other string methods come up constantly in real code: equals ignore case, which is just like dot equals but treats upper and lower case the same; contains, starts with, and ends with, for checking what's inside a string; trim and strip, for clearing out leading and trailing whitespace; replace, and split. And one thing worth flagging: a String variable can be null, a reference pointing at no object at all, so calling a method directly on it throws a Null Pointer Exception. Put a known-non-null literal first when you're not sure, quote Left quote dot equals status, never throws, even if status is null.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="t">String</span> msg = <span class="t">String</span>.format(<span class="s">"Speed: %.2f, Cycle: %d"</span>, <span class="n">0.755</span>, <span class="n">3</span>);
+<span class="c">// "Speed: 0.76, Cycle: 3"</span></code></pre>''',
+        "speak": "And String dot format, along with System dot out dot printf, builds a formatted string from a pattern: percent dot 2 f for a number rounded to 2 decimal places, percent d for an integer, percent s for a string.",
+    },
+    {
         "screen": '''<pre class="code"><code><span class="t">String</span> a = <span class="k">new</span> <span class="t">String</span>(<span class="s">"Left"</span>);
 <span class="t">String</span> b = <span class="k">new</span> <span class="t">String</span>(<span class="s">"Left"</span>);
 System.out.println(a == b);       <span class="c">// false — two different objects</span>
@@ -57,20 +74,21 @@ System.out.println(a.equals(b));  <span class="c">// true — same characters</s
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
-      <li><span class="check">!</span>Using double equals to compare string content &mdash; it compiles and runs, but almost always gives the wrong answer.</li>
+      <li><span class="check">!</span>Using double equals to compare string content &mdash; it always compiles and runs, and can even seem to work, then silently fails on strings built at runtime.</li>
       <li><span class="check">!</span>Forgetting a string method's result has to be captured &mdash; strings are immutable, so a thrown-away result is a no-op.</li>
       <li><span class="check">!</span>Off-by-one in sub string &mdash; the second index is exclusive, so sub string 0 to 4 gives 4 characters, not 5.</li>
     </ul></div>''',
-        "speak": "A few pitfalls worth flagging one more time. Never use double equals to compare what's actually inside a string, it compiles, it runs, and it's wrong far more often than it errors out, so always reach for dot equals instead. Don't forget a string method's result has to be used, since strings are immutable, calling to upper case and throwing away what it returns does absolutely nothing. And watch the off-by-one in sub string, the ending index is exclusive, so sub string 0 to 4 gives you 4 characters, not 5.",
+        "speak": "A few pitfalls worth flagging one more time. Never use double equals to compare what's actually inside a string. It always compiles and runs, double equals never errors on a string, and it can even seem to work at first, since identical literals are often the exact same object, but it silently fails the moment you compare strings built at runtime, like from sub string or concatenation, so always reach for dot equals instead. Don't forget a string method's result has to be used, since strings are immutable, calling to upper case and throwing away what it returns does absolutely nothing. And watch the off-by-one in sub string, the ending index is exclusive, so sub string 0 to 4 gives you 4 characters, not 5.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
       <li><span class="check">&#10003;</span>String is a class &mdash; literals are the normal way to create one.</li>
       <li><span class="check">&#10003;</span>Strings are immutable &mdash; every "modifying" method returns a new string instead.</li>
       <li><span class="check">&#10003;</span>Plus and plus-equals concatenate, auto-converting non-string values.</li>
-      <li><span class="check">&#10003;</span>length, sub string, and index of are the core methods, all indexed from 0.</li>
+      <li><span class="check">&#10003;</span>length, sub string, index of, and char At are the core methods, all indexed from 0.</li>
+      <li><span class="check">&#10003;</span>equals ignore case, contains, trim, replace, split, and String dot format round out everyday string work.</li>
       <li><span class="check">&#10003;</span>Use dot equals to compare string content &mdash; double equals only checks if it's the same object.</li>
     </ul></div>''',
-        "speak": "So, to recap. String is a class, and a string literal is the normal way to build one. Strings are immutable, every method that looks like it modifies one actually hands back a brand new string. Plus and plus-equals concatenate, converting non-string values automatically. Length, sub string, and index of are your core tools, all indexed starting from 0. And always use dot equals, never double equals, to compare what's actually inside two strings. Next up, lesson 6.2, we'll put strings to work in real loops, scanning them character by character.",
+        "speak": "So, to recap. String is a class, and a string literal is the normal way to build one. Strings are immutable, every method that looks like it modifies one actually hands back a brand new string. Plus and plus-equals concatenate, converting non-string values automatically. Length, sub string, index of, and char At are your core tools, all indexed starting from 0. Equals ignore case, contains, trim, replace, split, and String dot format round out everyday string work. And always use dot equals, never double equals, to compare what's actually inside two strings. Next up, lesson 6.2, we'll put strings to work in real loops, scanning them character by character.",
     },
 ]

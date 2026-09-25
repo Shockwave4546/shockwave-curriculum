@@ -3,9 +3,9 @@ BEATS = [
         "screen": '''<div class="scr-title">
       <div class="scr-eyebrow">Ch. 7 &middot; The Class Blueprint</div>
       <h1>Anatomy of a Java Class</h1>
-      <p class="scr-sub">Every class you write has the same three parts, in the same order.</p>
+      <p class="scr-sub">Every class you write has the same three parts, conventionally in the same order.</p>
     </div>''',
-        "speak": "Welcome to Chapter 7. Up to now you've been using classes other people wrote, String, Scanner, Math. Starting today, you're writing your own. And every single class you'll ever write, no matter what it represents, breaks down into the same three parts.",
+        "speak": "Welcome to Chapter 7. Up to now you've been using classes other people wrote, String, System, Math. Starting today, you're writing your own. And every single class you'll ever write, no matter what it represents, breaks down into the same three parts.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">The Three Anatomical Parts</h2><ul>
@@ -39,7 +39,7 @@ BEATS = [
 
     <span class="c">// 3. methods — the behaviors</span>
 }</code></pre>''',
-        "speak": "Here's that skeleton in real Java, for a subsystem called Intake, always in this order: instance variables first, constructors second, methods third.",
+        "speak": "Here's that skeleton in real Java, for a subsystem called Intake, conventionally in this order: instance variables first, constructors second, methods third. Java doesn't enforce that order — it's a style convention, not a compiler rule.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span>
@@ -94,11 +94,11 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
-      <li><span class="check">&#10003;</span>Every class has the same three parts, in order: instance variables, constructors, methods.</li>
+      <li><span class="check">&#10003;</span>Every class has the same three parts, conventionally in order: instance variables, constructors, methods.</li>
       <li><span class="check">&#10003;</span>Instance variables are per-object &mdash; each object gets its own independent copies.</li>
       <li><span class="check">&#10003;</span>Instance variables should be private; that's encapsulation.</li>
       <li><span class="check">&#10003;</span>Design a class by first asking what data it needs to represent.</li>
     </ul></div>''',
-        "speak": "So, to recap. Every class has the same three parts, always in the same order, instance variables, constructors, methods. Instance variables are per-object, each object keeps its own independent copies. Instance variables should be private, and that's what encapsulation actually means. And design a class by first asking what data it needs to represent, before writing a single line of code. Next up, lesson 7.2, where we actually write those methods.",
+        "speak": "So, to recap. Every class has the same three parts, conventionally in the same order, instance variables, constructors, methods, though Java itself doesn't enforce that order, and a class with no constructor at all still gets an empty default one. Instance variables are per-object, each object keeps its own independent copies. Instance variables should be private, and that's what encapsulation actually means. And design a class by first asking what data it needs to represent, before writing a single line of code. Next up, lesson 7.2, where we actually write those methods.",
     },
 ]
