@@ -7,6 +7,8 @@ Started 2026-09-25. Every issue found in the Phase 1 audit of lessons, worked ex
 - **Java 25**, with a brief note wherever Java 17 behaves differently.
 - **WPILib 2027** (SystemCore, `org.wpilib.*`, alpha/beta) and **Commands v3** — not v2.
 - **Generic WPILib classes only** in Java I/II — no vendor classes (CTRE/REV/AdvantageKit). Invented robot-code classes are fine.
+- **FRC only**: SystemCore is shared by FRC and FTC, but FTC-only hardware/classes (e.g. `org.wpilib.hardware.expansionhub.*` — `ExpansionHubMotor`, `ExpansionHubServo`) must never be used. Any proposed fix naming them is invalid.
+- Motors: an invented `DriveMotor`-style class in most lessons; WPILib's generic `MotorController` interface (`setThrottle`) only where a lesson is about interfaces/polymorphism. Ch.3 uses real non-motor WPILib classes (`Encoder`, `DigitalInput`, `Timer`).
 - Identical-text Micro-Parsons fragments are declared `**Interchangeable:**` in the exercise file.
 - `review/chNN.html` pages are kept in sync with lessons.
 
@@ -41,7 +43,7 @@ Tracked here so fixes that depend on them stay `Needs decision` until answered.
 
 | # | Decision | Status |
 |---|---|---|
-| D1 | Generic motor class used everywhere (WPILib `PWMSparkMax`/`PWMTalonFX`, WPILib `ExpansionHubMotor`, or an invented `DriveMotor`) | Pending |
+| D1 | Generic motor class used everywhere (WPILib `PWMSparkMax`/`PWMTalonFX`, WPILib `ExpansionHubMotor`, or an invented `DriveMotor`) | Decided (Joe): C — invented motor class + generic `MotorController` interface; FTC-only ExpansionHub classes excluded |
 | D2 | Chapter order: move Ch.15–16 (collections by interface, generics with bounds) after Ch.17–19 (inheritance, interfaces)? | Pending |
 | D3 | Move scope/shadowing (23.1) into Java I (Ch.7/8)? | Pending |
 | D4 | New lessons: `switch` (Ch.5), abstract classes (17.5) — and where other coverage gaps land | Pending |
