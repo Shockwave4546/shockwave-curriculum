@@ -110,7 +110,7 @@ details.solution .solbody{padding:0 18px 18px;}
 <div id="sidebar">
   <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
   <h1>Ch.2 — Variables &amp; Types</h1>
-  <p class="sub">shockwave-curriculum · draft lessons &amp; exercises, under review.</p>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises and worked examples have moved to the live academy site: <a href="https://yellow-mushroom-0bc18cf1e.6.azurestaticapps.net" style="color:inherit;">yellow-mushroom-0bc18cf1e.6.azurestaticapps.net</a>.</p>
   <div id="itemlist"></div>
 </div>
 <div id="main">
@@ -178,47 +178,6 @@ System.out.<span class="me">println</span>(<span class="s">"Robot "</span> + rob
         "Variable names use camelCase and should describe what the value is."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.02-variables-and-data-types.md (CSA 1.2)"
-    },
-    exercise: {
-      problem: `<p><strong>Debug the Shooter Status Report.</strong> A teammate wrote this status-report code for the shooter subsystem, but it has bugs — some won't compile, some compile but print the wrong thing. Find and fix all of them before checking the solution.</p>`,
-      code: `<span class="k">public class</span> <span class="t">ShooterStatus</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        <span class="k">int</span> targetRPM = <span class="n">4500.0</span>;
-        <span class="k">double</span> currentRPM = <span class="n">4480</span>
-        <span class="k">boolean</span> isAtSpeed = <span class="n">1</span>;
-        <span class="k">var</span> name = <span class="s">"Shooter"</span>
-
-        System.out.<span class="me">print</span>(<span class="s">"Subsystem: "</span>);
-        System.out.<span class="me">println</span>(<span class="s">"name"</span>);
-        System.out.<span class="me">println</span>(<span class="s">"Target RPM: "</span> + targetRPM);
-        System.out.<span class="me">println</span>(<span class="s">"At speed? "</span> + isAtSpeed);
-    }
-}`,
-      hints: [
-        "One variable is declared with a type that can't hold the value being assigned to it.",
-        "Two lines are missing something every Java statement needs.",
-        "<code class=\"inline\">boolean</code> only ever holds two specific literal values — <code class=\"inline\">1</code> isn't one of them.",
-        "Look closely at the <code class=\"inline\">println(\"name\")</code> line — is <code class=\"inline\">name</code> inside or outside the quotes?"
-      ],
-      solutionCode: `<span class="k">public class</span> <span class="t">ShooterStatus</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        <span class="k">double</span> targetRPM = <span class="n">4500.0</span>;   <span class="c">// bug: was int, but 4500.0 is a double literal</span>
-        <span class="k">double</span> currentRPM = <span class="n">4480</span>;    <span class="c">// bug: missing semicolon</span>
-        <span class="k">boolean</span> isAtSpeed = <span class="k">false</span>;   <span class="c">// bug: boolean can only be true/false, not 1</span>
-        <span class="k">var</span> name = <span class="s">"Shooter"</span>;        <span class="c">// bug: missing semicolon</span>
-
-        System.out.<span class="me">print</span>(<span class="s">"Subsystem: "</span>);
-        System.out.<span class="me">println</span>(name);      <span class="c">// bug: "name" printed literal text; needed unquoted</span>
-        System.out.<span class="me">println</span>(<span class="s">"Target RPM: "</span> + targetRPM);
-        System.out.<span class="me">println</span>(<span class="s">"At speed? "</span> + isAtSpeed);
-    }
-}`,
-      solutionNote: "That's 5 bugs once you count the quoted-variable mistake separately from the missing semicolons — worth noticing that \"a few obvious bugs\" often hides one more once you trace through carefully.",
-      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.02-variables-and-data-types.md (CSA 1.2, Debugging Challenge pattern)"
     }
   },
   "2.2": {
@@ -262,44 +221,6 @@ System.out.<span class="me">println</span>(totalSeconds % <span class="n">60</sp
         "<code class=\"inline\">%</code> gives the remainder after division — useful for splitting a total into two units (like seconds into minutes and seconds)."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.03-expressions-and-output.md (CSA 1.3)"
-    },
-    exercise: {
-      problem: `<p><strong>Fill In the Missing Operators.</strong> The scoring calculator below is missing an operator on some lines (shown as a blank). Figure out which operator belongs on each blank so the printed output matches the comment above it, then predict the exact output before checking the solution.</p>`,
-      code: `<span class="k">public class</span> <span class="t">AutonScoreCalculator</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        <span class="c">// Total points scored across 3 auton legs: 4, 4, and 6</span>
-        System.out.<span class="me">println</span>(<span class="n">4</span>  <span class="n">4</span>  <span class="n">6</span>);
-
-        <span class="c">// Average points per leg, as a whole number (int division — ok to truncate here)</span>
-        System.out.<span class="me">println</span>(<span class="n">14</span>  <span class="n">3</span>);
-
-        <span class="c">// Remainder when dividing legs completed (5) by legs required (3)</span>
-        System.out.<span class="me">println</span>(<span class="n">5</span>  <span class="n">3</span>);
-    }
-}`,
-      hints: [
-        "Line 1 needs two operators, not one — read the comment carefully.",
-        "Line 2's comment explicitly says truncation is fine here — that's a clue about which types are involved, not which operator.",
-        "\"Remainder when dividing\" is a direct description of one specific operator from this lesson."
-      ],
-      solutionCode: `<span class="k">public class</span> <span class="t">AutonScoreCalculator</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        <span class="c">// Total points scored across 3 auton legs: 4, 4, and 6</span>
-        System.out.<span class="me">println</span>(<span class="n">4</span> + <span class="n">4</span> + <span class="n">6</span>); <span class="c">// 14</span>
-
-        <span class="c">// Average points per leg, as a whole number (int division — ok to truncate here)</span>
-        System.out.<span class="me">println</span>(<span class="n">14</span> / <span class="n">3</span>); <span class="c">// 4 — truncated from 4.666..., which the comment says is fine</span>
-
-        <span class="c">// Remainder when dividing legs completed (5) by legs required (3)</span>
-        System.out.<span class="me">println</span>(<span class="n">5</span> % <span class="n">3</span>); <span class="c">// 2</span>
-    }
-}`,
-      solutionNote: "Output: 14, 4, 2. The middle one is the one worth double-checking your instinct on — 14 / 3 is genuinely 4, not 4.67 and not 5, because both operands are int literals.",
-      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.03-expressions-and-output.md (CSA 1.3, Pay Calculator challenge pattern)"
     }
   },
   "2.3": {
@@ -343,46 +264,6 @@ step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of
         "\"Input\" is any value that comes from outside your code — a joystick reading, a sensor, or typed text."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.04-assignment-and-input.md (CSA 1.4)"
-    },
-    exercise: {
-      problem: `<p><strong>Swap the Primary and Backup Auto Paths.</strong> Your drive team wants to swap which autonomous path is "primary" and which is "backup" without losing either <code class="inline">String</code> value — but the code below has a bug: it overwrites <code class="inline">primaryPath</code> before saving it anywhere, so its original value is lost forever.</p>`,
-      code: `<span class="k">public class</span> <span class="t">AutoPathSwap</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        <span class="t">String</span> primaryPath = <span class="s">"3-Piece-Left"</span>;
-        <span class="t">String</span> backupPath = <span class="s">"1-Piece-Safe"</span>;
-
-        <span class="c">// BUG: this loses the original primaryPath value before backupPath can use it</span>
-        primaryPath = backupPath;
-        backupPath = primaryPath;
-
-        System.out.<span class="me">println</span>(<span class="s">"Primary: "</span> + primaryPath);
-        System.out.<span class="me">println</span>(<span class="s">"Backup: "</span> + backupPath);
-    }
-}`,
-      hints: [
-        "You cannot swap two variables in just 2 lines without losing one value along the way.",
-        "Introduce a third variable to hold one value while you overwrite it.",
-        "The order matters: save the value you're about to overwrite <em>before</em> you overwrite it, not after."
-      ],
-      solutionCode: `<span class="k">public class</span> <span class="t">AutoPathSwap</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        <span class="t">String</span> primaryPath = <span class="s">"3-Piece-Left"</span>;
-        <span class="t">String</span> backupPath = <span class="s">"1-Piece-Safe"</span>;
-
-        <span class="t">String</span> temp = primaryPath;  <span class="c">// 1. save primaryPath's original value before it's lost</span>
-        primaryPath = backupPath;   <span class="c">// 2. now safe to overwrite primaryPath</span>
-        backupPath = temp;          <span class="c">// 3. backupPath gets the saved original value</span>
-
-        System.out.<span class="me">println</span>(<span class="s">"Primary: "</span> + primaryPath); <span class="c">// "1-Piece-Safe"</span>
-        System.out.<span class="me">println</span>(<span class="s">"Backup: "</span> + backupPath);   <span class="c">// "3-Piece-Left"</span>
-    }
-}`,
-      solutionNote: "This 3-step pattern (save, overwrite, restore-from-save) is the standard swap idiom anywhere you need to exchange two values — it comes up again swapping array elements during a sort (see Ch.28).",
-      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.04-assignment-and-input.md (CSA 1.4, variable-swap Parsons activity pattern)"
     }
   },
   "2.4": {
@@ -422,48 +303,6 @@ step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of
         "<code class=\"inline\">double</code> values have a precision limit — tiny rounding differences can make <code class=\"inline\">==</code> unreliable."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.05-casting-and-ranges-of-values.md (CSA 1.5)"
-    },
-    exercise: {
-      problem: `<p><strong>"Why Is My Average Always 0?"</strong> A teammate is trying to compute the average vision-pipeline latency from 4 samples, but no matter what the 4 numbers are, this always prints <code class="inline">0</code>. Find the bug and fix it.</p>`,
-      code: `<span class="k">public class</span> <span class="t">LatencyAverage</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        <span class="k">int</span> sample1 = <span class="n">8</span>;
-        <span class="k">int</span> sample2 = <span class="n">12</span>;
-        <span class="k">int</span> sample3 = <span class="n">9</span>;
-        <span class="k">int</span> sample4 = <span class="n">3</span>;
-
-        <span class="k">int</span> total = sample1 + sample2 + sample3 + sample4; <span class="c">// 32</span>
-        <span class="k">int</span> count = <span class="n">4</span>;
-
-        <span class="k">double</span> average = total / count; <span class="c">// always prints 0 — why?</span>
-        System.out.<span class="me">println</span>(<span class="s">"Average latency: "</span> + average + <span class="s">" ms"</span>);
-    }
-}`,
-      hints: [
-        "average is correctly declared as a double — so why is it still wrong? Look at the right-hand side, not the variable itself.",
-        "What are the types of total and count? What type does total / count evaluate to, before it's ever assigned to anything?",
-        "Declaring the variable that receives a division as double does not change how the division itself is performed."
-      ],
-      solutionCode: `<span class="k">public class</span> <span class="t">LatencyAverage</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        <span class="k">int</span> sample1 = <span class="n">8</span>;
-        <span class="k">int</span> sample2 = <span class="n">12</span>;
-        <span class="k">int</span> sample3 = <span class="n">9</span>;
-        <span class="k">int</span> sample4 = <span class="n">3</span>;
-
-        <span class="k">int</span> total = sample1 + sample2 + sample3 + sample4; <span class="c">// 32</span>
-        <span class="k">int</span> count = <span class="n">4</span>;
-
-        <span class="k">double</span> average = (<span class="k">double</span>) total / count; <span class="c">// cast BEFORE dividing: 8.0</span>
-        System.out.<span class="me">println</span>(<span class="s">"Average latency: "</span> + average + <span class="s">" ms"</span>);
-    }
-}`,
-      solutionNote: "The bug: total / count is int / int, which truncates to 8 before that result is ever assigned into the double average. The fix casts total to double first, forcing the whole division to be computed as a double. Try it with total = 31 to see the difference: 31/4 truncates to 7, while (double) 31/4 correctly gives 7.75.",
-      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.05-casting-and-ranges-of-values.md (CSA 1.5, average-of-ints casting pattern)"
     }
   },
   "2.5": {
@@ -514,39 +353,6 @@ total--;             <span class="c">// total: 2</span></code></pre>
         "Tracing code by hand — one line, one value at a time — is a real debugging skill."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.06-compound-assignment-operators.md (CSA 1.6)"
-    },
-    exercise: {
-      problem: `<p><strong>Trace the Ramp.</strong> Below is a simplified motor-ramping loop, run for exactly 4 iterations (imagine the scheduler calling it 4 times, 20ms apart). Without running it, write a trace table tracking <code class="inline">currentPower</code> and <code class="inline">iterationsAtTarget</code> after each iteration. Then check your table against the solution.</p>`,
-      code: `<span class="k">double</span> currentPower = <span class="n">0.20</span>;
-<span class="k">double</span> targetPower = <span class="n">0.30</span>;
-<span class="k">double</span> rampRate = <span class="n">0.05</span>;
-<span class="k">int</span> iterationsAtTarget = <span class="n">0</span>;
-
-<span class="c">// --- one iteration of the loop, run 4 times total ---</span>
-currentPower += rampRate;
-<span class="k">if</span> (currentPower > targetPower) {
-    currentPower = targetPower;
-}
-<span class="k">if</span> (currentPower == targetPower) {
-    iterationsAtTarget++;
-}`,
-      hints: [
-        "Process one iteration completely (all 3 lines) before moving to the next — don't skip ahead.",
-        "The clamp only fires once currentPower has actually overshot — check the comparison carefully each time.",
-        "Once currentPower reaches targetPower exactly, does it ever change again on later iterations? Trace it and see."
-      ],
-      solutionCode: null,
-      solutionTable: {
-        headers: ["Iteration", "currentPower after +=", "Clamped?", "currentPower final", "iterationsAtTarget"],
-        rows: [
-          ["1", "0.25", "no (0.25 ≤ 0.30)", "0.25", "0"],
-          ["2", "0.30", "no (0.30 is not > 0.30)", "0.30", "1 (0.30 == 0.30)"],
-          ["3", "0.35", "yes → 0.30", "0.30", "2"],
-          ["4", "0.35", "yes → 0.30", "0.30", "3"]
-        ]
-      },
-      solutionNote: "Final values after 4 iterations: currentPower = 0.30, iterationsAtTarget = 3. The subtle part worth noticing: on iteration 2, currentPower reaches exactly 0.30 without ever triggering the clamp — the clamp's > comparison only fires on iteration 3, once addition has pushed it slightly past. This is exactly why the clamp exists as its own separate check, rather than assuming the ramp will \"naturally\" stop at the target.",
-      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.06-compound-assignment-operators.md (CSA 1.6, trace-table pattern)"
     }
   }
 };
@@ -573,7 +379,6 @@ function renderMain(){
   let html = `
     <div class="tabs">
       <div class="tab lesson ${currentTab === 'lesson' ? 'on' : ''}" data-tab="lesson">Lesson</div>
-      <div class="tab exercise ${currentTab === 'exercise' ? 'on' : ''}" data-tab="exercise">Exercise</div>
     </div>
   `;
   if (currentTab === 'lesson'){
@@ -585,25 +390,6 @@ function renderMain(){
         <div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${l.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>
         <div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${l.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>
         <div class="prov"><strong>Derived from</strong> ${l.prov}</div>
-      </div>
-    `;
-  } else {
-    const e = it.exercise;
-    html += `
-      <div class="doc">
-        <h1 class="doctitle">${it.title} — Exercise</h1>
-        <div class="problembox">${e.problem}</div>
-        <pre class="code"><code>${e.code}</code></pre>
-        <div class="pitfalls"><div class="lbl">Hints</div><ul>${e.hints.map(h => `<li>${h}</li>`).join('')}</ul></div>
-        <details class="solution">
-          <summary>Show Solution</summary>
-          <div class="solbody">
-            ${e.solutionCode ? `<pre class="code"><code>${e.solutionCode}</code></pre>` : ''}
-            ${e.solutionTable ? `<table class="trace"><thead><tr>${e.solutionTable.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${e.solutionTable.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>` : ''}
-            <p style="font-size:14px;line-height:1.6;color:var(--ink-soft);max-width:62ch;">${e.solutionNote}</p>
-          </div>
-        </details>
-        <div class="prov"><strong>Derived from</strong> ${e.prov}</div>
       </div>
     `;
   }

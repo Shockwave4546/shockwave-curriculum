@@ -44,13 +44,13 @@ Tracked here so fixes that depend on them stay `Needs decision` until answered.
 | # | Decision | Status |
 |---|---|---|
 | D1 | Generic motor class used everywhere (WPILib `PWMSparkMax`/`PWMTalonFX`, WPILib `ExpansionHubMotor`, or an invented `DriveMotor`) | Decided (Joe): C — invented motor class + generic `MotorController` interface; FTC-only ExpansionHub classes excluded |
-| D2 | Chapter order: move Ch.15–16 (collections by interface, generics with bounds) after Ch.17–19 (inheritance, interfaces)? | Pending |
-| D3 | Move scope/shadowing (23.1) into Java I (Ch.7/8)? | Pending |
-| D4 | New lessons: `switch` (Ch.5), abstract classes (17.5) — and where other coverage gaps land | Pending |
-| D5 | `review/` pages still hold the old free-text exercises — replace with current exercises, or drop the review exercise tab | Pending |
+| D2 | Chapter order: move Ch.15–16 (collections by interface, generics with bounds) after Ch.17–19 (inheritance, interfaces)? | Decided (Joe): A — keep chapter order; add short preview notes where Ch.15–16 use later concepts |
+| D3 | Move scope/shadowing (23.1) into Java I (Ch.7/8)? | Decided (Joe): A — add a "where variables live" scope section to 7.2; refocus 23.1 on access modifiers + `final`, pointing back to 7.2 |
+| D4 | New lessons: `switch` (Ch.5), abstract classes (17.5) — and where other coverage gaps land | Decided (Joe): A — two new lessons, 5.12 `switch` and 17.5 Abstract Classes; all other gaps as sections in existing lessons |
+| D5 | `review/` pages still hold the old free-text exercises — replace with current exercises, or drop the review exercise tab | Decided (Joe): A — exercise tab removed from review pages, with a note that exercises moved to the live academy site (done 2026-09-25) |
 | D6 | Ch.20: forward pointer to the AdvantageKit chapters (Ch.33–34) acceptable? | Decided (Claude, overridable): one-line pointer only ("a logging framework, Ch.33, can record this"); no AdvantageKit API in Ch.20 |
-| D7 | Ch.25 v3: where per-loop state logic lives (no `periodic()` in v3) | Pending |
-| D8 | Ch.25 v3: project layout for 25.7 (`OpModeRobot` template vs `TimedRobot` hatchbotcmdv3) | Pending |
+| D7 | Ch.25 v3: where per-loop state logic lives (no `periodic()` in v3) | Decided (Joe): A — state-machine `switch` runs as the mechanism's default command (`runRepeatedly`, lowest priority). Strengthen 25.4–25.5 as the State Machine design pattern (states, transitions, guards, entry actions, diagram); later subsystem chapters (44–45) build on it |
+| D8 | Ch.25 v3: project layout for 25.7 (`OpModeRobot` template vs `TimedRobot` hatchbotcmdv3) | Decided (Joe): A — official 2027 v3 template (`OpModeRobot` + OpModes), PLUS a clearly-labelled "Reading Commands v2 code (2026 and earlier)" section in 25.7 (annotated v2 snippet + v2→v3 mapping table) and one-line v2 callouts in 25.2/25.3; depth to be reviewed by Joe |
 | D9 | Ch.25 v3: teach the built-in `StateMachine` (alpha)? | Decided (Claude, overridable): mention only, as a short sidebar in 25.5 flagged alpha; not taught |
 | D10 | Ch.25 v3: controller class (`CommandXboxController` vs `CommandGamepad`) | Decided (Claude, overridable): `CommandXboxController` (a/b/x/y) — matches the controllers teams use; one note that `CommandGamepad` exists |
 | D11 | Constant naming convention (`kName` vs `ALL_CAPS`) | Decided (Claude, overridable): `ALL_CAPS` — already taught in 7.4 and used by the WPILib 2027 templates; replace `kName` in 25.7/26/27 |

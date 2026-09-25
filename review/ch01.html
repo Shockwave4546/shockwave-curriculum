@@ -110,7 +110,7 @@ details.solution .solbody{padding:0 18px 18px;}
 <div id="sidebar">
   <a class="back" href="../curriculum-ledger.html">← Table of Contents</a>
   <h1>Ch.1 — Getting Started</h1>
-  <p class="sub">shockwave-curriculum · draft lessons &amp; exercises, under review.</p>
+  <p class="sub">shockwave-curriculum · draft lessons, under review. Exercises and worked examples have moved to the live academy site: <a href="https://yellow-mushroom-0bc18cf1e.6.azurestaticapps.net" style="color:inherit;">yellow-mushroom-0bc18cf1e.6.azurestaticapps.net</a>.</p>
   <div id="itemlist"></div>
 </div>
 <div id="main">
@@ -205,32 +205,6 @@ const DATA = {
         "<code class=\"inline\">//</code> and <code class=\"inline\">/* */</code> are comments — the compiler ignores them completely."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.01-introduction-to-algorithms-programming-and-compilers.md (CSA 1.1)"
-    },
-    exercise: {
-      problem: `<p><strong>Fix the First Program.</strong> This program is supposed to print two lines, but it won't compile. Find every mistake and fix it. Write your code in a real IDE (or an online one) first, get it running, then check it against the solution below.</p>`,
-      code: `<span class="k">public class</span> <span class="t">Greeting</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        System.out.<span class="me">println</span>(<span class="s">"Welcome to the team!"</span>)
-        system.out.<span class="me">println</span>(<span class="s">"Let's write some Java."</span>);
-    }
-}`,
-      hints: [
-        "Every statement needs something at the end of it — check both lines.",
-        "Java is case-sensitive. Is every word spelled with the capitalization Java expects?",
-        "Every opening quote <code class=\"inline\">\"</code> needs a matching closing quote."
-      ],
-      solutionCode: `<span class="k">public class</span> <span class="t">Greeting</span>
-{
-    <span class="k">public static void</span> <span class="me">main</span>(<span class="t">String</span>[] args)
-    {
-        System.out.<span class="me">println</span>(<span class="s">"Welcome to the team!"</span>);       <span class="c">// was missing a semicolon</span>
-        System.out.<span class="me">println</span>(<span class="s">"Let's write some Java."</span>);      <span class="c">// "system" -> "System"</span>
-    }
-}`,
-      solutionNote: "Two separate mistakes were hiding in that second line — a capitalization error (system instead of System) and a missing closing quote in the original. This is normal: the compiler stops at the first error it finds, so fixing one bug sometimes reveals another one right behind it.",
-      prov: "csawesome-2026: unit-1-using-objects-and-methods/1.01-introduction-to-algorithms-programming-and-compilers.md (CSA 1.1, Debugging Challenge pattern)"
     }
   }
 };
@@ -276,24 +250,6 @@ function renderMain(){
         ${l.pitfalls ? `<div class="pitfalls"><div class="lbl">Common Pitfalls</div><ul>${l.pitfalls.map(p => `<li>${p}</li>`).join('')}</ul></div>` : ''}
         ${l.takeaways ? `<div class="takeaways"><div class="lbl">Key Takeaways</div><ul>${l.takeaways.map(t => `<li>${t}</li>`).join('')}</ul></div>` : ''}
         <div class="prov"><strong>Derived from</strong> ${l.prov}</div>
-      </div>
-    `;
-  } else {
-    const e = it.exercise;
-    html += `
-      <div class="doc">
-        <h1 class="doctitle">${it.title} — Exercise</h1>
-        <div class="problembox">${e.problem}</div>
-        <pre class="code"><code>${e.code}</code></pre>
-        <div class="pitfalls"><div class="lbl">Hints</div><ul>${e.hints.map(h => `<li>${h}</li>`).join('')}</ul></div>
-        <details class="solution">
-          <summary>Show Solution</summary>
-          <div class="solbody">
-            ${e.solutionCode ? `<pre class="code"><code>${e.solutionCode}</code></pre>` : ''}
-            <p style="font-size:14px;line-height:1.6;color:var(--ink-soft);max-width:62ch;">${e.solutionNote}</p>
-          </div>
-        </details>
-        <div class="prov"><strong>Derived from</strong> ${e.prov}</div>
       </div>
     `;
   }
