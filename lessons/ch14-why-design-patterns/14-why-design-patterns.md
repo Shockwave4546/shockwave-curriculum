@@ -1,6 +1,7 @@
 ---
 outlineRef: "14 — Why Design Patterns? (no citation — deck-original content)"
 status: "new — authored lesson (fuller depth than the teaser slide)"
+noWorkedExample: true
 ---
 
 # Why Design Patterns?
