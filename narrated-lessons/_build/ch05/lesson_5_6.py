@@ -10,9 +10,9 @@ BEATS = [
     {
         "screen": '''<pre class="code"><code><span class="k">if</span> (armReady &amp;&amp; intakeReady)
 {
-    scoreCommand.schedule();
+    shooter.score();
 }</code></pre>''',
-        "speak": "Two ampersands mean and, needs both sides true. arm ready and intake ready, only schedules the score command when both conditions actually hold at once. Two pipe characters mean or, needs just one side true, maybe both. And a single exclamation point flips a boolean's value entirely.",
+        "speak": "Two ampersands mean and, needs both sides true. arm ready and intake ready, the shooter only scores when both conditions actually hold at once. Two pipe characters mean or, needs just one side true, maybe both. And a single exclamation point flips a boolean's value entirely.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Short-Circuit Evaluation</div>
@@ -32,13 +32,13 @@ BEATS = [
         "speak": "Not binds tightest, then and, then or, and parentheses override all of it, making your actual intent explicit whenever there's any doubt.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">if</span> (!ready || !armed) { ... }        <span class="c">// ! applies to each individually</span></code></pre>''',
-        "speak": "Not ready, or not armed, here the not applies to each variable individually, before the or ever gets involved.",
+        "screen": '''<pre class="code"><code><span class="k">if</span> (!ready &amp;&amp; !armed) { ... }        <span class="c">// ! applies to each: true only if BOTH are false</span></code></pre>''',
+        "speak": "Not ready, and not armed. Here the not applies to each variable individually, before the and ever gets involved, so this is true only when both ready and armed are false.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">if</span> (!ready || !armed) { ... }        <span class="c">// ! applies to each individually</span>
-<span class="k">if</span> (!(ready && armed)) { ... }       <span class="c">// different! ! applies to the whole expression</span></code></pre>''',
-        "speak": "But this second one is genuinely different, not, wrapped around the entire parenthesized ready-and-armed expression. Same variables, different grouping, and as we'll see next lesson, these two actually do end up logically equivalent, but they read very differently, and mixing up which one you meant to write is a real risk.",
+        "screen": '''<pre class="code"><code><span class="k">if</span> (!ready &amp;&amp; !armed) { ... }        <span class="c">// ! applies to each: true only if BOTH are false</span>
+<span class="k">if</span> (!(ready &amp;&amp; armed)) { ... }       <span class="c">// different! true if EITHER one is false</span></code></pre>''',
+        "speak": "But this second one is genuinely different. The not wraps the entire parenthesized ready-and-armed expression, so it's true whenever either one of them is false. If ready is true but armed is false, the first line is false, and the second is true. Same variables, different grouping, different answer, which is exactly why mixing up which one you meant is a real risk.",
         "continues": True,
     },
     {

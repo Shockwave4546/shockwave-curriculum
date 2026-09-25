@@ -29,8 +29,53 @@ Math.<span class="me">sqrt</span>(<span class="n">9</span>);     <span class="c"
 Math.<span class="me">pow</span>(<span class="n">2</span>, <span class="n">3</span>);   <span class="c">// 8.0 &mdash; 2 to the power of 3</span>
 Math.<span class="me">sqrt</span>(<span class="n">9</span>);     <span class="c">// 3.0</span>
 Math.<span class="me">random</span>();    <span class="c">// a double &gt;= 0.0 and &lt; 1.0</span></code></pre>''',
-        "speak": "And Math dot random gives you a double that's greater than or equal to 0 point 0, and strictly less than 1 point 0. All four of these return a value, so, same rule as last lesson, you have to actually use what comes back.",
+        "speak": "And Math dot random gives you a double that's greater than or equal to 0 point 0, and strictly less than 1 point 0. All four of these return a value, so, same rule as last lesson, you should actually use what comes back. And since Math lives in java dot lang, it never needs an import.",
         "continues": True,
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">More Math Methods Robot Code Uses</h2><ul>
+      <li><span class="num">1</span><span><strong>Math.max(a, b) / Math.min(a, b)</strong> &mdash; larger / smaller of two values</span></li>
+      <li><span class="num">2</span><span><strong>Math.round(x)</strong> &mdash; nearest whole number</span></li>
+      <li><span class="num">3</span><span><strong>Math.floor(x) / Math.ceil(x)</strong> &mdash; round down / up, as a double</span></li>
+    </ul></div>''',
+        "speak": "Math has plenty more that robot code uses constantly. Math dot max and Math dot min give you the larger or smaller of two values, max of 3 and 7 is 7. Math dot round rounds to the nearest whole number, round of 2 point 6 is 3. And Math dot floor and Math dot ceil round down or up, giving back a double, floor of 2 point 6 is 2 point 0.",
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">More Math Methods Robot Code Uses</h2><ul>
+      <li><span class="num">1</span><span><strong>Math.max(a, b) / Math.min(a, b)</strong> &mdash; larger / smaller of two values</span></li>
+      <li><span class="num">2</span><span><strong>Math.round(x)</strong> &mdash; nearest whole number</span></li>
+      <li><span class="num">3</span><span><strong>Math.floor(x) / Math.ceil(x)</strong> &mdash; round down / up, as a double</span></li>
+      <li><span class="num">4</span><span><strong>Math.signum(x)</strong> &mdash; the sign: -1.0, 0.0, or 1.0</span></li>
+      <li><span class="num">5</span><span><strong>Math.PI</strong> &mdash; the constant &pi; &mdash; no parentheses</span></li>
+      <li><span class="num">6</span><span><strong>Math.toRadians(degrees)</strong> &mdash; degrees to radians</span></li>
+    </ul></div>''',
+        "speak": "Math dot signum gives you just the sign of a number, negative 1, 0, or positive 1. Math dot PI is the constant pie itself, a value, not a method, so no parentheses. And Math dot to radians converts an angle in degrees into radians, 180 degrees is pie radians.",
+        "continues": True,
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">More Math Methods Robot Code Uses</h2><ul>
+      <li><span class="num">1</span><span><strong>Math.max(a, b) / Math.min(a, b)</strong> &mdash; larger / smaller of two values</span></li>
+      <li><span class="num">2</span><span><strong>Math.round(x)</strong> &mdash; nearest whole number</span></li>
+      <li><span class="num">3</span><span><strong>Math.floor(x) / Math.ceil(x)</strong> &mdash; round down / up, as a double</span></li>
+      <li><span class="num">4</span><span><strong>Math.signum(x)</strong> &mdash; the sign: -1.0, 0.0, or 1.0</span></li>
+      <li><span class="num">5</span><span><strong>Math.PI</strong> &mdash; the constant &pi; &mdash; no parentheses</span></li>
+      <li><span class="num">6</span><span><strong>Math.toRadians(degrees)</strong> &mdash; degrees to radians</span></li>
+      <li><span class="num">7</span><span><strong>Math.hypot(x, y)</strong> &mdash; &radic;(x&sup2; + y&sup2;) &mdash; a distance</span></li>
+      <li><span class="num">8</span><span><strong>Math.atan2(y, x)</strong> &mdash; angle (radians) toward (x, y) &mdash; y first</span></li>
+      <li><span class="num">9</span><span><strong>Math.clamp(value, min, max)</strong> &mdash; value kept inside min to max</span></li>
+    </ul></div>''',
+        "speak": "Math dot hypot, short for hypotenuse, takes x and y and gives the straight-line distance, hypot of 3 and 4 is 5. Math dot a tan 2 gives the angle, in radians, pointing at x, y, and note that y comes first. And Math dot clamp keeps a value inside a range, clamp of 1 point 4, between negative 1 and 1, gives back 1 point 0.",
+        "continues": True,
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="c">// never lower than -1.0 or higher than 1.0</span>
+<span class="k">double</span> throttle = <span class="t">Math</span>.<span class="me">clamp</span>(joystickValue * <span class="n">1.5</span>, -<span class="n">1.0</span>, <span class="n">1.0</span>);</code></pre>''',
+        "speak": "Clamp is the one you'll use most for motors. It keeps a computed throttle from ever leaving the legal range, never lower than negative 1, never higher than 1, no matter how big joystick value times 1 point 5 gets.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">Java 17 Note</div>
+    <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto;">Math.clamp was added in Java 21. On Java 17, write Math.max(-1.0, Math.min(1.0, value)) instead.</p>''',
+        "speak": "One version note. Math dot clamp was added in Java 21. On Java 17, write Math dot max of negative 1, and Math dot min of 1 and value, instead, it gives exactly the same result.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Random Numbers in a Range</div>
@@ -80,7 +125,8 @@ Math.<span class="me">random</span>();    <span class="c">// a double &gt;= 0.0 
       <li><span class="check">&#10003;</span>Math.random() returns a double in [0.0, 1.0) &mdash; 0.0 possible, 1.0 never reached.</li>
       <li><span class="check">&#10003;</span>Random int in a range: (int)(Math.random() * range) + min.</li>
       <li><span class="check">&#10003;</span>The parentheses around Math.random() * range are required.</li>
+      <li><span class="check">&#10003;</span>Math also has max/min, round, floor/ceil, signum, PI, toRadians, hypot, atan2, and (Java 21+) clamp.</li>
     </ul></div>''',
-        "speak": "So: Math methods are static, call them as Math dot method name, no object ever needed. Math dot random returns a double between 0 and 1, 0 possible, 1 never reached. To get a random int in a range, cast, open-paren, Math dot random, times range, close-paren, plus the minimum. And those inner parentheses around Math dot random times range are not optional, skip them and the formula silently breaks. Next up, lesson 4.4, we finally start building our own objects instead of just using ones libraries hand us.",
+        "speak": "So: Math methods are static, call them as Math dot method name, no object ever needed. Math dot random returns a double between 0 and 1, 0 possible, 1 never reached. To get a random int in a range, cast, open-paren, Math dot random, times range, close-paren, plus the minimum. And those inner parentheses around Math dot random times range are not optional, skip them and the formula silently breaks. And Math also gives you max and min, round, floor and ceil, signum, pie, to radians, hypot, a tan 2, and, on Java 21 and later, clamp. Next up, lesson 4.4, what an object actually is, the difference between a class and the objects built from it.",
     },
 ]

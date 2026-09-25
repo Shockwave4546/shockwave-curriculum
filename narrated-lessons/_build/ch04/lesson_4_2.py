@@ -9,8 +9,13 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Class Methods (Static Methods)</div>
-    <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto;">Belongs to the class itself, not to any object. main is always static.</p>''',
-        "speak": "A method marked static belongs to the class itself, not to any particular object built from it, that's why it's called a class method, or a static method. Main is always static, that's exactly why it can run before a single object exists yet.",
+    <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto;">Belongs to the class itself, not to any object. main is static too.</p>''',
+        "speak": "A method marked static belongs to the class itself, not to any particular object built from it, that's why it's called a class method, or a static method. Main is static too, in this course it's always public static void main, with String args, which is exactly why it can run before a single object exists yet.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">Java 25 Note</div>
+    <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto;">Java 25 also accepts a shorter, non-static void main(). On Java 17, main must be public static void main(String[] args).</p>''',
+        "speak": "One version note. Java 25 also accepts a shorter, non-static void main as a program's entry point. On Java 17, main has to be public static void main, with String args, and since that works on every version, it's what this course uses.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">double</span> distance = <span class="t">Math</span>.<span class="me">abs</span>(target - current);</code></pre>''',
@@ -19,7 +24,7 @@ BEATS = [
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Void vs. Non-Void</div>
     <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto;">void returns nothing; a non-void method computes and returns a value.</p>''',
-        "speak": "A void method doesn't return anything, you call it purely for its side effect, printing something, setting a motor's speed. A non-void method computes and returns a value, one the caller actually has to do something with.",
+        "speak": "A void method doesn't return anything, you call it purely for its side effect, printing something, setting a motor's speed. A non-void method computes and returns a value, one the caller should actually do something with.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">public</span> <span class="k">static</span> <span class="k">int</span> square(<span class="k">int</span> number)
@@ -31,7 +36,7 @@ BEATS = [
     },
     {
         "screen": '''<pre class="code"><code><span class="k">int</span> y = square(<span class="n">5</span>);        <span class="c">// stored in a variable</span></code></pre>''',
-        "speak": "Call it, and you have to actually use what comes back. y equals square of 5 stores the returned value in a variable.",
+        "speak": "Call it, and you should actually use what comes back. y equals square of 5 stores the returned value in a variable.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">int</span> y = square(<span class="n">5</span>);        <span class="c">// stored in a variable</span>
@@ -40,12 +45,13 @@ System.out.<span class="me">println</span>(square(<span class="n">4</span>)); <s
         "continues": True,
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">int</span> total = calculateChecksum(data); <span class="c">// fine &mdash; assuming calculateChecksum returns an int</span></code></pre>''',
+        "screen": '''<pre class="code"><code><span class="k">int</span> total = calculateChecksum(data); <span class="c">// fine — assuming calculateChecksum returns an int</span></code></pre>''',
         "speak": "Here calculate checksum's returned int gets stored properly in total, exactly as it should be.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">int</span> total = calculateChecksum(data); <span class="c">// fine &mdash; assuming calculateChecksum returns an int</span>
-calculateChecksum(data);             <span class="c">// compiles, but the returned value is silently thrown away</span></code></pre>''',
+        "screen": '''<pre class="code"><code><span class="k">int</span> total = calculateChecksum(data); <span class="c">// fine — assuming calculateChecksum returns an int</span>
+<span class="c">// compiles, but the returned value is silently thrown away:</span>
+calculateChecksum(data);</code></pre>''',
         "speak": "But this second line compiles just fine too, and that's exactly the trap, calculate checksum still runs, but whatever it returns gets silently thrown away, no error, no warning, just a wasted computation and a bug waiting to be noticed.",
         "continues": True,
     },
@@ -59,10 +65,10 @@ calculateChecksum(data);             <span class="c">// compiles, but the return
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
       <li><span class="check">&#10003;</span>A static method is a class method, called via the class name.</li>
-      <li><span class="check">&#10003;</span>void returns nothing; non-void computes a value that must be stored or used.</li>
+      <li><span class="check">&#10003;</span>void returns nothing; non-void computes a value that should be stored or used.</li>
       <li><span class="check">&#10003;</span>return sends a value back to the caller and ends the method immediately.</li>
       <li><span class="check">&#10003;</span>An ignored return value still compiles &mdash; a real, easy-to-miss bug.</li>
     </ul></div>''',
-        "speak": "So: a static method is a class method, called through the class name, or bare from inside that same class. Void returns nothing, non-void computes a value that must be stored or used. Return sends a value back to the caller and ends the method right there. And an ignored return value still compiles, quietly, which makes it a real bug to watch for in your own code. Next up, lesson 4.3, a whole class built entirely out of static methods, Math itself.",
+        "speak": "So: a static method is a class method, called through the class name, or bare from inside that same class. Void returns nothing, non-void computes a value that should be stored or used. Return sends a value back to the caller and ends the method right there. And an ignored return value still compiles, quietly, which makes it a real bug to watch for in your own code. Next up, lesson 4.3, a whole class built entirely out of static methods, Math itself.",
     },
 ]

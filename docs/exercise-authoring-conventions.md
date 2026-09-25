@@ -157,10 +157,18 @@ Custom classes representing *the student's own robot code* (e.g. `DriveMotor`, `
 place this doesn't apply: when a class is standing in for **"a library class"** — Ch.3's
 entire teaching point is that libraries and their APIs are real, looked-up things, not
 invented ones. `exercises/ch03-apis-libraries-and-documentation/3.1-apis-and-libraries.md`
-originally used a fictional `ColorSensor`/`calibrate()`/`getProximity()` — replaced with
-WPILib's real `Ultrasonic` class (`ping()`, `getRangeInches()`), verified against actual
-WPILib source, not just a plausible-sounding guess. Apply this same check to any future
-Ch.3-adjacent content that introduces "a library class" as the example.
+originally used a fictional `ColorSensor`/`calibrate()`/`getProximity()`, later replaced with
+WPILib's `Ultrasonic` class — which turned out to be removed in WPILib 2027 (the "verified"
+check had been done against a pre-2027 tree). It now uses WPILib 2027's real
+`org.wpilib.hardware.rotation.Encoder` (`Encoder(int, int)`, `reset()`, `double getDistance()`),
+verified in `wpilibj/src/main/java/org/wpilib/hardware/rotation/Encoder.java` on allwpilib `main`
+at commit `5072e8cd5dec7f46da2eee5a219ff72cf2d01926` (2026-09-25). The rest of Ch.3's library
+classes were checked at the same commit: `org.wpilib.hardware.discrete.DigitalInput`
+(`DigitalInput(int)`, `boolean get()`), `org.wpilib.hardware.discrete.DigitalOutput`
+(`DigitalOutput(int)`, `void set(boolean)`), and `org.wpilib.system.Timer` (`Timer()`, `start()`,
+`double get()`). Apply this same check — against the current allwpilib `main`, recording the
+commit — to any future Ch.3-adjacent content that introduces "a library class" as the example.
+FRC only: never use FTC-only classes (`org.wpilib.hardware.expansionhub.*`).
 
 ## Known pre-existing lesson issues (found while authoring, now fixed)
 

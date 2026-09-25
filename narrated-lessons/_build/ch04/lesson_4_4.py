@@ -9,31 +9,31 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-diagram">
-      <div class="dbox">TalonFX <span style="color:var(--ink-faint)">(class)</span></div>
+      <div class="dbox">DriveMotor <span style="color:var(--ink-faint)">(class)</span></div>
       <div class="darrow">&rarr;</div>
       <div class="dbox active">leftMotor</div>
       <div class="dbox active">rightMotor</div>
     </div>
     <p style="text-align:center;color:var(--ink-soft);font-size:13px;margin-top:16px;">Like a cookie cutter stamping out cookies &mdash; same shape, each its own cookie.</p>''',
-        "speak": "A class is a blueprint, an object is one specific thing built from it. Think of a cookie cutter stamping out cookies, same shape every time, but each one is its own separate cookie. Talon F X is a class, left motor and right motor are two separate objects built from it.",
+        "speak": "A class is a blueprint, an object is one specific thing built from it. Think of a cookie cutter stamping out cookies, same shape every time, but each one is its own separate cookie. Drive Motor is a class, left motor and right motor are two separate objects built from it. Drive Motor stands for your team's own motor class, assume it already exists in your robot project, you'll write classes like it yourself in chapter 7. Its constructor takes the P W M channel the motor is plugged into.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">TalonFX</span> leftMotor;
-<span class="t">TalonFX</span> rightMotor;</code></pre>''',
-        "speak": "A class also defines a brand new type, exactly the way int or double do. Talon F X left motor, semicolon, declares a variable exactly like int score would, it just holds a Talon F X instead of a whole number.",
-    },
-    {
-        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Attributes &amp; Behaviors, Revisited</h2><ul>
-      <li><span class="num">1</span><span><strong>Attributes</strong> &mdash; the data it holds (its CAN ID, its current speed).</span></li>
-    </ul></div>''',
-        "speak": "Every object has attributes, the data it holds, its CAN ID, its current speed.",
+        "screen": '''<pre class="code"><code><span class="t">DriveMotor</span> leftMotor;
+<span class="t">DriveMotor</span> rightMotor;</code></pre>''',
+        "speak": "A class also defines a brand new type, exactly the way int or double do. Drive Motor left motor, semicolon, declares a variable exactly like int score would, it just holds a Drive Motor instead of a whole number.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Attributes &amp; Behaviors, Revisited</h2><ul>
-      <li><span class="num">1</span><span><strong>Attributes</strong> &mdash; the data it holds (its CAN ID, its current speed).</span></li>
-      <li><span class="num">2</span><span><strong>Behaviors</strong> &mdash; what it can do, defined as methods (set, getVelocity).</span></li>
+      <li><span class="num">1</span><span><strong>Attributes</strong> &mdash; the data it holds (its PWM channel, its current throttle).</span></li>
     </ul></div>''',
-        "speak": "And behaviors, what it can do, defined as methods, set, get velocity. The class defines what attributes and behaviors exist, but each individual object has its own values for them. left motor and right motor are both Talon F X objects, but each has its own CAN ID and its own current speed, completely independent of the other.",
+        "speak": "Every object has attributes, the data it holds, its P W M channel, its current throttle.",
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Attributes &amp; Behaviors, Revisited</h2><ul>
+      <li><span class="num">1</span><span><strong>Attributes</strong> &mdash; the data it holds (its PWM channel, its current throttle).</span></li>
+      <li><span class="num">2</span><span><strong>Behaviors</strong> &mdash; what it can do, defined as methods (setThrottle, getThrottle).</span></li>
+    </ul></div>''',
+        "speak": "And behaviors, what it can do, defined as methods, set throttle, get throttle. The class defines what attributes and behaviors exist, but each individual object has its own values for them. left motor and right motor are both Drive Motor objects, but each has its own P W M channel and its own current throttle, completely independent of the other.",
         "continues": True,
     },
     {
@@ -42,17 +42,17 @@ BEATS = [
         "speak": "Here's a subtlety worth catching early. A variable like left motor doesn't hold the motor object directly, it holds a reference to it, like a tracking number pointing at where the real object actually lives in memory. That's genuinely different from a primitive variable, an int or a double holds its value directly, with nothing in between.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">TalonFX</span> leftMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">1</span>);
-<span class="t">TalonFX</span> rightMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">2</span>);
-<span class="t">TalonFX</span> intakeMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">3</span>);</code></pre>''',
-        "speak": "And you can create as many objects from one class as you actually need. Three separate Talon F X objects here, one class, three completely independent motors.",
+        "screen": '''<pre class="code"><code><span class="t">DriveMotor</span> leftMotor = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">1</span>);
+<span class="t">DriveMotor</span> rightMotor = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">2</span>);
+<span class="t">DriveMotor</span> intakeMotor = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">3</span>);</code></pre>''',
+        "speak": "And you can create as many objects from one class as you actually need. Three separate Drive Motor objects here, one class, three completely independent motors.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
-      <li><span class="check">!</span>Confusing the class name with an object's name &mdash; TalonFX (Pascal case) is always the class; leftMotor (camelCase) is a specific object.</li>
-      <li><span class="check">!</span>Assuming two objects of the same class share state &mdash; changing one's speed has zero effect on the other.</li>
+      <li><span class="check">!</span>Confusing the class name with an object's name &mdash; DriveMotor (Pascal case) is always the class; leftMotor (camelCase) is a specific object.</li>
+      <li><span class="check">!</span>Assuming two objects of the same class share state &mdash; changing one's throttle has zero effect on the other.</li>
     </ul></div>''',
-        "speak": "Two pitfalls. Confusing the class name with an object's name, Talon F X, written in Pascal case, capitalized, is always the class, left motor, in camelCase, is a specific object, mixing those two up is a genuinely common early error. And assuming two objects of the same class share state, left motor and right motor are both Talon F X objects, but changing one's speed has exactly zero effect on the other, each object's attributes are entirely its own.",
+        "speak": "Two pitfalls. Confusing the class name with an object's name, Drive Motor, written in Pascal case, capitalized, is always the class, left motor, in camelCase, is a specific object, mixing those two up is a genuinely common early error. And assuming two objects of the same class share state, left motor and right motor are both Drive Motor objects, but changing one's throttle has exactly zero effect on the other, each object's attributes are entirely its own.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>

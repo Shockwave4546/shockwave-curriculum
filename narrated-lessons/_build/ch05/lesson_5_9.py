@@ -5,7 +5,7 @@ BEATS = [
       <h1>Implementing Selection &amp; Iteration Algorithms</h1>
       <p class="scr-sub">A handful of loop shapes that come up constantly &mdash; once you recognize them, you'll see them everywhere.</p>
     </div>''',
-        "speak": "We now have everything we need, loops and selection, to actually build something. A handful of shapes come up over and over, let's meet each one. These examples loop over an existing collection with an enhanced for, building your own collections is Chapter 9, for now, focus purely on the shape of each pattern.",
+        "speak": "We now have everything we need, loops and selection, to actually build something. A handful of shapes come up over and over, let's meet each one. These examples loop over an existing collection with an enhanced for. Read for, double sample, colon, vision latencies, as for each sample in vision latencies, the loop variable takes each value in turn, first to last, with no index to manage. Lesson 9.4 covers it fully, and building your own collections is Chapter 9, for now, focus purely on the shape of each pattern.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">The Accumulator Pattern</div>
@@ -36,7 +36,7 @@ BEATS = [
         "speak": "Second, tracking a minimum or a maximum, by pairing that same accumulator idea with an if inside the loop.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">double</span> max = Double.MIN_VALUE;
+        "screen": '''<pre class="code"><code><span class="k">double</span> max = <span class="t">Double</span>.NEGATIVE_INFINITY; <span class="c">// below every real number</span>
 <span class="k">for</span> (<span class="k">double</span> sample : visionLatencies)
 {
     <span class="k">if</span> (sample &gt; max)
@@ -44,7 +44,12 @@ BEATS = [
         max = sample; <span class="c">// running max</span>
     }
 }</code></pre>''',
-        "speak": "max starts at Double dot Min underscore Value, the smallest possible double, guaranteeing the very first real sample will always beat it. Then for each sample, if it's bigger than the current max, it becomes the new max. By the end, max holds the true largest value seen across the whole loop.",
+        "speak": "max starts at Double dot negative infinity, a special double value smaller than every real number, so the very first real sample always beats it. Then for each sample, if it's bigger than the current max, it becomes the new max. By the end, max holds the true largest value seen across the whole loop.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">Not Double.MIN_VALUE</div>
+    <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto;">Despite the name, it&rsquo;s the smallest <em>positive</em> double &mdash; about 4.9E-324.</p>''',
+        "speak": "Double is Java's wrapper class for double, its constants, and the other wrapper classes, come in lesson 9.2. And watch out for the similar-looking Double dot Min underscore Value. Despite the name, it's the smallest positive double, a tiny number just above zero. Seed a max with it, and the answer stays wrong whenever every sample is zero or negative.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Frequency Counting</div>
@@ -76,10 +81,10 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
-      <li><span class="check">!</span>Initializing an accumulator with the wrong starting value &mdash; a sum starts at 0; a max should start at the smallest possible value.</li>
+      <li><span class="check">!</span>Initializing an accumulator with the wrong starting value &mdash; a sum starts at 0; a max starts below every value (Double.NEGATIVE_INFINITY), not at Double.MIN_VALUE.</li>
       <li><span class="check">!</span>Putting the accumulator update outside the loop &mdash; it has to be inside the body to accumulate across every iteration.</li>
     </ul></div>''',
-        "speak": "Two pitfalls. Initializing an accumulator with the wrong starting value, a sum starts at 0, but a max should start at the smallest possible value, so the very first real value always replaces it. And putting the accumulator update outside the loop, it has to be inside the loop body, or it only ever runs once instead of accumulating across every iteration.",
+        "speak": "Two pitfalls. Initializing an accumulator with the wrong starting value, a sum starts at 0, but a max should start below every possible value, Double dot negative infinity for a double, Integer dot Min underscore Value for an int, so the very first real value always replaces it. Not Double dot Min underscore Value, that's the smallest positive double. And putting the accumulator update outside the loop, it has to be inside the loop body, or it only ever runs once instead of accumulating across every iteration.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>

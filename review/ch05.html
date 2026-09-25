@@ -96,31 +96,39 @@ const DATA = {
     body: `
       <h2>if Statements: One-Way and Two-Way Selection</h2>
       <p>An <code class="inline">if</code> statement runs its body only when a boolean condition is true:</p>
-      <pre class="code"><code><span class="k">if</span> (joystick.<span class="me">getRawButton</span>(<span class="n">1</span>)) {
+      <pre class="code"><code><span class="k">if</span> (joystick.<span class="me">getRawButton</span>(<span class="n">1</span>))
+{
     intake.<span class="me">spin</span>(<span class="n">0.5</span>);
 }</code></pre>
       <p>Add an <code class="inline">else</code> for a second branch that runs when the condition is false:</p>
-      <pre class="code"><code><span class="k">if</span> (joystick.<span class="me">getRawButton</span>(<span class="n">1</span>)) {
+      <pre class="code"><code><span class="k">if</span> (joystick.<span class="me">getRawButton</span>(<span class="n">1</span>))
+{
     intake.<span class="me">spin</span>(<span class="n">0.5</span>);
-} <span class="k">else</span> {
+}
+<span class="k">else</span>
+{
     intake.<span class="me">stop</span>();
 }</code></pre>
       <p>Always use curly braces, even for a single statement — Java doesn't require them, but skipping them is exactly how the classic "which statement is actually inside the if" bug happens.</p>
-      <h2>The Classic = vs. == Mistake</h2>
+      <h2>The Classic <code class="inline">=</code> vs. <code class="inline">==</code> Mistake</h2>
       <p>One <code class="inline">=</code> assigns a value; two <code class="inline">==</code> test whether a value equals something. Writing <code class="inline">if (isCold = true)</code> inside a condition compiles (it's a legal assignment expression) but silently does the wrong thing — it assigns <code class="inline">true</code> to <code class="inline">isCold</code> and the condition is always true, regardless of what <code class="inline">isCold</code> was before.</p>
       <h2>For Loops: Three Parts, One Line</h2>
       <p>A <code class="inline">for</code> loop bundles the three steps of a loop — initialize, test, update — into one header:</p>
-      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i < sensors.length; i++) {
-    <span class="k">if</span> (sensors[i].<span class="me">isFaulty</span>()) {
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; sensors.length; i++)
+{
+    <span class="k">if</span> (sensors[i].<span class="me">isFaulty</span>())
+    {
         <span class="me">report</span>(sensors[i]);
     }
 }</code></pre>
+      <p><em><code class="inline">sensors</code> here is an array — a numbered list of values: <code class="inline">sensors.length</code> is how many there are, and <code class="inline">sensors[i]</code> is the one at position <code class="inline">i</code>, counting from <code class="inline">0</code>. Arrays get their own full lesson in Ch.9; for now, focus on the loop's shape.</em></p>
       <p>The three parts are always separated by semicolons, in this order: initialize the loop variable, test it, update it. Starting at <code class="inline">0</code> pairs naturally with <code class="inline">&lt;</code>; starting at <code class="inline">1</code> pairs naturally with <code class="inline">&lt;=</code> — pick whichever matches how many times you actually want to run.</p>
+      <p>The update doesn't have to be <code class="inline">i++</code>. <code class="inline">for (int i = 10; i &gt; 0; i--)</code> counts down from 10 to 1, and <code class="inline">for (int i = 0; i &lt;= 10; i += 2)</code> steps by two: 0, 2, 4, … 10. A loop variable declared in the header, like <code class="inline">int i</code>, exists only inside that loop.</p>
     `,
     pitfalls: [
-      "Missing curly braces. Without them, only the very next line is actually part of the if/loop body — everything after it runs unconditionally, every time.",
+      "Missing curly braces. Without them, only the very next line is actually part of the <code class=\"inline\">if</code>/loop body — everything after it runs unconditionally, every time.",
       "<code class=\"inline\">=</code> instead of <code class=\"inline\">==</code> in a condition. A real, silent bug — the code compiles and the condition is always true.",
-      "Off-by-one in a for loop's bound. <code class=\"inline\">i < sensors.length</code> visits every valid index; <code class=\"inline\">i <= sensors.length</code> runs one iteration too many and reads past the end."
+      "Off-by-one in a for loop's bound. <code class=\"inline\">i &lt; sensors.length</code> visits every valid index; <code class=\"inline\">i &lt;= sensors.length</code> runs one iteration too many and reads past the end."
     ],
     takeaways: [
       "An <code class=\"inline\">if</code> runs its body only when its condition is true; an <code class=\"inline\">else</code> gives it a second branch for when it's false.",
@@ -176,19 +184,19 @@ Otherwise, back up and try a different path</code></pre>
 System.out.<span class="me">println</span>(battery &lt; <span class="n">12.0</span>);  <span class="c">// true — low battery</span>
 System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</span>); <span class="c">// false</span></code></pre>
       <h2>Equality: Primitives vs. Objects</h2>
-      <p><code class="inline">==</code> on primitives (<code class="inline">int</code>, <code class="inline">double</code>, <code class="inline">boolean</code>) compares the actual values — exactly what you'd expect. <code class="inline">==</code> on objects compares whether two variables refer to the <em>same object in memory</em>, not whether their contents look the same. Two separately-built <code class="inline">TalonFX</code> objects with identical settings are still two different objects — <code class="inline">==</code> between them is <code class="inline">false</code>. (Object equality gets its own full treatment in Ch.6, once Strings are introduced.)</p>
+      <p><code class="inline">==</code> on primitives (<code class="inline">int</code>, <code class="inline">double</code>, <code class="inline">boolean</code>) compares the actual values — exactly what you'd expect, with one caveat for <code class="inline">double</code>: a computed result can carry a tiny rounding error, so <code class="inline">0.1 + 0.2 == 0.3</code> is <code class="inline">false</code>. Compare computed doubles within a small tolerance instead (Lesson 2.4; Ch.13 revisits it). <code class="inline">==</code> on objects compares whether two variables refer to the <em>same object in memory</em>, not whether their contents look the same. Two separately-built <code class="inline">DriveMotor</code> objects (our own motor class) with identical settings are still two different objects — <code class="inline">==</code> between them is <code class="inline">false</code>. (Object equality gets its own full treatment in Ch.6, once Strings are introduced.)</p>
       <h2>Divisibility with the Remainder Operator</h2>
       <p><code class="inline">%</code> (from Ch.2) is how you test whether a number divides evenly into another:</p>
-      <pre class="code"><code>(number % 2 == 0)  <span class="c">// true if number is even</span>
-(number % 2 != 0)  <span class="c">// true if number is odd</span>
-(number % x == 0)  <span class="c">// true if number is evenly divisible by x</span></code></pre>
+      <pre class="code"><code>(number % <span class="n">2</span> == <span class="n">0</span>)  <span class="c">// true if number is even</span>
+(number % <span class="n">2</span> != <span class="n">0</span>)  <span class="c">// true if number is odd</span>
+(number % x == <span class="n">0</span>)  <span class="c">// true if number is evenly divisible by x</span></code></pre>
     `,
     pitfalls: [
       "Using <code class=\"inline\">==</code> on objects expecting a content comparison. It checks \"same object,\" not \"same values\" — two different but identical-looking objects compare unequal.",
       "Testing oddness with <code class=\"inline\">num % 2 == 1</code>. This looks right but fails for negative odd numbers (their remainder is <code class=\"inline\">-1</code>, not <code class=\"inline\">1</code>). Use <code class=\"inline\">num % 2 != 0</code> instead — it works for both signs."
     ],
     takeaways: [
-      "Relational operators (<code class=\"inline\">== != < > <= >=</code>) always produce a boolean result.",
+      "Relational operators (<code class=\"inline\">== != &lt; &gt; &lt;= &gt;=</code>) always produce a boolean result.",
       "<code class=\"inline\">==</code> on primitives compares values; <code class=\"inline\">==</code> on objects compares identity (same object), not content.",
       "<code class=\"inline\">%</code> tests divisibility — <code class=\"inline\">num % 2 == 0</code> for even, <code class=\"inline\">num % 2 != 0</code> for odd (not <code class=\"inline\">== 1</code>, which breaks on negatives)."
     ],
@@ -200,43 +208,86 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
     body: `
       <h2>Multiway Selection with else if</h2>
       <p>Chain <code class="inline">else if</code> to pick between three or more paths — only the first true branch runs:</p>
-      <pre class="code"><code><span class="k">if</span> (distance &lt; <span class="n">1.0</span>) {
-    state = IntakeState.CLOSE;
-} <span class="k">else if</span> (distance &lt; <span class="n">3.0</span>) {
-    state = IntakeState.MID;
-} <span class="k">else</span> {
-    state = IntakeState.FAR;
+      <pre class="code"><code><span class="k">if</span> (distance &lt; <span class="n">1.0</span>)
+{
+    zone = <span class="s">"CLOSE"</span>;
+}
+<span class="k">else</span> <span class="k">if</span> (distance &lt; <span class="n">3.0</span>)
+{
+    zone = <span class="s">"MID"</span>;
+}
+<span class="k">else</span>
+{
+    zone = <span class="s">"FAR"</span>;
 }</code></pre>
       <p>A trailing plain <code class="inline">else</code> (no condition) catches everything not already matched — it's optional, but leaving it off means "do nothing" is a real possible outcome.</p>
       <h2>Chained vs. Separate ifs</h2>
       <p><code class="inline">else if</code> connects the branches together — only one of them ever runs. Writing separate, unconnected <code class="inline">if</code> statements instead is a different (and often wrong) thing entirely, because <em>all</em> of them get checked independently:</p>
       <pre class="code"><code><span class="c">// Connected — only one branch runs</span>
 <span class="k">if</span> (score &gt;= <span class="n">90</span>) { grade = <span class="s">"A"</span>; }
-<span class="k">else if</span> (score &gt;= <span class="n">80</span>) { grade = <span class="s">"B"</span>; }
+<span class="k">else</span> <span class="k">if</span> (score &gt;= <span class="n">80</span>) { grade = <span class="s">"B"</span>; }
 <span class="k">else</span> { grade = <span class="s">"C"</span>; }
 
 <span class="c">// NOT connected — multiple could run, overwriting each other</span>
 <span class="k">if</span> (score &gt;= <span class="n">90</span>) { grade = <span class="s">"A"</span>; }
 <span class="k">if</span> (score &gt;= <span class="n">80</span>) { grade = <span class="s">"B"</span>; } <span class="c">// a 95 would hit this too, overwriting "A" with "B"!</span></code></pre>
       <h2>The Dangling Else</h2>
-      <p>When ifs are nested without braces, an <code class="inline">else</code> always attaches to the <em>closest</em> unmatched <code class="inline">if</code> — regardless of indentation. If that's not what you meant, braces fix it:</p>
-      <pre class="code"><code><span class="k">if</span> (sunny) {
-    <span class="k">if</span> (hot) {
-        goToBeach();
-    }
-} <span class="k">else</span> <span class="c">// now belongs to the OUTER if, thanks to the braces</span>
+      <p>When ifs are nested without braces, an <code class="inline">else</code> always attaches to the <em>closest</em> unmatched <code class="inline">if</code> — regardless of indentation:</p>
+      <pre class="code"><code><span class="k">if</span> (sunny)
+    <span class="k">if</span> (hot)
+        <span class="me">goToBeach</span>();
+<span class="k">else</span> <span class="c">// looks like it belongs to sunny, but it belongs to hot</span>
+    <span class="me">bringUmbrella</span>();</code></pre>
+      <p>This brings an umbrella when it's sunny but <em>not</em> hot — and does nothing at all when it isn't sunny. If that's not what you meant, braces fix it:</p>
+      <pre class="code"><code><span class="k">if</span> (sunny)
 {
-    bringUmbrella();
+    <span class="k">if</span> (hot)
+    {
+        <span class="me">goToBeach</span>();
+    }
+}
+<span class="k">else</span> <span class="c">// now belongs to the OUTER if, thanks to the braces</span>
+{
+    <span class="me">bringUmbrella</span>();
 }</code></pre>
+      <h2>A Missing else Can Leave a Variable Unassigned</h2>
+      <p>Java requires a local variable (one declared inside a method, like <code class="inline">tier</code> below) to be <em>definitely assigned</em> before it's read. If no branch is guaranteed to run, the compiler won't let you read it afterward:</p>
+      <pre class="code"><code><span class="t">String</span> tier; <span class="c">// local variable, no initial value</span>
+
+<span class="k">if</span> (score &gt;= <span class="n">8</span>)
+{
+    tier = <span class="s">"ELITE"</span>;
+}
+<span class="c">// no else — if score &lt; 8, tier is never assigned</span>
+
+System.out.<span class="me">println</span>(tier); <span class="c">// won't compile: tier might not be assigned</span></code></pre>
+      <p>Adding a trailing <code class="inline">else</code> that assigns <code class="inline">tier</code> (or giving <code class="inline">tier</code> a starting value) fixes it.</p>
+      <h2>Choosing Between Two Values with ?:</h2>
+      <p>When an <code class="inline">if</code>/<code class="inline">else</code> exists only to pick one of two values for the same variable, the conditional operator <code class="inline">?:</code> (often called the <em>ternary</em> operator, because it has three parts) does it in a single expression. This <code class="inline">if</code>/<code class="inline">else</code>:</p>
+      <pre class="code"><code><span class="k">double</span> speed;
+<span class="k">if</span> (boosted)
+{
+    speed = <span class="n">1.0</span>;
+}
+<span class="k">else</span>
+{
+    speed = <span class="n">0.5</span>;
+}</code></pre>
+      <p>does the same thing as this one line:</p>
+      <pre class="code"><code><span class="k">double</span> speed = boosted ? <span class="n">1.0</span> : <span class="n">0.5</span>;</code></pre>
+      <p>Read it as <code class="inline">condition ? valueIfTrue : valueIfFalse</code>: Java checks the condition, then produces exactly one of the two values. Use it for short value choices; keep a regular <code class="inline">if</code>/<code class="inline">else</code> when a branch needs to <em>do</em> things, not just produce a value.</p>
     `,
     pitfalls: [
       "Using separate <code class=\"inline\">if</code>s instead of <code class=\"inline\">else if</code>. Separate ifs are each checked independently — a later one can silently overwrite what an earlier one just set.",
-      "Relying on indentation instead of braces. Java ignores indentation entirely; only <code class=\"inline\">{ }</code> actually determines which <code class=\"inline\">if</code> an <code class=\"inline\">else</code> belongs to."
+      "Relying on indentation instead of braces. Java ignores indentation entirely; only <code class=\"inline\">{ }</code> actually determines which <code class=\"inline\">if</code> an <code class=\"inline\">else</code> belongs to.",
+      "Skipping the trailing <code class=\"inline\">else</code> when a local variable is only assigned inside branches. The compiler won't let you read a local variable that isn't definitely assigned on every path — add an <code class=\"inline\">else</code>, or give the variable a starting value.",
+      "Stacking ternaries. <code class=\"inline\">a ? x : b ? y : z</code> is legal but hard to read — for three or more choices, use an <code class=\"inline\">else if</code> chain."
     ],
     takeaways: [
       "<code class=\"inline\">else if</code> chains pick exactly one branch — the first condition that's true, and nothing after it.",
       "Unconnected, separate <code class=\"inline\">if</code> statements are checked independently and can overwrite each other's results.",
-      "An <code class=\"inline\">else</code> always attaches to the nearest unmatched <code class=\"inline\">if</code> — braces are the only reliable way to control this."
+      "An <code class=\"inline\">else</code> always attaches to the nearest unmatched <code class=\"inline\">if</code> — braces are the only reliable way to control this.",
+      "<code class=\"inline\">condition ? a : b</code> picks one of two values in a single expression — a compact stand-in for an <code class=\"inline\">if</code>/<code class=\"inline\">else</code> that only assigns."
     ],
     prov: "csawesome-2026: unit-2-selection-and-iteration/2.04-nested-if-statements.md (CSA 2.4)"
   },
@@ -246,34 +297,36 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
     body: `
       <h2>And, Or, Not</h2>
       <p>Combine conditions with <code class="inline">&amp;&amp;</code> (and), <code class="inline">||</code> (or), and <code class="inline">!</code> (not):</p>
-      <pre class="code"><code><span class="k">if</span> (armReady && intakeReady) {
-    scoreCommand.<span class="me">schedule</span>();
+      <pre class="code"><code><span class="k">if</span> (armReady &amp;&amp; intakeReady)
+{
+    shooter.<span class="me">score</span>();
 }</code></pre>
       <p><code class="inline">&amp;&amp;</code> needs both sides true; <code class="inline">||</code> needs just one (or both). <code class="inline">!</code> flips a boolean's value.</p>
       <h2>Short-Circuit Evaluation</h2>
       <p>Java stops checking as soon as the answer is already known — it never evaluates more than it needs to:</p>
       <ul>
-        <li>In <code class="inline">a && b</code>: if <code class="inline">a</code> is false, <code class="inline">b</code> is never even checked — the whole thing is already false.</li>
+        <li>In <code class="inline">a &amp;&amp; b</code>: if <code class="inline">a</code> is false, <code class="inline">b</code> is never even checked — the whole thing is already false.</li>
         <li>In <code class="inline">a || b</code>: if <code class="inline">a</code> is true, <code class="inline">b</code> is never checked — the whole thing is already true.</li>
       </ul>
       <p>This isn't just an optimization — it's a real safety pattern:</p>
-      <pre class="code"><code><span class="k">if</span> (sensor != <span class="k">null</span> && sensor.<span class="me">isFaulty</span>()) {
+      <pre class="code"><code><span class="k">if</span> (sensor != <span class="k">null</span> &amp;&amp; sensor.<span class="me">isFaulty</span>())
+{
     <span class="me">report</span>(sensor);
 }</code></pre>
       <p>If <code class="inline">sensor</code> is <code class="inline">null</code>, the left side is false, so <code class="inline">&amp;&amp;</code> never evaluates <code class="inline">sensor.isFaulty()</code> — which would otherwise throw a <code class="inline">NullPointerException</code>. The order here matters: the null check has to come <em>first</em>.</p>
       <h2>Operator Precedence</h2>
       <p><code class="inline">!</code> binds tightest, then <code class="inline">&amp;&amp;</code>, then <code class="inline">||</code> — parentheses override all of it and make intent explicit:</p>
-      <pre class="code"><code><span class="k">if</span> (!ready || !armed) { ... }        <span class="c">// ! applies to each individually</span>
-<span class="k">if</span> (!(ready && armed)) { ... }       <span class="c">// different! ! applies to the whole expression</span></code></pre>
+      <pre class="code"><code><span class="k">if</span> (!ready &amp;&amp; !armed) { ... }        <span class="c">// ! applies to each: true only if BOTH are false</span>
+<span class="k">if</span> (!(ready &amp;&amp; armed)) { ... }       <span class="c">// different! true if EITHER one is false</span></code></pre>
     `,
     pitfalls: [
-      "Putting the null check on the wrong side. <code class=\"inline\">sensor.isFaulty() && sensor != null</code> checks the faulty status first — if <code class=\"inline\">sensor</code> is <code class=\"inline\">null</code>, it crashes before the null check ever runs. The null check must come first for short-circuiting to protect you.",
-      "Assuming <code class=\"inline\">!(a && b)</code> is the same as <code class=\"inline\">!a && !b</code>. It's not — that's a real logic error (the correct equivalent, De Morgan's Law, comes in the next lesson)."
+      "Putting the null check on the wrong side. <code class=\"inline\">sensor.isFaulty() &amp;&amp; sensor != null</code> checks the faulty status <em>first</em> — if <code class=\"inline\">sensor</code> is <code class=\"inline\">null</code>, it crashes before the null check ever runs. The null check must come first for short-circuiting to protect you.",
+      "Assuming <code class=\"inline\">!(a &amp;&amp; b)</code> is the same as <code class=\"inline\">!a &amp;&amp; !b</code>. It's not — that's a real logic error (the correct equivalent, De Morgan's Law, comes in the next lesson)."
     ],
     takeaways: [
-      "<code class=\"inline\">&&</code> requires both sides true; <code class=\"inline\">||</code> requires at least one; <code class=\"inline\">!</code> flips a boolean.",
+      "<code class=\"inline\">&amp;&amp;</code> requires both sides true; <code class=\"inline\">||</code> requires at least one; <code class=\"inline\">!</code> flips a boolean.",
       "Short-circuit evaluation skips the right side once the left side already determines the result — order a null-check first specifically to exploit this.",
-      "<code class=\"inline\">!</code> has higher precedence than <code class=\"inline\">&&</code>, which has higher precedence than <code class=\"inline\">||</code>; use parentheses when the default grouping isn't what you mean."
+      "<code class=\"inline\">!</code> has higher precedence than <code class=\"inline\">&amp;&amp;</code>, which has higher precedence than <code class=\"inline\">||</code>; use parentheses when the default grouping isn't what you mean."
     ],
     prov: "csawesome-2026: unit-2-selection-and-iteration/2.05-compound-boolean-expressions.md (CSA 2.5)"
   },
@@ -320,7 +373,8 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
       <h2>The Three Steps of a Loop</h2>
       <p>A <code class="inline">while</code> loop repeats its body as long as a condition holds, checked <em>before</em> every pass, including the first:</p>
       <pre class="code"><code><span class="k">int</span> attempts = <span class="n">0</span>;             <span class="c">// 1. initialize</span>
-<span class="k">while</span> (attempts &lt; <span class="n">3</span> && !connected) { <span class="c">// 2. test</span>
+<span class="k">while</span> (attempts &lt; <span class="n">3</span> &amp;&amp; !connected) <span class="c">// 2. test</span>
+{
     connected = <span class="me">tryConnect</span>();
     attempts++;                <span class="c">// 3. update</span>
 }</code></pre>
@@ -328,25 +382,58 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
       <h2>Infinite Loops</h2>
       <p>Forget step 3 and the condition never changes — the loop runs forever:</p>
       <pre class="code"><code><span class="k">int</span> i = <span class="n">0</span>;
-<span class="k">while</span> (i &lt; <span class="n">10</span>) {
+<span class="k">while</span> (i &lt; <span class="n">10</span>)
+{
     System.out.<span class="me">println</span>(i); <span class="c">// i never changes — this never stops</span>
 }</code></pre>
       <p>An infinite loop on a robot doesn't just print forever — it can freeze the whole robot's control loop, since nothing after it ever gets a chance to run.</p>
-      <h2>When to Reach for while Instead of for</h2>
-      <p><code class="inline">for</code> fits naturally when you already know the number of iterations. <code class="inline">while</code> fits better when you're waiting for a <em>condition</em>, not counting to a number — like waiting for a sensor to settle, or retrying a connection a limited number of times:</p>
-      <pre class="code"><code><span class="k">while</span> (!gyro.<span class="me">isConnected</span>() && attempts &lt; <span class="n">5</span>) {
+      <h2>When to Reach for <code class="inline">while</code> Instead of <code class="inline">for</code></h2>
+      <p><code class="inline">for</code> fits naturally when you already know the number of iterations. <code class="inline">while</code> fits better when you're repeating until a <em>condition</em> changes, not counting to a number — like retrying a connection a limited number of times:</p>
+      <pre class="code"><code><span class="k">int</span> attempts = <span class="n">0</span>;
+<span class="k">while</span> (!gyro.<span class="me">isConnected</span>() &amp;&amp; attempts &lt; <span class="n">5</span>)
+{
+    gyro.<span class="me">reconnect</span>(); <span class="c">// assume our gyro class has this retry method</span>
     attempts++;
 }</code></pre>
+      <p>This tries at most 5 times, then moves on whether or not the gyro came back. What it must never do is <em>wait</em>: robot code runs in short, repeating cycles many times per second, and a loop that sits spinning until a sensor finally responds holds up everything else — the freeze described above. In robot code, check a condition once per cycle instead of looping until it changes.</p>
+      <h2>do-while: Run the Body at Least Once</h2>
+      <p>A <code class="inline">do-while</code> loop checks its condition <em>after</em> each pass instead of before, so the body always runs at least once:</p>
+      <pre class="code"><code><span class="k">int</span> attempts = <span class="n">0</span>;
+<span class="k">do</span>
+{
+    connected = <span class="me">tryConnect</span>();
+    attempts++;
+} <span class="k">while</span> (!connected &amp;&amp; attempts &lt; <span class="n">3</span>); <span class="c">// this semicolon is required</span></code></pre>
+      <p>This is the first loop in this lesson, reshaped: the first connection attempt happens unconditionally, and the test only decides whether to try <em>again</em>. Use <code class="inline">do-while</code> when there's nothing to test until the body has run once; otherwise, a plain <code class="inline">while</code> is the usual choice.</p>
+      <h2>Leaving a Loop Early: break and continue</h2>
+      <p>Two statements change a loop's flow from inside its body. <code class="inline">break</code> ends the loop immediately; <code class="inline">continue</code> skips the rest of the current pass and moves on to the next one:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> port = <span class="n">0</span>; port &lt; <span class="n">10</span>; port++)
+{
+    <span class="k">if</span> (port == <span class="n">3</span>)
+    {
+        <span class="k">continue</span>; <span class="c">// port 3 is reserved: skip to the next pass</span>
+    }
+    <span class="k">if</span> (<span class="me">isFree</span>(port))
+    {
+        System.out.<span class="me">println</span>(<span class="s">"First free port: "</span> + port);
+        <span class="k">break</span>;    <span class="c">// found one: stop the whole loop now</span>
+    }
+}</code></pre>
+      <p>In a <code class="inline">for</code> loop, <code class="inline">continue</code> still runs the update (<code class="inline">port++</code>) before the next test; in a <code class="inline">while</code> loop, it jumps straight to the test. Inside nested loops, both affect only the innermost loop they're in. (<code class="inline">break</code> also ends a case in a <code class="inline">switch</code> statement — Lesson 5.12.)</p>
     `,
     pitfalls: [
       "Forgetting to update the loop variable. The single most common cause of an infinite loop — every <code class=\"inline\">while</code> loop needs something inside it that eventually makes the condition false.",
-      "A condition that's false from the very first check. If the condition never holds, the loop body never runs at all — not even once. Double-check the loop variable's starting value against the condition."
+      "A condition that's false from the very first check. If the condition never holds, the loop body never runs at all — not even once. Double-check the loop variable's starting value against the condition.",
+      "Leaving off the semicolon after a <code class=\"inline\">do-while</code>'s condition. <code class=\"inline\">} while (attempts &lt; 3)</code> with no <code class=\"inline\">;</code> won't compile. The opposite mistake, a stray <code class=\"inline\">;</code> right after a plain <code class=\"inline\">while (...)</code> header, gives the loop an empty body — and an infinite loop if the condition starts true.",
+      "A <code class=\"inline\">continue</code> in a <code class=\"inline\">while</code> loop that skips the update. If the update (<code class=\"inline\">i++</code>) comes after the <code class=\"inline\">continue</code>, the skipped pass never reaches it, and the loop repeats the same value forever."
     ],
     takeaways: [
       "Every loop needs three steps: initialize, test, update — <code class=\"inline\">while</code> just doesn't bundle them into one line like <code class=\"inline\">for</code> does.",
       "A <code class=\"inline\">while</code> loop's condition is checked before every pass, including the first — if it starts false, the body never runs.",
       "Forgetting to update the loop variable is the classic cause of an infinite loop, which can freeze a robot's control code.",
-      "<code class=\"inline\">while</code> fits naturally when you're waiting for a condition rather than counting a known number of iterations."
+      "<code class=\"inline\">while</code> fits naturally when you're repeating until a condition changes rather than counting a known number of iterations.",
+      "A <code class=\"inline\">do-while</code> checks its condition after each pass, so its body always runs at least once — and its closing <code class=\"inline\">while (...)</code> needs a semicolon.",
+      "<code class=\"inline\">break</code> ends the innermost loop immediately; <code class=\"inline\">continue</code> skips to that loop's next pass."
     ],
     prov: "csawesome-2026: unit-2-selection-and-iteration/2.07-while-loops.md (CSA 2.7)"
   },
@@ -355,45 +442,52 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
     ref: "5.9 — Implementing Selection and Iteration Algorithms (CSA 2.9)",
     body: `
       <p>A handful of loop-and-selection patterns come up constantly. Once you recognize them, you'll see the same shape everywhere.</p>
+      <p><em>The examples below loop over an existing collection (<code class="inline">visionLatencies</code>, <code class="inline">sensors</code>) with an enhanced <code class="inline">for</code> — building your own comes in Ch.9. Read <code class="inline">for (double sample : visionLatencies)</code> as "for each <code class="inline">sample</code> in <code class="inline">visionLatencies</code>": the loop variable takes each value in turn, first to last, with no index to manage (Lesson 9.4 covers it fully). For now, focus on the accumulator/selection shape itself; it applies the same way once you get there.</em></p>
       <h2>The Accumulator Pattern</h2>
       <p>Build up a running total across a loop: initialize before the loop, update inside it, use the result after.</p>
       <pre class="code"><code><span class="k">double</span> sum = <span class="n">0</span>;
-<span class="k">for</span> (<span class="k">double</span> sample : visionLatencies) {
+<span class="k">for</span> (<span class="k">double</span> sample : visionLatencies)
+{
     sum += sample; <span class="c">// accumulate</span>
 }
 <span class="k">double</span> average = sum / visionLatencies.<span class="me">size</span>();</code></pre>
       <h2>Min/Max with an if Inside a Loop</h2>
       <p>Track the smallest or largest value seen so far by pairing an accumulator with an <code class="inline">if</code> inside the loop:</p>
-      <pre class="code"><code><span class="k">double</span> max = <span class="t">Double</span>.MIN_VALUE;
-<span class="k">for</span> (<span class="k">double</span> sample : visionLatencies) {
-    <span class="k">if</span> (sample &gt; max) {
+      <pre class="code"><code><span class="k">double</span> max = <span class="t">Double</span>.NEGATIVE_INFINITY; <span class="c">// below every real number</span>
+<span class="k">for</span> (<span class="k">double</span> sample : visionLatencies)
+{
+    <span class="k">if</span> (sample &gt; max)
+    {
         max = sample; <span class="c">// running max</span>
     }
 }</code></pre>
+      <p><code class="inline">Double.NEGATIVE_INFINITY</code> is a special <code class="inline">double</code> value smaller than every real number, so the first sample always replaces it. (<code class="inline">Double</code> is Java's wrapper class for <code class="inline">double</code>; its constants and the other wrapper classes come in Lesson 9.2.) Watch out for the similar-looking <code class="inline">Double.MIN_VALUE</code>: despite the name, it's the smallest <em>positive</em> <code class="inline">double</code> (about <code class="inline">4.9E-324</code>), so a max seeded with it stays wrong whenever every sample is zero or negative.</p>
       <h2>Frequency Counting</h2>
       <p>Count how many values in a sequence meet some criterion, using a counter incremented inside a conditional:</p>
       <pre class="code"><code><span class="k">int</span> faultyCount = <span class="n">0</span>;
-<span class="k">for</span> (<span class="t">Sensor</span> sensor : sensors) {
-    <span class="k">if</span> (sensor.<span class="me">isFaulty</span>()) {
+<span class="k">for</span> (Sensor sensor : sensors)
+{
+    <span class="k">if</span> (sensor.<span class="me">isFaulty</span>())
+    {
         faultyCount++;
     }
 }</code></pre>
       <h2>Simulating Probability with Math.random()</h2>
-      <p><code class="inline">Math.random() < p</code> is true with probability <code class="inline">p</code> — a real way to simulate an event that happens some percentage of the time (useful for testing code against randomized simulated sensor noise, for instance):</p>
-      <pre class="code"><code><span class="k">if</span> (<span class="t">Math</span>.<span class="me">random</span>() &lt; <span class="n">0.1</span>) <span class="c">// roughly 10% of the time</span>
+      <p><code class="inline">Math.random() &lt; p</code> is true with probability <code class="inline">p</code> — a real way to simulate an event that happens some percentage of the time (useful for testing code against randomized simulated sensor noise, for instance):</p>
+      <pre class="code"><code><span class="k">if</span> (Math.<span class="me">random</span>() &lt; <span class="n">0.1</span>) <span class="c">// roughly 10% of the time</span>
 {
     <span class="me">simulateSensorGlitch</span>();
 }</code></pre>
     `,
     pitfalls: [
-      "Initializing an accumulator with the wrong starting value. A sum starts at <code class=\"inline\">0</code>; a max should start at the smallest possible value (<code class=\"inline\">Double.MIN_VALUE</code> or similar) so the very first real value always replaces it.",
-      "Putting the accumulator update outside the loop. It has to be inside the loop body to actually accumulate across every iteration."
+      "Initializing an accumulator with the wrong starting value. A sum starts at <code class=\"inline\">0</code>; a max should start below every possible value (<code class=\"inline\">Double.NEGATIVE_INFINITY</code> for a <code class=\"inline\">double</code>, <code class=\"inline\">Integer.MIN_VALUE</code> for an <code class=\"inline\">int</code>) so the very first real value always replaces it. Not <code class=\"inline\">Double.MIN_VALUE</code> — that's the smallest <em>positive</em> <code class=\"inline\">double</code>, not the most negative one.",
+      "Putting the accumulator update outside the loop. It has to be <em>inside</em> the loop body to actually accumulate across every iteration."
     ],
     takeaways: [
       "The accumulator pattern: initialize before the loop, update inside it, use the result after.",
       "Min/max tracking pairs an accumulator with an <code class=\"inline\">if</code> inside the loop, comparing each new value against the best one seen so far.",
       "Frequency counting increments a counter inside a conditional, once per matching iteration.",
-      "<code class=\"inline\">Math.random() < p</code> simulates an event with probability <code class=\"inline\">p</code>."
+      "<code class=\"inline\">Math.random() &lt; p</code> simulates an event with probability <code class=\"inline\">p</code>."
     ],
     prov: "csawesome-2026: unit-2-selection-and-iteration/2.09-implementing-selection-and-iteration-algorithms.md (CSA 2.9)"
   },
@@ -403,8 +497,10 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
     body: `
       <h2>A Loop Inside a Loop</h2>
       <p>Nesting one loop inside another means the inner loop runs to completion for <em>every single pass</em> of the outer one:</p>
-      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; <span class="n">8</span>; row++) {
-    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; <span class="n">8</span>; col++) {
+      <pre class="code"><code><span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; <span class="n">8</span>; row++)
+{
+    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; <span class="n">8</span>; col++)
+    {
         visionGrid[row][col] = <span class="me">sampleCell</span>(row, col);
     }
 }</code></pre>
@@ -413,7 +509,7 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
       <p>Nested loops are the natural shape for anything grid-like: scanning a 2D vision frame, checking every pair of sensors against each other, or generating a table of test cases. (2D arrays, which pair naturally with nested loops, get their own full chapter — Ch.10.)</p>
     `,
     pitfalls: [
-      "Reusing the same loop variable name for both loops. <code class=\"inline\">for (int i ...)</code> nested inside another <code class=\"inline\">for (int i ...)</code> won't compile — the inner declaration shadows/conflicts with the outer one in the same scope. Use distinct names (<code class=\"inline\">row</code>/<code class=\"inline\">col</code>, <code class=\"inline\">i</code>/<code class=\"inline\">j</code>).",
+      "Reusing the same loop variable name for both loops. <code class=\"inline\">for (int i ...)</code> nested inside another <code class=\"inline\">for (int i ...)</code> won't compile — the outer <code class=\"inline\">i</code> is still in scope inside the inner loop, so the compiler reports <code class=\"inline\">variable i is already defined</code>. Use distinct names (<code class=\"inline\">row</code>/<code class=\"inline\">col</code>, <code class=\"inline\">i</code>/<code class=\"inline\">j</code>).",
       "Assuming the inner loop's variable persists across outer iterations. It doesn't — a loop variable declared in the <code class=\"inline\">for</code> header is freshly initialized every time that loop starts, including every restart of an inner loop."
     ],
     takeaways: [
@@ -435,12 +531,14 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
       <p>A nested loop's total iteration count is outer iterations × inner iterations:</p>
       <pre class="code"><code><span class="c">// 5 outer passes × 10 inner passes = 50 total iterations</span>
 <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; <span class="n">5</span>; row++)
-    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; <span class="n">10</span>; col++) { ... }</code></pre>
+{
+    <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; <span class="n">10</span>; col++) { ... }
+}</code></pre>
       <h2>Why This Matters</h2>
       <p>Being able to predict a loop's iteration count without running it is a real debugging tool — if a loop is running way more (or fewer) times than expected, tracing through this formula by hand usually finds the off-by-one or the wrong bound immediately, faster than adding print statements and re-running.</p>
     `,
     pitfalls: [
-      "Forgetting to subtract 1 for a <code class=\"inline\">&lt;</code> bound. <code class=\"inline\">i < 7</code> starting at <code class=\"inline\">3</code> reaches <code class=\"inline\">3, 4, 5, 6</code> — four values, not seven minus three.",
+      "Forgetting to subtract 1 for a <code class=\"inline\">&lt;</code> bound. <code class=\"inline\">i &lt; 7</code> starting at <code class=\"inline\">3</code> reaches <code class=\"inline\">3, 4, 5, 6</code> — four values, not <code class=\"inline\">7 − 3 + 1 = 5</code> (that would treat <code class=\"inline\">7</code> itself as reached).",
       "Multiplying the wrong two numbers for a nested loop. It's outer-count × inner-count-per-outer-pass, not outer-count + inner-count."
     ],
     takeaways: [
@@ -449,6 +547,139 @@ System.out.<span class="me">println</span>(battery &gt;= <span class="n">12.0</s
       "Counting iterations by hand is a fast way to catch an off-by-one bug before it turns into a mysterious runtime problem."
     ],
     prov: "csawesome-2026: unit-2-selection-and-iteration/2.12-informal-runtime-analysis-of-loops.md (CSA 2.12)"
+  },
+  "5.12": {
+    title: "switch Statements and Expressions",
+    ref: "5.12 — switch Statements and Expressions (not in AP CSA; added by the 2026-09-25 content audit)",
+    body: `
+      <p>When one value decides between many fixed choices, an <code class="inline">else if</code> chain (Lesson 5.5) ends up comparing the same variable over and over. A <code class="inline">switch</code> says it directly: look at one value, then jump to the case that matches it.</p>
+      <h2>The Classic switch Statement</h2>
+      <pre class="code"><code><span class="k">int</span> autoMode = <span class="n">2</span>;
+
+<span class="k">switch</span> (autoMode)
+{
+    <span class="k">case</span> <span class="n">1</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Drive forward"</span>);
+        <span class="k">break</span>;
+    <span class="k">case</span> <span class="n">2</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Score one piece"</span>);
+        <span class="k">break</span>;
+    <span class="k">case</span> <span class="n">3</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Score two pieces"</span>);
+        <span class="k">break</span>;
+    <span class="k">default</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Do nothing"</span>);
+        <span class="k">break</span>;
+}</code></pre>
+      <p>Java evaluates the value in parentheses once, jumps to the <code class="inline">case</code> whose label matches it, and runs the statements from there. <code class="inline">break</code> ends the whole <code class="inline">switch</code> — the same <code class="inline">break</code> that leaves a loop early in Lesson 5.8. <code class="inline">default</code> runs when no label matches, like the trailing <code class="inline">else</code> of an <code class="inline">else if</code> chain; it's optional in a <code class="inline">switch</code> statement, but leaving it off makes "do nothing" a real outcome.</p>
+      <p>Case labels must be fixed values, like <code class="inline">2</code> or <code class="inline">"RED"</code> — never a condition such as <code class="inline">autoMode &gt; 2</code>. For ranges, use an <code class="inline">if</code>/<code class="inline">else</code> chain. You can switch on an <code class="inline">int</code>, a <code class="inline">char</code>, a <code class="inline">String</code> or an enum (Ch.11) — but not on a <code class="inline">long</code>, a <code class="inline">double</code> or a <code class="inline">boolean</code>.</p>
+      <h2>Fall-Through: What Happens Without break</h2>
+      <p>Leave out a <code class="inline">break</code>, and execution doesn't stop at the next label — it <em>falls through</em> and keeps running the following case's statements, ignoring that case's label, until it reaches a <code class="inline">break</code> or the end of the <code class="inline">switch</code>:</p>
+      <pre class="code"><code><span class="k">switch</span> (autoMode)
+{
+    <span class="k">case</span> <span class="n">1</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Drive forward"</span>);
+        <span class="c">// no break: falls through into case 2</span>
+    <span class="k">case</span> <span class="n">2</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Score one piece"</span>);
+        <span class="k">break</span>;
+    <span class="k">default</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Do nothing"</span>);
+        <span class="k">break</span>;
+}</code></pre>
+      <p>With <code class="inline">autoMode</code> set to <code class="inline">1</code>, this prints both <code class="inline">Drive forward</code> and <code class="inline">Score one piece</code>. Fall-through is occasionally what you want, but far more often it's a forgotten <code class="inline">break</code>.</p>
+      <h2>Several Labels, One Action</h2>
+      <p>When several values should do the same thing, list them in one <code class="inline">case</code>, separated by commas:</p>
+      <pre class="code"><code><span class="k">switch</span> (buttonNumber)
+{
+    <span class="k">case</span> <span class="n">1</span>, <span class="n">2</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Intake"</span>);
+        <span class="k">break</span>;
+    <span class="k">case</span> <span class="n">3</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Shoot"</span>);
+        <span class="k">break</span>;
+    <span class="k">default</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Unmapped button"</span>);
+        <span class="k">break</span>;
+}</code></pre>
+      <p>Older code gets the same effect with fall-through, stacking <code class="inline">case 1:</code> and <code class="inline">case 2:</code> on separate lines with nothing between them. The comma form says it more clearly.</p>
+      <h2>Switching on a String</h2>
+      <pre class="code"><code><span class="t">String</span> alliance = <span class="s">"RED"</span>;
+
+<span class="k">switch</span> (alliance)
+{
+    <span class="k">case</span> <span class="s">"RED"</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Start on the left"</span>);
+        <span class="k">break</span>;
+    <span class="k">case</span> <span class="s">"BLUE"</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Start on the right"</span>);
+        <span class="k">break</span>;
+    <span class="k">default</span>:
+        System.out.<span class="me">println</span>(<span class="s">"Unknown alliance"</span>);
+        <span class="k">break</span>;
+}</code></pre>
+      <p>A <code class="inline">String</code> case matches only the exact same text, capital letters included — <code class="inline">"red"</code> would land in <code class="inline">default</code>. (Ch.6 explains how Java compares Strings.)</p>
+      <h2>The Arrow Form: No Fall-Through</h2>
+      <p>Writing <code class="inline">case ... -&gt;</code> instead of <code class="inline">case ...:</code> gives each case its own separate body. It never falls through, so there's no <code class="inline">break</code> to forget:</p>
+      <pre class="code"><code><span class="k">switch</span> (autoMode)
+{
+    <span class="k">case</span> <span class="n">1</span> -&gt; System.out.<span class="me">println</span>(<span class="s">"Drive forward"</span>);
+    <span class="k">case</span> <span class="n">2</span> -&gt;
+    {
+        System.out.<span class="me">println</span>(<span class="s">"Score one piece"</span>);
+        System.out.<span class="me">println</span>(<span class="s">"Then back up"</span>);
+    }
+    <span class="k">case</span> <span class="n">3</span>, <span class="n">4</span> -&gt; System.out.<span class="me">println</span>(<span class="s">"Score two pieces"</span>);
+    <span class="k">default</span> -&gt; System.out.<span class="me">println</span>(<span class="s">"Do nothing"</span>);
+}</code></pre>
+      <p>A case with one statement puts it right after the arrow; a case with several wraps them in braces. One <code class="inline">switch</code> must use one form throughout — you can't mix <code class="inline">:</code> and <code class="inline">-&gt;</code> cases. For new code, the arrow form is usually the better choice.</p>
+      <h2>switch Expressions: Producing a Value</h2>
+      <p>A <code class="inline">switch</code> can also <em>produce a value</em>, the way <code class="inline">?:</code> does in Lesson 5.5, but for any number of choices:</p>
+      <pre class="code"><code><span class="k">int</span> autoMode = <span class="n">3</span>;
+
+<span class="t">String</span> plan = <span class="k">switch</span> (autoMode)
+{
+    <span class="k">case</span> <span class="n">1</span> -&gt; <span class="s">"Drive forward"</span>;
+    <span class="k">case</span> <span class="n">2</span> -&gt; <span class="s">"Score one piece"</span>;
+    <span class="k">case</span> <span class="n">3</span>, <span class="n">4</span> -&gt; <span class="s">"Score two pieces"</span>;
+    <span class="k">default</span> -&gt; <span class="s">"Do nothing"</span>;
+};
+
+System.out.<span class="me">println</span>(plan); <span class="c">// Score two pieces</span></code></pre>
+      <p>Each case's value becomes the value of the whole <code class="inline">switch</code>. Two rules come with that. The semicolon after the closing brace is required, because the <code class="inline">switch</code> is part of an assignment statement. And a <code class="inline">switch</code> expression must be <em>exhaustive</em>: every possible value has to produce a result, so a switch expression on an <code class="inline">int</code> or a <code class="inline">String</code> needs a <code class="inline">default</code>.</p>
+      <h2>yield: When a Case Needs More Than One Line</h2>
+      <p>If a case in a <code class="inline">switch</code> expression needs to do some work before producing its value, give it a block and hand the value back with <code class="inline">yield</code>:</p>
+      <pre class="code"><code><span class="k">double</span> speed = <span class="k">switch</span> (gear)
+{
+    <span class="k">case</span> <span class="n">1</span> -&gt; <span class="n">0.3</span>;
+    <span class="k">case</span> <span class="n">2</span> -&gt; <span class="n">0.6</span>;
+    <span class="k">case</span> <span class="n">3</span> -&gt;
+    {
+        System.out.<span class="me">println</span>(<span class="s">"Top gear: watch the corners"</span>);
+        <span class="k">yield</span> <span class="n">1.0</span>;
+    }
+    <span class="k">default</span> -&gt; <span class="n">0.0</span>;
+};</code></pre>
+      <p><code class="inline">yield</code> means "this is the switch's value" — <code class="inline">return</code> would try to leave the whole method instead. <code class="inline">yield</code> also replaces <code class="inline">break</code> if you ever write a <code class="inline">switch</code> expression in the colon form (<code class="inline">case 1: yield 0.3;</code>).</p>
+      <h2>switch and Enums (Ch.11)</h2>
+      <p><code class="inline">switch</code> is at its best with enums, the named sets of choices that Ch.11 introduces — that chapter picks up right where this lesson leaves off. One Java version note to carry there: on Java 21 and later, including Java 25 (this course's target), an enum case label can be written either bare (<code class="inline">case INTAKE -&gt;</code>) or qualified with the enum's name (<code class="inline">case ArmPosition.INTAKE -&gt;</code>). On Java 17, only the bare name compiles. Everything else in this lesson — arrow cases, comma-separated labels, <code class="inline">switch</code> expressions and <code class="inline">yield</code> — has been standard since Java 14, so it works the same on Java 17 and Java 25.</p>
+    `,
+    pitfalls: [
+      "Forgetting <code class=\"inline\">break</code> in the colon form. Execution falls through and runs the next case's statements too. The arrow form can't fall through, which is a good reason to prefer it.",
+      "Writing a condition as a case label. <code class=\"inline\">case autoMode &gt; 2:</code> won't compile — labels are fixed values. Use an <code class=\"inline\">if</code>/<code class=\"inline\">else</code> chain for ranges.",
+      "Leaving out <code class=\"inline\">default</code> in a <code class=\"inline\">switch</code> expression on an <code class=\"inline\">int</code> or <code class=\"inline\">String</code>. It won't compile, because some values would have no result.",
+      "Forgetting the semicolon after a <code class=\"inline\">switch</code> expression. <code class=\"inline\">String plan = switch (autoMode) { ... }</code> needs a <code class=\"inline\">;</code> after the closing brace, like any other assignment.",
+      "Switching on a <code class=\"inline\">String</code> that might be <code class=\"inline\">null</code>. The <code class=\"inline\">switch</code> throws a <code class=\"inline\">NullPointerException</code> before checking any case, even <code class=\"inline\">default</code>."
+    ],
+    takeaways: [
+      "A <code class=\"inline\">switch</code> matches one value against fixed case labels; it works on <code class=\"inline\">int</code>, <code class=\"inline\">char</code>, <code class=\"inline\">String</code> and enum values.",
+      "In the colon form, each case needs a <code class=\"inline\">break</code>; without one, execution falls through into the next case. <code class=\"inline\">default</code> catches every value no label matched.",
+      "The arrow form (<code class=\"inline\">case 1 -&gt;</code>) never falls through, and <code class=\"inline\">case 1, 2</code> lists several labels for one action.",
+      "A <code class=\"inline\">switch</code> expression produces a value and must cover every possible input, so <code class=\"inline\">int</code> and <code class=\"inline\">String</code> switch expressions need a <code class=\"inline\">default</code>.",
+      "<code class=\"inline\">yield</code> hands back the value from a multi-line block inside a <code class=\"inline\">switch</code> expression.",
+      "On Java 21+ an enum case label may be qualified (<code class=\"inline\">case ArmPosition.INTAKE</code>); Java 17 accepts only the bare constant name."
+    ],
+    prov: "nothing upstream — written for this course (content-audit decision D4); AP CSA doesn't cover switch"
   }
 };
 

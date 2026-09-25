@@ -55,12 +55,17 @@ BEATS = [
         report(sensors[i]);
     }
 }</code></pre>''',
-        "speak": "int i equals 0 initializes the loop variable. i less than sensors dot length is the test, run again as long as this is true. i plus-plus updates it after every pass. Inside, we check each sensor in turn, and report it if it's faulty. The three parts are always separated by semicolons, and always in this order, initialize, test, update.",
+        "speak": "int i equals 0 initializes the loop variable. i less than sensors dot length is the test, run again as long as this is true. i plus-plus updates it after every pass. Inside, we check each sensor in turn, and report it if it's faulty. Here, sensors is an array, a numbered list of values. sensors dot length is how many there are, and sensors, bracket i, is the one at position i, counting from zero. Arrays get their own full lesson in Chapter 9, so for now, just focus on the loop's shape. The three parts are always separated by semicolons, and always in this order, initialize, test, update.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Starting at 0 vs. Starting at 1</div>
     <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto;">0 pairs naturally with &lt; &mdash; 1 pairs naturally with &lt;=.</p>''',
         "speak": "One detail worth internalizing, starting at 0 pairs naturally with less-than, starting at 1 pairs naturally with less-than-or-equal. Pick whichever combination actually matches how many times you want the loop to run.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">10</span>; i &gt; <span class="n">0</span>; i--)      <span class="c">// 10, 9, 8, ... 1</span>
+<span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt;= <span class="n">10</span>; i += <span class="n">2</span>)  <span class="c">// 0, 2, 4, ... 10</span></code></pre>''',
+        "speak": "The update doesn't have to be i plus-plus, either. Start at 10, keep going while i is greater than 0, and use i minus-minus, and the loop counts down, 10, 9, 8, all the way to 1. Or use i plus-equals 2, and it steps by twos, 0, 2, 4, up to 10. And a loop variable declared right in the header, like int i, only exists inside that loop.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>

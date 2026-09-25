@@ -96,7 +96,7 @@ const DATA = {
     body: `
       <h2>Libraries and APIs</h2>
       <p>A <strong>library</strong> is a collection of code someone else already wrote, that you can reuse instead of writing it yourself. WPILib — the library every FRC robot depends on — is exactly this: motor control, sensors, the whole command-based framework, all written once and reused by thousands of teams.</p>
-      <p>The <strong>API</strong> (Application Programming Interface) is the instructions for how to actually use a library: what classes it gives you, what each one can do, and what you need to pass in. You don't need to know how a library's code works internally — you just need its API.</p>
+      <p>The <strong>API</strong> (Application Programming Interface) is the instructions for how to actually use a library: what classes it gives you, what each one can do, and what you need to pass in. You don't need to know how a library's code works internally — you just need its API. WPILib publishes its API as web pages you can look things up in; Lesson 3.2 shows how to read one.</p>
       <h2>Classes, Attributes, and Behaviors</h2>
       <p>A <strong>class</strong> is the building block a library gives you — it defines a new kind of value, the same way <code class="inline">int</code> or <code class="inline">double</code> do, except you (or a library author) define what it means. An <strong>object</strong> is one specific thing built from a class.</p>
       <p>Every class bundles two things together:</p>
@@ -104,16 +104,19 @@ const DATA = {
         <li><strong>Attributes</strong> — the data it holds. Stored in variables.</li>
         <li><strong>Behaviors</strong> — what it can do. Defined as methods.</li>
       </ul>
-      <pre class="code"><code><span class="t">TalonFX</span> shooterMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">5</span>); <span class="c">// shooterMotor is an object, built from the TalonFX class</span>
+      <pre class="code"><code><span class="c">// statusLight is an object, built from WPILib's DigitalOutput class</span>
+<span class="t">DigitalOutput</span> statusLight = <span class="k">new</span> <span class="t">DigitalOutput</span>(<span class="n">0</span>);
 
-shooterMotor.<span class="me">set</span>(<span class="n">0.8</span>); <span class="c">// a behavior — call a method with the dot operator</span></code></pre>
-      <p>The <code class="inline">.</code> (dot operator) is how you reach an object's behaviors and attributes. <code class="inline">shooterMotor.set(0.8)</code> means: find the <code class="inline">set</code> method defined in the <code class="inline">TalonFX</code> class, and run it on this specific motor object.</p>
+<span class="c">// a behavior — call a method with the dot operator</span>
+statusLight.<span class="me">set</span>(<span class="k">true</span>);</code></pre>
+      <p><code class="inline">DigitalOutput</code> is a real WPILib class: it switches one of the robot controller's digital output pins on or off — here pin <code class="inline">0</code>, wired to a status light. <code class="inline">new</code> builds the object (Lesson 4.5 covers exactly how); for now, read that line as "make one <code class="inline">DigitalOutput</code> for pin 0 and call it <code class="inline">statusLight</code>." A real file also needs an <code class="inline">import</code> line before it can use <code class="inline">DigitalOutput</code> — that's Lesson 3.3.</p>
+      <p>The <code class="inline">.</code> (dot operator) is how you reach an object's behaviors and attributes. <code class="inline">statusLight.set(true)</code> means: find the <code class="inline">set</code> method defined in the <code class="inline">DigitalOutput</code> class, and run it on this specific object — turning its pin on.</p>
       <h2>Why This Matters</h2>
-      <p>You don't need to know how <code class="inline">TalonFX</code> is implemented internally — motor controller firmware, CAN bus protocol, none of it — to use <code class="inline">shooterMotor.set(0.8)</code> correctly. That's the entire point of a library: someone else solved the hard problem once, documented how to use their solution, and you build on top of it instead of starting from scratch.</p>
+      <p>You don't need to know how <code class="inline">DigitalOutput</code> is implemented internally — the calls into the robot controller's hardware, the voltage on the pin, none of it — to use <code class="inline">statusLight.set(true)</code> correctly. That's the entire point of a library: someone else solved the hard problem once, documented how to use their solution, and you build on top of it instead of starting from scratch.</p>
     `,
     pitfalls: [
-      "Confusing a class with an object. <code class=\"inline\">TalonFX</code> is the class (the blueprint); <code class=\"inline\">shooterMotor</code> is one specific object built from it. A robot might have several <code class=\"inline\">TalonFX</code> objects — one per motor.",
-      "Forgetting the dot operator. <code class=\"inline\">shooterMotor set(0.8)</code> isn't valid — the dot is what connects an object to its behavior."
+      "Confusing a class with an object. <code class=\"inline\">DigitalOutput</code> is the class (the blueprint); <code class=\"inline\">statusLight</code> is one specific object built from it. A robot might have several <code class=\"inline\">DigitalOutput</code> objects — one per pin.",
+      "Forgetting the dot operator. <code class=\"inline\">statusLight set(true)</code> isn't valid — the dot is what connects an object to its behavior."
     ],
     takeaways: [
       "A library is reusable code written by someone else; its API documents how to use it.",
@@ -133,26 +136,59 @@ shooterMotor.<span class="me">set</span>(<span class="n">0.8</span>); <span clas
    comment */</span>
 <span class="c">/** a documentation comment — describes a class or method for other programmers */</span></code></pre>
       <p>The compiler ignores all three completely — they exist for whoever reads the code next, including future-you.</p>
+      <p><strong>Java 25 note:</strong> Java 23 added a fourth style, <code class="inline">///</code> Markdown documentation comments, where every line of the comment starts with <code class="inline">///</code>. This course uses <code class="inline">/** */</code>, which works on every Java version — on Java 17, a <code class="inline">///</code> line is just an ordinary <code class="inline">//</code> comment.</p>
       <h2>Preconditions and Postconditions</h2>
       <p>A <strong>precondition</strong> is what has to be true before a method is called for it to work correctly. A <strong>postcondition</strong> is what's guaranteed true after it runs.</p>
+      <p>The method below takes a parameter, which Lesson 4.1 covers properly — for now, just look at the comment above it:</p>
       <pre class="code"><code><span class="c">/**
- * @param targetRPM the speed to spin up to
+ * Spins the shooter up toward a target speed.
  * Precondition: targetRPM is between 0 and the motor's max RPM.
  * Postcondition: the motor ramps toward targetRPM.
+ *
+ * @param targetRPM the speed to spin up to
  */</span>
-<span class="k">public void</span> <span class="me">spinUpTo</span>(<span class="k">double</span> targetRPM) { ... }</code></pre>
-      <p>Java doesn't enforce preconditions automatically — nothing stops you from calling <code class="inline">spinUpTo(-500)</code>. A precondition is a documented expectation, not a guarantee the method checks it. <code class="inline">Math.sqrt(-4)</code> is a real example: nothing crashes, but the result is <code class="inline">NaN</code> ("not a number") because negative input violates <code class="inline">sqrt</code>'s precondition.</p>
+<span class="k">public</span> <span class="k">void</span> spinUpTo(<span class="k">double</span> targetRPM) { ... }</code></pre>
+      <p>A documentation comment starts with a plain description — here, what the method does plus its precondition and postcondition — and ends with its <strong>tags</strong>. <code class="inline">@param</code> describes one parameter. Keep the tags last: everything after a tag is treated as part of that tag's description.</p>
+      <p>Java doesn't enforce preconditions automatically — nothing stops you from calling <code class="inline">spinUpTo(-500)</code>. A precondition is a documented expectation, not a guarantee the method checks it. A real library shows the same effect: <code class="inline">Math.sqrt(-4)</code> (Java's <code class="inline">Math</code> class is Lesson 4.3) doesn't crash — its documentation says a negative input gives <code class="inline">NaN</code> ("not a number"). If your code needed a real distance, <code class="inline">NaN</code> is a silent wrong answer, not an error.</p>
+      <h2>More Documentation Tags</h2>
+      <p>Two more tags show up constantly in library documentation:</p>
+      <pre class="code"><code><span class="c">/**
+ * Converts a battery voltage into an approximate charge percentage.
+ *
+ * @param volts the measured battery voltage
+ * @return the charge, from 0 to 100
+ * @throws IllegalArgumentException if volts is negative
+ */</span>
+<span class="k">public</span> <span class="k">static</span> <span class="k">double</span> batteryPercent(<span class="k">double</span> volts) { ... }</code></pre>
+      <ul>
+        <li><code class="inline">@return</code> describes the value the method hands back (return values are Lesson 4.2).</li>
+        <li><code class="inline">@throws</code> names an error (an <em>exception</em>) the method can throw, and when it happens (exceptions are Ch.12).</li>
+      </ul>
+      <p>Your IDE reads these comments too: hover over a call to <code class="inline">batteryPercent</code> and it shows the description and tags. The <code class="inline">javadoc</code> tool turns the same comments into web pages — which is exactly how a library's API pages are made.</p>
+      <h2>Reading an API Page</h2>
+      <p>WPILib's API pages are generated from its own <code class="inline">/** */</code> comments. The 2027 pages are at <code class="inline">github.wpilib.org/allwpilib/docs/beta/java/</code> — search there for a class by name. The page for WPILib's <code class="inline">Timer</code> class shows, top to bottom:</p>
+      <ul>
+        <li><strong>Package and class</strong> — <code class="inline">org.wpilib.system</code>, class <code class="inline">Timer</code>. The package tells you what to <code class="inline">import</code> (Lesson 3.3).</li>
+        <li><strong>Class description</strong> — "A timer class."</li>
+        <li><strong>Constructor Summary</strong> — <code class="inline">Timer()</code>: how to build one with <code class="inline">new</code>, and what it needs (no arguments).</li>
+        <li><strong>Method Summary</strong> — one row per method: its return type, its name and parameters, and a one-line description. <code class="inline">double get()</code> — "Get the current time from the timer." <code class="inline">void start()</code> — "Start the timer running." <code class="inline">boolean hasElapsed(double seconds)</code> — "Check if the period specified has passed."</li>
+        <li><strong>Method Details</strong> — the full comment for each method, including its <code class="inline">@param</code> and <code class="inline">@return</code> text.</li>
+      </ul>
+      <p>The row <code class="inline">double get()</code> tells you everything you need to call it: no arguments, and it hands back a <code class="inline">double</code> — the timer's elapsed time in seconds.</p>
       <h2>Why Bother Documenting This</h2>
       <p>Once you write a method, other people (including future-you, and your whole team) will call it without reading its implementation. Documenting preconditions and postconditions is how they know what's safe to pass in and what to expect back — without documentation, the only way to find out is to read the method's full source or guess.</p>
     `,
     pitfalls: [
       "Assuming a precondition is enforced. Documenting a precondition doesn't make Java check it — passing a bad value can still silently produce a wrong result (like <code class=\"inline\">NaN</code>) instead of an error.",
-      "Skipping documentation on methods other people will call. The cost of a two-line comment is much smaller than the cost of a teammate guessing wrong about what a method expects."
+      "Skipping documentation on methods other people will call. The cost of a two-line comment is much smaller than the cost of a teammate guessing wrong about what a method expects.",
+      "Putting description text after the tags. Anything written after <code class=\"inline\">@param</code> becomes part of that parameter's description — write the description first, then the tags."
     ],
     takeaways: [
-      "<code class=\"inline\">//</code>, <code class=\"inline\">/* */</code>, and <code class=\"inline\">/** */</code> are the three comment styles; the compiler ignores all of them.",
+      "<code class=\"inline\">//</code>, <code class=\"inline\">/* */</code>, and <code class=\"inline\">/** */</code> are the three comment styles; the compiler ignores all of them. (Java 23+ also allows <code class=\"inline\">///</code> documentation comments.)",
       "A precondition is what must be true before a method is called; a postcondition is what's guaranteed true after it returns.",
-      "Preconditions are documented expectations, not automatically enforced — violating one can produce a wrong result without an error."
+      "Preconditions are documented expectations, not automatically enforced — violating one can produce a wrong result without an error.",
+      "A <code class=\"inline\">/** */</code> comment starts with its description, then its tags: <code class=\"inline\">@param</code> for each parameter, <code class=\"inline\">@return</code> for the returned value, <code class=\"inline\">@throws</code> for errors.",
+      "An API page lists a class's package, constructors, and methods (return type, name, parameters, description) — all generated from comments like these."
     ],
     prov: "csawesome-2026: unit-1-using-objects-and-methods/1.08-documentation-with-comments-and-preconditions.md (CSA 1.8)"
   },
@@ -161,27 +197,37 @@ shooterMotor.<span class="me">set</span>(<span class="n">0.8</span>); <span clas
     ref: "3.3 — Packages & Imports (CSA 1.7 §1.7.2)",
     body: `
       <h2>Packages Are Folders for Classes</h2>
-      <p>A <strong>package</strong> groups related classes together — like a folder. <code class="inline">edu.wpi.first.wpilibj2.command</code> is a real WPILib package holding all the command-based framework's classes.</p>
+      <p>A <strong>package</strong> groups related classes together — like a folder. <code class="inline">org.wpilib.command3</code> is a real WPILib package holding the command-based framework's classes (Ch.25), and <code class="inline">org.wpilib.hardware.discrete</code> holds <code class="inline">DigitalInput</code> and <code class="inline">DigitalOutput</code>. Package names match folders on disk: a class in the package <code class="inline">frc.robot.subsystems</code> lives in a <code class="inline">frc/robot/subsystems/</code> folder.</p>
       <h2>Importing a Class</h2>
       <p>To use a class from another package, <code class="inline">import</code> it at the top of your file:</p>
       <pre class="code"><code><span class="k">package</span> frc.robot.subsystems;
 
-<span class="k">import</span> edu.wpi.first.wpilibj2.command.<span class="t">SubsystemBase</span>;
-<span class="k">import</span> com.revrobotics.<span class="t">CANSparkMax</span>;
+<span class="k">import</span> org.wpilib.hardware.discrete.<span class="t">DigitalInput</span>;
+<span class="k">import</span> org.wpilib.hardware.rotation.<span class="t">Encoder</span>;
 
-<span class="k">public class</span> <span class="t">Drivetrain</span> <span class="k">extends</span> <span class="t">SubsystemBase</span> { ... }</code></pre>
-      <p>The <code class="inline">package</code> line at the top says where <em>this</em> file lives; each <code class="inline">import</code> brings in one class from somewhere else so you can use it by its short name (<code class="inline">SubsystemBase</code>) instead of its full path.</p>
+<span class="k">public</span> <span class="k">class</span> <span class="t">Arm</span> { ... }</code></pre>
+      <p>The <code class="inline">package</code> line at the top says where <em>this</em> file lives; each <code class="inline">import</code> brings in one class from somewhere else so you can use it by its short name (<code class="inline">Encoder</code>) instead of its full path. The order is always the same: <code class="inline">package</code> first, then the imports, then the class.</p>
+      <h2>Other Ways to Reach a Class</h2>
+      <ul>
+        <li><strong>Fully-qualified name</strong> — skip the import and write the whole path where you use the class: <code class="inline">org.wpilib.system.Timer clock = new org.wpilib.system.Timer();</code>. Legal, just long.</li>
+        <li><strong>Wildcard import</strong> — <code class="inline">import org.wpilib.hardware.discrete.*;</code> imports every class in that one package (not the packages inside it).</li>
+        <li><strong>Static import</strong> — <code class="inline">import static java.lang.Math.sqrt;</code> lets you call one static method without its class name: <code class="inline">sqrt(9.0)</code> instead of <code class="inline">Math.sqrt(9.0)</code> (static methods are Lesson 4.2).</li>
+        <li><strong>Same package, no import</strong> — a class in the same package as your file can be used by its short name with no import at all.</li>
+      </ul>
       <h2>One Package Needs No Import</h2>
-      <p><code class="inline">java.lang</code> is special — its classes (<code class="inline">String</code>, <code class="inline">System</code>, and a handful of others) are always available, in every Java file, with no <code class="inline">import</code> needed. That's why you've been able to use <code class="inline">System.out.println</code> and <code class="inline">String</code> this whole time without importing anything.</p>
+      <p><code class="inline">java.lang</code> is special — its classes (<code class="inline">String</code>, <code class="inline">System</code>, <code class="inline">Math</code>, and a handful of others) are always available, in every Java file, with no <code class="inline">import</code> needed. That's why you've been able to use <code class="inline">System.out.println</code> and <code class="inline">String</code> this whole time without importing anything — and why <code class="inline">Math</code> (Lesson 4.3) needs no import either.</p>
+      <p><strong>Java 25 note:</strong> Java 25 adds <code class="inline">import module java.base;</code>, which imports every public class in Java's core library at once, and a compact source file (one that's just <code class="inline">void main() { ... }</code> with no class line around it) gets that import automatically. On Java 17 neither exists — import classes one at a time as shown above.</p>
+      <p><strong>Running a file that has a package line:</strong> keep it in the folder its package names. On Java 22 and later, <code class="inline">java SelfTest.java</code> refuses to run a file whose <code class="inline">package</code> line doesn't match the folder it's in.</p>
     `,
     pitfalls: [
       "Forgetting an import. If a class isn't in <code class=\"inline\">java.lang</code> and isn't in your own package, using it without importing it is a compile error.",
       "Importing something you don't use. Not a functional bug, but most IDEs will flag it — it's just clutter."
     ],
     takeaways: [
-      "A package groups related classes together, the way a folder groups related files.",
+      "A package groups related classes together, the way a folder groups related files — and its name matches the folder path on disk.",
       "<code class=\"inline\">import</code> brings a class from another package into your file so you can use its short name.",
-      "<code class=\"inline\">java.lang</code> (which includes <code class=\"inline\">String</code> and <code class=\"inline\">System</code>) never needs an import — it's always available."
+      "You can also write a fully-qualified name, import a whole package with <code class=\"inline\">.*</code>, or <code class=\"inline\">import static</code> a single static member; classes in your own package need no import.",
+      "<code class=\"inline\">java.lang</code> (which includes <code class=\"inline\">String</code>, <code class=\"inline\">System</code>, and <code class=\"inline\">Math</code>) never needs an import — it's always available."
     ],
     prov: "csawesome-2026: unit-1-using-objects-and-methods/1.07-apis-and-libraries.md (CSA 1.7 §1.7.2)"
   }

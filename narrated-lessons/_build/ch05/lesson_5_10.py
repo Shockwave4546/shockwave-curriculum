@@ -38,10 +38,10 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
-      <li><span class="check">!</span>Reusing the same loop variable name for both loops &mdash; it won't compile; the inner declaration conflicts with the outer one.</li>
+      <li><span class="check">!</span>Reusing the same loop variable name for both loops &mdash; it won't compile: variable i is already defined.</li>
       <li><span class="check">!</span>Assuming the inner loop's variable persists across outer iterations &mdash; it doesn't; it's freshly initialized every restart.</li>
     </ul></div>''',
-        "speak": "Two pitfalls. Reusing the same loop variable name for both loops, a for loop declaring i nested inside another for loop also declaring i simply won't compile, the inner declaration conflicts with the outer one in the same scope, use distinct names, row and col, or i and j. And assuming the inner loop's variable persists across outer iterations, it doesn't, a loop variable declared in a for header is freshly initialized every single time that loop starts, including every restart of an inner loop.",
+        "speak": "Two pitfalls. Reusing the same loop variable name for both loops, a for loop declaring i nested inside another for loop also declaring i simply won't compile. The outer i is still in scope inside the inner loop, so the compiler reports, variable i is already defined. So use distinct names, row and col, or i and j. And assuming the inner loop's variable persists across outer iterations, it doesn't, a loop variable declared in a for header is freshly initialized every single time that loop starts, including every restart of an inner loop.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>

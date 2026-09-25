@@ -70,6 +70,9 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
 pre.code code{display:block;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;}
 .k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+table.cmp{width:100%;border-collapse:collapse;margin:0 0 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+table.cmp th,table.cmp td{border:1px solid var(--card-line);padding:8px 10px;text-align:left;}
+table.cmp th{background:var(--card);font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--ink-soft);font-size:11px;text-transform:uppercase;letter-spacing:0.03em;}
 .prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
 .prov strong{color:var(--accent);font-weight:500;}
 ::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
@@ -97,13 +100,13 @@ const DATA = {
       <h2>What a Method Is</h2>
       <p>A <strong>method</strong> is a named block of code that runs when you call it. <code class="inline">System.out.println(...)</code> is a method call — you've been calling methods since Lesson 1.2 without needing to know how <code class="inline">println</code> is implemented internally. That's the whole benefit: you use a method by its name and what it does, not by reading its insides.</p>
       <h2>Signature, Parameters, Arguments</h2>
-      <p>A method's <strong>signature</strong> is its name plus its parameter types — what you need to know to call it correctly.</p>
-      <pre class="code"><code><span class="k">public void</span> <span class="me">rampTo</span>(<span class="k">double</span> targetSpeed) { ... }</code></pre>
+      <p>A method's <strong>signature</strong> is its name plus its parameter types — what you need to know to call it correctly. The return type is <em>not</em> part of the signature, so two methods in one class can't differ only in what they return.</p>
+      <pre class="code"><code><span class="k">public</span> <span class="k">void</span> rampTo(<span class="k">double</span> targetSpeed) { ... }</code></pre>
       <p><code class="inline">targetSpeed</code> here is a <strong>parameter</strong> — a variable declared in the method's header, usable inside the method's body. When you actually call the method:</p>
       <pre class="code"><code>drivetrain.<span class="me">rampTo</span>(<span class="n">0.8</span>);</code></pre>
       <p><code class="inline">0.8</code> is the <strong>argument</strong> — the real value being passed in. "Parameter" and "argument" describe the same slot from two different sides: the parameter is the variable <em>in the method</em>; the argument is the value <em>at the call site</em>.</p>
       <h2>Call by Value</h2>
-      <p>Java copies the argument's value into the parameter — <strong>call by value</strong>. If the method changes its own parameter internally, the original value the caller passed in is unaffected; only a copy went in.</p>
+      <p>Java copies the argument's value into the parameter — <strong>call by value</strong>. If the method changes its own parameter internally, the original value the caller passed in is unaffected; only a copy went in. (When the argument is an object, what gets copied is the reference to it — Lesson 7.3 shows what that means.)</p>
       <h2>Overloading</h2>
       <p>Two methods can share the same name if their parameter lists differ in number or type — this is <strong>overloading</strong>. <code class="inline">System.out.println()</code> is a real example: there's a version for no arguments, one for a <code class="inline">String</code>, one for an <code class="inline">int</code>, and more — Java picks the right one based on what you pass in.</p>
       <pre class="code"><code><span class="k">void</span> println()          <span class="c">// no parameters</span>
@@ -113,7 +116,7 @@ const DATA = {
     pitfalls: [
       "Mixing up \"parameter\" and \"argument.\" They're often used loosely as if interchangeable, but precisely: parameter = the variable in the method header, argument = the value at the call site.",
       "Assuming a method can change the caller's original value. Call by value means the method only ever gets a copy — reassigning a parameter inside the method never affects the variable the caller passed in.",
-      "Wrong argument count or type. The compiler checks a call's arguments against the method's signature — mismatches (wrong count, wrong type, wrong order) won't compile."
+      "Wrong argument count, type, or order. The compiler checks a call's arguments against the method's signature — a wrong count or a wrong type won't compile, and neither will swapping two arguments of <em>different</em> types. Swapping two arguments of the <em>same</em> type (two <code class=\"inline\">double</code>s, say) does compile, and silently passes the wrong values (Lesson 4.5)."
     ],
     takeaways: [
       "A method's signature is its name plus its parameter types.",
@@ -128,27 +131,29 @@ const DATA = {
     ref: "4.2 — Calling Class Methods (CSA 1.10)",
     body: `
       <h2>Class Methods (Static Methods)</h2>
-      <p>A method marked <code class="inline">static</code> belongs to the class itself, not to any object — called a <strong>class method</strong> or <strong>static method</strong>. <code class="inline">main</code> is always static. Call one using the class name and the dot operator:</p>
+      <p>A method marked <code class="inline">static</code> belongs to the class itself, not to any object — called a <strong>class method</strong> or <strong>static method</strong>. <code class="inline">main</code> is static too: in this course it's always <code class="inline">public static void main(String[] args)</code>. Call a static method using the class name and the dot operator:</p>
       <pre class="code"><code><span class="k">double</span> distance = <span class="t">Math</span>.<span class="me">abs</span>(target - current);</code></pre>
       <p>Inside the same class that defines the method, you can drop the class name and just call it directly.</p>
+      <p><strong>Java 25 note:</strong> Java 25 also accepts a shorter, non-static <code class="inline">void main()</code> as a program's entry point. On Java 17, <code class="inline">main</code> must be <code class="inline">public static void main(String[] args)</code> — which works on every version, so it's what this course uses.</p>
       <h2>Void vs. Non-Void Methods</h2>
-      <p>A <code class="inline">void</code> method doesn't return anything — you call it purely for its effect (like printing, or setting a motor's speed). A <strong>non-void</strong> method computes and returns a value, which the caller must actually use:</p>
-      <pre class="code"><code><span class="k">public static int</span> <span class="me">square</span>(<span class="k">int</span> number)
+      <p>A <code class="inline">void</code> method doesn't return anything — you call it purely for its effect (like printing, or setting a motor's speed). A <strong>non-void</strong> method computes and returns a value, which the caller should actually use:</p>
+      <pre class="code"><code><span class="k">public</span> <span class="k">static</span> <span class="k">int</span> square(<span class="k">int</span> number)
 {
     <span class="k">int</span> result = number * number;
     <span class="k">return</span> result;
 }</code></pre>
       <p><code class="inline">return</code> sends the value back to whoever called the method, and ends the method immediately — nothing after <code class="inline">return</code> runs.</p>
-      <pre class="code"><code><span class="k">int</span> y = <span class="me">square</span>(<span class="n">5</span>);        <span class="c">// stored in a variable</span>
-System.out.<span class="me">println</span>(<span class="me">square</span>(<span class="n">4</span>)); <span class="c">// used directly in an expression</span></code></pre>
+      <pre class="code"><code><span class="k">int</span> y = square(<span class="n">5</span>);        <span class="c">// stored in a variable</span>
+System.out.<span class="me">println</span>(square(<span class="n">4</span>)); <span class="c">// used directly in an expression</span></code></pre>
       <h2>Common Errors</h2>
       <ul>
-        <li>Forgetting to do something with a non-void method's return value — it has to be stored or used, not just called and ignored.</li>
+        <li>Forgetting to do something with a non-void method's return value — it should be stored or used; Java lets you ignore it, but then the call's result is wasted.</li>
         <li>A type mismatch between what a method returns and what you try to store it in (assigning a <code class="inline">double</code> return into an <code class="inline">int</code> variable won't compile).</li>
-        <li>Wrong argument count, order, or type at the call site.</li>
+        <li>Wrong argument count or type at the call site (or two arguments swapped — see Lesson 4.1).</li>
       </ul>
-      <pre class="code"><code><span class="k">int</span> total = <span class="me">calculateChecksum</span>(data); <span class="c">// fine — assuming calculateChecksum returns an int</span>
-<span class="me">calculateChecksum</span>(data);             <span class="c">// compiles, but the returned value is silently thrown away</span></code></pre>
+      <pre class="code"><code><span class="k">int</span> total = calculateChecksum(data); <span class="c">// fine — assuming calculateChecksum returns an int</span>
+<span class="c">// compiles, but the returned value is silently thrown away:</span>
+calculateChecksum(data);</code></pre>
     `,
     pitfalls: [
       "Calling a non-void method and doing nothing with the result. It still compiles — Java doesn't force you to use a return value, which makes this an easy mistake to miss.",
@@ -156,7 +161,7 @@ System.out.<span class="me">println</span>(<span class="me">square</span>(<span 
     ],
     takeaways: [
       "A <code class=\"inline\">static</code> method is a class method, called via the class name (or bare, from inside the same class).",
-      "A <code class=\"inline\">void</code> method returns nothing; a non-void method computes a value that must be stored or used.",
+      "A <code class=\"inline\">void</code> method returns nothing; a non-void method computes a value that should be stored or used.",
       "<code class=\"inline\">return</code> sends a value back to the caller and ends the method immediately.",
       "A non-void method's return value being ignored is a real, easy-to-miss bug — it still compiles."
     ],
@@ -171,8 +176,24 @@ System.out.<span class="me">println</span>(<span class="me">square</span>(<span 
       <pre class="code"><code><span class="t">Math</span>.<span class="me">abs</span>(-<span class="n">4</span>);     <span class="c">// 4 — absolute value</span>
 <span class="t">Math</span>.<span class="me">pow</span>(<span class="n">2</span>, <span class="n">3</span>);   <span class="c">// 8.0 — 2 to the power of 3</span>
 <span class="t">Math</span>.<span class="me">sqrt</span>(<span class="n">9</span>);     <span class="c">// 3.0</span>
-<span class="t">Math</span>.<span class="me">random</span>();    <span class="c">// a double >= 0.0 and < 1.0</span></code></pre>
-      <p>These all return a value, so — same rule as the last lesson — you must actually use what they return.</p>
+<span class="t">Math</span>.<span class="me">random</span>();    <span class="c">// a double &gt;= 0.0 and &lt; 1.0</span></code></pre>
+      <p>These all return a value, so — same rule as the last lesson — you should actually use what they return. (<code class="inline">Math</code> lives in <code class="inline">java.lang</code>, so it never needs an import — Lesson 3.3.)</p>
+      <h2>More Math Methods Robot Code Uses</h2>
+      <table class="cmp"><thead><tr><th>Method</th><th>What it gives you</th><th>Example</th></tr></thead><tbody>
+        <tr><td><code class="inline">Math.max(a, b)</code> / <code class="inline">Math.min(a, b)</code></td><td>the larger / smaller of two values</td><td><code class="inline">Math.max(3, 7)</code> → <code class="inline">7</code></td></tr>
+        <tr><td><code class="inline">Math.round(x)</code></td><td><code class="inline">x</code> rounded to the nearest whole number</td><td><code class="inline">Math.round(2.6)</code> → <code class="inline">3</code></td></tr>
+        <tr><td><code class="inline">Math.floor(x)</code> / <code class="inline">Math.ceil(x)</code></td><td><code class="inline">x</code> rounded down / up, as a <code class="inline">double</code></td><td><code class="inline">Math.floor(2.6)</code> → <code class="inline">2.0</code></td></tr>
+        <tr><td><code class="inline">Math.signum(x)</code></td><td>the sign of <code class="inline">x</code>: <code class="inline">-1.0</code>, <code class="inline">0.0</code>, or <code class="inline">1.0</code></td><td><code class="inline">Math.signum(-0.4)</code> → <code class="inline">-1.0</code></td></tr>
+        <tr><td><code class="inline">Math.PI</code></td><td>the constant π — a value, not a method, so no parentheses</td><td><code class="inline">3.141592653589793</code></td></tr>
+        <tr><td><code class="inline">Math.toRadians(degrees)</code></td><td>an angle in degrees converted to radians</td><td><code class="inline">Math.toRadians(180)</code> → <code class="inline">3.141592653589793</code></td></tr>
+        <tr><td><code class="inline">Math.hypot(x, y)</code></td><td><code class="inline">√(x² + y²)</code> — the straight-line distance</td><td><code class="inline">Math.hypot(3, 4)</code> → <code class="inline">5.0</code></td></tr>
+        <tr><td><code class="inline">Math.atan2(y, x)</code></td><td>the angle, in radians, pointing at <code class="inline">(x, y)</code> — note <code class="inline">y</code> comes first</td><td><code class="inline">Math.atan2(1, 1)</code> → <code class="inline">0.7853981633974483</code></td></tr>
+        <tr><td><code class="inline">Math.clamp(value, min, max)</code></td><td><code class="inline">value</code>, kept inside the range <code class="inline">min</code> to <code class="inline">max</code></td><td><code class="inline">Math.clamp(1.4, -1.0, 1.0)</code> → <code class="inline">1.0</code></td></tr>
+      </tbody></table>
+      <p><code class="inline">Math.clamp</code> is the one you'll use most for motors — it keeps a computed throttle from ever leaving the legal <code class="inline">-1.0</code> to <code class="inline">1.0</code> range:</p>
+      <pre class="code"><code><span class="c">// never lower than -1.0 or higher than 1.0</span>
+<span class="k">double</span> throttle = <span class="t">Math</span>.<span class="me">clamp</span>(joystickValue * <span class="n">1.5</span>, -<span class="n">1.0</span>, <span class="n">1.0</span>);</code></pre>
+      <p><strong>Java 17 note:</strong> <code class="inline">Math.clamp</code> was added in Java 21. On Java 17, write <code class="inline">Math.max(-1.0, Math.min(1.0, value))</code> instead — it gives the same result.</p>
       <h2>Random Numbers in a Range</h2>
       <p><code class="inline">Math.random()</code> alone gives a <code class="inline">double</code> in <code class="inline">[0.0, 1.0)</code> — including 0.0, never reaching 1.0. That's rarely useful on its own; you stretch and shift it to get the range you actually want:</p>
       <pre class="code"><code><span class="k">int</span> rnd = (<span class="k">int</span>)(<span class="t">Math</span>.<span class="me">random</span>() * <span class="n">10</span>);      <span class="c">// an int from 0-9 (10 possible values)</span>
@@ -194,7 +215,8 @@ System.out.<span class="me">println</span>(<span class="me">square</span>(<span 
       "<code class=\"inline\">Math</code> methods are static — call them as <code class=\"inline\">Math.methodName(...)</code>, no object needed.",
       "<code class=\"inline\">Math.random()</code> returns a <code class=\"inline\">double</code> in <code class=\"inline\">[0.0, 1.0)</code> — 0.0 possible, 1.0 never reached.",
       "To get a random int in a range: <code class=\"inline\">(int)(Math.random() * range) + min</code>, where <code class=\"inline\">range</code> is the count of possible values.",
-      "The parentheses around <code class=\"inline\">Math.random() * range</code> are required — casting only <code class=\"inline\">Math.random()</code> breaks the formula."
+      "The parentheses around <code class=\"inline\">Math.random() * range</code> are required — casting only <code class=\"inline\">Math.random()</code> breaks the formula.",
+      "<code class=\"inline\">Math</code> also gives you <code class=\"inline\">max</code>/<code class=\"inline\">min</code>, <code class=\"inline\">round</code>, <code class=\"inline\">floor</code>/<code class=\"inline\">ceil</code>, <code class=\"inline\">signum</code>, <code class=\"inline\">PI</code>, <code class=\"inline\">toRadians</code>, <code class=\"inline\">hypot</code>, <code class=\"inline\">atan2</code>, and — on Java 21+ — <code class=\"inline\">clamp</code>."
     ],
     prov: "csawesome-2026: unit-1-using-objects-and-methods/1.11-using-the-math-class.md (CSA 1.11)"
   },
@@ -203,28 +225,29 @@ System.out.<span class="me">println</span>(<span class="me">square</span>(<span 
     ref: "4.4 — Objects – Instances of Classes (CSA 1.12)",
     body: `
       <h2>Class as Blueprint, Object as Instance</h2>
-      <p>A <strong>class</strong> is a blueprint; an <strong>object</strong> is one specific thing built from it — the way a cookie cutter (class) stamps out cookies (objects), all the same shape but each its own cookie. <code class="inline">TalonFX</code> is a class; <code class="inline">leftMotor</code> and <code class="inline">rightMotor</code> are two separate objects built from it.</p>
-      <pre class="code"><code><span class="t">TalonFX</span> leftMotor;
-<span class="t">TalonFX</span> rightMotor;</code></pre>
-      <p>A class also defines a new <em>type</em>, the same way <code class="inline">int</code> or <code class="inline">double</code> do — <code class="inline">TalonFX leftMotor;</code> declares a variable exactly like <code class="inline">int score;</code> does, just holding a <code class="inline">TalonFX</code> instead of a whole number.</p>
+      <p>A <strong>class</strong> is a blueprint; an <strong>object</strong> is one specific thing built from it — the way a cookie cutter (class) stamps out cookies (objects), all the same shape but each its own cookie. <code class="inline">DriveMotor</code> is a class; <code class="inline">leftMotor</code> and <code class="inline">rightMotor</code> are two separate objects built from it.</p>
+      <p><code class="inline">DriveMotor</code> stands for your team's own motor class — assume it already exists in your robot project (you'll write classes like it yourself in Ch.7). Its constructor takes the PWM channel the motor is plugged into.</p>
+      <pre class="code"><code><span class="t">DriveMotor</span> leftMotor;
+<span class="t">DriveMotor</span> rightMotor;</code></pre>
+      <p>A class also defines a new <em>type</em>, the same way <code class="inline">int</code> or <code class="inline">double</code> do — <code class="inline">DriveMotor leftMotor;</code> declares a variable exactly like <code class="inline">int score;</code> does, just holding a <code class="inline">DriveMotor</code> instead of a whole number.</p>
       <h2>Attributes and Behaviors, Revisited</h2>
       <p>Every object has:</p>
       <ul>
-        <li><strong>Attributes</strong> — the data it holds (its CAN ID, its current speed).</li>
-        <li><strong>Behaviors</strong> — what it can do, defined as methods (<code class="inline">set()</code>, <code class="inline">getVelocity()</code>).</li>
+        <li><strong>Attributes</strong> — the data it holds (its PWM channel, its current throttle).</li>
+        <li><strong>Behaviors</strong> — what it can do, defined as methods (<code class="inline">setThrottle()</code>, <code class="inline">getThrottle()</code>).</li>
       </ul>
-      <p>The class defines <em>what</em> attributes and behaviors exist; each individual object has its <em>own</em> values for them. <code class="inline">leftMotor</code> and <code class="inline">rightMotor</code> are both <code class="inline">TalonFX</code> objects, but each has its own CAN ID and its own current speed.</p>
+      <p>The class defines <em>what</em> attributes and behaviors exist; each individual object has its <em>own</em> values for them. <code class="inline">leftMotor</code> and <code class="inline">rightMotor</code> are both <code class="inline">DriveMotor</code> objects, but each has its own PWM channel and its own current throttle.</p>
       <h2>Reference Variables</h2>
       <p>A variable like <code class="inline">leftMotor</code> doesn't hold the motor object directly — it holds a <strong>reference</strong> to it, like a tracking number pointing at where the real object lives in memory. This is different from a primitive variable (<code class="inline">int</code>, <code class="inline">double</code>), which holds its value directly with nothing in between.</p>
       <p>You can create as many objects from one class as you need:</p>
-      <pre class="code"><code><span class="t">TalonFX</span> leftMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">1</span>);
-<span class="t">TalonFX</span> rightMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">2</span>);
-<span class="t">TalonFX</span> intakeMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">3</span>);</code></pre>
+      <pre class="code"><code><span class="t">DriveMotor</span> leftMotor = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">1</span>);
+<span class="t">DriveMotor</span> rightMotor = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">2</span>);
+<span class="t">DriveMotor</span> intakeMotor = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">3</span>);</code></pre>
       <p>Three separate objects, one class.</p>
     `,
     pitfalls: [
-      "Confusing the class name with an object's name. <code class=\"inline\">TalonFX</code> is always the class (capitalized, PascalCase); <code class=\"inline\">leftMotor</code> is a specific object (camelCase). Mixing these up is a common early error.",
-      "Assuming two objects of the same class share state. <code class=\"inline\">leftMotor</code> and <code class=\"inline\">rightMotor</code> are both <code class=\"inline\">TalonFX</code> objects, but changing one's speed has zero effect on the other — each object's attributes are entirely its own."
+      "Confusing the class name with an object's name. <code class=\"inline\">DriveMotor</code> is always the class (capitalized, PascalCase); <code class=\"inline\">leftMotor</code> is a specific object (camelCase). Mixing these up is a common early error.",
+      "Assuming two objects of the same class share state. <code class=\"inline\">leftMotor</code> and <code class=\"inline\">rightMotor</code> are both <code class=\"inline\">DriveMotor</code> objects, but changing one's throttle has zero effect on the other — each object's attributes are entirely its own."
     ],
     takeaways: [
       "A class is a blueprint; an object is one specific instance built from it.",
@@ -241,28 +264,32 @@ System.out.<span class="me">println</span>(<span class="me">square</span>(<span 
     body: `
       <h2>Building an Object with new</h2>
       <p>A <strong>constructor</strong> initializes a new object's attributes when it's created. To build one, use <code class="inline">new</code> followed by the class name — that's actually a call to the constructor:</p>
-      <pre class="code"><code><span class="t">TalonFX</span> leftMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">5</span>); <span class="c">// 5 is the CAN ID — argument order matters</span></code></pre>
+      <pre class="code"><code><span class="t">DriveMotor</span> leftMotor = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">5</span>); <span class="c">// 5 is the PWM channel it's plugged into</span></code></pre>
+      <p>(<code class="inline">DriveMotor</code> is the team's own motor class from Lesson 4.4 — assume it exists.)</p>
       <h2>Constructors Can Be Overloaded</h2>
-      <p>A class can offer more than one constructor — different ways to set up an object, distinguished by their parameter lists. This is the same <strong>overloading</strong> concept from methods (Lesson 4.1), applied to constructors:</p>
-      <pre class="code"><code><span class="t">Pose2d</span> start1 = <span class="k">new</span> <span class="t">Pose2d</span>();                       <span class="c">// no-argument constructor: defaults to (0, 0, facing 0°)</span>
-<span class="t">Pose2d</span> start2 = <span class="k">new</span> <span class="t">Pose2d</span>(<span class="n">1.0</span>, <span class="n">2.0</span>, <span class="k">new</span> <span class="t">Rotation2d</span>()); <span class="c">// x, y, and heading, explicitly</span></code></pre>
+      <p>A class can offer more than one constructor — different ways to set up an object, distinguished by their parameter lists. This is the same <strong>overloading</strong> concept from methods (Lesson 4.1), applied to constructors. WPILib's <code class="inline">Pose2d</code> class (a robot's position and heading on the field) has several:</p>
+      <pre class="code"><code><span class="c">// no-argument constructor: defaults to (0, 0, facing 0°)</span>
+<span class="t">Pose2d</span> start1 = <span class="k">new</span> <span class="t">Pose2d</span>();
+<span class="c">// x, y, and heading, explicitly</span>
+<span class="t">Pose2d</span> start2 = <span class="k">new</span> <span class="t">Pose2d</span>(<span class="n">1.0</span>, <span class="n">2.0</span>, <span class="k">new</span> <span class="t">Rotation2d</span>());</code></pre>
+      <p><code class="inline">Pose2d</code> and <code class="inline">Rotation2d</code> are real WPILib classes, from the package <code class="inline">org.wpilib.math.geometry</code>; a pose's x and y are measured in meters.</p>
       <p>Argument order matters — mixing up which number means what (is it x-then-y, or y-then-x?) produces a real, silent bug: the code compiles fine, but the object ends up with the wrong values.</p>
       <h2>Object References and null</h2>
       <p>A reference variable can be declared without pointing at any object yet — that's <code class="inline">null</code>, meaning "doesn't refer to anything."</p>
-      <pre class="code"><code><span class="t">TalonFX</span> intakeMotor = <span class="k">null</span>; <span class="c">// no object yet</span>
-intakeMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">7</span>); <span class="c">// now it does</span></code></pre>
-      <p>Calling a method on a <code class="inline">null</code> reference — one that was declared but never actually constructed — throws a <code class="inline">NullPointerException</code> at runtime (more on this in the next lesson).</p>
+      <pre class="code"><code><span class="t">DriveMotor</span> intakeMotor = <span class="k">null</span>; <span class="c">// no object yet</span>
+intakeMotor = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">7</span>); <span class="c">// now it does</span></code></pre>
+      <p>Calling a method on a <code class="inline">null</code> reference — one that still holds <code class="inline">null</code> because no object was ever assigned to it — throws a <code class="inline">NullPointerException</code> at runtime (more on this in the next lesson).</p>
       <h2>Constructor Signatures</h2>
-      <p>Just like methods, a constructor has a signature: its name (always the same as the class) plus its parameter types. Look up a library class's constructors in its documentation to see what arguments it expects and in what order.</p>
-      <pre class="code"><code><span class="k">public class</span> <span class="t">Pose2d</span> {
-    <span class="k">public</span> <span class="t">Pose2d</span>() { <span class="c">/* implementation not shown */</span> }
-    <span class="k">public</span> <span class="t">Pose2d</span>(<span class="k">double</span> x, <span class="k">double</span> y, <span class="t">Rotation2d</span> rotation) { <span class="c">/* implementation not shown */</span> }
+      <p>Just like methods, a constructor has a signature: its name (always the same as the class) plus its parameter types. Look up a library class's constructors in its documentation (its API page's Constructor Summary — Lesson 3.2) to see what arguments it expects and in what order.</p>
+      <pre class="code"><code><span class="k">public</span> <span class="k">class</span> <span class="t">Pose2d</span> {
+    <span class="k">public</span> <span class="t">Pose2d</span>() { <span class="c">/* not shown */</span> }
+    <span class="k">public</span> <span class="t">Pose2d</span>(<span class="k">double</span> x, <span class="k">double</span> y, <span class="t">Rotation2d</span> rotation) { <span class="c">/* not shown */</span> }
 }</code></pre>
     `,
     pitfalls: [
-      "Forgetting <code class=\"inline\">new</code>. <code class=\"inline\">TalonFX leftMotor = TalonFX(5);</code> doesn't compile — creating an object always requires <code class=\"inline\">new</code>.",
+      "**Forgetting <code class=\"inline\">new</code>.** <code class=\"inline\">DriveMotor leftMotor = DriveMotor(5);</code> doesn't compile — creating an object always requires <code class=\"inline\">new</code>.",
       "Mixing up argument order. A constructor taking <code class=\"inline\">(x, y, rotation)</code> called as <code class=\"inline\">(rotation, x, y)</code> either won't compile (wrong types) or, worse, compiles with the wrong values silently swapped.",
-      "Calling a method on an unconstructed reference. Declaring <code class=\"inline\">TalonFX m;</code> without ever assigning <code class=\"inline\">new TalonFX(...)</code> to it leaves <code class=\"inline\">m</code> as <code class=\"inline\">null</code> — calling <code class=\"inline\">m.set(0.5)</code> crashes with a <code class=\"inline\">NullPointerException</code>."
+      "**Calling a method on a <code class=\"inline\">null</code> reference.** <code class=\"inline\">DriveMotor m = null;</code> followed by <code class=\"inline\">m.setThrottle(0.5);</code> compiles, but crashes with a <code class=\"inline\">NullPointerException</code> at runtime. (A local variable given no value at all — just <code class=\"inline\">DriveMotor m;</code> — is different: Java won't compile code that reads <code class=\"inline\">m</code> before it's assigned, reporting \"variable m might not have been initialized.\")"
     ],
     takeaways: [
       "<code class=\"inline\">new ClassName(arguments)</code> calls a constructor to build and initialize an object.",
@@ -279,30 +306,32 @@ intakeMotor = <span class="k">new</span> <span class="t">TalonFX</span>(<span cl
     body: `
       <h2>Instance Methods vs. Static Methods</h2>
       <p>Lesson 4.2 covered static (class) methods, called via the class name. An <strong>instance method</strong> is the opposite: it's always called on a specific object, and it reads or changes <em>that object's</em> attributes.</p>
-      <pre class="code"><code>leftMotor.<span class="me">set</span>(<span class="n">0.5</span>); <span class="c">// instance method — acts on leftMotor specifically, not TalonFX in general</span></code></pre>
-      <p><code class="inline">Math.sqrt(9)</code> doesn't care which object called it (there is no object) — it's pure computation. <code class="inline">leftMotor.set(0.5)</code> only makes sense applied to one specific motor.</p>
+      <pre class="code"><code><span class="c">// instance method — acts on leftMotor specifically, not DriveMotor in general</span>
+leftMotor.<span class="me">setThrottle</span>(<span class="n">0.5</span>);</code></pre>
+      <p><code class="inline">Math.sqrt(9)</code> doesn't care which object called it (there is no object) — it's pure computation. <code class="inline">leftMotor.setThrottle(0.5)</code> only makes sense applied to one specific motor. (<code class="inline">leftMotor</code> is a <code class="inline">DriveMotor</code>, the team's own motor class from Lesson 4.4.)</p>
       <h2>NullPointerException</h2>
-      <p>Calling a method on a reference that's <code class="inline">null</code> — declared but never actually built with <code class="inline">new</code> — throws a <code class="inline">NullPointerException</code> at runtime. This is one of the most common real bugs in object-oriented code:</p>
-      <pre class="code"><code><span class="t">TalonFX</span> intakeMotor = <span class="k">null</span>;
-intakeMotor.<span class="me">set</span>(<span class="n">0.5</span>); <span class="c">// crashes: intakeMotor doesn't refer to a real object yet</span></code></pre>
+      <p>Calling a method on a reference that holds <code class="inline">null</code> — set to <code class="inline">null</code> and never assigned a real object with <code class="inline">new</code> — throws a <code class="inline">NullPointerException</code> at runtime. This is one of the most common real bugs in object-oriented code:</p>
+      <pre class="code"><code><span class="t">DriveMotor</span> intakeMotor = <span class="k">null</span>;
+intakeMotor.<span class="me">setThrottle</span>(<span class="n">0.5</span>); <span class="c">// crashes: intakeMotor doesn't refer to a real object</span></code></pre>
       <h2>Methods With Arguments</h2>
       <p>Just like the constructors from the last lesson, instance methods can take arguments:</p>
-      <pre class="code"><code>leftMotor.<span class="me">set</span>(<span class="n">0.5</span>);          <span class="c">// no extra behavior beyond the speed itself</span>
+      <pre class="code"><code>leftMotor.<span class="me">setThrottle</span>(<span class="n">0.5</span>);    <span class="c">// 0.5 is the argument: half throttle forward</span>
 elevator.<span class="me">moveToPosition</span>(<span class="n">24.0</span>); <span class="c">// 24.0 is the argument, saved into the method's parameter</span></code></pre>
+      <p>(<code class="inline">elevator</code> is an object of another of the team's own classes, <code class="inline">Elevator</code>.)</p>
       <h2>Getters (Accessors)</h2>
-      <p>A method that just reports one of an object's attributes — no side effects, just returns a value — is a <strong>getter</strong> (formally, an accessor). By convention its name starts with <code class="inline">get</code>, and its return value must actually be used:</p>
-      <pre class="code"><code><span class="k">double</span> speed = leftMotor.<span class="me">getVelocity</span>(); <span class="c">// a getter — must use the returned value</span>
-System.out.<span class="me">println</span>(<span class="s">"Current speed: "</span> + leftMotor.<span class="me">getVelocity</span>());</code></pre>
+      <p>A method that just reports one of an object's attributes — no side effects, just returns a value — is a <strong>getter</strong> (formally, an accessor). By convention its name starts with <code class="inline">get</code>, and its return value should actually be used. <code class="inline">getThrottle()</code> reports the last throttle this motor was told to run at:</p>
+      <pre class="code"><code><span class="k">double</span> throttle = leftMotor.<span class="me">getThrottle</span>(); <span class="c">// a getter — use the returned value</span>
+System.out.<span class="me">println</span>(<span class="s">"Current throttle: "</span> + leftMotor.<span class="me">getThrottle</span>());</code></pre>
     `,
     pitfalls: [
-      "Calling an instance method without an object. <code class=\"inline\">TalonFX.set(0.5)</code> doesn't make sense — <code class=\"inline\">set</code> needs a specific motor to act on; only <code class=\"inline\">leftMotor.set(0.5)</code> does.",
-      "Calling a method on a <code class=\"inline\">null</code> reference. The single most common source of <code class=\"inline\">NullPointerException</code> — make sure every object is actually constructed with <code class=\"inline\">new</code> before calling anything on it.",
-      "Ignoring a getter's return value. <code class=\"inline\">leftMotor.getVelocity();</code> alone does nothing useful — a getter exists specifically to report a value you then use."
+      "Calling an instance method without an object. <code class=\"inline\">DriveMotor.setThrottle(0.5)</code> doesn't compile — Java reports \"non-static method setThrottle(double) cannot be referenced from a static context,\" because <code class=\"inline\">setThrottle</code> needs a specific motor to act on. Only <code class=\"inline\">leftMotor.setThrottle(0.5)</code> works.",
+      "**Calling a method on a <code class=\"inline\">null</code> reference.** The single most common source of <code class=\"inline\">NullPointerException</code> — make sure every object is actually constructed with <code class=\"inline\">new</code> before calling anything on it.",
+      "Ignoring a getter's return value. <code class=\"inline\">leftMotor.getThrottle();</code> alone does nothing useful — a getter exists specifically to report a value you then use."
     ],
     takeaways: [
       "An instance method is called on a specific object and can read/change that object's own attributes; a static method belongs to the class itself.",
       "Calling a method on a <code class=\"inline\">null</code> reference throws a <code class=\"inline\">NullPointerException</code> — one of the most common real bugs.",
-      "A getter (accessor) reports one of an object's attributes; its return value must be used, not ignored."
+      "A getter (accessor) reports one of an object's attributes; its return value should be used, not ignored."
     ],
     prov: "csawesome-2026: unit-1-using-objects-and-methods/1.14-calling-instance-methods.md (CSA 1.14)"
   }

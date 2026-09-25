@@ -14,7 +14,7 @@ BEATS = [
     },
     {
         "screen": '''<pre class="code"><code><span class="k">public</span> <span class="k">void</span> rampTo(<span class="k">double</span> targetSpeed) { ... }</code></pre>''',
-        "speak": "A method's signature is its name plus its parameter types, exactly what you need to know to call it correctly. Here, ramp to takes one double, called target speed. target speed is a parameter, a variable declared right in the method's own header, usable inside the method's body.",
+        "speak": "A method's signature is its name plus its parameter types, exactly what you need to know to call it correctly. Here, ramp to takes one double, called target speed. target speed is a parameter, a variable declared right in the method's own header, usable inside the method's body. Notice the return type isn't part of the signature, so two methods in one class can't differ only in what they return.",
     },
     {
         "screen": '''<pre class="code"><code>drivetrain.rampTo(<span class="n">0.8</span>);</code></pre>''',
@@ -23,7 +23,7 @@ BEATS = [
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Call by Value</div>
     <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto;">Java copies the argument's value into the parameter &mdash; the original is never touched.</p>''',
-        "speak": "Java copies the argument's value into the parameter, this is called call by value. If a method changes its own parameter internally, the original value the caller passed in is completely unaffected, only a copy ever went in.",
+        "speak": "Java copies the argument's value into the parameter, this is called call by value. If a method changes its own parameter internally, the original value the caller passed in is completely unaffected, only a copy ever went in. When the argument is an object, what gets copied is the reference to it, lesson 7.3 shows what that means.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Overloading</div>
@@ -51,9 +51,9 @@ BEATS = [
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
       <li><span class="check">!</span>Mixing up parameter and argument &mdash; parameter is the variable in the method header, argument is the value at the call site.</li>
       <li><span class="check">!</span>Assuming a method can change the caller's original value &mdash; call by value means only a copy ever goes in.</li>
-      <li><span class="check">!</span>Wrong argument count or type &mdash; the compiler checks a call against the method's signature, and mismatches won't compile.</li>
+      <li><span class="check">!</span>Wrong argument count, type, or order &mdash; wrong counts and types won't compile, but swapping two same-type arguments compiles with the wrong values.</li>
     </ul></div>''',
-        "speak": "Three pitfalls. Mixing up parameter and argument, precisely, parameter is the variable in the method's header, argument is the value at the call site. Assuming a method can reach back and change the caller's original value, call by value means the method only ever gets a copy, reassigning a parameter inside never touches the variable the caller passed in. And getting the argument count or type wrong, the compiler checks every call against the method's signature, and any mismatch simply won't compile.",
+        "speak": "Three pitfalls. Mixing up parameter and argument, precisely, parameter is the variable in the method's header, argument is the value at the call site. Assuming a method can reach back and change the caller's original value, call by value means the method only ever gets a copy, reassigning a parameter inside never touches the variable the caller passed in. And getting the argument count, type, or order wrong. The compiler checks every call against the method's signature, so a wrong count or a wrong type won't compile, and neither will swapping two arguments of different types. But swap two arguments of the same type, two doubles, say, and it compiles fine, silently passing the wrong values, more on that in lesson 4.5.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
