@@ -46,19 +46,19 @@ Tracked here so fixes that depend on them stay `Needs decision` until answered.
 | D3 | Move scope/shadowing (23.1) into Java I (Ch.7/8)? | Pending |
 | D4 | New lessons: `switch` (Ch.5), abstract classes (17.5) — and where other coverage gaps land | Pending |
 | D5 | `review/` pages still hold the old free-text exercises — replace with current exercises, or drop the review exercise tab | Pending |
-| D6 | Ch.20: forward pointer to the AdvantageKit chapters (Ch.33–34) acceptable? | Pending |
+| D6 | Ch.20: forward pointer to the AdvantageKit chapters (Ch.33–34) acceptable? | Decided (Claude, overridable): one-line pointer only ("a logging framework, Ch.33, can record this"); no AdvantageKit API in Ch.20 |
 | D7 | Ch.25 v3: where per-loop state logic lives (no `periodic()` in v3) | Pending |
 | D8 | Ch.25 v3: project layout for 25.7 (`OpModeRobot` template vs `TimedRobot` hatchbotcmdv3) | Pending |
-| D9 | Ch.25 v3: teach the built-in `StateMachine` (alpha)? | Pending |
-| D10 | Ch.25 v3: controller class (`CommandXboxController` vs `CommandGamepad`) | Pending |
-| D11 | Constant naming convention (`kName` vs `ALL_CAPS`) | Pending |
-| D12 | Invented `Subsystem` class in Ch.17–18 collides with the v2 WPILib name — rename? | Pending |
-| D13 | 9.3 is titled "Optional" but Ch.15 builds on it — required or optional? | Pending |
-| D14 | Keyboard `Scanner`: teach in 2.3, or reword 9.8 | Pending |
-| D15 | Whole-block order independence in Micro-Parsons: pin order in Problem text (content) vs app support (front end, later) | Pending |
-| D16 | Java 25 compact `void main()`: mention in 1.2 / 4.2? | Pending |
-| D17 | 27.2 cites a "Mechanical Advantage lesson deck" — confirm source/licence | Pending |
-| D18 | Ch.27–28 placement and "closing chapter" wording | Pending |
+| D9 | Ch.25 v3: teach the built-in `StateMachine` (alpha)? | Decided (Claude, overridable): mention only, as a short sidebar in 25.5 flagged alpha; not taught |
+| D10 | Ch.25 v3: controller class (`CommandXboxController` vs `CommandGamepad`) | Decided (Claude, overridable): `CommandXboxController` (a/b/x/y) — matches the controllers teams use; one note that `CommandGamepad` exists |
+| D11 | Constant naming convention (`kName` vs `ALL_CAPS`) | Decided (Claude, overridable): `ALL_CAPS` — already taught in 7.4 and used by the WPILib 2027 templates; replace `kName` in 25.7/26/27 |
+| D12 | Invented `Subsystem` class in Ch.17–18 collides with the v2 WPILib name — rename? | Decided (Claude, overridable): rename the invented Ch.17–18 base class to `RobotPart` so it can't be confused with WPILib's v2 `Subsystem` or v3 `Mechanism` |
+| D13 | 9.3 is titled "Optional" but Ch.15 builds on it — required or optional? | Decided (Claude, overridable): make 9.3 required (drop "Optional" from the title) since Ch.15 builds on it |
+| D14 | Keyboard `Scanner`: teach in 2.3, or reword 9.8 | Decided (Claude, overridable): reword 9.8 (no keyboard-Scanner claim); don't add console input |
+| D15 | Whole-block order independence in Micro-Parsons: pin order in Problem text (content) vs app support (front end, later) | Decided (Claude, overridable): pin block order in the Problem text; app support can come with the front-end work |
+| D16 | Java 25 compact `void main()`: mention in 1.2 / 4.2? | Decided (Claude, overridable): one short Java 25 note in 1.2 and 4.2 (course keeps `public static void main`) |
+| D17 | 27.2 cites a "Mechanical Advantage lesson deck" — confirm source/licence | Pending (Joe, non-blocking): only you know the source/licence — the sentence stays as-is until you answer |
+| D18 | Ch.27–28 placement and "closing chapter" wording | Decided (Claude, overridable): keep placement; fix only the "closing chapter" / "between Java I and II" wording |
 
 ## G01 — Ch.1–2
 
