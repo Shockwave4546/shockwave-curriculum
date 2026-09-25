@@ -78,9 +78,16 @@ def lesson_title(md_path):
     raise ValueError(f"no H1 title in {md_path}")
 
 
-def python_module_suffix(item_num):
+def python_module_suffix(item_num, sibling_item_nums=()):
+    # A dot-less item ("11") maps to lesson_11_1.py -- unless the same chapter
+    # also has a real "N.1" lesson (Ch.19: "19" + "19.1"), which would collide,
+    # so the dot-less one takes lesson_N_0.py instead.
     first_seg = item_num.split('-')[0]
-    return first_seg.replace('.', '_') if '.' in first_seg else f'{first_seg}_1'
+    if '.' in first_seg:
+        return first_seg.replace('.', '_')
+    if f'{first_seg}.1' in {s.split('-')[0] for s in sibling_item_nums}:
+        return f'{first_seg}_0'
+    return f'{first_seg}_1'
 
 
 def import_beats(build_dir, chapter_num, module_suffix):
@@ -113,11 +120,12 @@ def main():
         audio_root = os.path.join(REPO_ROOT, 'narrated-lessons', f'ch{ch:02d}-audio')
 
         md_files = sorted(glob.glob(os.path.join(lessons_dir, '*.md')))
+        item_nums = [item_num_from_filename(os.path.splitext(os.path.basename(m))[0]) for m in md_files]
         for md_path in md_files:
             stem = os.path.splitext(os.path.basename(md_path))[0]
             item_num = item_num_from_filename(stem)
             title = lesson_title(md_path)
-            suffix = python_module_suffix(item_num)
+            suffix = python_module_suffix(item_num, item_nums)
 
             html_out_path = os.path.join(out_dir, f'{item_num}-narrated-lesson.html')
             if args.skip_existing and os.path.exists(html_out_path):
