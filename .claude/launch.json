@@ -4,8 +4,23 @@
     {
       "name": "static-site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8743"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8743"
+      ],
       "port": 8743
+    },
+    {
+      "name": "academy-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/home/cjoe/dev/shockwave-programming-academy",
+        "run",
+        "dev"
+      ],
+      "port": 3000
     }
   ]
 }
