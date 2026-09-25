@@ -95,57 +95,58 @@ const DATA = {
     ref: "18.1 — Overriding Methods (CSA 5.3)",
     body: `
       <h2>What Overriding Is</h2>
-      <p>A subclass inherits all its superclass's <code class="inline">public</code> methods unchanged — but it can also <strong>override</strong> one, replacing the inherited version with its own. Overriding requires matching the superclass method's exact <strong>signature</strong>: same name, same parameter list, and the same (or a subtype of the) return type.</p>
-      <pre class="code"><code><span class="k">public abstract class</span> <span class="t">Subsystem</span>
+      <p>A subclass inherits all its superclass's <code class="inline">public</code> methods unchanged — but it can also <strong>override</strong> one, replacing the inherited version with its own. Overriding requires matching the superclass method's <strong>signature</strong> — the same name and the same parameter list — with a return type that is the same as the superclass method's, or a subtype of it (called a <em>covariant</em> return type).</p>
+      <p><code class="inline">RobotPart</code> (Lesson 17.1) has a general-purpose <code class="inline">stop()</code> that only logs a message: <code class="inline">public void stop() { log("stopped"); }</code>. <code class="inline">Intake</code> overrides it with a version specific to its own rollers:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">RobotPart</span>
 {
-    <span class="k">public void</span> <span class="me">stop</span>() { System.out.<span class="me">println</span>(<span class="s">"Stopping subsystem"</span>); }
-}
+    <span class="k">public</span> <span class="t">Intake</span>(<span class="t">String</span> name) { <span class="k">super</span>(name); }
 
-<span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
-{
-    <span class="me">@Override</span>
+    <span class="k">@Override</span>
     <span class="k">public void</span> <span class="me">stop</span>()
     {
-        motor.<span class="me">set</span>(<span class="n">0</span>); <span class="c">// Intake's own, specific version replaces Subsystem's</span>
+        <span class="c">// Intake's own, specific version replaces RobotPart's</span>
+        <span class="me">log</span>(<span class="s">"rollers off, game piece held"</span>);
     }
 }</code></pre>
       <p><code class="inline">@Override</code> is optional but always worth writing — it tells the compiler "I intend to override an inherited method here," and the compiler then checks the signature truly matches. Without it, a typo in the method name (<code class="inline">stopp()</code> instead of <code class="inline">stop()</code>) would silently create a brand-new, unrelated method instead of overriding anything — with <code class="inline">@Override</code>, that same typo becomes a compile error instead of a bug that only shows up at runtime.</p>
       <h2>Overriding vs. Overloading</h2>
-      <p>These sound similar but are entirely different things. <strong>Overriding</strong> means the exact same signature, in a subclass, replacing the superclass's version. <strong>Overloading</strong> means the same method <em>name</em>, in the <em>same</em> class, with a different parameter list:</p>
-      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
+      <p>These sound similar but are entirely different things. <strong>Overriding</strong> means the same signature, in a subclass, replacing the superclass's version. <strong>Overloading</strong> means the same method <em>name</em> with a different parameter list — either in the same class, or added by a subclass alongside the method it inherited. Here <code class="inline">RobotPart</code> overloads its own <code class="inline">log()</code>:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">RobotPart</span>
 {
-    <span class="k">public void</span> <span class="me">log</span>(<span class="t">String</span> message) { System.out.<span class="me">println</span>(message); }
-    <span class="k">public void</span> <span class="me">log</span>(<span class="t">String</span> message, <span class="k">int</span> code) { System.out.<span class="me">println</span>(message + <span class="s">" ["</span> + code + <span class="s">"]"</span>); } <span class="c">// overload — different parameters</span>
-}</code></pre>
-      <p>Two methods can never differ <em>only</em> in return type — that alone doesn't count as a valid overload, and doesn't count as an override either (a mismatched return type on an otherwise-identical signature is just a compile error).</p>
-      <h2>Inherited Getters and Setters Still Apply</h2>
-      <p>A subclass gets its superclass's public getters and setters automatically, and — since the superclass's fields are <code class="inline">private</code> — those accessor methods remain the <em>only</em> way to reach them, even from the subclass itself:</p>
-      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
-{
-    <span class="k">private</span> <span class="t">String</span> name;
-    <span class="k">public</span> <span class="t">String</span> <span class="me">getName</span>() { <span class="k">return</span> name; }
-    <span class="k">public void</span> <span class="me">setName</span>(<span class="t">String</span> name) { <span class="k">this</span>.name = name; }
-}
+    <span class="c">// ...name field, constructor, getName(), and stop() as in Lesson 17.1</span>
+    <span class="k">public void</span> <span class="me">log</span>(<span class="t">String</span> msg) { <span class="t">System</span>.out.<span class="me">println</span>(<span class="s">"["</span> + name + <span class="s">"] "</span> + msg); }
 
-<span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
+    <span class="c">// overload — same name, different parameters</span>
+    <span class="k">public void</span> <span class="me">log</span>(<span class="t">String</span> msg, <span class="k">int</span> code) { <span class="me">log</span>(msg + <span class="s">" (code "</span> + code + <span class="s">")"</span>); }
+}</code></pre>
+      <p>Two methods can never differ <em>only</em> in return type — that alone doesn't count as a valid overload. And a subclass method with the same name and parameters as an inherited one, but an incompatible return type (for example <code class="inline">int</code> where the superclass method returns <code class="inline">void</code>), isn't an override either: it's a compile error.</p>
+      <h2>Inherited Getters and Setters Still Apply</h2>
+      <p>A subclass gets its superclass's public getters and setters automatically, and — since the superclass's fields are <code class="inline">private</code> — those accessor methods remain the only way to reach them, even from the subclass itself (unless the superclass marks a field <code class="inline">protected</code>, Lesson 17.2):</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">RobotPart</span>
 {
-    <span class="k">public void</span> <span class="me">rename</span>(<span class="t">String</span> newName)
+    <span class="c">// ...constructor and stop() as above</span>
+
+    <span class="k">public void</span> <span class="me">announce</span>()
     {
-        <span class="me">setName</span>(newName); <span class="c">// must go through the inherited setter — direct access to \`name\` isn't legal here</span>
+        <span class="c">// must go through the inherited getter — direct access to name isn't legal here</span>
+        <span class="t">System</span>.out.<span class="me">println</span>(<span class="s">"Intake online: "</span> + <span class="me">getName</span>());
     }
 }</code></pre>
+      <h2>Preventing an Override: final</h2>
+      <p>A method declared <code class="inline">final</code> can't be overridden: if <code class="inline">RobotPart</code> declared <code class="inline">public final String getName()</code>, any subclass that tried to write its own <code class="inline">getName()</code> would fail to compile. A whole class can be <code class="inline">final</code> too, which means it can't be extended at all — <code class="inline">String</code> is one, so <code class="inline">class MyString extends String</code> doesn't compile. Lesson 23.1 covers <code class="inline">final</code> in full.</p>
     `,
     pitfalls: [
       "Mismatching the signature and expecting an override anyway. Changing the parameter list (even by adding one parameter) makes it an overload, not an override — the original method is still inherited unchanged, sitting alongside the new one.",
       "Forgetting <code class=\"inline\">@Override</code>. Skipping it doesn't break anything when the signature is right, but it removes the compiler's safety net against typos — always include it when overriding.",
-      "Trying to differ only by return type. <code class=\"inline\">public int stop()</code> next to a superclass's <code class=\"inline\">public void stop()</code> doesn't compile — that's neither a valid override nor a valid overload."
+      "Changing only the return type. <code class=\"inline\">public int stop()</code> next to a superclass's <code class=\"inline\">public void stop()</code> doesn't compile — <code class=\"inline\">int</code> isn't compatible with <code class=\"inline\">void</code>, so it's neither a valid override nor a valid overload."
     ],
     takeaways: [
-      "Overriding replaces an inherited method with a new version in the subclass, using the <em>exact same</em> signature (name, parameters, return type).",
+      "Overriding replaces an inherited method with a new version in the subclass: same name and parameter list, with a return type that's the same or a subtype (covariant).",
       "<code class=\"inline\">@Override</code> isn't required, but should always be used — it turns a signature typo into a compile error instead of a silent, unrelated new method.",
-      "Overloading is different: same name, same class, different parameter list — not to be confused with overriding.",
+      "Overloading is different: same name, different parameter list — in the same class, or added in a subclass — not to be confused with overriding.",
       "Two methods can never differ only in return type.",
-      "Inherited getters/setters remain the only way to reach a superclass's private fields, even from within the subclass."
+      "Inherited getters/setters remain the only way to reach a superclass's private fields, even from within the subclass.",
+      "A <code class=\"inline\">final</code> method can't be overridden, and a <code class=\"inline\">final</code> class (like <code class=\"inline\">String</code>) can't be extended."
     ],
     prov: "csawesome-2026: unit-5-inheritance-optional/5.03-overriding-methods.md (CSA 5.3) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 5 (\"Polymorphism: Many Forms\")"
   },
@@ -154,45 +155,34 @@ const DATA = {
     ref: "18.2 — super Keyword (CSA 5.4)",
     body: `
       <h2>Extending, Not Just Replacing, Inherited Behavior</h2>
-      <p>Overriding a method (Lesson 18.1) completely replaces the superclass's version — but often a subclass wants to run the <em>original</em> logic too, and add something on top of it, rather than throwing it away entirely. <code class="inline">super.method()</code> calls the superclass's version of a method explicitly, from inside an override:</p>
-      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
+      <p>Overriding a method (Lesson 18.1) completely replaces the superclass's version — but often a subclass wants to run the <em>original</em> logic too, and add something on top of it, rather than throwing it away entirely. <code class="inline">super.method()</code> calls the superclass's version of a method explicitly, from inside an override. A <code class="inline">Climber</code> should still do everything <code class="inline">RobotPart</code>'s <code class="inline">stop()</code> does (Lesson 17.1), and then engage its brake:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span> <span class="k">extends</span> <span class="t">RobotPart</span>
 {
-    <span class="me">@Override</span>
-    <span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>() { <span class="k">return</span> <span class="s">"Subsystem"</span>; }
-}
+    <span class="k">public</span> <span class="t">Climber</span>(<span class="t">String</span> name) { <span class="k">super</span>(name); }
 
-<span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">Subsystem</span>
-{
-    <span class="me">@Override</span>
-    <span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>()
+    <span class="k">@Override</span>
+    <span class="k">public void</span> <span class="me">stop</span>()
     {
-        <span class="k">return</span> <span class="k">super</span>.<span class="me">toString</span>() + <span class="s">" (Intake)"</span>; <span class="c">// runs Subsystem's version first, then extends it</span>
+        <span class="k">super</span>.<span class="me">stop</span>();            <span class="c">// runs RobotPart's stop() first</span>
+        <span class="me">log</span>(<span class="s">"brake engaged"</span>);    <span class="c">// then adds Climber's own step</span>
     }
 }</code></pre>
-      <p><code class="inline">super</code> has two distinct uses, both already introduced separately: <code class="inline">super(...)</code>, which must be the first line of a constructor and calls a superclass <em>constructor</em> (Lesson 17.2); and <code class="inline">super.method()</code>, which calls a superclass <em>method</em> from anywhere inside a subclass method body.</p>
+      <p>You've seen this once already: Lesson 17.4's <code class="inline">Intake.toString()</code> called <code class="inline">super.toString()</code> and added to its result.</p>
+      <p><code class="inline">super</code> has two distinct uses: <code class="inline">super(...)</code>, which calls a superclass <em>constructor</em> from inside a constructor (Lesson 17.2); and <code class="inline">super.method()</code>, which calls a superclass <em>method</em> from anywhere inside a subclass method body. Where <code class="inline">super(...)</code> may go depends on the Java version: on Java 25, only statements that don't use the object being built may come before it; on Java 17, it must be the constructor's very first statement.</p>
       <h2>How Method Lookup Actually Works</h2>
       <p>Every object remembers the actual class it was created with. A method call on that object starts looking there first; if the method isn't found in that exact class, Java searches up the chain — parent, grandparent, and so on — until it finds a match (which it always will, or the code wouldn't have compiled in the first place).</p>
-      <pre class="code"><code><span class="k">public class</span> <span class="t">Subsystem</span>
-{
-    <span class="k">public void</span> <span class="me">periodic</span>() { System.out.<span class="me">println</span>(<span class="s">"Subsystem periodic"</span>); }
-}
-
-<span class="k">public class</span> <span class="t">Climber</span> <span class="k">extends</span> <span class="t">Subsystem</span>
-{
-    <span class="me">@Override</span>
-    <span class="k">public void</span> <span class="me">periodic</span>()
-    {
-        <span class="k">super</span>.<span class="me">periodic</span>();                    <span class="c">// explicitly runs Subsystem's version first</span>
-        System.out.<span class="me">println</span>(<span class="s">"Climber periodic"</span>); <span class="c">// then adds Climber's own behavior</span>
-    }
-}</code></pre>
-      <p>Calling <code class="inline">climberInstance.periodic()</code> starts in <code class="inline">Climber.periodic()</code>; when execution reaches <code class="inline">super.periodic()</code>, it runs <code class="inline">Subsystem.periodic()</code>, then returns to finish the rest of <code class="inline">Climber.periodic()</code>'s body.</p>
+      <pre class="code"><code><span class="t">RobotPart</span> part = <span class="k">new</span> <span class="t">Climber</span>(<span class="s">"Left Climber"</span>);
+part.<span class="me">stop</span>();
+<span class="c">// prints:</span>
+<span class="c">// [Left Climber] stopped</span>
+<span class="c">// [Left Climber] brake engaged</span></code></pre>
+      <p>Calling <code class="inline">part.stop()</code> starts in <code class="inline">Climber.stop()</code>, because the object is a <code class="inline">Climber</code>; when execution reaches <code class="inline">super.stop()</code>, it runs <code class="inline">RobotPart.stop()</code>, which logs <code class="inline">stopped</code>, then returns to finish the rest of <code class="inline">Climber.stop()</code>'s body, which logs <code class="inline">brake engaged</code>.</p>
       <h2>A Subtlety: super Only Affects the One Call It's Written On</h2>
-      <p><code class="inline">super.someMethod()</code> only changes which version of <em>that specific call</em> runs — it doesn't change how any other method call inside the same method resolves. Any call made without <code class="inline">super</code> still dispatches based on the object's actual runtime type, even from inside inherited code. This is why a <code class="inline">super.methodOne()</code> call that internally calls another method still ends up running the <em>subclass's</em> override of that other method, not the superclass's — the override "wins" everywhere except the one spot <code class="inline">super</code> explicitly overrides it.</p>
+      <p><code class="inline">super.someMethod()</code> only changes which version of <em>that specific call</em> runs — it doesn't change how any other method call inside the same method resolves. Any call made without <code class="inline">super</code> (an unqualified call, or one through <code class="inline">this</code>) still dispatches based on the object's actual runtime type, even from inside inherited code. <code class="inline">RobotPart</code>'s <code class="inline">stop()</code> calls <code class="inline">log(...)</code>: if <code class="inline">Climber</code> also overrode <code class="inline">log()</code>, then the <code class="inline">log("stopped")</code> call inside <code class="inline">RobotPart.stop()</code> — reached through <code class="inline">super.stop()</code> — would run *<code class="inline">Climber</code>'s* <code class="inline">log()</code>, not <code class="inline">RobotPart</code>'s. The override "wins" everywhere except the one spot <code class="inline">super</code> explicitly overrides it.</p>
     `,
     pitfalls: [
       "Forgetting <code class=\"inline\">super.method()</code> must be called explicitly — it never happens automatically the way <code class=\"inline\">super()</code> does for constructors. Overriding a method completely discards the superclass's version unless the override calls <code class=\"inline\">super.method()</code> itself.",
-      "Confusing the two <code class=\"inline\">super</code> forms. <code class=\"inline\">super(...)</code> (no method name) only ever calls a constructor, and only as a constructor's first line; <code class=\"inline\">super.method()</code> calls a named method, and can appear anywhere inside a method body.",
+      "Confusing the two <code class=\"inline\">super</code> forms. <code class=\"inline\">super(...)</code> (no method name) only ever calls a constructor, and only from inside a constructor — first on Java 17, and after only object-free statements on Java 25; <code class=\"inline\">super.method()</code> calls a named method, and can appear anywhere inside a method body.",
       "Assuming <code class=\"inline\">super.method()</code> changes every call inside that method to use the superclass's versions. It only affects the one call written with <code class=\"inline\">super</code> — any other method call inside that same superclass method still resolves against the object's real runtime type."
     ],
     takeaways: [
@@ -208,44 +198,72 @@ const DATA = {
     ref: "18.3 — Polymorphism (CSA 5.6)",
     body: `
       <h2>Many Forms, One Piece of Code</h2>
-      <p><strong>Polymorphism</strong> ("many forms") means the method that actually runs at runtime depends on the object's <em>actual</em> type — not the type its variable was declared with. This is the concrete payoff of everything Ch.17 and Lessons 18.1-18.2 built toward: real WPILib code treats a <code class="inline">TalonFX</code> or a <code class="inline">SparkMax</code> as just a <code class="inline">MotorController</code>, and calls the same method on either without caring which one it actually is:</p>
+      <p><strong>Polymorphism</strong> ("many forms") means the method that actually runs at runtime depends on the object's <em>actual</em> type — not the type its variable was declared with. This is the concrete payoff of everything Ch.17 and Lessons 18.1-18.2 built toward. Real WPILib code relies on it constantly: WPILib's <code class="inline">MotorController</code> type (in <code class="inline">org.wpilib.hardware.motor</code>) describes what every motor controller can do, and code written against it calls the same method on any motor controller without caring which class it actually is. (<code class="inline">MotorController</code> is an <em>interface</em>, a kind of type Ch.19 covers in full — for now, treat it like a superclass shared by every WPILib motor controller class.)</p>
       <pre class="code"><code><span class="k">public void</span> <span class="me">driveForward</span>(<span class="t">MotorController</span> controller)
 {
-    controller.<span class="me">set</span>(<span class="n">0.5</span>); <span class="c">// works identically whether controller is a TalonFX or a SparkMax</span>
+    <span class="c">// works the same whichever motor controller class is passed in</span>
+    controller.<span class="me">setThrottle</span>(<span class="n">0.5</span>);
 }</code></pre>
       <h2>Declared Type vs. Actual Type</h2>
       <p>Every variable has two types that matter: its <strong>declared (compile-time) type</strong> — what it's written as in the code — and its <strong>actual (runtime) type</strong> — the real class that was actually constructed with <code class="inline">new</code>:</p>
-      <pre class="code"><code><span class="t">Subsystem</span> s = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>);
-<span class="c">// declared type: Subsystem</span>
+      <pre class="code"><code><span class="t">RobotPart</span> part = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>);
+<span class="c">// declared type: RobotPart</span>
 <span class="c">// actual type:   Intake</span></code></pre>
       <p>The compiler only ever checks the <strong>declared</strong> type when deciding whether code compiles — it verifies that whatever method you're calling actually exists on that declared type (or an ancestor of it):</p>
       <pre class="code"><code><span class="t">Object</span> message = <span class="k">new</span> <span class="t">String</span>(<span class="s">"hi"</span>);
-message.<span class="me">indexOf</span>(<span class="s">"h"</span>); <span class="c">// COMPILE ERROR — Object has no indexOf method, even though String does</span></code></pre>
+<span class="c">// COMPILE ERROR — Object has no indexOf method, even though String does</span>
+message.<span class="me">indexOf</span>(<span class="s">"h"</span>);</code></pre>
       <p>Even though the real object here is a <code class="inline">String</code> (which absolutely does have <code class="inline">indexOf</code>), the compiler only looks at <code class="inline">message</code>'s <em>declared</em> type, <code class="inline">Object</code> — and refuses to compile, since <code class="inline">Object</code> never promises an <code class="inline">indexOf</code> method.</p>
       <h2>Runtime Dispatch: The Actual Type Decides Which Version Runs</h2>
       <p>Once code <em>does</em> compile, the JVM decides which overridden version of a method actually executes by looking at the object's real, actual type — starting there and searching upward through its superclasses if needed (same lookup process as Lesson 18.2's <code class="inline">super</code>):</p>
-      <pre class="code"><code><span class="t">Subsystem</span> s = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>); <span class="c">// declared Subsystem, actually an Intake</span>
-s.<span class="me">stop</span>(); <span class="c">// the compiler only confirms Subsystem HAS a stop() method — but Intake's own override is what actually runs</span></code></pre>
-      <p>This is exactly what makes the earlier <code class="inline">Subsystem[]</code>/<code class="inline">ArrayList&lt;Subsystem&gt;</code> examples (Lesson 17.3) genuinely useful — a single loop calling <code class="inline">s.stop()</code> on each element automatically runs whichever subclass's own <code class="inline">stop()</code> actually applies, without an <code class="inline">if</code>/<code class="inline">else</code> chain checking each one's specific type:</p>
-      <pre class="code"><code><span class="k">for</span> (<span class="t">Subsystem</span> s : allSubsystems)
+      <pre class="code"><code><span class="t">RobotPart</span> part = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>);  <span class="c">// declared RobotPart, actually an Intake</span>
+<span class="c">// the compiler only confirms RobotPart HAS a stop() method —</span>
+<span class="c">// but Intake's own override (Lesson 18.1) is what actually runs</span>
+part.<span class="me">stop</span>();</code></pre>
+      <p>This is exactly what makes the earlier <code class="inline">RobotPart[]</code>/<code class="inline">ArrayList&lt;RobotPart&gt;</code> examples (Lesson 17.3) genuinely useful — a single loop calling <code class="inline">p.stop()</code> on each element automatically runs whichever subclass's own <code class="inline">stop()</code> actually applies, without an <code class="inline">if</code>/<code class="inline">else</code> chain checking each one's specific type:</p>
+      <pre class="code"><code><span class="k">for</span> (<span class="t">RobotPart</span> p : allParts)
 {
-    s.<span class="me">stop</span>(); <span class="c">// Intake's stop(), Climber's stop(), Shooter's stop() — whichever is actually correct for each object</span>
+    <span class="c">// Intake's stop(), Climber's stop(), Shooter's stop() — whichever fits each object</span>
+    p.<span class="me">stop</span>();
 }</code></pre>
+      <h2>Casting Back Down</h2>
+      <p>Storing an <code class="inline">Intake</code> in a <code class="inline">RobotPart</code> variable is an <strong>upcast</strong> — from a subclass type up to a superclass type — and it happens automatically, because every <code class="inline">Intake</code> is a <code class="inline">RobotPart</code>. Going the other way, a <strong>downcast</strong>, needs an explicit cast, because not every <code class="inline">RobotPart</code> is an <code class="inline">Intake</code>. Suppose <code class="inline">Intake</code> adds a method of its own, a getter for the field from Lesson 17.2:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">RobotPart</span>
+{
+    <span class="c">// ...hasGamePiece field, constructor, and stop() as in Lessons 17.2 and 18.1</span>
+    <span class="k">public boolean</span> <span class="me">hasGamePiece</span>() { <span class="k">return</span> hasGamePiece; }
+}</code></pre>
+      <p><code class="inline">part.hasGamePiece()</code> doesn't compile, since <code class="inline">part</code> is declared <code class="inline">RobotPart</code>. A cast tells the compiler to treat the reference as an <code class="inline">Intake</code>:</p>
+      <pre class="code"><code><span class="t">RobotPart</span> part = <span class="k">new</span> <span class="t">Intake</span>(<span class="s">"Front Intake"</span>);  <span class="c">// upcast: automatic</span>
+<span class="t">Intake</span> intake = (<span class="t">Intake</span>) part;                <span class="c">// downcast: needs a cast</span>
+<span class="t">System</span>.out.<span class="me">println</span>(intake.<span class="me">hasGamePiece</span>());</code></pre>
+      <p>The cast is checked when the program runs. If the object isn't really an <code class="inline">Intake</code>, it throws a <code class="inline">ClassCastException</code>:</p>
+      <pre class="code"><code><span class="t">RobotPart</span> other = <span class="k">new</span> <span class="t">Climber</span>(<span class="s">"Left Climber"</span>);
+<span class="c">// compiles, but throws ClassCastException when it runs: a Climber isn't an Intake</span>
+<span class="t">Intake</span> wrong = (<span class="t">Intake</span>) other;</code></pre>
+      <p>So check with <code class="inline">instanceof</code> first. Since Java 16, the check and the cast combine into one step with a <em>pattern</em>: if <code class="inline">part</code> refers to an <code class="inline">Intake</code>, the new variable <code class="inline">i</code> is that same object, already typed as <code class="inline">Intake</code>, inside the <code class="inline">if</code>:</p>
+      <pre class="code"><code><span class="k">if</span> (part <span class="k">instanceof</span> <span class="t">Intake</span> i)
+{
+    <span class="t">System</span>.out.<span class="me">println</span>(<span class="s">"Holding a piece: "</span> + i.<span class="me">hasGamePiece</span>());
+}</code></pre>
+      <p>Needing lots of downcasts is usually a sign the method belongs in the superclass as an override — polymorphism exists so most code never has to ask "which kind is this?"</p>
       <h2>Static Methods Don't Get This</h2>
       <p>Polymorphic dispatch only applies to regular (instance) methods. A <code class="inline">static</code> method call is resolved entirely by the declared type, at compile time — there's no runtime lookup involved at all, since static methods belong to the class itself, not to any particular object.</p>
     `,
     pitfalls: [
       "Assuming the compiler checks the actual type. It never does — <code class=\"inline\">message.indexOf(\"h\")</code> fails to compile even when the real object genuinely has that method, because the compiler only ever consults the declared type.",
       "Forgetting that runtime dispatch is what actually decides which override runs. The declared type only gates <em>whether the code compiles</em> — which specific version executes is always decided by the real, actual object type.",
+      "Downcasting without checking. <code class=\"inline\">(Intake) part</code> compiles whenever <code class=\"inline\">part</code> could be an <code class=\"inline\">Intake</code>, but throws <code class=\"inline\">ClassCastException</code> at runtime if it isn't — guard it with <code class=\"inline\">instanceof</code>, or use the <code class=\"inline\">part instanceof Intake i</code> pattern.",
       "Expecting polymorphism to apply to static methods. Static method calls are resolved by declared type alone, with no runtime dispatch — they don't participate in overriding the way instance methods do."
     ],
     takeaways: [
       "Polymorphism means the method that runs depends on an object's actual runtime type, not its variable's declared type.",
       "The compiler only checks the declared type for whether a method call is legal; the JVM decides which overridden version actually runs based on the real, actual type.",
-      "This is why a <code class=\"inline\">Subsystem</code>-typed array or method parameter can transparently work with <code class=\"inline\">Intake</code>, <code class=\"inline\">Climber</code>, <code class=\"inline\">Shooter</code>, or any other subclass — one piece of code, many possible real behaviors.",
+      "This is why a <code class=\"inline\">RobotPart</code>-typed array or method parameter can transparently work with <code class=\"inline\">Intake</code>, <code class=\"inline\">Climber</code>, <code class=\"inline\">Shooter</code>, or any other subclass — one piece of code, many possible real behaviors.",
+      "Upcasts are automatic; downcasts need an explicit cast, can throw <code class=\"inline\">ClassCastException</code>, and are safest as <code class=\"inline\">if (x instanceof Intake i)</code>.",
       "Static methods don't participate in this — they're resolved entirely by declared type, at compile time."
     ],
-    prov: "csawesome-2026: unit-5-inheritance-optional/5.06-polymorphism.md (CSA 5.6) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 5 — TalonFX/SparkMax-as-MotorController example"
+    prov: "csawesome-2026: unit-5-inheritance-optional/5.06-polymorphism.md (CSA 5.6) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 5 (\"Polymorphism: Many Forms\") — the deck's vendor motor classes are replaced here by WPILib's generic MotorController interface"
   }
 };
 
