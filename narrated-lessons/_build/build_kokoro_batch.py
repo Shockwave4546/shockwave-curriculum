@@ -10,6 +10,7 @@ Usage: python3 narrated-lessons/_build/build_kokoro_batch.py [--only 2,3] [--ski
 """
 import argparse
 import glob
+import html
 import importlib.util
 import os
 import re
@@ -26,6 +27,14 @@ CHAPTER_SLUGS = {
     6: 'ch06-strings', 7: 'ch07-the-class-blueprint', 8: 'ch08-constructors-and-this',
     9: 'ch09-storing-data', 10: 'ch10-2d-arrays', 11: 'ch11-enums-named-choices',
     12: 'ch12-exceptions-and-try-catch', 13: 'ch13-common-gotchas',
+    14: 'ch14-why-design-patterns', 15: 'ch15-advanced-collections',
+    16: 'ch16-writing-your-own-generics', 17: 'ch17-inheritance-and-abstractions',
+    18: 'ch18-polymorphism-many-forms', 19: 'ch19-interfaces-as-contracts',
+    20: 'ch20-the-io-layer-pattern', 21: 'ch21-static-factories',
+    22: 'ch22-the-builder-pattern', 23: 'ch23-encapsulation-and-final',
+    24: 'ch24-optional-avoiding-null-pointer-exceptions',
+    26: 'ch26-architecture-takeaways', 27: 'ch27-program-design-and-abstraction',
+    28: 'ch28-algorithms-searching-sorting-recursion',
 }
 
 CHAPTER_NAMES = {
@@ -33,14 +42,23 @@ CHAPTER_NAMES = {
     4: 'Using Objects & Calling Methods', 5: 'Control Structures', 6: 'Strings',
     7: 'The Class Blueprint', 8: 'Constructors & "this"', 9: 'Storing Data',
     10: '2D Arrays', 11: 'Enums: Named Choices', 12: 'Exceptions & try/catch',
-    13: 'Common Gotchas',
+    13: 'Common Gotchas', 14: 'Why Design Patterns?', 15: 'Advanced Collections',
+    16: 'Writing Your Own Generics', 17: 'Inheritance & Abstractions',
+    18: 'Polymorphism: Many Forms', 19: 'Interfaces as Contracts',
+    20: 'The IO-Layer Pattern', 21: 'Static Factories', 22: 'The Builder Pattern',
+    23: 'Encapsulation & final', 24: 'Optional: Avoiding NullPointerExceptions',
+    26: 'Architecture Takeaways', 27: 'Program Design & Abstraction',
+    28: 'Algorithms: Searching, Sorting & Recursion',
 }
 
 # One voice per chapter -- see docs/kokoro-tts-process.md for the full table/rationale.
 CHAPTER_VOICES = {
     2: 'am_echo', 3: 'af_jessica', 4: 'am_puck', 5: 'af_heart', 6: 'bm_fable',
     7: 'bf_emma', 8: 'am_echo', 9: 'af_jessica', 10: 'am_puck', 11: 'af_heart',
-    12: 'bm_fable', 13: 'bf_emma',
+    12: 'bm_fable', 13: 'bf_emma', 14: 'af_jessica', 15: 'am_echo', 16: 'af_heart',
+    17: 'am_puck', 18: 'bf_emma', 19: 'bm_fable', 20: 'af_jessica', 21: 'am_echo',
+    22: 'af_heart', 23: 'am_puck', 24: 'bf_emma', 26: 'af_jessica', 27: 'bm_fable',
+    28: 'af_heart',
 }
 
 
@@ -52,9 +70,12 @@ def item_num_from_filename(stem):
 
 
 def lesson_title(md_path):
+    # First H1 — not the first line, which is the frontmatter's opening "---".
     with open(md_path) as f:
-        first_line = f.readline().strip()
-    return first_line.lstrip('#').strip()
+        for line in f:
+            if line.startswith('# '):
+                return line[2:].strip()
+    raise ValueError(f"no H1 title in {md_path}")
 
 
 def python_module_suffix(item_num):
@@ -120,8 +141,8 @@ def main():
             print(f"\n=== Ch.{item_num} — {title} (voice={voice}, {len(beats)} beats) ===")
             try:
                 build_lesson(
-                    page_title=f'Ch.{item_num} — {title}',
-                    playerbar_title=f'Ch.{ch} — {CHAPTER_NAMES[ch]}',
+                    page_title=html.escape(f'Ch.{item_num} — {title}', quote=False),
+                    playerbar_title=html.escape(f'Ch.{item_num} — {title}', quote=False),
                     beats=beats,
                     voice=voice,
                     audio_dir=audio_dir,
