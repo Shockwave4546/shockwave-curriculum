@@ -22,7 +22,7 @@ x = y;   <span class="c">// x is now assigned a copy of y's value: 2</span></cod
 <span class="k">int</span> y = <span class="n">2</span>;
 x = y;   <span class="c">// x is now assigned a copy of y's value: 2</span>
 y = <span class="n">5</span>;   <span class="c">// y changes &mdash; x is still 2, unaffected</span></code></pre>''',
-        "speak": "Change y afterward, set it to 5, and x doesn't move, it's still 2. The moment that copy happened, x and y went their separate ways. This trips people up because in everyday language, linking two things together feels natural, but assignment in code is a one-time snapshot, not a standing relationship.",
+        "speak": "Change y afterward, set it to 5, and x doesn't move, it's still 2. The moment that copy happened, x and y went their separate ways. This trips people up because in everyday language, linking two things together feels natural, but assignment in code is a one-time snapshot, not a standing relationship. Worth flagging: that's true for primitive types like int and double, everything we've used so far. Once you start working with objects, starting in Chapter 7, copying a variable copies a reference instead, which behaves differently.",
         "continues": True,
     },
     {
@@ -39,10 +39,11 @@ step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Where "Input" Comes From</div>
     <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:48ch;margin:0 auto;">On a robot, it's a joystick or a sensor, not typed text &mdash; but the idea is identical.</p>''',
-        "speak": "Now, input. Some value arrives from outside your code, lands in a variable, and the rest of your code reacts to it. On a laptop that might be typed text, but on a robot, it's a joystick reading or a sensor value. The mechanism is exactly the same either way, a variable holds whatever value showed up, and the rest of the code doesn't have to change no matter what that value turns out to be.",
+        "speak": "Now, input. Some value arrives from outside your code, lands in a variable, and the rest of your code reacts to it. On a robot, that's a joystick reading or a sensor value — this course doesn't cover keyboard input, but the mechanism would be exactly the same either way, a variable holds whatever value showed up, and the rest of the code doesn't have to change no matter what that value turns out to be.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">double</span> throttle = <span class="n">0.6</span>; <span class="c">// stands in for "whatever value the controller sends"</span>
+        "screen": '''<pre class="code"><code><span class="k">double</span> maxSpeed = <span class="n">0.85</span>;
+<span class="k">double</span> throttle = <span class="n">0.6</span>; <span class="c">// stands in for "whatever value the controller sends"</span>
 <span class="k">double</span> output = throttle * maxSpeed;</code></pre>''',
         "speak": "Here, throttle stands in for whatever value the controller happens to send in at that instant, we're just hard-coding 0 point 6 to see the shape of it. Output then gets computed from throttle, and it works identically whether throttle came from a hard-coded number or a live joystick reading.",
     },
@@ -60,6 +61,6 @@ step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of
       <li><span class="check">&#10003;</span>A variable needs a value, of a matching type, before it's used.</li>
       <li><span class="check">&#10003;</span>"Input" is any value from outside your code &mdash; a joystick, a sensor, or typed text.</li>
     </ul></div>''',
-        "speak": "So, read equals as gets assigned, never as equals. Copying a value doesn't link two variables together, each one goes its own way afterward. A variable needs a value of a matching type before you can use it. And input is any value that shows up from outside your code, whether that's a joystick, a sensor, or typed text. Next up, lesson 2.4, we'll look at converting between types on purpose, and what happens when a value doesn't fit.",
+        "speak": "So, read equals as gets assigned, never as equals. Copying a value doesn't link two variables together, each one goes its own way afterward. A variable needs a value of a matching type before you can use it. And input is any value that shows up from outside your code, a joystick or a sensor on a robot. Next up, lesson 2.4, we'll look at converting between types on purpose, and what happens when a value doesn't fit.",
     },
 ]

@@ -63,7 +63,7 @@ BEATS = [
       <div class="dbox active">String</div>
     </div>
     <p style="text-align:center;color:var(--ink-soft);font-size:13px;margin-top:16px;">byte and short are rarely reached for directly; char holds one character &mdash; and String is really a chain of chars underneath.</p>''',
-        "speak": "The remaining three primitives, byte, short, and char, round out the full list of eight. You'll rarely reach for byte or short directly. char is worth knowing though, it holds exactly one character, because String, which you already use constantly, is really just a sequence of chars glued together underneath. That's the whole list, nothing else in Java is a primitive. Everything else, String included, and every class you'll eventually write starting in Chapter 7, is built by combining these eight.",
+        "speak": "The remaining three primitives, byte, short, and char, round out the full list of eight. You'll rarely reach for byte or short directly. char is worth knowing though, it holds exactly one character, because String, which you already use constantly, is conceptually a sequence of chars glued together underneath. That's the whole list, nothing else in Java is a primitive. Everything else, String included, and every class you'll eventually write starting in Chapter 7, is built out of these eight, or references to objects built out of them.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">int</span> motorSpeed;</code></pre>
@@ -85,12 +85,12 @@ BEATS = [
       <div class="namerow"><code>maxSpeed</code><span class="nlabel">start lowercase, capitalize each new word</span></div>
       <div class="namerow"><code>isReady</code><span class="nlabel">say what the value IS &mdash; not just "x"</span></div>
     </div>''',
-        "speak": "Naming matters. A name has to start with a letter and can't contain spaces, and Java's own style, which you'll see in every piece of code from here forward, is camelCase: start lowercase, then capitalize the first letter of every new word after that. And pick a name that actually says what the value is, speed tells you something useful, x tells you nothing.",
+        "speak": "Naming matters. A name has to start with a letter, can't contain spaces, and can't be a keyword, a reserved word like int or class that already means something fixed to Java. Java's own style, which you'll see in every piece of code from here forward, is camelCase: start lowercase, then capitalize the first letter of every new word after that. And pick a name that actually says what the value is, speed tells you something useful, x tells you nothing.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">double</span> maxSpeed = <span class="n">0.85</span>;   <span class="c">// not max_speed, not MaxSpeed</span>
 <span class="k">boolean</span> isReady = <span class="k">false</span>;</code></pre>''',
-        "speak": "Here's camelCase in practice. double max speed, not max underscore speed, not Max Speed with a capital M. boolean is ready, same rule, lowercase start.",
+        "speak": "Here's camelCase in practice. double max speed, not max underscore speed, not Max Speed with a capital M. boolean is ready, same rule, lowercase start. Quick aside: you can declare more than one variable of the same type on one line, separated by commas, and modern Java also lets you write var and let the compiler figure out the type. This course always spells out one variable, one type, per line, since seeing the type is part of learning it.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">int</span> motorSpeed = <span class="n">5</span>;         <span class="c">// a whole number &mdash; no decimal needed here</span>
@@ -103,7 +103,7 @@ BEATS = [
 <span class="k">double</span> maxOutput = <span class="n">0.85</span>;    <span class="c">// a percentage like 85% &mdash; needs a decimal</span>
 <span class="k">boolean</span> isReady = <span class="k">false</span>;    <span class="c">// only ever true or false</span>
 <span class="t">String</span> robotName = <span class="s">"Titan"</span>; <span class="c">// text, built out of primitives under the hood</span></code></pre>''',
-        "speak": "And a String for the robot's name, Titan, in quotes. Remember, under the hood that's really just a chain of chars, built out of the same eight primitives, wearing a more convenient wrapper.",
+        "speak": "And a String for the robot's name, Titan, in quotes. Remember, under the hood that's conceptually a chain of chars, built out of the same eight primitives, wearing a more convenient wrapper.",
         "continues": True,
     },
     {
@@ -119,10 +119,10 @@ System.out.<span class="me">println</span>(<span class="s">"Robot "</span> + rob
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
       <li><span class="check">!</span>Putting a variable's name inside quotes prints the literal word, not the value stored in it.</li>
-      <li><span class="check">!</span>Case matters &mdash; motorSpeed and motorspeed are two different variables, silently.</li>
-      <li><span class="check">!</span>Mismatching type and value &mdash; a decimal value stuffed into an int just throws away everything past the decimal point.</li>
+      <li><span class="check">!</span>Case matters &mdash; motorSpeed and motorspeed are two different variables to Java.</li>
+      <li><span class="check">!</span>Mismatching type and value &mdash; a decimal value doesn't compile into an int at all, it needs an explicit cast.</li>
     </ul></div>''',
-        "speak": "A few pitfalls worth flagging. Never put a variable's name inside quotes, that prints the literal word, not the number stored inside it. Case matters, motor speed with a lowercase s and motor speed with an uppercase S are two completely different variables to Java, and that mistake won't throw an error, it'll just quietly break something. And match the type to the value, a decimal value needs a double, an int just throws away everything after the decimal point.",
+        "speak": "A few pitfalls worth flagging. Never put a variable's name inside quotes, that prints the literal word, not the number stored inside it. Case matters: motorSpeed, with a capital S in the middle, and motorspeed, all one case with no capital, are two completely different variables to Java. Mistype one, and you'll usually get a cannot find symbol error, but if both names happen to exist, Java quietly uses the wrong one, with no error at all. And match the type to the value, a decimal value simply won't compile into an int, you'd need an explicit cast, covered in lesson 2.4.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>

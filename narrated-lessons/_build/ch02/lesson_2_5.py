@@ -24,13 +24,13 @@ power *= <span class="n">0.5</span>;  <span class="c">// same as: power = power 
     {
         "screen": '''<pre class="code"><code>step++;   <span class="c">// same as step += 1, same as step = step + 1</span>
 timer--;</code></pre>''',
-        "speak": "And timer minus-minus subtracts exactly 1 the same way.",
+        "speak": "And timer minus-minus subtracts exactly 1 the same way. One distinction worth knowing: step plus-plus is called postfix, and plus-plus step is called prefix. Both add 1 to step, the difference only shows up when the increment sits inside a larger expression on the same line, postfix uses the old value first then increments, prefix increments first then uses the new value. Used on its own line, like every example here, they behave identically.",
         "continues": True,
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">A Real Example: Ramping Up Power</div>
     <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:48ch;margin:0 auto;">Increase power a little at a time, instead of jumping straight to full.</p>''',
-        "speak": "Here's where this earns its keep on an actual robot. Instead of slamming straight to full power, you increase it gradually, a small amount each time through the loop.",
+        "speak": "Here's where this earns its keep on an actual robot. Instead of slamming straight to full power, you increase it gradually, a small amount each time this code runs. That if check coming up is a sneak peek, Chapter 5 covers it properly, for now just read it as only run the next line when this is true.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">double</span> power = <span class="n">0.0</span>;
@@ -94,8 +94,9 @@ total--;             <span class="c">// total: 2</span></code></pre>''',
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
       <li><span class="check">!</span>Forgetting the clamp when ramping &mdash; power += rampRate with no limit check just keeps climbing past your target.</li>
       <li><span class="check">!</span>Skipping ahead while tracing &mdash; go one line at a time, in order; skipping ahead is how you miss the actual bug.</li>
+      <li><span class="check">!</span>Compound assignment hides a cast &mdash; x *= 0.5 compiles and silently truncates, even though x = x * 0.5 wouldn't compile.</li>
     </ul></div>''',
-        "speak": "Two pitfalls. Forgetting the clamp when ramping, power plus-equals ramp rate with no limit check just sails right past your target and keeps going. And skipping ahead while tracing, go one line at a time, in order, skipping ahead is exactly how you miss the actual bug you were trying to find.",
+        "speak": "Three pitfalls. Forgetting the clamp when ramping, power plus-equals ramp rate with no limit check just sails right past your target and keeps going. Skipping ahead while tracing, go one line at a time, in order, skipping ahead is exactly how you miss the actual bug you were trying to find. And compound assignment hides a cast: with int x equals 5, x equals x times zero point 5 won't compile, but x times-equals zero point 5 compiles fine and silently truncates x down to 2, the compound form has an invisible int cast built in.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>

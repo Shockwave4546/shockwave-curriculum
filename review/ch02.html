@@ -140,7 +140,7 @@ const DATA = {
           <li><code class="inline">byte</code>, <code class="inline">short</code> — smaller whole numbers than <code class="inline">int</code>. Rarely needed.</li>
           <li><code class="inline">char</code> — one single character, like <code class="inline">'A'</code>. You won't use this much on its own, but it's worth knowing: this is what <code class="inline">String</code> is actually built from underneath.</li>
         </ul>
-        <p>That's the full list — nothing else in Java is a primitive. <strong>Everything else is built out of these 8</strong>, most obviously <code class="inline">String</code>, which is really a sequence of <code class="inline">char</code>s glued together. Later, when you write your own classes (starting in Ch.7), those will be built by bundling primitives together — a robot subsystem might combine a <code class="inline">double</code> for speed, a <code class="inline">boolean</code> for "is it ready," and more, all wrapped into one object. Keep this in the back of your mind going forward: every new type you meet is either one of this fixed list, or something built on top of it.</p>
+        <p>That's the full list — nothing else in Java is a primitive. <strong>Everything else is built out of these 8</strong> (or references to objects built out of them), most obviously <code class="inline">String</code>, which conceptually is a sequence of <code class="inline">char</code>s glued together. Later, when you write your own classes (starting in Ch.7), those will be built by bundling primitives together — a robot subsystem might combine a <code class="inline">double</code> for speed, a <code class="inline">boolean</code> for "is it ready," and more, all wrapped into one object. Keep this in the back of your mind going forward: every new type you meet is either one of this fixed list, or something built on top of it.</p>
         <h2>Declaring and Assigning</h2>
         <p>To create a variable, write its type, then its name, then a semicolon:</p>
         <pre class="code"><code><span class="k">int</span> motorSpeed;</code></pre>
@@ -152,10 +152,12 @@ const DATA = {
         <p>Read this the same way: <strong>motorSpeed, of type int, is assigned the value 5.</strong></p>
         <p>A variable declared inside a method body, like everything here, is called a <strong>local variable</strong> — it only exists inside that method. (Java has other kinds of variables too — you'll meet those once classes and methods are on the table, starting in Ch.7.)</p>
         <h2>Naming Variables (camelCase)</h2>
-        <p>A name must start with a letter and can't contain spaces. Java's style — you'll see this in every piece of code from here on — is <strong>camelCase</strong>: start lowercase, then capitalize the first letter of each new word.</p>
+        <p>A name must start with a letter (<code class="inline">_</code> and <code class="inline">$</code> are technically allowed too, but not digits), can't contain spaces, and can't be a <strong>keyword</strong> — a reserved word like <code class="inline">int</code> or <code class="inline">class</code> that already means something fixed to Java. Java's style — you'll see this in every piece of code from here on — is <strong>camelCase</strong>: start lowercase, then capitalize the first letter of each new word.</p>
         <pre class="code"><code><span class="k">double</span> maxSpeed = <span class="n">0.85</span>;   <span class="c">// not max_speed, not MaxSpeed</span>
 <span class="k">boolean</span> isReady = <span class="k">false</span>;</code></pre>
         <p>Pick a name that says what the value <em>is</em>. <code class="inline">speed</code> tells you something; <code class="inline">x</code> doesn't.</p>
+        <p>You can declare more than one variable of the same type in a single statement, separated by commas: <code class="inline">int wins = 0, losses = 0;</code>. It's legal, but one variable per line (as everywhere else in this course) is easier to read — you'll mostly see the combined form in other people's code.</p>
+        <p><em>Aside: modern Java also lets you write <code class="inline">var motorSpeed = 5;</code> and have the compiler figure out the type from the value. This course always spells out the type instead, since seeing it is part of learning what it is — but you'll see <code class="inline">var</code> in real-world code.</em></p>
         <h2>Worked Example</h2>
         <pre class="code"><code><span class="k">int</span> motorSpeed = <span class="n">5</span>;         <span class="c">// a whole number — no decimal needed here</span>
 <span class="k">double</span> maxOutput = <span class="n">0.85</span>;    <span class="c">// a percentage like 85% — needs a decimal</span>
@@ -166,8 +168,8 @@ System.out.<span class="me">println</span>(<span class="s">"Robot "</span> + rob
       `,
       pitfalls: [
         "Never put a variable's name inside quotes. <code class=\"inline\">System.out.println(\"motorSpeed\")</code> prints the literal word <code class=\"inline\">motorSpeed</code>, not the number stored in it. Only actual words/sentences go inside <code class=\"inline\">\"\"</code>; variables get attached with <code class=\"inline\">+</code>.",
-        "Case matters. <code class=\"inline\">motorSpeed</code> and <code class=\"inline\">motorspeed</code> are two different variables to Java. This doesn't cause an error you'll notice right away — it just quietly breaks something.",
-        "Match the type to the value. If a value has a decimal point, it needs <code class=\"inline\">double</code>, not <code class=\"inline\">int</code> — otherwise Java throws away everything after the decimal point."
+        "Case matters. <code class=\"inline\">motorSpeed</code> and <code class=\"inline\">motorspeed</code> are two different variables to Java. Mistype one and you'll usually get a <code class=\"inline\">cannot find symbol</code> error — but if both names happen to exist, Java quietly uses the wrong one, with no error at all.",
+        "Match the type to the value. If a value has a decimal point, it needs <code class=\"inline\">double</code>, not <code class=\"inline\">int</code> — a decimal value in an <code class=\"inline\">int</code> variable won't compile (\"possible lossy conversion\"); only an explicit <code class=\"inline\">(int)</code> cast (covered in 2.4) cuts off the decimal."
       ],
       takeaways: [
         "Java has exactly 8 primitive types. <code class=\"inline\">int</code>, <code class=\"inline\">long</code>, <code class=\"inline\">double</code>, <code class=\"inline\">float</code>, <code class=\"inline\">boolean</code> are the common ones in FRC code; <code class=\"inline\">byte</code>, <code class=\"inline\">short</code>, <code class=\"inline\">char</code> exist but are rarely used directly.",
@@ -194,6 +196,17 @@ System.out.<span class="me">println</span>(<span class="s">"Robot "</span> + rob
         <pre class="code"><code>System.out.<span class="me">print</span>(<span class="s">"Score: "</span>);
 System.out.<span class="me">println</span>(<span class="n">24</span>);
 <span class="c">// Output: Score: 24</span></code></pre>
+        <h2>Joining Text and Values With +</h2>
+        <p><code class="inline">+</code> doesn't just add numbers — between a <code class="inline">String</code> and anything else, it <strong>joins them into one longer piece of text</strong> instead:</p>
+        <pre class="code"><code><span class="k">int</span> score = <span class="n">24</span>;
+System.out.<span class="me">println</span>(<span class="s">"Score: "</span> + score); <span class="c">// Score: 24</span></code></pre>
+        <p>Every worked example so far has been doing this already. The catch: <code class="inline">+</code> still runs left to right, so where the text shows up in the expression changes the result:</p>
+        <pre class="code"><code>System.out.<span class="me">println</span>(<span class="s">"a"</span> + <span class="n">1</span> + <span class="n">2</span>); <span class="c">// a12 — "a"+1 makes "a1" (text), then +2 makes "a12" (text)</span>
+System.out.<span class="me">println</span>(<span class="n">1</span> + <span class="n">2</span> + <span class="s">"a"</span>); <span class="c">// 3a  — 1+2 makes 3 (math) first, then +"a" makes "3a" (text)</span></code></pre>
+        <p>Once a <code class="inline">+</code> touches a <code class="inline">String</code>, everything after it becomes text-joining, left to right — there's no going back to math mode later in the same line.</p>
+        <p>Text inside <code class="inline">""</code> can also contain <strong>escape sequences</strong> — a backslash followed by a letter, meaning something other than a literal character: <code class="inline">\\n</code> (new line), <code class="inline">\\t</code> (tab), <code class="inline">\\"</code> (a literal quote mark inside the text), and <code class="inline">\\\\</code> (a literal backslash).</p>
+        <pre class="code"><code>System.out.<span class="me">println</span>(<span class="s">"Line one\\nLine two"</span>); <span class="c">// prints on two separate lines</span>
+System.out.<span class="me">println</span>(<span class="s">"She said \\"go\\""</span>);    <span class="c">// She said "go"</span></code></pre>
         <h2>Math Expressions</h2>
         <p><code class="inline">+ - * /</code> work the same way you'd expect, with one big exception: <strong>dividing two whole numbers throws away the decimal part.</strong></p>
         <pre class="code"><code>System.out.<span class="me">println</span>(<span class="n">7</span> / <span class="n">2</span>); <span class="c">// prints 3, not 3.5</span></code></pre>
@@ -209,6 +222,7 @@ System.out.<span class="me">println</span>((<span class="n">2</span> + <span cla
 System.out.<span class="me">println</span>(totalSeconds / <span class="n">60</span>); <span class="c">// 2 — whole minutes</span>
 System.out.<span class="me">println</span>(totalSeconds % <span class="n">60</span>); <span class="c">// 30 — leftover seconds</span>
 <span class="c">// 150 seconds = 2 minutes, 30 seconds</span></code></pre>
+        <p><code class="inline">%</code> binds as tightly as <code class="inline">*</code> and <code class="inline">/</code> (so it follows the same order-of-operations rule above). It also behaves a little differently with negative numbers than you might expect: <code class="inline">-7 / 2</code> is <code class="inline">-3</code> (still truncated toward zero, not rounded down), and <code class="inline">-7 % 2</code> is <code class="inline">-1</code> (the remainder keeps the sign of the number being divided).</p>
       `,
       pitfalls: [
         "Dividing two whole numbers and expecting a decimal. It truncates instead — check whether at least one side is a <code class=\"inline\">double</code>.",
@@ -231,7 +245,7 @@ System.out.<span class="me">println</span>(totalSeconds % <span class="n">60</sp
         <h2>Assignment, One More Time</h2>
         <p><code class="inline">=</code> always has one variable on the left, and a value (or a math expression) on the right. Read it as "gets assigned," not "equals."</p>
         <pre class="code"><code><span class="k">int</span> score = <span class="n">10</span> * <span class="n">2</span> + <span class="n">5</span>; <span class="c">// score is assigned the value 25</span></code></pre>
-        <p>Copying one variable into another only copies the value at that moment — it doesn't link them together.</p>
+        <p>Copying one variable into another only copies the value at that moment — it doesn't link them together. (This is true for primitive types like <code class="inline">int</code> and <code class="inline">double</code>, which is everything we've used so far; once you start working with objects, starting in Ch.7, copying a variable copies a <em>reference</em> instead, which behaves differently.)</p>
         <pre class="code"><code><span class="k">int</span> x = <span class="n">3</span>;
 <span class="k">int</span> y = <span class="n">2</span>;
 x = y;   <span class="c">// x is now assigned a copy of y's value: 2</span>
@@ -249,7 +263,8 @@ step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of
         <p>(Lesson 2.5 covers a shorthand for this: <code class="inline">step++</code>.)</p>
         <h2>Where "Input" Comes From</h2>
         <p>Some value comes from outside your code, gets stored in a variable, and your code reacts to it. On a robot, that's a joystick or a sensor, not typed text — but it's the same idea: the variable holds whatever value showed up, and the rest of the code doesn't need to change no matter what that value is.</p>
-        <pre class="code"><code><span class="k">double</span> throttle = <span class="n">0.6</span>; <span class="c">// stands in for "whatever value the controller sends"</span>
+        <pre class="code"><code><span class="k">double</span> maxSpeed = <span class="n">0.85</span>;
+<span class="k">double</span> throttle = <span class="n">0.6</span>; <span class="c">// stands in for "whatever value the controller sends"</span>
 <span class="k">double</span> output = throttle * maxSpeed;</code></pre>
       `,
       pitfalls: [
@@ -261,7 +276,7 @@ step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of
         "Copying a variable's value into another does not link them — each is independent afterward.",
         "A variable must have a value, of a matching type, before it's used in an expression.",
         "<code class=\"inline\">step = step + 1</code> uses the old value first, then overwrites the variable.",
-        "\"Input\" is any value that comes from outside your code — a joystick reading, a sensor, or typed text."
+        "\"Input\" is any value that comes from outside your code — a joystick reading, a sensor, or (on a laptop, not covered in this course) typed text."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.04-assignment-and-input.md (CSA 1.4)"
     }
@@ -271,6 +286,12 @@ step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of
     ref: "2.4 — Casting and Ranges of Values (CSA 1.5)",
     lesson: {
       body: `
+        <h2>Widening vs. Narrowing</h2>
+        <p>Java moves values between numeric types two different ways:</p>
+        <ul>
+          <li><strong>Widening</strong> — a smaller type flows into a bigger one automatically, no cast needed: <code class="inline">int</code> into <code class="inline">double</code> is always safe (no information is lost), so <code class="inline">double d = 5;</code> just compiles.</li>
+          <li><strong>Narrowing</strong> — a bigger type into a smaller one loses information, so Java requires an explicit cast to make sure you meant it: <code class="inline">double</code> into <code class="inline">int</code> needs <code class="inline">(int)</code>. This is exactly the rule behind the "possible lossy conversion" compile errors from 2.1 and 2.3.</li>
+        </ul>
         <h2>Converting Between Types (Casting)</h2>
         <p>Put <code class="inline">(int)</code> or <code class="inline">(double)</code> right before a value to convert it to that type on the spot:</p>
         <pre class="code"><code>(<span class="k">double</span>) <span class="n">1</span> / <span class="n">3</span>   <span class="c">// 0.333... — the 1 becomes a double first, then divides</span>
@@ -278,29 +299,42 @@ step = step + <span class="n">1</span>; <span class="c">// uses the OLD value of
         <p><code class="inline">(int)</code> always cuts off the decimal — it never rounds. <code class="inline">(int) 3.9</code> is <code class="inline">3</code>, not <code class="inline">4</code>.</p>
         <p>If you actually want to round, add <code class="inline">0.5</code> first, then cast:</p>
         <pre class="code"><code><span class="k">int</span> rounded = (<span class="k">int</span>)(<span class="n">5.7</span> + <span class="n">0.5</span>); <span class="c">// 6 — this is rounding, not truncating</span></code></pre>
+        <p>This add-<code class="inline">0.5</code> trick only rounds correctly for <strong>non-negative</strong> numbers. For a negative value it rounds the wrong way: <code class="inline">(int)(-5.7 + 0.5)</code> is <code class="inline">-5</code>, not <code class="inline">-6</code> — and FRC values (joystick input, encoder deltas) are often negative. Java's own <code class="inline">Math.round(...)</code> (Ch.4) handles the sign correctly and is the better tool for real code; this trick is worth knowing because you'll see it, and because it explains <em>why</em> <code class="inline">Math.round</code> exists.</p>
         <h2>The Fix for Truncating Division</h2>
         <p>Lesson 2.2 showed that dividing two whole numbers cuts off the decimal. Casting one of them fixes it — but only if the cast happens <em>before</em> the division:</p>
         <pre class="code"><code><span class="k">int</span> total = <span class="n">17</span>;
 <span class="k">int</span> games = <span class="n">5</span>;
 
 <span class="k">double</span> average = (<span class="k">double</span>) total / games;   <span class="c">// correct: 3.4</span>
-<span class="k">double</span> wrong    = (<span class="k">double</span>) (total / games); <span class="c">// wrong: divides as whole numbers first (3), then casts: 3.0</span></code></pre>
+<span class="k">double</span> wrong    = (<span class="k">double</span>) (total / games); <span class="c">// wrong: int division first, then cast: 3.0</span></code></pre>
         <h2>Whole Numbers Have a Limit</h2>
         <p>An <code class="inline">int</code> can only hold values in a fixed range (roughly ±2.1 billion). Go past that limit, and the number silently wraps around to a wrong value — no error, no warning.</p>
         <pre class="code"><code>System.out.<span class="me">println</span>(<span class="t">Integer</span>.MAX_VALUE + <span class="n">1</span>); <span class="c">// wraps to the smallest possible int</span></code></pre>
+        <p>(<code class="inline">Integer</code> here is a built-in helper class that travels alongside the <code class="inline">int</code> primitive, and <code class="inline">MAX_VALUE</code> is a constant it defines — both get a proper introduction in 9.2.)</p>
         <p>This is unlikely to come up in a match, but it's a real risk for a counter that keeps growing and is never reset.</p>
         <h2>Decimals Have a Precision Limit Too</h2>
-        <p>A <code class="inline">double</code> can only store so many digits (about 14-15). Beyond that, the extra digits get quietly rounded off. This is why comparing two decimals with <code class="inline">==</code> is risky — two values that "should" be equal might differ by a tiny rounding amount.</p>
+        <p>A <code class="inline">double</code> can only store so many significant digits (about 15-16). Beyond that, the extra digits get quietly rounded off. The everyday cause isn't running out of digits, though — most decimals simply can't be stored <em>exactly</em> in binary at all, the same way <code class="inline">1/3</code> can't be written exactly in decimal:</p>
+        <pre class="code"><code>System.out.<span class="me">println</span>(<span class="n">0.1</span> + <span class="n">0.2</span>);        <span class="c">// 0.30000000000000004, not 0.3</span>
+System.out.<span class="me">println</span>(<span class="n">0.1</span> + <span class="n">0.2</span> == <span class="n">0.3</span>); <span class="c">// false</span></code></pre>
+        <p>This is why comparing two <code class="inline">double</code>s with <code class="inline">==</code> is risky — two values that "should" be mathematically equal can differ by a tiny rounding amount you never typed in yourself. The fix, needed constantly for things like checking whether a robot arm reached its target angle, is a <strong>tolerance comparison</strong>: instead of asking "are these exactly equal," ask "are these close enough":</p>
+        <pre class="code"><code><span class="k">double</span> target = <span class="n">45.0</span>;
+<span class="k">double</span> current = <span class="n">44.98</span>;
+<span class="k">double</span> tolerance = <span class="n">0.05</span>;
+
+<span class="k">boolean</span> closeEnough = Math.<span class="me">abs</span>(current - target) &lt; tolerance; <span class="c">// true</span></code></pre>
+        <p><code class="inline">Math.abs(...)</code> (Ch.4) strips the sign, so it doesn't matter whether <code class="inline">current</code> is a bit above or a bit below <code class="inline">target</code> — only how far apart they are.</p>
       `,
       pitfalls: [
         "Casting after dividing instead of before. The division already happened as whole numbers by the time the cast runs — putting the cast in the wrong spot doesn't fix anything.",
-        "Assuming a cast rounds. <code class=\"inline\">(int)</code> cuts off the decimal. Rounding needs the add-0.5-then-cast trick."
+        "Assuming a cast rounds. <code class=\"inline\">(int)</code> cuts off the decimal. Rounding needs the add-0.5-then-cast trick — and even that trick only works for non-negative numbers.",
+        "Comparing <code class=\"inline\">double</code>s with <code class=\"inline\">==</code>. Two values that \"should\" be equal often aren't, bit-for-bit — use a tolerance comparison (<code class=\"inline\">Math.abs(a - b) < tolerance</code>) instead."
       ],
       takeaways: [
+        "Widening (small type into big, e.g. <code class=\"inline\">int</code> into <code class=\"inline\">double</code>) happens automatically; narrowing (big into small, e.g. <code class=\"inline\">double</code> into <code class=\"inline\">int</code>) needs an explicit cast.",
         "<code class=\"inline\">(int)</code> and <code class=\"inline\">(double)</code> convert a value's type on the spot; <code class=\"inline\">(int)</code> always cuts off decimals, never rounds.",
         "To fix truncating division, cast one of the numbers <em>before</em> dividing — position matters.",
         "<code class=\"inline\">int</code> values have a fixed range; going past it silently wraps to a wrong value.",
-        "<code class=\"inline\">double</code> values have a precision limit — tiny rounding differences can make <code class=\"inline\">==</code> unreliable."
+        "<code class=\"inline\">double</code> values have a precision limit and can't store most decimals exactly — compare with a tolerance (<code class=\"inline\">Math.abs(a - b) < tolerance</code>) instead of <code class=\"inline\">==</code>."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.05-casting-and-ranges-of-values.md (CSA 1.5)"
     }
@@ -318,8 +352,9 @@ power *= <span class="n">0.5</span>;  <span class="c">// same as: power = power 
         <p>Adding or subtracting exactly 1 is common enough to get its own shortcut: <code class="inline">++</code> and <code class="inline">--</code>.</p>
         <pre class="code"><code>step++;   <span class="c">// same as step += 1, same as step = step + 1</span>
 timer--;</code></pre>
+        <p><code class="inline">step++</code> (<strong>postfix</strong>) and <code class="inline">++step</code> (<strong>prefix</strong>) both add 1 to <code class="inline">step</code> — the difference only shows up when the increment is used <em>inside</em> a larger expression on the same line: postfix uses the old value first, then increments; prefix increments first, then uses the new value. Used on its own line, like every example here, they behave identically.</p>
         <h2>A Real Example: Ramping Up Power</h2>
-        <p>Instead of jumping straight to full power, increase it gradually, a little bit each time:</p>
+        <p>Instead of jumping straight to full power, increase it gradually, a little bit each time. (The <code class="inline">if</code> below is a sneak peek — Ch.5 covers it properly; for now, just read it as "only run the next line when this is true.")</p>
         <pre class="code"><code><span class="k">double</span> power = <span class="n">0.0</span>;
 <span class="k">double</span> rampRate = <span class="n">0.02</span>; <span class="c">// add 2% each time this runs</span>
 
@@ -344,7 +379,8 @@ total--;             <span class="c">// total: 2</span></code></pre>
       `,
       pitfalls: [
         "Forgetting the clamp when ramping. <code class=\"inline\">power += rampRate</code> with no limit check will just keep climbing past your target.",
-        "Skipping ahead while tracing. Go one line at a time, in order — skipping ahead is how you miss the actual bug."
+        "Skipping ahead while tracing. Go one line at a time, in order — skipping ahead is how you miss the actual bug.",
+        "Compound assignment hides a cast. <code class=\"inline\">x = x + 1;</code> and <code class=\"inline\">x += 1;</code> are usually described as identical, but they're not quite: <code class=\"inline\">int x = 5; x = x * 0.5;</code> won't compile (the right side is a <code class=\"inline\">double</code>), while <code class=\"inline\">x *= 0.5;</code> compiles fine and silently truncates <code class=\"inline\">x</code> down to <code class=\"inline\">2</code> — the compound form has an invisible <code class=\"inline\">(int)</code> cast built in."
       ],
       takeaways: [
         "<code class=\"inline\">+= -= *= /= %=</code> update a variable using its current value, then store the result back.",

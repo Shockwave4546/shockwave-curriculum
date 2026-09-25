@@ -155,7 +155,9 @@ const DATA = {
         System.out.<span class="me">println</span>(<span class="s">"Hi there!"</span>);
     }
 }</code></pre>
-        <p>Every open curly brace <code class="inline">{</code> needs a matching close <code class="inline">}</code>. The file itself has to be named the same as the class — <code class="inline">MyClass.java</code> for <code class="inline">public class MyClass</code>.</p>
+        <p>Every open curly brace <code class="inline">{</code> needs a matching close <code class="inline">}</code>. Each word in <code class="inline">public static void main(String[] args)</code> gets its own full explanation later — <code class="inline">String[] args</code> in Ch.4, <code class="inline">public</code>/<code class="inline">static</code> more fully in Ch.7, where <code class="inline">void</code> fits among method return types in Ch.9 — for now, treat the whole line as fixed boilerplate every program starts with.</p>
+        <p>When you compile normally (<code class="inline">javac</code>, or most IDEs), the file has to be named the same as its <code class="inline">public class</code> — <code class="inline">MyClass.java</code> for <code class="inline">public class MyClass</code>. Running a single file directly with <code class="inline">java MyClass.java</code> doesn't enforce this, but matching the names is still the habit to build.</p>
+        <p><strong>On Java 25:</strong> you may also see an even shorter <code class="inline">void main() { ... }</code> with no <code class="inline">class</code> and no <code class="inline">public static</code> — a newer shortcut for quick scripts (JEP 512). This course always uses the full form shown above, since it works unchanged on Java 17 too.</p>
         <h2>Every Statement Ends With a Semicolon</h2>
         <p>Each individual instruction is a <strong>statement</strong>, and every statement ends with <code class="inline">;</code> — think of it like a period ending a sentence.</p>
         <pre class="code"><code>System.out.<span class="me">println</span>(<span class="s">"Hi there!"</span>);</code></pre>
@@ -165,29 +167,29 @@ const DATA = {
         <p>Computers don't understand Java directly. A <strong>compiler</strong> checks your code for mistakes and translates it into something the computer can run. If it finds a mistake, it stops and tells you — that's a <strong>syntax error</strong>.</p>
         <p>For this course, you have two ways to write and run your code:</p>
         <ul>
-          <li>Use your own IDE, like <strong>VS Code</strong> with the Java extension — genuinely how most FRC teams write real robot code, so it's good practice either way. Write and run it there, then copy your finished code into this course's checker when an exercise asks for it.</li>
-          <li>Use this course's built-in checker directly — no copying needed. This part of the course is still being built, so it's not ready yet.</li>
+          <li>Use your own IDE, like <strong>VS Code</strong> with the Java extension — genuinely how most FRC teams write real robot code, so it's good practice either way.</li>
+          <li>Use an online IDE, like <strong>Replit</strong>, if you don't want to install anything yet.</li>
         </ul>
-        <p>For now, the first option is what actually works: write and run your code in a real IDE (or an online one, like <strong>Replit</strong>), then paste the result in when an exercise asks for it. <em>(This section will get an update once the built-in checker exists.)</em></p>
+        <p>Write and run your code in one of those to see it actually work. This lesson's own exercises are multiple-choice and reorder (Micro-Parsons) puzzles, so you don't need to submit code anywhere to complete them — a text-submit coding checker, for later chapters, is still being built.</p>
         <h2>Keywords and Naming</h2>
         <p>Words like <code class="inline">public</code>, <code class="inline">class</code>, and <code class="inline">void</code> are <strong>keywords</strong> — reserved words with a fixed meaning in Java. Keywords are always lowercase.</p>
         <p>Everything else — every name you pick yourself — follows one of three styles:</p>
         <ul>
           <li><strong>lowerCamelCase</strong> — variables and methods start lowercase, then capitalize each new word: <code class="inline">motorSpeed</code>, <code class="inline">calculateTotal()</code>.</li>
           <li><strong>PascalCase</strong> (also called UpperCamelCase) — classes and interfaces capitalize every word, including the first: <code class="inline">System</code>, <code class="inline">String</code>, or a class you write yourself like <code class="inline">Drivetrain</code>.</li>
-          <li><strong>SCREAMING_SNAKE_CASE</strong> — constants (values that never change) are all uppercase with underscores between words: <code class="inline">MAX_SPEED</code>, <code class="inline">PI</code>. You'll see this style starting in Ch.23.</li>
+          <li><strong>SCREAMING_SNAKE_CASE</strong> — constants (values that never change) are all uppercase with underscores between words: <code class="inline">MAX_SPEED</code>, <code class="inline">PI</code>. You'll meet real constants starting in Ch.7.4; <code class="inline">final</code>, what actually makes a value a constant, gets full treatment in Ch.23.</li>
         </ul>
         <p>That's why <code class="inline">System.out.println(...)</code> looks the way it does: <code class="inline">System</code> is a class, so it's PascalCase. <code class="inline">println</code> is a method — here it's just one word, so there's no second word to capitalize, but it still starts lowercase like every method name does.</p>
         <h2>Syntax Errors vs. Run-Time Errors</h2>
         <ul>
           <li>A <strong>syntax error</strong> is caught by the compiler, before your program ever runs — a missing <code class="inline">;</code>, an unmatched <code class="inline">{</code> or <code class="inline">"</code>.</li>
-          <li>A <strong>run-time error</strong> happens while the program is running, after it already compiled — like dividing by zero.</li>
+          <li>A <strong>run-time error</strong> happens while the program is running, after it already compiled — like dividing a whole number by zero.</li>
         </ul>
         <p>Both are normal. Finding and fixing errors is called <strong>debugging</strong> — informally, an error is a "bug." If you're stuck, explaining your code line-by-line out loud — even to an inanimate object, a real technique called "rubber duck debugging" — often reveals the problem before you finish explaining it.</p>
         <h2>Comments</h2>
         <p><code class="inline">//</code> starts a comment that runs to the end of the line; <code class="inline">/* ... */</code> comments out everything in between, even across multiple lines. The compiler ignores comments completely — they exist to explain your code to yourself and your teammates.</p>
         <pre class="code"><code><span class="c">// this line is ignored by the compiler</span>
-<span class="k">int</span> score = <span class="n">10</span>; <span class="c">// so is this part, after the //</span></code></pre>
+System.out.<span class="me">println</span>(<span class="s">"Hi there!"</span>); <span class="c">// so is this part, after the //</span></code></pre>
       `,
       pitfalls: [
         "Missing a semicolon. The single most common first error — check the end of the line the compiler points at, and the line just before it.",
@@ -201,7 +203,7 @@ const DATA = {
         "Every statement ends with <code class=\"inline\">;</code>.",
         "Three naming styles: lowerCamelCase (variables/methods), PascalCase (classes/interfaces), SCREAMING_SNAKE_CASE (constants).",
         "A compiler checks your code and translates it to run; a syntax error is a mistake it catches before your program ever runs.",
-        "Write and run code in a real IDE (like VS Code) or an online one, then paste it in when an exercise asks for it.",
+        "Write and run code in a real IDE (like VS Code) or an online one; this lesson's exercises are multiple-choice and reorder puzzles, not a code checker.",
         "<code class=\"inline\">//</code> and <code class=\"inline\">/* */</code> are comments — the compiler ignores them completely."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.01-introduction-to-algorithms-programming-and-compilers.md (CSA 1.1)"
