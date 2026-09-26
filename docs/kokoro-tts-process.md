@@ -120,7 +120,7 @@ Java I → Java II seam (Ch.13/14) rather than mid-track.
 
 | Ch. | Voice | | Ch. | Voice |
 |---|---|---|---|---|
-| 1 | Jenny (Azure, existing — not re-recorded) | | 15 | Echo |
+| 1 | Heart (re-voiced from Azure Jenny, 2026-09-26) | | 15 | Echo |
 | 2 | Echo | | 16 | Heart |
 | 3 | Jessica | | 17 | Puck |
 | 4 | Puck | | 18 | Emma |

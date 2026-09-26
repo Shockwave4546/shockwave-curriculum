@@ -22,6 +22,7 @@ from kokoro_builder import build_lesson
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 CHAPTER_SLUGS = {
+    1: 'ch01-why-java-for-frc',
     2: 'ch02-variables-and-types', 3: 'ch03-apis-libraries-and-documentation',
     4: 'ch04-using-objects-and-calling-methods', 5: 'ch05-control-structures',
     6: 'ch06-strings', 7: 'ch07-the-class-blueprint', 8: 'ch08-constructors-and-this',
@@ -39,6 +40,7 @@ CHAPTER_SLUGS = {
 }
 
 CHAPTER_NAMES = {
+    1: 'Why Java for FRC',
     2: 'Variables & Types', 3: 'APIs, Libraries & Documentation',
     4: 'Using Objects & Calling Methods', 5: 'Control Structures', 6: 'Strings',
     7: 'The Class Blueprint', 8: 'Constructors & "this"', 9: 'Storing Data',
@@ -55,6 +57,7 @@ CHAPTER_NAMES = {
 
 # One voice per chapter -- see docs/kokoro-tts-process.md for the full table/rationale.
 CHAPTER_VOICES = {
+    1: 'af_heart',
     2: 'am_echo', 3: 'af_jessica', 4: 'am_puck', 5: 'af_heart', 6: 'bm_fable',
     7: 'bf_emma', 8: 'am_echo', 9: 'af_jessica', 10: 'am_puck', 11: 'af_heart',
     12: 'bm_fable', 13: 'bf_emma', 14: 'af_jessica', 15: 'am_echo', 16: 'af_heart',
