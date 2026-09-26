@@ -98,7 +98,7 @@ const DATA = {
       <p>Some data is naturally rows-and-columns, not just a flat list. Swerve drive telemetry is a good example: 4 modules (front-left, front-right, back-left, back-right), each logging several current-draw samples over time. That's a 2D array — one row per module, one column per sample.</p>
       <pre class="code"><code><span class="c">// datatype[][] variableName = new datatype[numberRows][numberCols];</span>
 <span class="k">double</span>[][] moduleCurrents = <span class="k">new double</span>[<span class="n">4</span>][<span class="n">5</span>]; <span class="c">// 4 modules, 5 samples each</span></code></pre>
-      <p>Java stores this as an <strong>array of arrays</strong> — the outer array holds 4 references, each pointing to its own 5-element inner array. Declared but not yet created (<code class="inline">double[][] moduleCurrents;</code> with no <code class="inline">new</code>), the variable is <code class="inline">null</code>, same as any other reference type. Once created with <code class="inline">new</code>, every element starts at that type's default (<code class="inline">0.0</code> here).</p>
+      <p>A 2D array variable works like any other reference type: declared as a <strong>field</strong> with no <code class="inline">new</code> (<code class="inline">double[][] moduleCurrents;</code>), it defaults to <code class="inline">null</code>. Declared as a <strong>local variable</strong>, Java won't even let you read it before it's assigned — that's a compile error ("variable moduleCurrents might not have been initialized"), not a <code class="inline">null</code>. Once created with <code class="inline">new</code>, every element starts at that type's default (<code class="inline">0.0</code> here); how Java actually stores the rows is covered below.</p>
       <h2>Initializer Lists</h2>
       <p>An initializer list for a 2D array is a list of 1D initializer lists, one per row — size is inferred:</p>
       <pre class="code"><code><span class="k">double</span>[][] moduleCurrents =
@@ -154,13 +154,22 @@ moduleCurrents[<span class="n">0</span>].length  <span class="c">// 5  (samples 
       <p>Which index changes in the <em>outer</em> loop decides the traversal order:</p>
       <pre class="code"><code><span class="c">// Row-major: finish one module's samples before moving to the next module</span>
 <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; moduleCurrents.length; row++)
+{
     <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[<span class="n">0</span>].length; col++)
-        process(moduleCurrents[row][col]);
+    {
+        // stand-in for whatever this pass needs to do
+        System.out.<span class="me">println</span>(moduleCurrents[row][col]);
+    }
+}
 
-<span class="c">// Column-major: look at sample #0 across ALL modules, then sample #1 across all modules...</span>
+<span class="c">// Column-major: sample #0 across every module, then sample #1, and so on</span>
 <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[<span class="n">0</span>].length; col++)
+{
     <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; moduleCurrents.length; row++)
-        process(moduleCurrents[row][col]);</code></pre>
+    {
+        System.out.<span class="me">println</span>(moduleCurrents[row][col]);
+    }
+}</code></pre>
       <p>Row-major is the natural choice for "how did this one module behave over time." Column-major is the natural choice for "what was total robot current draw at this one instant" — e.g. checking whether all 4 modules spiked simultaneously (a brownout risk), which row-major order would never surface directly.</p>
       <h2>Enhanced For-Each, Nested</h2>
       <p>A nested for-each also traverses a 2D array, with no indices — but only when you don't need row/column numbers or in-place modification of primitive values:</p>
@@ -173,12 +182,13 @@ moduleCurrents[<span class="n">0</span>].length  <span class="c">// 5  (samples 
 }</code></pre>
       <p>Pattern to remember: the <strong>outer</strong> loop variable is typed as a 1D array (a whole row); the <strong>inner</strong> loop variable is typed as one element. As with 1D for-each (Lesson 9.4), reassigning <code class="inline">sample</code> inside the loop does not change what's stored in the array.</p>
       <h2>2D Arrays of Objects Are Different</h2>
-      <p>The for-each modification limit above is about <em>primitives</em>. A 2D array of objects — like a grid of <code class="inline">TalonFX</code> motor wrappers, or a vision system's <code class="inline">Pixel[][]</code> — can still have its objects mutated through a for-each loop, because you're calling a method on the object the loop variable refers to, not reassigning the array slot itself:</p>
-      <pre class="code"><code><span class="k">for</span> (<span class="t">TalonFX</span>[] moduleRow : driveMotors)
+      <p>The for-each modification limit above is about <em>primitives</em>. A 2D array of objects — like a grid of <code class="inline">DriveMotor</code> objects (the team's own motor class, Lesson 4.4), or a vision system's <code class="inline">Pixel[][]</code> — can still have its objects mutated through a for-each loop, because you're calling a method on the object the loop variable refers to, not reassigning the array slot itself:</p>
+      <pre class="code"><code><span class="c">// driveMotors is a DriveMotor[][], one row per swerve module</span>
+<span class="k">for</span> (<span class="t">DriveMotor</span>[] moduleRow : driveMotors)
 {
-    <span class="k">for</span> (<span class="t">TalonFX</span> motor : moduleRow)
+    <span class="k">for</span> (<span class="t">DriveMotor</span> motor : moduleRow)
     {
-        motor.<span class="me">setNeutralMode</span>(NeutralModeValue.Brake); <span class="c">// mutates the real object — this works</span>
+        motor.<span class="me">setThrottle</span>(<span class="n">0.0</span>); <span class="c">// mutates the real object — this works</span>
     }
 }</code></pre>
     `,
@@ -191,7 +201,7 @@ moduleCurrents[<span class="n">0</span>].length  <span class="c">// 5  (samples 
       "Traversing a full 2D array needs nested loops: outer for rows, inner for columns.",
       "Row-major order finishes one row before moving to the next; column-major order finishes one column (across all rows) before moving to the next — which one to use depends on what you're computing.",
       "A nested for-each loop traverses a 2D array with no indices; its outer variable is a 1D array (one row), its inner variable matches the element type.",
-      "For-each can't modify a primitive 2D array's stored values, but it can call mutator methods on objects the array holds (like motor controllers)."
+      "For-each can't modify a primitive 2D array's stored values, but it can call mutator methods on objects the array holds (like DriveMotor)."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.12-2d-array-traversals-nested-loops.md (CSA 4.12)"
   },
@@ -266,6 +276,7 @@ moduleCurrents[<span class="n">0</span>].length  <span class="c">// 5  (samples 
         {
             <span class="k">for</span> (<span class="k">int</span> row2 = row; row2 &lt; a.length; row2++)
             {
+                <span class="c">// ?: is the conditional operator, Lesson 5.5</span>
                 <span class="k">int</span> startCol = (row2 == row) ? col + <span class="n">1</span> : <span class="n">0</span>;
                 <span class="k">for</span> (<span class="k">int</span> col2 = startCol; col2 &lt; a[<span class="n">0</span>].length; col2++)
                 {
@@ -281,7 +292,7 @@ moduleCurrents[<span class="n">0</span>].length  <span class="c">// 5  (samples 
 }</code></pre>
       <p>The <code class="inline">startCol</code> trick avoids comparing a pair twice: within the same row (<code class="inline">row2 == row</code>), only look at columns after the candidate's own column; in a later row, every column is fair game.</p>
       <h2>Rotate/Reverse a Single Row or Column</h2>
-      <p>Rotating or reversing just one row (or one "virtual column" — a fixed column index across every row) works exactly like the 1D version from Lesson 9.5, because you're really only touching one 1D array at a time:</p>
+      <p>Working on just one row (or one "virtual column" — a fixed column index across every row) really only touches one 1D array at a time, so the Ch.9 patterns carry over directly: rotating works like Lesson 9.7's <code class="inline">ArrayList</code> rotate (shift each element into the next slot, then wrap the last one around to the front); reversing works like Lesson 9.5's swap-from-both-ends.</p>
       <pre class="code"><code><span class="k">public static void</span> <span class="me">rotateRowRight</span>(<span class="k">double</span>[][] a, <span class="k">int</span> row)
 {
     <span class="k">double</span> last = a[row][a[<span class="n">0</span>].length - <span class="n">1</span>];
@@ -290,18 +301,32 @@ moduleCurrents[<span class="n">0</span>].length  <span class="c">// 5  (samples 
         a[row][col] = a[row][col - <span class="n">1</span>];
     }
     a[row][<span class="n">0</span>] = last;
+}
+
+<span class="k">public static void</span> <span class="me">reverseRow</span>(<span class="k">double</span>[][] a, <span class="k">int</span> row)
+{
+    <span class="k">int</span> left = <span class="n">0</span>;
+    <span class="k">int</span> right = a[<span class="n">0</span>].length - <span class="n">1</span>;
+    <span class="k">while</span> (left &lt; right)
+    {
+        <span class="k">double</span> temp = a[row][left];
+        a[row][left] = a[row][right];
+        a[row][right] = temp;
+        left++;
+        right--;
+    }
 }</code></pre>
     `,
     pitfalls: [
       "Confusing \"sum a row\" with \"sum a column.\" Fixing <code class=\"inline\">row</code> and looping <code class=\"inline\">col</code> sums a row; fixing <code class=\"inline\">col</code> and looping <code class=\"inline\">row</code> sums a column — it's easy to write the wrong one by habit.",
-      "Forgetting the duplicate check's <code class=\"inline\">startCol</code> trick. Without it, a 2D duplicate search either misses valid pairs or double-compares the same pair twice.",
+      "Forgetting the duplicate check's <code class=\"inline\">startCol</code> trick. Without it, <code class=\"inline\">col2</code> always starts at <code class=\"inline\">0</code>, so the innermost comparison hits <code class=\"inline\">a[row][col] == a[row2][col2]</code> with <code class=\"inline\">row2 == row</code> and <code class=\"inline\">col2 == col</code> — a cell compared to itself — which is always <code class=\"inline\">true</code>. <code class=\"inline\">hasDuplicateReading</code> would report a duplicate on every array, even ones with none.",
       "Using <code class=\"inline\">&lt;</code> instead of <code class=\"inline\">&lt;=</code> on subsection bounds that are meant to be inclusive. <code class=\"inline\">countSpikes</code>'s <code class=\"inline\">rowEnd</code>/<code class=\"inline\">colEnd</code> are inclusive bounds by design — a <code class=\"inline\">&lt;</code> would silently skip the last row/column."
     ],
     takeaways: [
       "Every 1D array algorithm pattern (accumulator, min/max, property count, duplicates, rotate) extends to 2D — applied to the whole array, one row, one column, or a bounded subsection.",
       "Summing a row fixes the row index and loops columns; summing a column fixes the column index and loops rows.",
       "A full 2D duplicate check needs 4 nested loops, not 2 — two to pick the candidate cell, two more to scan every cell that comes after it without re-checking any pair.",
-      "Rotating or reversing a single row (or a fixed-column \"column slice\") reuses the exact 1D in-place pattern from Lesson 9.5."
+      "Rotating a single row (or a fixed-column \"column slice\") reuses Lesson 9.7's ArrayList rotate pattern; reversing one reuses Lesson 9.5's swap-from-both-ends pattern."
     ],
     prov: "csawesome-2026: unit-4-data-collections/4.13-implementing-2d-array-algorithms.md (CSA 4.13)"
   }

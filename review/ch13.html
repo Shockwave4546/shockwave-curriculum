@@ -99,9 +99,15 @@ const DATA = {
       <p><code class="inline">==</code> compares primitives (<code class="inline">int</code>, <code class="inline">double</code>, <code class="inline">boolean</code>) by value, which is correct and sufficient for them. For objects — including <code class="inline">String</code> — <code class="inline">==</code> instead checks whether two variables point at the <em>exact same object in memory</em>, which is almost never what you actually want to ask:</p>
       <pre class="code"><code><span class="t">String</span> a = <span class="k">new</span> <span class="t">String</span>(<span class="s">"BlueAlliance-Left"</span>);
 <span class="t">String</span> b = <span class="k">new</span> <span class="t">String</span>(<span class="s">"BlueAlliance-Left"</span>);
-a == b;        <span class="c">// false — two different objects, even with identical text</span>
-a.<span class="me">equals</span>(b);   <span class="c">// true — compares the actual characters</span></code></pre>
-      <p>Use <code class="inline">.equals()</code> (or <code class="inline">.equals()</code>-style comparisons) for any object type, including boxed numbers like <code class="inline">Integer</code> and <code class="inline">Double</code>. See Lesson 6.1 for the full explanation.</p>
+System.out.<span class="me">println</span>(a == b);        <span class="c">// false — two different objects, same text</span>
+System.out.<span class="me">println</span>(a.<span class="me">equals</span>(b));   <span class="c">// true — compares the actual characters</span></code></pre>
+      <p>Use <code class="inline">.equals()</code> — or a purpose-built comparison method like <code class="inline">.equalsIgnoreCase()</code>, <code class="inline">.compareTo()</code>, or <code class="inline">.contains()</code> — for any object type, including boxed numbers like <code class="inline">Integer</code> and <code class="inline">Double</code>. See Lesson 6.1 for the full explanation.</p>
+      <p>A few <code class="inline">==</code> special cases worth knowing by heart:</p>
+      <ul>
+        <li><strong><code class="inline">double ==</code>.</strong> Even without boxing, <code class="inline">0.1 + 0.2 == 0.3</code> is <code class="inline">false</code> — floating-point math rarely lands on an exact value. Compare with a tolerance instead (<code class="inline">Math.abs(a - b) < 0.0001</code>), as covered in Lesson 2.4.</li>
+        <li><strong><code class="inline">Integer ==</code>.</strong> Java caches small boxed <code class="inline">Integer</code> values (<code class="inline">-128</code> to <code class="inline">127</code>), so <code class="inline">Integer x = 100, y = 100; x == y</code> happens to be <code class="inline">true</code> — but <code class="inline">Integer p = 1000, q = 1000; p == q</code> is <code class="inline">false</code>. Never rely on this; always use <code class="inline">.equals()</code> for boxed numbers.</li>
+        <li><strong>Enums are the exception.</strong> <code class="inline">==</code> <em>is</em> safe (and preferred) for comparing enum constants (Lesson 11) — there's only ever one object per constant, so <code class="inline">==</code> and <code class="inline">.equals()</code> always agree.</li>
+      </ul>
       <h2>Integer Division</h2>
       <p>Dividing two <code class="inline">int</code>s produces an <code class="inline">int</code> — the fractional part is silently discarded (truncated), not rounded:</p>
       <pre class="code"><code><span class="k">int</span> result = <span class="n">5</span> / <span class="n">2</span>;       <span class="c">// 2, not 2.5 — the .5 is thrown away, not rounded</span>
@@ -109,24 +115,49 @@ a.<span class="me">equals</span>(b);   <span class="c">// true — compares the 
       <p>This bites often when averaging (<code class="inline">total / count</code> where both are <code class="inline">int</code>) — cast at least one operand to <code class="inline">double</code> first. See Lesson 2.4 for casting rules in full.</p>
       <h2>NullPointerException</h2>
       <p>Calling a method or accessing a field on a variable that's <code class="inline">null</code> (declared but never assigned a real object) throws <code class="inline">NullPointerException</code> — one of the most common runtime crashes in any Java program, robot code included:</p>
-      <pre class="code"><code><span class="t">Drivetrain</span> drivetrain; <span class="c">// declared, but never assigned — currently null</span>
-drivetrain.<span class="me">stop</span>();      <span class="c">// NullPointerException — nothing to call stop() on</span></code></pre>
+      <pre class="code"><code><span class="t">Drivetrain</span> drivetrain = <span class="k">null</span>; <span class="c">// explicitly assigned null — no real object yet</span>
+drivetrain.<span class="me">stop</span>();            <span class="c">// NullPointerException — nothing to call stop() on</span></code></pre>
+      <p>(A <em>local</em> variable left truly unassigned — just <code class="inline">Drivetrain drivetrain;</code> with no <code class="inline">= null</code> — is a different, compile-time error: Java refuses to compile code that reads it before it's given a value, reporting "variable drivetrain might not have been initialized." Only a <em>field</em> defaults to <code class="inline">null</code> automatically.)</p>
       <p>The fix is always the same shape: make sure every object is actually constructed (<code class="inline">new Drivetrain(...)</code>) before anything calls a method on it, and check for <code class="inline">null</code> explicitly at any point where a value might legitimately be missing (e.g., a <code class="inline">HashMap.get()</code> that found no match — see Lesson 9.3).</p>
       <h2>Off-by-One</h2>
       <p>Arrays (and <code class="inline">ArrayList</code>) are indexed starting at <code class="inline">0</code> — the last valid index is always <code class="inline">length - 1</code> (or <code class="inline">size() - 1</code>), never <code class="inline">length</code> itself:</p>
       <pre class="code"><code><span class="k">int</span>[] canBusIds = <span class="k">new int</span>[<span class="n">10</span>]; <span class="c">// valid indices: 0 through 9</span>
-canBusIds[<span class="n">10</span>]; <span class="c">// ArrayIndexOutOfBoundsException — 10 is one past the end</span></code></pre>
+<span class="c">// ArrayIndexOutOfBoundsException — 10 is one past the end</span>
+System.out.<span class="me">println</span>(canBusIds[<span class="n">10</span>]);</code></pre>
       <p>This is the single most common loop-bound mistake — writing <code class="inline">i &lt;= array.length</code> instead of <code class="inline">i &lt; array.length</code>. See Lesson 9.1 (arrays) and 9.2 (ArrayList) for the full indexing rules.</p>
+      <h2>Ignoring a Return Value</h2>
+      <p>Methods like <code class="inline">String.toUpperCase()</code>, <code class="inline">.trim()</code>, and <code class="inline">.replace()</code> don't modify the object they're called on — <code class="inline">String</code> is immutable — they <em>return</em> a new value. Calling one and throwing away the result does nothing:</p>
+      <pre class="code"><code><span class="t">String</span> teamName = <span class="s">"shockwave"</span>;
+teamName.<span class="me">toUpperCase</span>();               <span class="c">// return value discarded — teamName is unchanged</span>
+teamName = teamName.<span class="me">toUpperCase</span>();    <span class="c">// correct — reassign the result</span></code></pre>
+      <p>See Lesson 6.1 for the full list of String methods that work this way.</p>
+      <h2>switch Fall-Through</h2>
+      <p>A colon-style <code class="inline">switch</code> (Lesson 5.12) keeps running into the <em>next</em> <code class="inline">case</code> once one matches, unless a <code class="inline">break</code> stops it — forgetting one is a classic bug:</p>
+      <pre class="code"><code><span class="k">switch</span> (day)
+{
+    <span class="k">case</span> 1:
+        System.out.<span class="me">println</span>(<span class="s">"Mon"</span>);
+    <span class="k">case</span> 2:                          <span class="c">// day == 2 starts here...</span>
+        System.out.<span class="me">println</span>(<span class="s">"Tue"</span>);
+    <span class="k">case</span> 3:                          <span class="c">// ...and falls through to here too</span>
+        System.out.<span class="me">println</span>(<span class="s">"Wed"</span>);
+        <span class="k">break</span>;
+    <span class="k">default</span>:
+        System.out.<span class="me">println</span>(<span class="s">"other"</span>);
+}
+<span class="c">// day == 2 prints both "Tue" and "Wed" — not just "Tue"</span></code></pre>
+      <p>Arrow-style <code class="inline">case -></code> (also Lesson 5.12) never falls through, which is why this course defaults to it.</p>
     `,
     pitfalls: [
       "Treating this chapter as the complete list of Java mistakes. It isn't — it's the handful the original deck happened to flag. Real practice will surface plenty more (this chapter is expected to grow).",
       "Fixing the symptom instead of the cause. E.g., wrapping a <code class=\"inline\">NullPointerException</code> in a <code class=\"inline\">try</code>/<code class=\"inline\">catch</code> (Lesson 12) instead of fixing why the object was never constructed in the first place."
     ],
     takeaways: [
-      "Use <code class=\"inline\">==</code> for primitives, <code class=\"inline\">.equals()</code> for objects (Lesson 6.1).",
+      "Use <code class=\"inline\">==</code> for primitives, <code class=\"inline\">.equals()</code> for objects (Lesson 6.1) — except enums, where <code class=\"inline\">==</code> is safe. Watch <code class=\"inline\">double ==</code> and the <code class=\"inline\">Integer</code> cache.",
       "<code class=\"inline\">int / int</code> truncates; make at least one operand a floating-point type to keep the fractional part (Lesson 2.4).",
       "<code class=\"inline\">NullPointerException</code> means something was used before it was actually constructed — always initialize before use (Lessons 4.4–4.6, 9.1).",
       "Valid indices run from <code class=\"inline\">0</code> to <code class=\"inline\">length - 1</code> (or <code class=\"inline\">size() - 1</code>) — never <code class=\"inline\">length</code> itself (Lessons 9.1, 9.2).",
+      "A discarded <code class=\"inline\">String</code> method return value does nothing; a colon-style <code class=\"inline\">switch</code> without <code class=\"inline\">break</code> falls through to the next <code class=\"inline\">case</code>.",
       "This is a living checklist, not a finished one — expect it to grow as more real gotchas surface through practice."
     ],
     prov: "mechacoder-test: src/lessons/java-1.js, slide 13 (\"Common Gotchas\") — original deck content, no external citation"

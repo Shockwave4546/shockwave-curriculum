@@ -18,15 +18,35 @@ BEATS = [
     {
         "screen": '''<pre class="code"><code>String a = <span class="k">new</span> String("BlueAlliance-Left");
 String b = <span class="k">new</span> String("BlueAlliance-Left");
-a == b;        <span class="c">// false — two different objects, even with identical text</span>
-a.equals(b);   <span class="c">// true — compares the actual characters</span></code></pre>''',
+System.out.println(a == b);        <span class="c">// false — two different objects, same text</span>
+System.out.println(a.equals(b));   <span class="c">// true — compares the actual characters</span></code></pre>''',
         "speak": "But for objects, including String, double-equals checks something totally different: whether two variables point at the exact same object in memory. Here, a and b hold identical text, but they're two separate String objects, so double-equals says false. Dot-equals actually compares the characters, and correctly says true.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">The Fix</h2><ul>
       <li><span class="num">1</span><span>Use <code>.equals()</code> for any object type, including boxed numbers like <code>Integer</code> and <code>Double</code></span></li>
     </ul></div>''',
-        "speak": "The rule of thumb: use dot-equals for any object type at all, and that includes boxed numbers like Integer and Double, not just String. See lesson 6.1 if you want the full explanation of why this happens.",
+        "speak": "The rule of thumb: use dot-equals, or a purpose-built comparison method like equalsIgnoreCase, compareTo, or contains, for any object type at all, and that includes boxed numbers like Integer and Double, not just String. See lesson 6.1 if you want the full explanation of why this happens.",
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">A Few == Special Cases</h2><ul>
+      <li><span class="num">1</span><span><code>double ==</code> &mdash; 0.1 + 0.2 == 0.3 is false; compare with a tolerance instead</span></li>
+    </ul></div>''',
+        "speak": "A few double-equals special cases worth knowing cold. Even without boxing, zero-point-one plus zero-point-two double-equals zero-point-three is false, floating-point math rarely lands exactly. Compare with a tolerance instead, math dot abs of the difference less than a small number, covered in lesson 2.4.",
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">A Few == Special Cases</h2><ul>
+      <li><span class="num">1</span><span><code>double ==</code> &mdash; 0.1 + 0.2 == 0.3 is false; compare with a tolerance instead</span></li>
+      <li><span class="num">2</span><span><code>Integer ==</code> &mdash; cached for -128 to 127, so it "accidentally" works for small values</span></li>
+    </ul></div>''',
+        "speak": "Second, Integer double-equals. Java caches small boxed Integer values, negative one-twenty-eight through one-twenty-seven, so two Integers both holding one hundred happen to pass double-equals. But two both holding one thousand don't. Never rely on this, always use dot-equals for boxed numbers.",
+        "continues": True,
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Enums Are the Exception</h2><ul>
+      <li><span class="num">1</span><span><code>==</code> IS safe and preferred for enum constants (Lesson 11)</span></li>
+    </ul></div>''',
+        "speak": "And enums are the one place double-equals actually is safe and preferred, from lesson 11. There's only ever one object per constant, so double-equals and dot-equals always agree there.",
     },
     {
         "screen": '''<div class="scr-title">
@@ -56,9 +76,9 @@ a.equals(b);   <span class="c">// true — compares the actual characters</span>
         "speak": "Third: the null pointer exception, one of the single most common runtime crashes in any Java program, robot code very much included. It happens when you call a method or access a field on a variable that's null, declared, but never actually assigned a real object.",
     },
     {
-        "screen": '''<pre class="code"><code>Drivetrain drivetrain; <span class="c">// declared, but never assigned — currently null</span>
-drivetrain.stop();      <span class="c">// NullPointerException — nothing to call stop() on</span></code></pre>''',
-        "speak": "A Drive Train variable that's only ever been declared, never constructed with new, is null. Call stop on it, and there's nothing there to actually call stop on, so you get a null pointer exception.",
+        "screen": '''<pre class="code"><code>Drivetrain drivetrain = <span class="k">null</span>; <span class="c">// explicitly assigned null — no real object yet</span>
+drivetrain.stop();            <span class="c">// NullPointerException — nothing to call stop() on</span></code></pre>''',
+        "speak": "A Drive Train variable explicitly assigned null, never constructed with new, is exactly that, null. Call stop on it, and there's nothing there to actually call stop on, so you get a null pointer exception. A quick note on the difference: a local variable left truly unassigned, just the declaration with no equals null, is actually a compile-time error instead, Java won't let you read it before it's given a value. Only a field defaults to null automatically.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">The Fix Is Always the Same Shape</h2><ul>
@@ -84,8 +104,47 @@ drivetrain.stop();      <span class="c">// NullPointerException — nothing to c
     },
     {
         "screen": '''<pre class="code"><code><span class="t">int</span>[] canBusIds = <span class="k">new</span> <span class="t">int</span>[10]; <span class="c">// valid indices: 0 through 9</span>
-canBusIds[10]; <span class="c">// ArrayIndexOutOfBoundsException — 10 is one past the end</span></code></pre>''',
+<span class="c">// ArrayIndexOutOfBoundsException — 10 is one past the end</span>
+System.out.println(canBusIds[10]);</code></pre>''',
         "speak": "Ten CAN bus IDs means valid indices zero through nine. Reach for index ten, one past the end, and you'll get an ArrayIndexOutOfBoundsException. This is the single most common loop-bound mistake there is, writing i less-than-or-equal-to array dot length instead of i less-than array dot length. Lessons 9.1 and 9.2 have the full indexing rules for arrays and ArrayList.",
+    },
+    {
+        "screen": '''<div class="scr-title">
+      <div class="scr-eyebrow">Gotcha 5</div>
+      <h1>Ignoring a Return Value</h1>
+      <p class="scr-sub">String is immutable &mdash; methods return a new value, they don&rsquo;t change it in place.</p>
+    </div>''',
+        "speak": "Fifth: ignoring a return value. Methods like String's toUpperCase, trim, and replace don't modify the object they're called on, String is immutable, they return a brand new value instead. Call one and throw away what it gives back, and nothing happens.",
+    },
+    {
+        "screen": '''<pre class="code"><code>String teamName = "shockwave";
+teamName.toUpperCase();               <span class="c">// return value discarded — teamName is unchanged</span>
+teamName = teamName.toUpperCase();    <span class="c">// correct — reassign the result</span></code></pre>''',
+        "speak": "The first line does nothing at all, teamName is still lowercase afterward. You have to reassign the result back, like the second line does, to actually keep it. Lesson 6.1 has the full list of String methods that work this way.",
+    },
+    {
+        "screen": '''<div class="scr-title">
+      <div class="scr-eyebrow">Gotcha 6</div>
+      <h1>switch Fall-Through</h1>
+      <p class="scr-sub">Colon-style switch keeps running past a match unless you break.</p>
+    </div>''',
+        "speak": "Sixth and last: switch fall-through. A colon-style switch, from lesson 5.12, keeps running into the next case once one matches, unless a break stops it. Forgetting one is a classic bug.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">switch</span> (day)
+{
+    <span class="k">case</span> 1:
+        System.out.println("Mon");
+    <span class="k">case</span> 2:                          <span class="c">// day == 2 starts here...</span>
+        System.out.println("Tue");
+    <span class="k">case</span> 3:                          <span class="c">// ...and falls through to here too</span>
+        System.out.println("Wed");
+        <span class="k">break</span>;
+    <span class="k">default</span>:
+        System.out.println("other");
+}
+<span class="c">// day == 2 prints both "Tue" and "Wed" — not just "Tue"</span></code></pre>''',
+        "speak": "With day equal to two, execution starts at case two, prints Tuesday, and then, with no break, just keeps falling through into case three and prints Wednesday too, when only Tuesday was probably intended. Arrow-style case, also from lesson 5.12, never falls through, which is exactly why this course defaults to it.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
@@ -96,11 +155,12 @@ canBusIds[10]; <span class="c">// ArrayIndexOutOfBoundsException — 10 is one p
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
-      <li><span class="check">&#10003;</span>Use == for primitives, .equals() for objects.</li>
+      <li><span class="check">&#10003;</span>Use == for primitives, .equals() for objects &mdash; except enums, where == is safe. Watch double == and the Integer cache.</li>
       <li><span class="check">&#10003;</span>int / int truncates; make at least one operand a floating-point type to keep the fraction.</li>
       <li><span class="check">&#10003;</span>NullPointerException means something was used before it was constructed &mdash; always initialize before use.</li>
       <li><span class="check">&#10003;</span>Valid indices run 0 to length - 1 &mdash; never length itself.</li>
+      <li><span class="check">&#10003;</span>A discarded String return value does nothing; colon-style switch without break falls through.</li>
     </ul></div>''',
-        "speak": "So, to recap this whole checklist. Use double-equals for primitives, dot-equals for objects. Int divided by int truncates, so make at least one operand a floating-point type if you want to keep the fraction. A null pointer exception means something got used before it was ever actually constructed, always initialize before use. And valid indices run from zero to length minus one, never length itself. And remember, this list is expected to grow, it's a living checklist, not a finished one, as real code review and practice surface more of the mistakes people actually make. That's the end of this run of chapters, nice work getting through all of it.",
+        "speak": "So, to recap this whole checklist. Use double-equals for primitives, dot-equals for objects, except enums, where double-equals is actually safe, and watch out for double == on doubles and the Integer cache. Int divided by int truncates, so make at least one operand a floating-point type if you want to keep the fraction. A null pointer exception means something got used before it was ever actually constructed, always initialize before use. Valid indices run from zero to length minus one, never length itself. And don't forget, a discarded String return value does nothing, and a colon-style switch without break falls through to the next case. And remember, this list is expected to grow, it's a living checklist, not a finished one, as real code review and practice surface more of the mistakes people actually make. That's the end of this run of chapters, nice work getting through all of it.",
     },
 ]

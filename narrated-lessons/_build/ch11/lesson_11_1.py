@@ -27,7 +27,7 @@ BEATS = [
 }
 
 ArmPosition target = ArmPosition.INTAKE; <span class="c">// legal</span>
-ArmPosition target = ArmPosition.CLIMB;  <span class="c">// compile error — CLIMB was never defined</span></code></pre>''',
+ArmPosition target2 = ArmPosition.CLIMB; <span class="c">// compile error — CLIMB was never defined</span></code></pre>''',
         "speak": "Assigning Arm Position dot Intake is completely legal. But try Arm Position dot Climb, a value that was never declared, and the code doesn't even compile. An invalid state isn't just wrong at runtime anymore, it's flat-out impossible to write.",
         "continues": True,
     },
@@ -50,7 +50,7 @@ ArmPosition target = ArmPosition.CLIMB;  <span class="c">// compile error — CL
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">No Type Prefix Inside a Switch</h2><ul>
       <li><span class="num">1</span><span>Just <code>STOWED</code>, not <code>ArmPosition.STOWED</code></span></li>
     </ul></div>''',
-        "speak": "Notice each case label is just STOWED, not Arm Position dot STOWED. Inside a switch over an Arm Position, Java already knows the type, so writing the prefix would be redundant, and it actually won't compile if you include it.",
+        "speak": "Notice each case label is just STOWED, not Arm Position dot STOWED. Inside a switch over an Arm Position, Java already knows the type, so the prefix is optional and redundant, leave it off. On Java 17 through 20, including it is actually a compile error; Java 21 and up allows it, but this course leaves it off either way for readability.",
     },
     {
         "screen": '''<div class="scr-title">
@@ -107,7 +107,7 @@ ArmPosition target = ArmPosition.CLIMB;  <span class="c">// compile error — CL
       <li><span class="num">1</span><span>An enum's constructor is implicitly <code>private</code></span></li>
       <li><span class="num">2</span><span>The only instances that will ever exist are the ones listed in the enum body</span></li>
     </ul></div>''',
-        "speak": "And here's the part that keeps the whole guarantee airtight: an enum's constructor is implicitly private. You're never allowed to write new Arm Position yourself, anywhere. The only Arm Position objects that will ever exist, for the entire life of the program, are exactly the ones listed right there in the enum body.",
+        "speak": "And here's the part that keeps the whole guarantee airtight: an enum's constructor is implicitly private. You're never allowed to write new Arm Position yourself, anywhere. The only Arm Position objects that will ever exist, for the entire life of the program, are exactly the ones listed right there in the enum body. Try to write public on that constructor yourself, and it's a compile error, modifier public not allowed here, so just leave the modifier off entirely.",
     },
     {
         "screen": '''<pre class="code"><code>arm.setAngle(target.getAngleDegrees());</code></pre>''',
@@ -127,6 +127,29 @@ ArmPosition target = ArmPosition.CLIMB;  <span class="c">// compile error — CL
     System.out.println(position + " -&gt; " + position.getAngleDegrees() + " degrees");
 }</code></pre>''',
         "speak": "That makes it trivial to loop over every possibility, here, printing each position alongside the angle it carries, with no need to maintain some separate list of all the states yourself.",
+    },
+    {
+        "screen": '''<pre class="code"><code>ArmPosition p = ArmPosition.INTAKE;
+System.out.println(p.name());     <span class="c">// "INTAKE" — the constant's exact declared name</span>
+System.out.println(p.ordinal());  <span class="c">// 1 — its position in the declared order, 0-indexed</span></code></pre>''',
+        "speak": "A few more built-in methods every enum gets for free, beyond values. Name gives you back the constant's exact declared name as a String. Ordinal gives you its position in that declared order, counting from zero.",
+    },
+    {
+        "screen": '''<pre class="code"><code>ArmPosition p = ArmPosition.INTAKE;
+System.out.println(p.name());     <span class="c">// "INTAKE" — the constant's exact declared name</span>
+System.out.println(p.ordinal());  <span class="c">// 1 — its position in the declared order, 0-indexed</span>
+System.out.println(p);            <span class="c">// "INTAKE" — toString() defaults to name()</span>
+<span class="c">// text -&gt; constant; throws IllegalArgumentException if no match</span>
+ArmPosition parsed = ArmPosition.valueOf("SCORE");</code></pre>''',
+        "speak": "Printing a constant directly calls toString, which defaults to the same thing name gives you. And valueOf goes the other direction, text in, matching constant out, throwing an IllegalArgumentException if nothing matches.",
+        "continues": True,
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Comparing Enums</h2><ul>
+      <li><span class="num">1</span><span><code>==</code> is safe and preferred for enums &mdash; unlike <code>String</code></span></li>
+      <li><span class="num">2</span><span>An enum variable can still be <code>null</code></span></li>
+    </ul></div>''',
+        "speak": "One more thing worth locking in: comparing two enum values with double-equals is safe, and actually preferred, unlike String, where double-equals is a well-known pitfall. There's only ever one object per constant, so double-equals and dot-equals always agree here. And don't forget an enum variable is still a reference type, it can absolutely be null.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">What Enums Can&rsquo;t Do</h2><ul>
@@ -163,8 +186,9 @@ ArmPosition target = ArmPosition.CLIMB;  <span class="c">// compile error — CL
       <li><span class="check">&#10003;</span>An enum defines a fixed, named set of legal values &mdash; the compiler rejects anything not in that list.</li>
       <li><span class="check">&#10003;</span>Constants use SCREAMING_SNAKE_CASE; a switch over an enum omits the type prefix on each case.</li>
       <li><span class="check">&#10003;</span>An enum is a real class &mdash; it can have fields, a constructor, and methods.</li>
-      <li><span class="check">&#10003;</span>values() returns every constant, in order, for looping; an enum can't extend another class, only implement interfaces.</li>
+      <li><span class="check">&#10003;</span>values(), name(), ordinal(), toString(), and valueOf() are all built in; == is safe for enums.</li>
+      <li><span class="check">&#10003;</span>An enum can't extend another class, only implement interfaces.</li>
     </ul></div>''',
-        "speak": "So, to recap Chapter 11. An enum defines a fixed, named set of legal values, and the compiler rejects anything outside that list. Constants use screaming snake case, and a switch over an enum leaves off the type prefix on every case. An enum is a genuine class, it can carry its own fields, a constructor, and methods, so each constant can hold its own data. Values, called with parentheses, hands you every constant in order for looping. And an enum can never extend another class, only implement interfaces. Next up, Chapter 12: exceptions and try-catch, what happens when something goes wrong while your program is running.",
+        "speak": "So, to recap Chapter 11. An enum defines a fixed, named set of legal values, and the compiler rejects anything outside that list. Constants use screaming snake case, and a switch over an enum leaves off the type prefix on every case. An enum is a genuine class, it can carry its own fields, a constructor, and methods, so each constant can hold its own data. Values, name, ordinal, toString, and valueOf are all built in for free, and double-equals is safe and preferred for comparing enums, though an enum variable can still be null. And an enum can never extend another class, only implement interfaces. Next up, Chapter 12: exceptions and try-catch, what happens when something goes wrong while your program is running.",
     },
 ]

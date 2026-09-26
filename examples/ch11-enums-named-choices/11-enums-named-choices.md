@@ -32,14 +32,14 @@ Any other name is rejected before the program ever runs:
 
 ```java
 IntakeMode mode = IntakeMode.EJECT; // legal
-IntakeMode mode = IntakeMode.SHOOT; // compile error — SHOOT was never defined
+IntakeMode mode2 = IntakeMode.SHOOT; // compile error — SHOOT was never defined
 ```
 
 The constants are written in `SCREAMING_SNAKE_CASE`, the same style as other constants.
 
 ## Step 3: React to the Current Mode With a `switch`
 
-In a separate file, `IntakeDemo.java`:
+In a separate file, `IntakeDemo.java` (both files in the same folder; `java IntakeDemo.java` runs multi-file source directly on JDK 22+ — on Java 17, compile both with `javac IntakeDemo.java IntakeMode.java` first, then `java IntakeDemo`):
 
 ```java
 public class IntakeDemo

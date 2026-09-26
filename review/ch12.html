@@ -119,10 +119,17 @@ const DATA = {
 {
     <span class="me">reportWarning</span>(<span class="s">"Camera unavailable — skipping vision this match"</span>);
 }
-<span class="k">catch</span> (<span class="t">IllegalArgumentException</span> e)
+<span class="k">catch</span> (<span class="t">NullPointerException</span> e)
 {
-    <span class="me">reportWarning</span>(<span class="s">"Bad camera config — check the port number"</span>);
+    <span class="me">reportWarning</span>(<span class="s">"Camera name was null"</span>);
 }</code></pre>
+      <p><code class="inline">VideoException</code> is <em>unchecked</em> — it extends <code class="inline">RuntimeException</code> — so catching it here is optional, not compiler-required. Catching it anyway lets the robot keep running with vision disabled instead of crashing outright.</p>
+      <p>Two <code class="inline">catch</code> blocks for exception types that share no inheritance relationship can be combined into one with <code class="inline">|</code> (multi-catch), when they should be handled identically:</p>
+      <pre class="code"><code><span class="k">catch</span> (<span class="t">VideoException</span> | <span class="t">NullPointerException</span> e)
+{
+    <span class="me">reportWarning</span>(<span class="s">"Camera unavailable — skipping vision this match"</span>);
+}</code></pre>
+      <p>Order matters when the types <em>do</em> relate: a <code class="inline">catch</code> for a more general type (like <code class="inline">Exception</code>) must come <em>after</em> every more specific <code class="inline">catch</code> for one of its subclasses — putting the general one first makes the specific one unreachable, which is a compile error ("exception X has already been caught").</p>
       <h2>finally</h2>
       <p>An optional <code class="inline">finally</code> block, after all the <code class="inline">catch</code> blocks, always runs — whether an exception was thrown or not, and even if the <code class="inline">catch</code> block itself returns early. It's the right place for cleanup that must happen no matter what (closing a file, releasing a resource):</p>
       <pre class="code"><code><span class="t">Scanner</span> scan = <span class="k">null</span>;
@@ -142,22 +149,34 @@ const DATA = {
         scan.<span class="me">close</span>(); <span class="c">// runs whether the try succeeded, failed, or even returned early</span>
     }
 }</code></pre>
+      <h2>try-with-resources</h2>
+      <p>The <code class="inline">finally</code>-based cleanup above is exactly the case <strong>try-with-resources</strong> exists to replace. Any resource that implements <code class="inline">AutoCloseable</code> (like <code class="inline">Scanner</code>) can be declared inside parentheses right after <code class="inline">try</code>; Java then calls its <code class="inline">close()</code> automatically, in every case, without a <code class="inline">finally</code> block at all:</p>
+      <pre class="code"><code><span class="k">try</span> (<span class="t">Scanner</span> scan = <span class="k">new</span> <span class="t">Scanner</span>(<span class="k">new</span> <span class="t">File</span>(<span class="s">"auto_config.csv"</span>)))
+{
+    <span class="c">// ... read the file ...</span>
+}
+<span class="k">catch</span> (<span class="t">FileNotFoundException</span> e)
+{
+    <span class="me">reportWarning</span>(<span class="s">"Missing auto_config.csv — using default route"</span>);
+}</code></pre>
+      <p><code class="inline">scan</code> is closed the moment the <code class="inline">try</code> block ends — normally or via an exception — and it only exists inside that <code class="inline">try</code>. Prefer this form over a manual <code class="inline">finally</code> whenever the resource type supports it.</p>
       <h2>Checked vs. Unchecked Exceptions</h2>
       <p>Java splits exceptions into two kinds, and the difference matters for what the compiler demands of you:</p>
       <ul>
         <li><strong>Checked exceptions</strong> (like <code class="inline">IOException</code>) — the compiler forces you to either <code class="inline">catch</code> them or declare them with a <code class="inline">throws</code> clause. They represent problems a caller could reasonably be expected to recover from.</li>
-        <li><strong>Unchecked exceptions</strong> (<code class="inline">RuntimeException</code> and its subclasses — <code class="inline">NullPointerException</code>, <code class="inline">ArrayIndexOutOfBoundsException</code>, <code class="inline">ArithmeticException</code>) — the compiler does not require handling them at all, though you're always allowed to. They almost always represent a genuine programming bug (a null you forgot to check, an index you miscalculated) rather than something the caller can meaningfully recover from at runtime.</li>
+        <li><strong>Unchecked exceptions</strong> (<code class="inline">RuntimeException</code>, <code class="inline">Error</code>, and their subclasses — <code class="inline">NullPointerException</code>, <code class="inline">ArrayIndexOutOfBoundsException</code>, <code class="inline">ArithmeticException</code>) — the compiler does not require handling them at all, though you're always allowed to. <code class="inline">RuntimeException</code> subclasses almost always represent a genuine programming bug (a null you forgot to check, an index you miscalculated) rather than something the caller can meaningfully recover from at runtime; <code class="inline">Error</code> and its subclasses represent serious JVM-level failures ordinary code doesn't catch or throw.</li>
       </ul>
-      <p>Guideline from the language's own designers: <em>if a client can reasonably be expected to recover from a problem, make it checked; if a client can't do anything useful about it, make it unchecked.</em> This is also why CSA covers unchecked-exception concepts (NullPointerException, ArrayIndexOutOfBoundsException) as topics in their own right, without ever teaching the <code class="inline">try</code>/<code class="inline">catch</code> mechanism itself — the AP exam doesn't test it.</p>
+      <p>Guideline from the language's own designers: <em>if a client can reasonably be expected to recover from a problem, make it checked; if a client can't do anything useful about it, make it unchecked.</em> CSA covers unchecked-exception concepts (NullPointerException, ArrayIndexOutOfBoundsException) as topics in their own right, without teaching the <code class="inline">try</code>/<code class="inline">catch</code> mechanism itself — the AP exam doesn't test it.</p>
       <h2>The throws Clause</h2>
-      <p>If a method doesn't want to handle a checked exception itself, it can instead declare that it might throw one, pushing the decision up to whoever calls it:</p>
+      <p>If a method doesn't want to handle a checked exception itself, it can instead declare that it might throw one, pushing the decision up to whoever calls it. <code class="inline">PrintWriter</code>/<code class="inline">FileWriter</code> write text to a file — the counterpart to <code class="inline">Scanner</code>, which Lesson 9.8 uses to read one:</p>
       <pre class="code"><code><span class="k">public void</span> <span class="me">writeList</span>() <span class="k">throws</span> <span class="t">IOException</span>
 {
-    <span class="t">PrintWriter</span> out = <span class="k">new</span> <span class="t">PrintWriter</span>(<span class="k">new</span> <span class="t">FileWriter</span>(<span class="s">"OutFile.txt"</span>));
-    <span class="c">// ...</span>
-    out.<span class="me">close</span>();
+    <span class="k">try</span> (<span class="t">PrintWriter</span> out = <span class="k">new</span> <span class="t">PrintWriter</span>(<span class="k">new</span> <span class="t">FileWriter</span>(<span class="s">"OutFile.txt"</span>)))
+    {
+        <span class="c">// ...</span>
+    }
 }</code></pre>
-      <p><code class="inline">throws</code> goes after the parameter list, before the method body's opening brace. Unchecked exceptions never need to appear in a <code class="inline">throws</code> clause (though nothing stops you from listing one).</p>
+      <p><code class="inline">throws</code> goes after the parameter list, before the method body's opening brace. Unchecked exceptions never need to appear in a <code class="inline">throws</code> clause (though nothing stops you from listing one). Note the <code class="inline">try</code>-with-resources here too: without it, an exception thrown between opening <code class="inline">out</code> and calling <code class="inline">out.close()</code> would skip the close and leak the file handle.</p>
       <h2>The throw Statement</h2>
       <p>Any code — yours, a library's, or the Java runtime itself — can trigger an exception with the <code class="inline">throw</code> statement, given any object that's a <code class="inline">Throwable</code> (or a subclass):</p>
       <pre class="code"><code><span class="k">public void</span> <span class="me">setTargetAngle</span>(<span class="k">double</span> degrees)
@@ -168,7 +187,19 @@ const DATA = {
     }
     <span class="k">this</span>.targetAngle = degrees;
 }</code></pre>
-      <p>Every exception type in Java descends from <code class="inline">Throwable</code>. Its two direct children are <code class="inline">Error</code> (serious JVM-level failures — not something ordinary code catches or throws) and <code class="inline">Exception</code> (everything an ordinary program throws and catches), and <code class="inline">RuntimeException</code> is the branch of <code class="inline">Exception</code> reserved for unchecked exceptions.</p>
+      <p>Every exception type in Java descends from <code class="inline">Throwable</code> — each one is a <strong>subclass</strong> of it (built on top of it, inheriting its behavior; Ch.17 covers what that means in full). Its two direct children are <code class="inline">Error</code> (serious JVM-level failures — not something ordinary code catches or throws) and <code class="inline">Exception</code> (everything an ordinary program throws and catches), and <code class="inline">RuntimeException</code> is the branch of <code class="inline">Exception</code> reserved for unchecked exceptions.</p>
+      <h2>Reading What Went Wrong</h2>
+      <p>Every exception carries a message, and a caught one doesn't have to be handled blind:</p>
+      <pre class="code"><code><span class="k">catch</span> (<span class="t">IllegalArgumentException</span> e)
+{
+    <span class="me">reportWarning</span>(<span class="s">"Rejected: "</span> + e.<span class="me">getMessage</span>()); <span class="c">// "Angle out of range: 240.0"</span>
+}</code></pre>
+      <p><code class="inline">e.getMessage()</code> returns the text passed to the exception's constructor (<code class="inline">"Angle out of range: " + degrees</code> above) — use it in a log message instead of guessing what failed. An <em>uncaught</em> exception prints a <strong>stack trace</strong>: the exception type and message, followed by the chain of method calls (most recent first) that led to it —</p>
+      <pre class="code"><code>java.lang.IllegalArgumentException: Angle out of range: 240.0
+    at Arm.setTargetAngle(Arm.java:107)
+    at Robot.teleopPeriodic(Robot.java:42)</code></pre>
+      <p>— which is exactly what shows up when robot code crashes: read from the top down, the first line is the problem, and the first <code class="inline">at</code> line naming your own class (not a library's) is usually where to start looking.</p>
+      <p>Writing your <strong>own</strong> exception types (for errors specific to your robot code, not covered by a built-in class) needs <code class="inline">extends</code>, which isn't taught until Ch.17 — Lesson 17.2 covers it.</p>
     `,
     pitfalls: [
       "Catch-and-ignore. An empty <code class=\"inline\">catch</code> block silently swallows a real problem — at minimum, log or report it (<code class=\"inline\">reportWarning(...)</code> above), even if there's nothing more to do.",
@@ -177,9 +208,10 @@ const DATA = {
     ],
     takeaways: [
       "Throwing an exception creates an object describing the problem and hands it to the runtime, which searches the call stack for a matching handler; an unhandled exception crashes the program (a red \"Robot Code\" indicator, on a robot).",
-      "<code class=\"inline\">try</code> wraps risky code; one or more <code class=\"inline\">catch</code> blocks handle specific exception types; an optional <code class=\"inline\">finally</code> block always runs, for cleanup.",
-      "Checked exceptions (like <code class=\"inline\">IOException</code>) must be caught or declared with <code class=\"inline\">throws</code>; unchecked exceptions (<code class=\"inline\">RuntimeException</code> and its subclasses) don't require either, since they usually signal a real bug rather than a recoverable situation.",
+      "<code class=\"inline\">try</code> wraps risky code; one or more <code class=\"inline\">catch</code> blocks (in order, general after specific, or combined with <code class=\"inline\">|</code>) handle specific exception types; an optional <code class=\"inline\">finally</code> block always runs, for cleanup — or use try-with-resources for anything <code class=\"inline\">AutoCloseable</code>.",
+      "Checked exceptions (like <code class=\"inline\">IOException</code>) must be caught or declared with <code class=\"inline\">throws</code>; unchecked exceptions (<code class=\"inline\">RuntimeException</code>, <code class=\"inline\">Error</code>, and their subclasses) don't require either, since they usually signal a real bug rather than a recoverable situation.",
       "<code class=\"inline\">throw someObject;</code> triggers an exception yourself, given any <code class=\"inline\">Throwable</code>.",
+      "<code class=\"inline\">e.getMessage()</code> reports what went wrong; an uncaught exception prints a stack trace, read top-down.",
       "Never catch-and-ignore — recover meaningfully, or at least report the problem."
     ],
     prov: "other-reference-repo: oracle-java-tutorials/exceptions/01, 03, 09, 10, 13 (ORACLE 11.1-16) · Deck context: mechacoder-test/src/lessons/java-1.js, slide 11 (\"Exceptions & try/catch\")"

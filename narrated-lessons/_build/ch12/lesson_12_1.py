@@ -59,11 +59,18 @@ BEATS = [
 {
     reportWarning("Camera unavailable — skipping vision this match");
 }
-<span class="k">catch</span> (IllegalArgumentException e)
+<span class="k">catch</span> (NullPointerException e)
 {
-    reportWarning("Bad camera config — check the port number");
+    reportWarning("Camera name was null");
 }</code></pre>''',
-        "speak": "A single try can have multiple catch blocks stacked up, checked in order, so you can handle different exception types differently. Here, a camera that's simply unavailable gets one message, a bad configuration argument gets a completely different one.",
+        "speak": "A single try can have multiple catch blocks stacked up, checked in order, so you can handle different exception types differently. Here, a camera that's simply unavailable gets one message, a null camera name gets a completely different one. VideoException itself is unchecked, it extends RuntimeException, so catching it here is optional, not compiler-required, but doing so lets the robot keep running with vision disabled instead of crashing outright.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">catch</span> (VideoException | NullPointerException e)
+{
+    reportWarning("Camera unavailable — skipping vision this match");
+}</code></pre>''',
+        "speak": "When two exception types with no inheritance relationship should be handled identically, multi-catch combines them into one block with a pipe. And when catch blocks DO relate, order matters: a catch for a more general type has to come after every more specific catch for one of its subclasses, or the compiler rejects it, that more specific catch would be unreachable.",
     },
     {
         "screen": '''<div class="scr-title">
@@ -94,6 +101,17 @@ BEATS = [
         "speak": "Here, scan starts out null, in case the file genuinely can't be found. But the finally block runs regardless, closing scan if it ever actually got created, whether the read succeeded, failed, or the method returned early somewhere inside that try.",
     },
     {
+        "screen": '''<pre class="code"><code><span class="k">try</span> (Scanner scan = <span class="k">new</span> Scanner(<span class="k">new</span> File("auto_config.csv")))
+{
+    <span class="c">// ... read the file ...</span>
+}
+<span class="k">catch</span> (FileNotFoundException e)
+{
+    reportWarning("Missing auto_config.csv — using default route");
+}</code></pre>''',
+        "speak": "That manual finally block is exactly the case try-with-resources exists to replace. Any resource that implements AutoCloseable, like Scanner, can be declared right inside parentheses after try, and Java calls its close method automatically, every time, with no finally block at all. Prefer this form whenever the resource type supports it.",
+    },
+    {
         "screen": '''<div class="scr-title">
       <div class="scr-eyebrow">Ch. 12 &middot; Exceptions</div>
       <h1>Checked vs. Unchecked</h1>
@@ -110,9 +128,9 @@ BEATS = [
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Checked vs. Unchecked</h2><ul>
       <li><span class="num">1</span><span><strong>Checked</strong> (like IOException) &mdash; must be caught, or declared with <code>throws</code></span></li>
-      <li><span class="num">2</span><span><strong>Unchecked</strong> (RuntimeException and subclasses) &mdash; handling is optional</span></li>
+      <li><span class="num">2</span><span><strong>Unchecked</strong> (RuntimeException, Error, and subclasses) &mdash; handling is optional</span></li>
     </ul></div>''',
-        "speak": "Unchecked exceptions, RuntimeException and everything under it, things like NullPointerException and ArrayIndexOutOfBoundsException, the compiler doesn't require you to handle at all, though nothing stops you. These almost always mean a genuine bug, a null you forgot to check, an index you miscalculated, not something the caller can meaningfully recover from at runtime.",
+        "speak": "Unchecked exceptions, RuntimeException, Error, and everything under either of them, things like NullPointerException and ArrayIndexOutOfBoundsException, the compiler doesn't require you to handle at all, though nothing stops you. RuntimeException subclasses almost always mean a genuine bug, a null you forgot to check, an index you miscalculated, not something the caller can meaningfully recover from at runtime; Error and its subclasses are serious JVM-level failures ordinary code doesn't catch or throw.",
         "continues": True,
     },
     {
@@ -120,16 +138,17 @@ BEATS = [
       <li><span class="check">&#10003;</span>If a client can reasonably recover from a problem, make it checked.</li>
       <li><span class="check">&#10003;</span>If a client can't do anything useful about it, make it unchecked.</li>
     </ul></div>''',
-        "speak": "The language's own designers put it simply: if a client can reasonably be expected to recover from a problem, make it checked. If a client can't do anything useful about it, make it unchecked. That's also exactly why this curriculum's AP-exam material covers NullPointerException and ArrayIndexOutOfBoundsException as concepts in their own right, without ever teaching the try-catch mechanism, the exam itself doesn't test it.",
+        "speak": "The language's own designers put it simply: if a client can reasonably be expected to recover from a problem, make it checked. If a client can't do anything useful about it, make it unchecked. CSA covers unchecked-exception concepts, NullPointerException and ArrayIndexOutOfBoundsException, as topics in their own right, without teaching the try-catch mechanism itself, the AP exam doesn't test it.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">public void</span> <span class="me">writeList</span>() <span class="k">throws</span> IOException
 {
-    PrintWriter out = <span class="k">new</span> PrintWriter(<span class="k">new</span> FileWriter("OutFile.txt"));
-    <span class="c">// ...</span>
-    out.close();
+    <span class="k">try</span> (PrintWriter out = <span class="k">new</span> PrintWriter(<span class="k">new</span> FileWriter("OutFile.txt")))
+    {
+        <span class="c">// ...</span>
+    }
 }</code></pre>''',
-        "speak": "If a method doesn't want to handle a checked exception itself, it can push that decision up to whoever calls it, with a throws clause. It goes right after the parameter list, before the method body's opening brace. Unchecked exceptions never need to appear in a throws clause, though nothing stops you from listing one anyway.",
+        "speak": "If a method doesn't want to handle a checked exception itself, it can push that decision up to whoever calls it, with a throws clause. It goes right after the parameter list, before the method body's opening brace. Unchecked exceptions never need to appear in a throws clause, though nothing stops you from listing one anyway. PrintWriter and FileWriter write text to a file, the counterpart to Scanner, which lesson 9.8 uses to read one, and try-with-resources again means no leaked file handle if something throws partway through.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">public void</span> <span class="me">setTargetAngle</span>(<span class="t">double</span> degrees)
@@ -150,7 +169,21 @@ BEATS = [
       <div class="dbox">Error</div>
       <div class="dbox">Exception</div>
     </div>''',
-        "speak": "Every exception type in Java descends from Throwable. It has two direct children: Error, serious JVM-level failures that ordinary code never catches or throws, and Exception, everything an ordinary program actually throws and catches. RuntimeException is the branch of Exception specifically reserved for the unchecked family.",
+        "speak": "Every exception type in Java descends from Throwable, each one is a subclass of it, built on top of it, inheriting its behavior, chapter 17 covers what that means in full. It has two direct children: Error, serious JVM-level failures that ordinary code never catches or throws, and Exception, everything an ordinary program actually throws and catches. RuntimeException is the branch of Exception specifically reserved for the unchecked family.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">catch</span> (IllegalArgumentException e)
+{
+    reportWarning("Rejected: " + e.getMessage()); <span class="c">// "Angle out of range: 240.0"</span>
+}</code></pre>''',
+        "speak": "Every exception carries a message, and a caught one doesn't have to be handled blind. e dot getMessage returns the exact text passed to the exception's constructor, use it in a log message instead of guessing what failed.",
+    },
+    {
+        "screen": '''<pre class="code"><code>java.lang.IllegalArgumentException: Angle out of range: 240.0
+    at Arm.setTargetAngle(Arm.java:107)
+    at Robot.teleopPeriodic(Robot.java:42)</code></pre>''',
+        "speak": "An uncaught exception instead prints a stack trace, the exception type and message, followed by the chain of method calls, most recent first, that led to it, and that's exactly what shows up when robot code crashes. Read it top down: the first line is the problem, and the first at-line naming your own class, not a library's, is usually where to start looking. Writing your own exception types needs extends, which isn't taught until Chapter 17, lesson 17.2 covers it.",
+        "continues": True,
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
@@ -163,10 +196,10 @@ BEATS = [
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
       <li><span class="check">&#10003;</span>Throwing creates an exception object and hands it to the runtime, which searches the call stack for a handler.</li>
-      <li><span class="check">&#10003;</span>try wraps risky code; catch handles specific types; an optional finally always runs.</li>
-      <li><span class="check">&#10003;</span>Checked exceptions must be caught or declared with throws; unchecked ones don't require either.</li>
-      <li><span class="check">&#10003;</span>throw someObject triggers an exception yourself &mdash; and never catch-and-ignore.</li>
+      <li><span class="check">&#10003;</span>try wraps risky code; catch handles specific types, general after specific, or combined with |; finally or try-with-resources handles cleanup.</li>
+      <li><span class="check">&#10003;</span>Checked exceptions must be caught or declared with throws; unchecked ones (RuntimeException, Error) don't require either.</li>
+      <li><span class="check">&#10003;</span>throw someObject triggers an exception yourself; e.getMessage() and stack traces show what broke &mdash; and never catch-and-ignore.</li>
     </ul></div>''',
-        "speak": "So, to recap Chapter 12. Throwing an exception creates an object describing the problem and hands it to the runtime, which searches the call stack for a matching handler, an unhandled one crashes the program entirely. try wraps the risky code, one or more catch blocks handle specific exception types, and an optional finally block always runs, for cleanup. Checked exceptions, like IOException, must be caught or declared with throws; unchecked ones, RuntimeException and its subclasses, require neither, since they usually mean a real bug rather than a recoverable situation. And throw, given any Throwable, triggers an exception yourself. Above all, never catch and ignore, recover meaningfully, or at the very least, report the problem. Next up, Chapter 13: a quick-reference roundup of the most common Java gotchas.",
+        "speak": "So, to recap Chapter 12. Throwing an exception creates an object describing the problem and hands it to the runtime, which searches the call stack for a matching handler, an unhandled one crashes the program entirely. try wraps the risky code, one or more catch blocks handle specific exception types in order, or combined with a pipe, and an optional finally block always runs for cleanup, or try-with-resources handles it automatically. Checked exceptions, like IOException, must be caught or declared with throws; unchecked ones, RuntimeException, Error, and their subclasses, require neither, since they usually mean a real bug rather than a recoverable situation. throw, given any Throwable, triggers an exception yourself, and getMessage plus a stack trace tell you what actually broke. Above all, never catch and ignore, recover meaningfully, or at the very least, report the problem. Next up, Chapter 13: a quick-reference roundup of the most common Java gotchas.",
     },
 ]

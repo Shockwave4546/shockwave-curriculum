@@ -102,17 +102,17 @@ const DATA = {
 }
 
 <span class="t">ArmPosition</span> target = <span class="t">ArmPosition</span>.INTAKE; <span class="c">// legal</span>
-<span class="t">ArmPosition</span> target = <span class="t">ArmPosition</span>.CLIMB;  <span class="c">// compile error — CLIMB was never defined</span></code></pre>
+<span class="t">ArmPosition</span> target2 = <span class="t">ArmPosition</span>.CLIMB; <span class="c">// compile error — CLIMB was never defined</span></code></pre>
       <p>By convention, enum constants are written in <code class="inline">SCREAMING_SNAKE_CASE</code>, the same naming style used for other constants (Lesson 1.2).</p>
       <h2>Switching Over an Enum</h2>
-      <p>A <code class="inline">switch</code> over an enum reads close to plain English, and (with modern arrow-style <code class="inline">case</code>) needs no <code class="inline">break</code>:</p>
+      <p>Lesson 5.12 covers <code class="inline">switch</code> itself — arrow form, colon form, <code class="inline">break</code>, and switch expressions. Enums are where <code class="inline">switch</code> is most at home, because the compiler already knows every possible value:</p>
       <pre class="code"><code><span class="k">switch</span> (target)
 {
     <span class="k">case</span> STOWED -&gt; arm.<span class="me">setAngle</span>(<span class="n">0</span>);
     <span class="k">case</span> INTAKE -&gt; arm.<span class="me">setAngle</span>(<span class="n">35</span>);
     <span class="k">case</span> SCORE  -&gt; arm.<span class="me">setAngle</span>(<span class="n">110</span>);
 }</code></pre>
-      <p>Notice the case labels are just <code class="inline">STOWED</code>, not <code class="inline">ArmPosition.STOWED</code> — inside a switch over an enum, Java already knows the type, so the prefix would be redundant (and doesn't compile).</p>
+      <p>Notice the case labels are just <code class="inline">STOWED</code>, not <code class="inline">ArmPosition.STOWED</code> — inside a switch over an <code class="inline">ArmPosition</code>, Java already knows the type, so the prefix is optional and redundant; leave it off. (On Java 17–20, writing the qualified <code class="inline">ArmPosition.STOWED</code> form is a compile error; Java 21+ allows it but this course still leaves it off for readability.)</p>
       <h2>An Enum Is Really a Class</h2>
       <p>An enum isn't just a fancier set of named integers — it's a full class. Its body can declare fields, a constructor, and methods, letting each constant carry its own data:</p>
       <pre class="code"><code><span class="k">public enum</span> <span class="t">ArmPosition</span>
@@ -131,7 +131,7 @@ const DATA = {
         <span class="k">return</span> angleDegrees;
     }
 }</code></pre>
-      <p>Two rules this pattern depends on: the list of constants must come <strong>first</strong> in the enum body, and once there are fields or methods after it, that constant list must end with a semicolon. Each constant listed (<code class="inline">STOWED(0)</code>, <code class="inline">INTAKE(35)</code>, <code class="inline">SCORE(110)</code>) calls the constructor with its own arguments — an enum's constructor is implicitly <code class="inline">private</code>, since you're never allowed to write <code class="inline">new ArmPosition(...)</code> yourself; the only <code class="inline">ArmPosition</code> objects that will ever exist are the ones listed in the enum body.</p>
+      <p>Two rules this pattern depends on: the list of constants must come <strong>first</strong> in the enum body, and once there are fields or methods after it, that constant list must end with a semicolon. Each constant listed (<code class="inline">STOWED(0)</code>, <code class="inline">INTAKE(35)</code>, <code class="inline">SCORE(110)</code>) calls the constructor with its own arguments — an enum's constructor is implicitly <code class="inline">private</code>, since you're never allowed to write <code class="inline">new ArmPosition(...)</code> yourself; the only <code class="inline">ArmPosition</code> objects that will ever exist are the ones listed in the enum body. Writing <code class="inline">public</code> (or <code class="inline">protected</code>) on an enum constructor is a compile error ("modifier public not allowed here") — leave the modifier off entirely.</p>
       <p>With this version, the earlier switch could be simplified — every position now carries its own target angle:</p>
       <pre class="code"><code>arm.<span class="me">setAngle</span>(target.<span class="me">getAngleDegrees</span>());</code></pre>
       <h2>Iterating Every Value: values()</h2>
@@ -140,13 +140,22 @@ const DATA = {
 {
     System.out.<span class="me">println</span>(position + <span class="s">" -> "</span> + position.<span class="me">getAngleDegrees</span>() + <span class="s">" degrees"</span>);
 }</code></pre>
+      <h2>Built-In Methods Every Enum Gets</h2>
+      <p>Besides <code class="inline">values()</code>, every enum constant automatically has a few more methods, inherited from <code class="inline">java.lang.Enum</code> (inheritance and <code class="inline">extends</code> are covered in Ch.17; interfaces and <code class="inline">implements</code> in Ch.19 — you don't need those chapters to use these methods):</p>
+      <pre class="code"><code><span class="t">ArmPosition</span> p = <span class="t">ArmPosition</span>.INTAKE;
+System.out.<span class="me">println</span>(p.<span class="me">name</span>());     <span class="c">// "INTAKE" — the constant's exact declared name</span>
+System.out.<span class="me">println</span>(p.<span class="me">ordinal</span>());  <span class="c">// 1 — its position in the declared order, 0-indexed</span>
+System.out.<span class="me">println</span>(p);            <span class="c">// "INTAKE" — toString() defaults to name()</span>
+<span class="c">// text -&gt; constant; throws IllegalArgumentException if no match</span>
+<span class="t">ArmPosition</span> parsed = <span class="t">ArmPosition</span>.<span class="me">valueOf</span>(<span class="s">"SCORE"</span>);</code></pre>
+      <p>Comparing two enum values with <code class="inline">==</code> is safe and preferred (unlike <code class="inline">String</code>, where <code class="inline">==</code> is a pitfall) — there is only ever one object per constant, so <code class="inline">==</code> and <code class="inline">.equals()</code> always agree. An enum variable can still be <code class="inline">null</code> (it's a reference type), so a <code class="inline">switch</code> or <code class="inline">==</code> check on an unassigned enum variable can still throw or misbehave like any other <code class="inline">null</code> reference.</p>
       <h2>What Enums Can't Do</h2>
-      <p>Every enum implicitly extends <code class="inline">java.lang.Enum</code> behind the scenes. Since Java only allows extending one parent class, an enum can never <code class="inline">extends</code> anything else of its own — though it can still <code class="inline">implement</code> interfaces.</p>
+      <p>Every enum implicitly extends <code class="inline">java.lang.Enum</code> behind the scenes. Since Java only allows extending one parent class, an enum can never <code class="inline">extends</code> anything else of its own (Ch.17 covers <code class="inline">extends</code> in full) — though it can still <code class="inline">implement</code> interfaces (Ch.19).</p>
       <h2>Looking Ahead</h2>
       <p>This chapter's ideas — a fixed set of named states, plus a <code class="inline">switch</code> that reacts to whichever one is currently active — are exactly the foundation the <strong>State Machine</strong> pattern (Java II) builds on, where a subsystem tracks "which named state am I in right now" and transitions between them over time.</p>
     `,
     pitfalls: [
-      "Writing the enum type prefix inside a <code class=\"inline\">switch</code>. <code class=\"inline\">case ArmPosition.INTAKE -&gt;</code> doesn't compile inside a switch over an <code class=\"inline\">ArmPosition</code> — just <code class=\"inline\">case INTAKE -&gt;</code>.",
+      "Writing the enum type prefix inside a <code class=\"inline\">switch</code>. <code class=\"inline\">case ArmPosition.INTAKE -&gt;</code> is optional and redundant — just <code class=\"inline\">case INTAKE -&gt;</code>. (On Java 17–20 the qualified form is a compile error.)",
       "Forgetting the semicolon after the constant list once fields/methods follow. <code class=\"inline\">STOWED(0), INTAKE(35), SCORE(110)</code> with no trailing <code class=\"inline\">;</code> before <code class=\"inline\">private final double angleDegrees;</code> fails to compile.",
       "Trying to <code class=\"inline\">new</code> an enum constant. <code class=\"inline\">new ArmPosition(...)</code> is illegal — the only instances that will ever exist are the constants declared in the enum body itself."
     ],
@@ -154,7 +163,8 @@ const DATA = {
       "An enum defines a fixed, named set of legal values for a type — the compiler rejects anything not in that list.",
       "Enum constant names use <code class=\"inline\">SCREAMING_SNAKE_CASE</code>; a <code class=\"inline\">switch</code> over an enum omits the type prefix on each <code class=\"inline\">case</code>.",
       "An enum is a real class — it can have its own fields, a constructor, and methods, letting each constant carry its own data.",
-      "<code class=\"inline\">EnumType.values()</code> returns every constant, in order, for looping.",
+      "<code class=\"inline\">EnumType.values()</code> returns every constant, in order, for looping; <code class=\"inline\">name()</code>, <code class=\"inline\">ordinal()</code>, <code class=\"inline\">toString()</code>, and <code class=\"inline\">valueOf(String)</code> are also built in.",
+      "<code class=\"inline\">==</code> is safe (and preferred) for comparing enum values — unlike <code class=\"inline\">String</code>. An enum variable can still be <code class=\"inline\">null</code>.",
       "An enum implicitly extends <code class=\"inline\">java.lang.Enum</code>, so it can't extend any other class (interfaces are still fine)."
     ],
     prov: "other-reference-repo: oracle-java-tutorials/enums/enum-types.md (ORACLE 10.1) · Deck context: mechacoder-test/src/lessons/java-1.js, slide 9 (\"Enums: Named Choices\")"

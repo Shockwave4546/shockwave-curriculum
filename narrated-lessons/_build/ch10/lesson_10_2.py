@@ -38,21 +38,25 @@ BEATS = [
         "screen": '''<div class="scr-h2" style="text-align:center;">Row-Major: One Module at a Time</div>
     <pre class="code"><code><span class="c">// Row-major: finish one module's samples before moving to the next module</span>
 <span class="k">for</span> (<span class="t">int</span> row = 0; row &lt; moduleCurrents.length; row++)
+{
     <span class="k">for</span> (<span class="t">int</span> col = 0; col &lt; moduleCurrents[0].length; col++)
-        process(moduleCurrents[row][col]);</code></pre>''',
+    {
+        <span class="c">// stand-in for whatever this pass needs to do</span>
+        System.out.println(moduleCurrents[row][col]);
+    }
+}</code></pre>''',
         "speak": "Now here's something new that one-D arrays never had to worry about: which index changes in the outer loop decides your traversal order. Rows on the outside, like we just saw, is called row-major, and it finishes one module's entire sample history before moving on to the next module.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Column-Major: One Instant, Every Module</div>
-    <pre class="code"><code><span class="c">// Row-major: finish one module's samples before moving to the next module</span>
-<span class="k">for</span> (<span class="t">int</span> row = 0; row &lt; moduleCurrents.length; row++)
-    <span class="k">for</span> (<span class="t">int</span> col = 0; col &lt; moduleCurrents[0].length; col++)
-        process(moduleCurrents[row][col]);
-
-<span class="c">// Column-major: look at sample #0 across ALL modules, then sample #1 across all modules...</span>
+    <pre class="code"><code><span class="c">// Column-major: sample #0 across every module, then sample #1, and so on</span>
 <span class="k">for</span> (<span class="t">int</span> col = 0; col &lt; moduleCurrents[0].length; col++)
+{
     <span class="k">for</span> (<span class="t">int</span> row = 0; row &lt; moduleCurrents.length; row++)
-        process(moduleCurrents[row][col]);</code></pre>''',
+    {
+        System.out.println(moduleCurrents[row][col]);
+    }
+}</code></pre>''',
         "speak": "Flip which loop is on the outside, and you get column-major: for a given sample number, look across every module, then move to the next sample number. This is exactly what you'd want if you're asking, at this one instant, were all four modules spiking at once, a brownout risk that row-major order would never surface directly.",
         "continues": True,
     },
@@ -80,22 +84,23 @@ BEATS = [
         "speak": "And just like one-D for-each, reassigning that inner loop variable inside the loop body does not change what's actually stored in the array. It only overwrites a local copy.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">for</span> (TalonFX[] moduleRow : driveMotors)
+        "screen": '''<pre class="code"><code><span class="c">// driveMotors is a DriveMotor[][], one row per swerve module</span>
+<span class="k">for</span> (DriveMotor[] moduleRow : driveMotors)
 {
-    <span class="k">for</span> (TalonFX motor : moduleRow)
+    <span class="k">for</span> (DriveMotor motor : moduleRow)
     {
-        motor.setNeutralMode(NeutralModeValue.Brake); <span class="c">// mutates the real object — this works</span>
+        motor.setThrottle(0.0); <span class="c">// mutates the real object — this works</span>
     }
 }</code></pre>''',
-        "speak": "That modification limit is specifically about primitives, though. Give the for-each a two-D array of objects instead, say, a grid of motor controller wrapper objects, and calling a method on the loop variable absolutely does mutate the real thing, because you're not reassigning the array slot, you're calling a method on the object it already refers to. Setting every motor's neutral mode to brake, right here, actually works.",
+        "speak": "That modification limit is specifically about primitives, though. Give the for-each a two-D array of objects instead, say, a grid of DriveMotor objects, and calling a method on the loop variable absolutely does mutate the real thing, because you're not reassigning the array slot, you're calling a method on the object it already refers to. Setting every motor's throttle to zero, right here, actually works.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
-      <li><span class="check">!</span>Using the row count as the inner loop's bound &mdash; the inner loop walks columns, so it needs the column-length bound, not the row-length one.</li>
+      <li><span class="check">!</span>Using the row count as the inner loop's bound &mdash; the inner loop walks columns, so it needs the column count (<code>arr[0].length</code>), not the row count (<code>arr.length</code>).</li>
       <li><span class="check">!</span>Expecting for-each to let you assign into a primitive 2D array &mdash; same rule as 1D, it changes nothing.</li>
       <li><span class="check">!</span>Treating row-major vs. column-major as "correct" vs. "incorrect" &mdash; neither is wrong, it depends on the question being asked.</li>
     </ul></div>''',
-        "speak": "Common pitfalls here. Don't use the row count as the inner loop's bound, the inner loop walks columns, so it needs the column-length bound instead. Don't expect a for-each to let you assign into a primitive two-D array, same rule as one-D, it changes nothing. And don't treat row-major and column-major as one being correct and the other wrong, they're just two different questions.",
+        "speak": "Common pitfalls here. Don't use the row count as the inner loop's bound, the inner loop walks columns, so it needs the column count, moduleCurrents bracket zero dot length, not the row count, moduleCurrents dot length. Don't expect a for-each to let you assign into a primitive two-D array, same rule as one-D, it changes nothing. And don't treat row-major and column-major as one being correct and the other wrong, they're just two different questions.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>

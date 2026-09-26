@@ -37,7 +37,7 @@ BEATS = [
       <li><span class="num">1</span><span>An <em>array of arrays</em> &mdash; the outer array holds 4 references</span></li>
       <li><span class="num">2</span><span>Each reference points at its own separate 5-element inner array</span></li>
     </ul></div>''',
-        "speak": "And each of those four references points at its own separate five-element inner array. Declared without new, the variable is null, same as any other reference type. Once you do create it with new, every element starts at that type's default, which for double is zero point zero.",
+        "speak": "And each of those four references points at its own separate five-element inner array. This works like any other reference type: declared as a field with no new, the variable defaults to null. Declared as a local variable, Java won't even let you read it before it's assigned, that's a compile error, not a null. Once you do create it with new, every element starts at that type's default, which for double is zero point zero.",
         "continues": True,
     },
     {
@@ -78,19 +78,19 @@ moduleCurrents[0].length  <span class="c">// 5  (samples per module / columns)</
     },
     {
         "screen": '''<pre class="code"><code><span class="t">double</span>[] frontLeftRow = moduleCurrents[0]; <span class="c">// a single row IS a real 1D array on its own</span></code></pre>''',
-        "speak": "That's possible because of how Java actually built this thing: one row is a real, complete one-D array all by itself, not just a slice. That's exactly why moduleCurrents bracket zero dot length works, you're calling dot length on a genuine one-D array.",
+        "speak": "That's possible because of how Java actually built this thing: one row is a real, complete one-D array all by itself, not just a slice. That's exactly why moduleCurrents bracket zero dot length works, you're reading dot length on a genuine one-D array.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
       <li><span class="check">!</span>Swapping row and column &mdash; the first index is always the row, never the column.</li>
-      <li><span class="check">!</span>Assuming a freshly-created array has real data &mdash; new double bracket 4 bracket 5 gives 20 zeros, not real readings.</li>
+      <li><span class="check">!</span>Assuming a freshly-created array has real data &mdash; <code>new double[4][5]</code> gives 20 zeros, not real readings.</li>
       <li><span class="check">!</span>Off-by-one against length &mdash; last valid row is length minus 1, last valid column is row-length minus 1.</li>
     </ul></div>''',
         "speak": "A few pitfalls to watch for. Don't swap row and column, moduleCurrents at row two column zero is back-left's first sample, not front-left's third, the first index is always the row. Don't assume a freshly created array already has usable data, it's all zeros until you fill it in. And watch off-by-one against length, same rule as one-D arrays, just in both directions now. Get either index out of range, in either dimension, and you get the exact same ArrayIndexOutOfBoundsException as a one-D array.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
-      <li><span class="check">&#10003;</span>datatype bracket bracket name = new datatype bracket rows bracket cols.</li>
+      <li><span class="check">&#10003;</span><code>datatype[][] name = new datatype[rows][cols];</code></li>
       <li><span class="check">&#10003;</span>arr[row][col] reads or writes one element &mdash; row first, always.</li>
       <li><span class="check">&#10003;</span>.length gives row count; .length on one row gives column count.</li>
       <li><span class="check">&#10003;</span>Java builds it as an array of arrays &mdash; each row is its own real 1D array.</li>

@@ -41,11 +41,24 @@ catch (VideoException e)
 {
     reportWarning("Camera unavailable — skipping vision this match");
 }
-catch (IllegalArgumentException e)
+catch (NullPointerException e)
 {
-    reportWarning("Bad camera config — check the port number");
+    reportWarning("Camera name was null");
 }
 ```
+
+`VideoException` is *unchecked* — it extends `RuntimeException` — so catching it here is optional, not compiler-required. Catching it anyway lets the robot keep running with vision disabled instead of crashing outright.
+
+Two `catch` blocks for exception types that share no inheritance relationship can be combined into one with `|` (multi-catch), when they should be handled identically:
+
+```java
+catch (VideoException | NullPointerException e)
+{
+    reportWarning("Camera unavailable — skipping vision this match");
+}
+```
+
+Order matters when the types *do* relate: a `catch` for a more general type (like `Exception`) must come *after* every more specific `catch` for one of its subclasses — putting the general one first makes the specific one unreachable, which is a compile error ("exception X has already been caught").
 
 ## finally
 
@@ -71,29 +84,47 @@ finally
 }
 ```
 
+## try-with-resources
+
+The `finally`-based cleanup above is exactly the case **try-with-resources** exists to replace. Any resource that implements `AutoCloseable` (like `Scanner`) can be declared inside parentheses right after `try`; Java then calls its `close()` automatically, in every case, without a `finally` block at all:
+
+```java
+try (Scanner scan = new Scanner(new File("auto_config.csv")))
+{
+    // ... read the file ...
+}
+catch (FileNotFoundException e)
+{
+    reportWarning("Missing auto_config.csv — using default route");
+}
+```
+
+`scan` is closed the moment the `try` block ends — normally or via an exception — and it only exists inside that `try`. Prefer this form over a manual `finally` whenever the resource type supports it.
+
 ## Checked vs. Unchecked Exceptions
 
 Java splits exceptions into two kinds, and the difference matters for what the compiler demands of you:
 
 - **Checked exceptions** (like `IOException`) — the compiler forces you to either `catch` them or declare them with a `throws` clause. They represent problems a caller could reasonably be expected to recover from.
-- **Unchecked exceptions** (`RuntimeException` and its subclasses — `NullPointerException`, `ArrayIndexOutOfBoundsException`, `ArithmeticException`) — the compiler does not require handling them at all, though you're always allowed to. They almost always represent a genuine programming bug (a null you forgot to check, an index you miscalculated) rather than something the caller can meaningfully recover from at runtime.
+- **Unchecked exceptions** (`RuntimeException`, `Error`, and their subclasses — `NullPointerException`, `ArrayIndexOutOfBoundsException`, `ArithmeticException`) — the compiler does not require handling them at all, though you're always allowed to. `RuntimeException` subclasses almost always represent a genuine programming bug (a null you forgot to check, an index you miscalculated) rather than something the caller can meaningfully recover from at runtime; `Error` and its subclasses represent serious JVM-level failures ordinary code doesn't catch or throw.
 
-Guideline from the language's own designers: *if a client can reasonably be expected to recover from a problem, make it checked; if a client can't do anything useful about it, make it unchecked.* This is also why CSA covers unchecked-exception concepts (NullPointerException, ArrayIndexOutOfBoundsException) as topics in their own right, without ever teaching the `try`/`catch` mechanism itself — the AP exam doesn't test it.
+Guideline from the language's own designers: *if a client can reasonably be expected to recover from a problem, make it checked; if a client can't do anything useful about it, make it unchecked.* CSA covers unchecked-exception concepts (NullPointerException, ArrayIndexOutOfBoundsException) as topics in their own right, without teaching the `try`/`catch` mechanism itself — the AP exam doesn't test it.
 
 ## The `throws` Clause
 
-If a method doesn't want to handle a checked exception itself, it can instead declare that it might throw one, pushing the decision up to whoever calls it:
+If a method doesn't want to handle a checked exception itself, it can instead declare that it might throw one, pushing the decision up to whoever calls it. `PrintWriter`/`FileWriter` write text to a file — the counterpart to `Scanner`, which Lesson 9.8 uses to read one:
 
 ```java
 public void writeList() throws IOException
 {
-    PrintWriter out = new PrintWriter(new FileWriter("OutFile.txt"));
-    // ...
-    out.close();
+    try (PrintWriter out = new PrintWriter(new FileWriter("OutFile.txt")))
+    {
+        // ...
+    }
 }
 ```
 
-`throws` goes after the parameter list, before the method body's opening brace. Unchecked exceptions never need to appear in a `throws` clause (though nothing stops you from listing one).
+`throws` goes after the parameter list, before the method body's opening brace. Unchecked exceptions never need to appear in a `throws` clause (though nothing stops you from listing one). Note the `try`-with-resources here too: without it, an exception thrown between opening `out` and calling `out.close()` would skip the close and leak the file handle.
 
 ## The `throw` Statement
 
@@ -110,7 +141,30 @@ public void setTargetAngle(double degrees)
 }
 ```
 
-Every exception type in Java descends from `Throwable`. Its two direct children are `Error` (serious JVM-level failures — not something ordinary code catches or throws) and `Exception` (everything an ordinary program throws and catches), and `RuntimeException` is the branch of `Exception` reserved for unchecked exceptions.
+Every exception type in Java descends from `Throwable` — each one is a **subclass** of it (built on top of it, inheriting its behavior; Ch.17 covers what that means in full). Its two direct children are `Error` (serious JVM-level failures — not something ordinary code catches or throws) and `Exception` (everything an ordinary program throws and catches), and `RuntimeException` is the branch of `Exception` reserved for unchecked exceptions.
+
+## Reading What Went Wrong
+
+Every exception carries a message, and a caught one doesn't have to be handled blind:
+
+```java
+catch (IllegalArgumentException e)
+{
+    reportWarning("Rejected: " + e.getMessage()); // "Angle out of range: 240.0"
+}
+```
+
+`e.getMessage()` returns the text passed to the exception's constructor (`"Angle out of range: " + degrees` above) — use it in a log message instead of guessing what failed. An *uncaught* exception prints a **stack trace**: the exception type and message, followed by the chain of method calls (most recent first) that led to it —
+
+```
+java.lang.IllegalArgumentException: Angle out of range: 240.0
+    at Arm.setTargetAngle(Arm.java:107)
+    at Robot.teleopPeriodic(Robot.java:42)
+```
+
+— which is exactly what shows up when robot code crashes: read from the top down, the first line is the problem, and the first `at` line naming your own class (not a library's) is usually where to start looking.
+
+Writing your **own** exception types (for errors specific to your robot code, not covered by a built-in class) needs `extends`, which isn't taught until Ch.17 — Lesson 17.2 covers it.
 
 ## Common Pitfalls
 
@@ -121,9 +175,10 @@ Every exception type in Java descends from `Throwable`. Its two direct children 
 ## Key Takeaways
 
 - Throwing an exception creates an object describing the problem and hands it to the runtime, which searches the call stack for a matching handler; an unhandled exception crashes the program (a red "Robot Code" indicator, on a robot).
-- `try` wraps risky code; one or more `catch` blocks handle specific exception types; an optional `finally` block always runs, for cleanup.
-- Checked exceptions (like `IOException`) must be caught or declared with `throws`; unchecked exceptions (`RuntimeException` and its subclasses) don't require either, since they usually signal a real bug rather than a recoverable situation.
+- `try` wraps risky code; one or more `catch` blocks (in order, general after specific, or combined with `|`) handle specific exception types; an optional `finally` block always runs, for cleanup — or use try-with-resources for anything `AutoCloseable`.
+- Checked exceptions (like `IOException`) must be caught or declared with `throws`; unchecked exceptions (`RuntimeException`, `Error`, and their subclasses) don't require either, since they usually signal a real bug rather than a recoverable situation.
 - `throw someObject;` triggers an exception yourself, given any `Throwable`.
+- `e.getMessage()` reports what went wrong; an uncaught exception prints a stack trace, read top-down.
 - Never catch-and-ignore — recover meaningfully, or at least report the problem.
 
 Derived from `other-reference-repo`: `oracle-java-tutorials/exceptions/01-what-is-an-exception.md`, `03-catching-and-handling-exceptions.md`, `09-specifying-the-exceptions-thrown-by-a-method.md`, `10-how-to-throw-exceptions.md`, `13-unchecked-exceptions-the-controversy.md` (ORACLE 11.1-16)

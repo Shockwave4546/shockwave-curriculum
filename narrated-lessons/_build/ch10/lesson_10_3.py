@@ -109,6 +109,7 @@ BEATS = [
         {
             <span class="k">for</span> (<span class="t">int</span> row2 = row; row2 &lt; a.length; row2++)
             {
+                <span class="c">// ?: is the conditional operator, Lesson 5.5</span>
                 <span class="t">int</span> startCol = (row2 == row) ? col + 1 : 0;
                 <span class="k">for</span> (<span class="t">int</span> col2 = startCol; col2 &lt; a[0].length; col2++)
                 {
@@ -135,7 +136,24 @@ BEATS = [
     }
     a[row][0] = last;
 }</code></pre>''',
-        "speak": "Last shape: rotating or reversing. Do it to a single row, or to one fixed column index taken across every row, a kind of virtual column, and it works exactly like the one-D version from lesson 9.5, because at that point you're really only touching one one-D array at a time.",
+        "speak": "Last shape: rotating or reversing. Do it to a single row, or to one fixed column index taken across every row, a kind of virtual column, and you're really only touching one one-D array at a time. Rotating works just like lesson 9.7's ArrayList rotate, shift every element into the next slot and wrap the last one around to the front.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">public static void</span> <span class="me">reverseRow</span>(<span class="t">double</span>[][] a, <span class="t">int</span> row)
+{
+    <span class="t">int</span> left = 0;
+    <span class="t">int</span> right = a[0].length - 1;
+    <span class="k">while</span> (left &lt; right)
+    {
+        <span class="t">double</span> temp = a[row][left];
+        a[row][left] = a[row][right];
+        a[row][right] = temp;
+        left++;
+        right--;
+    }
+}</code></pre>''',
+        "speak": "Reversing works just like lesson 9.5's swap-from-both-ends: a left pointer and a right pointer walk toward the middle, swapping as they go.",
+        "continues": True,
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
@@ -150,8 +168,8 @@ BEATS = [
       <li><span class="check">&#10003;</span>Every 1D algorithm shape extends to 2D: whole array, one row, one column, or a bounded subsection.</li>
       <li><span class="check">&#10003;</span>Sum a row: fix the row, loop columns. Sum a column: fix the column, loop rows.</li>
       <li><span class="check">&#10003;</span>A full 2D duplicate check needs 4 nested loops, not 2.</li>
-      <li><span class="check">&#10003;</span>Rotating/reversing one row or one fixed column reuses the exact 1D in-place pattern.</li>
+      <li><span class="check">&#10003;</span>Rotating one row reuses 9.7's ArrayList rotate; reversing one reuses 9.5's swap-from-both-ends.</li>
     </ul></div>''',
-        "speak": "So, to recap Chapter 10 overall. Every one-D array algorithm pattern, accumulator, min-max, property count, duplicates, rotate, extends into two dimensions, whether you're covering the whole array, one row, one column, or a bounded subsection. Summing a row fixes the row and loops columns; summing a column fixes the column and loops rows. A full two-D duplicate check needs four nested loops, not two. And rotating or reversing a single row, or one fixed-column slice, reuses the exact one-D in-place pattern you already know. That wraps up two-D arrays. Next chapter, we're moving on to enums, named choices for a fixed set of states.",
+        "speak": "So, to recap Chapter 10 overall. Every one-D array algorithm pattern, accumulator, min-max, property count, duplicates, rotate, extends into two dimensions, whether you're covering the whole array, one row, one column, or a bounded subsection. Summing a row fixes the row and loops columns; summing a column fixes the column and loops rows. A full two-D duplicate check needs four nested loops, not two. And rotating a single row, or one fixed-column slice, reuses lesson 9.7's ArrayList rotate pattern, while reversing one reuses lesson 9.5's swap-from-both-ends. That wraps up two-D arrays. Next chapter, we're moving on to enums, named choices for a fixed set of states.",
     },
 ]

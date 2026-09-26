@@ -66,6 +66,8 @@ Reorder the fragments below to complete it:
 
 **Answer:** g, c, e, a, i, h, b, j, f, d
 
+**Interchangeable:** (c, j) (d, h)
+
 ```java
 import java.io.*;
 import java.util.*;
@@ -90,4 +92,4 @@ public class PitNotes
 
 If `pit_notes.txt` is missing, the output is `No pit notes found - starting fresh`. If it exists, the output is its first line.
 
-**Why this order:** `try` (`g`) and its opening brace (`c`) come first, because the code that might throw has to be inside the `try` block. Inside it, the `Scanner` has to be created (`e`) before anything can be read from it (`a`), and it can only be closed (`i`) after the reading is done. That line is also the one that can throw `FileNotFoundException`, which is why it sits inside `try`. The `try` block closes (`h`), and the `catch` (`b`) follows it directly. Its body (`j`, `f`, `d`) holds the fallback message, which only runs if opening the file failed. If opening the file fails, the rest of the `try` block (`a`, `i`) is skipped and execution jumps straight to `f`. Note that `c` and `j` (both an eight-space `{`) are identical, and so are `h` and `d` (both an eight-space `}`). One of each pair belongs to `try` and the other to `catch`, so it doesn't matter which copy goes where, as long as each block gets one opening and one closing brace.
+**Why this order:** `try` (`g`) and its opening brace (`c`) come first, because the code that might throw has to be inside the `try` block. Inside it, the `Scanner` has to be created (`e`) before anything can be read from it (`a`), and it can only be closed (`i`) after the reading is done. Line `e`, the `Scanner` constructor, is the one that can throw `FileNotFoundException`, which is why it sits inside `try`. The `try` block closes (`h`), and the `catch` (`b`) follows it directly. Its body (`j`, `f`, `d`) holds the fallback message, which only runs if opening the file failed. If opening the file fails, the rest of the `try` block (`a`, `i`) is skipped and execution jumps straight to `f`. Note that `c` and `j` (both an eight-space `{`) are identical, and so are `h` and `d` (both an eight-space `}`). One of each pair belongs to `try` and the other to `catch`, so it doesn't matter which copy goes where, as long as each block gets one opening and one closing brace.
