@@ -106,7 +106,7 @@ const DATA = {
     }
 }</code></pre>
       <h2>The Default Constructor</h2>
-      <p>If you don't write any constructor at all, Java gives your class a free no-argument one that sets every instance variable to its type's default (<code class="inline">0</code> for <code class="inline">int</code>, <code class="inline">0.0</code> for <code class="inline">double</code>, <code class="inline">false</code> for <code class="inline">boolean</code>, <code class="inline">null</code> for any reference type). The moment you write even one constructor yourself, that free one disappears — you have to cover every way you want objects of your class to be built.</p>
+      <p>Every instance variable starts at its type's default the instant an object exists — <code class="inline">0</code> for <code class="inline">int</code>, <code class="inline">0.0</code> for <code class="inline">double</code>, <code class="inline">false</code> for <code class="inline">boolean</code>, <code class="inline">null</code> for any reference type — whether or not you ever write a constructor. If you don't write any constructor at all, Java adds an empty no-argument one for you; it doesn't do anything beyond that automatic default-initialization. The moment you write even one constructor yourself, that free one disappears — you have to cover every way you want objects of your class to be built.</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span>
 {
     <span class="k">private int</span> motorPort; <span class="c">// if no constructor is written, this defaults to 0</span>
@@ -130,6 +130,25 @@ const DATA = {
         <span class="k">this</span>.climbSpeed = climbSpeed;
     }
 }</code></pre>
+      <h2>Chaining Constructors with this(...)</h2>
+      <p>The two <code class="inline">Climber</code> constructors above duplicate the <code class="inline">this.motorPort = motorPort;</code> line. When one constructor's job is really "do what another constructor does, plus a little more," it can call that other constructor directly with <code class="inline">this(...)</code> instead of repeating its body:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span>
+{
+    <span class="k">private int</span> motorPort;
+    <span class="k">private double</span> climbSpeed;
+
+    <span class="k">public</span> <span class="me">Climber</span>(<span class="k">int</span> motorPort)
+    {
+        <span class="k">this</span>(motorPort, <span class="n">0.5</span>); <span class="c">// delegates to the two-argument constructor below</span>
+    }
+
+    <span class="k">public</span> <span class="me">Climber</span>(<span class="k">int</span> motorPort, <span class="k">double</span> climbSpeed)
+    {
+        <span class="k">this</span>.motorPort = motorPort;
+        <span class="k">this</span>.climbSpeed = climbSpeed;
+    }
+}</code></pre>
+      <p>On Java 17, a <code class="inline">this(...)</code> call must be the very first statement in the constructor — nothing can come before it, not even a simple argument check. Java 25 (JEP 513, <em>Flexible Constructor Bodies</em>) relaxes this: statements can now run before <code class="inline">this(...)</code>, as long as they don't touch the new object's fields or call its methods yet (validating an argument, for example, is fine). This lesson still puts <code class="inline">this(...)</code> first, which works unchanged on both versions.</p>
       <h2>this: Referring to the Current Object</h2>
       <p>Inside an instance method or constructor, <code class="inline">this</code> refers to the specific object the method/constructor is currently running for. It's most useful when a parameter shares a name with an instance variable — <code class="inline">this.motorPort</code> unambiguously means "this object's <code class="inline">motorPort</code>," while bare <code class="inline">motorPort</code> means the parameter:</p>
       <pre class="code"><code><span class="k">public</span> <span class="me">Climber</span>(<span class="k">int</span> motorPort)
@@ -151,14 +170,15 @@ const DATA = {
 }</code></pre>
     `,
     pitfalls: [
-      "Forgetting <code class=\"inline\">this</code> when a parameter shadows an instance variable. <code class=\"inline\">motorPort = motorPort;</code> (no <code class=\"inline\">this</code>) does nothing useful — it assigns the parameter to itself, leaving the actual instance variable untouched.",
-      "Assuming a class always gets a free default constructor. Only true if you write zero constructors yourself. Write even one, and you're responsible for every constructor your class needs."
+      "Forgetting <code class=\"inline\">this</code> when a parameter shadows an instance variable — the general scope/lifetime rule behind this is Ch.7.2's \"Where Variables Live.\" <code class=\"inline\">motorPort = motorPort;</code> (no <code class=\"inline\">this</code>) does nothing useful — it assigns the parameter to itself, leaving the actual instance variable untouched.",
+      "Assuming a class always gets a free default constructor. Only true if you write zero constructors yourself. Write even one, and you're responsible for every constructor your class needs.",
+      "Writing <code class=\"inline\">void Climber(...)</code> instead of a constructor. Adding a return type — even <code class=\"inline\">void</code> — makes it an ordinary method that just happens to share the class's name, not a constructor. It never runs automatically when you <code class=\"inline\">new</code> the class; Java still builds the object with whichever real constructor exists (or the free default one, if you wrote none)."
     ],
     takeaways: [
       "A constructor's signature has no return type and always matches the class's name; its job is to leave the object in a valid state.",
-      "With no constructor written, Java provides a default one that zeroes/nulls every instance variable — writing any constructor yourself removes that default.",
-      "Constructors can be overloaded, just like methods, distinguished by parameter lists.",
-      "<code class=\"inline\">this</code> refers to the current object inside an instance method or constructor — essential for disambiguating a parameter from an instance variable of the same name.",
+      "Every instance variable starts at its type's default regardless of any constructor; with no constructor written, Java adds an empty default one — writing any constructor yourself removes it.",
+      "Constructors can be overloaded, just like methods, distinguished by parameter lists; one overload can delegate to another with <code class=\"inline\">this(...)</code> instead of repeating setup code (first statement on Java 17; Java 25 also allows validation before it, JEP 513).",
+      "<code class=\"inline\">this</code> refers to the current object inside an instance method or constructor — essential for disambiguating a parameter from an instance variable of the same name (shadowing, Ch.7.2).",
       "<code class=\"inline\">this</code> can be passed as an argument, like any other object reference. Static methods have no <code class=\"inline\">this</code>."
     ],
     prov: "Deck context: mechacoder-test/src/lessons/java-1.js, slide 8 (\"CONSTRUCTORS\")"

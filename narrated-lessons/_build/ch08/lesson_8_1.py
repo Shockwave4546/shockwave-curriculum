@@ -26,7 +26,7 @@ BEATS = [
 {
     <span class="k">private int</span> motorPort; <span class="c">// if no constructor is written, this defaults to 0</span>
 }</code></pre>''',
-        "speak": "If you don't write any constructor at all, Java quietly gives your class a free, no-argument one, that sets every instance variable to its type's default, 0 for int, 0.0 for double, false for boolean, null for any object reference. But the moment you write even one constructor yourself, that free one disappears completely, you're now responsible for covering every way you want objects of your class to get built.",
+        "speak": "Every instance variable starts at its type's default the instant an object exists, 0 for int, 0.0 for double, false for boolean, null for any object reference, whether or not you ever write a constructor. If you don't write one at all, Java quietly adds an empty no-argument constructor for you, it doesn't do anything beyond that automatic default initialization. But the moment you write even one constructor yourself, that free one disappears completely, you're now responsible for covering every way you want objects of your class to get built.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span>
@@ -47,6 +47,25 @@ BEATS = [
     }
 }</code></pre>''',
         "speak": "Just like methods back in Chapter 4, a class can have several constructors, distinguished by their parameter lists, the same overloading idea. Here, one constructor takes just a motor port and picks a sensible default climb speed, the other lets the caller specify both. Same class, two different ways to build one.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">public class</span> <span class="t">Climber</span>
+{
+    <span class="k">private int</span> motorPort;
+    <span class="k">private double</span> climbSpeed;
+
+    <span class="k">public</span> Climber(<span class="k">int</span> motorPort)
+    {
+        this(motorPort, <span class="n">0.5</span>); <span class="c">// delegates to the two-argument constructor below</span>
+    }
+
+    <span class="k">public</span> Climber(<span class="k">int</span> motorPort, <span class="k">double</span> climbSpeed)
+    {
+        this.motorPort = motorPort;
+        this.climbSpeed = climbSpeed;
+    }
+}</code></pre>''',
+        "speak": "One constructor can also call another constructor in the same class directly, using this followed by parentheses and the arguments to pass along, instead of repeating the same setup code. That's called constructor chaining. On Java 17, that call has to be the very first statement in the constructor, nothing before it. Java 25 loosens that a little, letting a simple check run first, as long as it doesn't touch the object's fields or methods yet. This lesson still puts it first, since that works the same on both versions.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">"this": the Current Object</h2><ul>
@@ -84,17 +103,18 @@ BEATS = [
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
       <li><span class="check">!</span>Forgetting this when a parameter shadows an instance variable &mdash; assigns the parameter to itself, and does nothing.</li>
       <li><span class="check">!</span>Assuming a class always gets a free default constructor &mdash; only true if you write zero constructors yourself.</li>
+      <li><span class="check">!</span>Writing void ClassName(...) instead of a constructor &mdash; that's just an ordinary method, and it never runs automatically.</li>
     </ul></div>''',
-        "speak": "Two pitfalls to really lock in. Forgetting this when a parameter shadows an instance variable, motor port equals motor port with no this, assigns the parameter to itself and leaves the actual instance variable completely untouched, no error, just silently wrong. And don't assume a class always gets a free default constructor, that's only true if you write exactly zero constructors yourself, write even one, and you own every constructor your class needs from then on.",
+        "speak": "Three pitfalls to really lock in. Forgetting this when a parameter shadows an instance variable, motor port equals motor port with no this, assigns the parameter to itself and leaves the actual instance variable completely untouched, no error, just silently wrong, the same scope idea from lesson seven point two. Don't assume a class always gets a free default constructor, that's only true if you write exactly zero constructors yourself, write even one, and you own every constructor your class needs from then on. And watch for adding void in front of a constructor's name, that turns it into an ordinary method that just happens to share the class's name, it's not a constructor anymore, and it never runs automatically when you build a new object.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
       <li><span class="check">&#10003;</span>A constructor's signature has no return type and matches the class's name; its job is a valid starting state.</li>
-      <li><span class="check">&#10003;</span>With no constructor written, Java provides a default one &mdash; writing any constructor yourself removes it.</li>
-      <li><span class="check">&#10003;</span>Constructors can be overloaded, just like methods.</li>
+      <li><span class="check">&#10003;</span>Every instance variable starts at its type's default regardless of any constructor; with none written, Java adds an empty one.</li>
+      <li><span class="check">&#10003;</span>Constructors can be overloaded, just like methods &mdash; one overload can chain to another with this(...).</li>
       <li><span class="check">&#10003;</span>this refers to the current object &mdash; essential when a parameter shares a name with an instance variable.</li>
       <li><span class="check">&#10003;</span>this can be passed as an argument, like any other reference. Static methods have no this.</li>
     </ul></div>''',
-        "speak": "So, to recap. A constructor's signature has no return type and always matches the class's name, and its whole job is leaving the object in a valid state. With no constructor written, Java hands you a default one, writing any constructor yourself removes that default entirely. Constructors can be overloaded, just like methods. this refers to the current object, and it's essential for disambiguating a parameter from an instance variable that shares its name. And this can be passed around as an argument like any other object reference, though static methods never have one. Next up, Chapter 9, where we start storing more than one piece of data at a time, arrays, array lists, and hash maps.",
+        "speak": "So, to recap. A constructor's signature has no return type and always matches the class's name, and its whole job is leaving the object in a valid state. Every instance variable starts at its type's default the moment an object exists, no matter what, with no constructor written Java just adds an empty one. Constructors can be overloaded, just like methods, and one overload can chain to another with this and parentheses instead of repeating the same setup code. this refers to the current object, and it's essential for disambiguating a parameter from an instance variable that shares its name. And this can be passed around as an argument like any other object reference, though static methods never have one. Next up, Chapter 9, where we start storing more than one piece of data at a time, arrays, array lists, and hash maps.",
     },
 ]

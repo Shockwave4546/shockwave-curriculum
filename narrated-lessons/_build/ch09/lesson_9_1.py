@@ -8,7 +8,8 @@ BEATS = [
         "speak": "Welcome to Chapter 9. So far, every piece of data you've stored has needed its own separate variable. That falls apart fast the moment you have a dozen related values, imagine writing motor 1, motor 2, motor 3, all the way up. An array is the fix.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">int</span>[] canBusIds = {<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>}; <span class="c">// an initializer list — size inferred, values set immediately</span></code></pre>''',
+        "screen": '''<pre class="code"><code><span class="c">// an initializer list — size inferred, values set immediately</span>
+<span class="k">int</span>[] canBusIds = {<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>};</code></pre>''',
         "speak": "An array is a fixed-size block of memory holding several values of the same type, accessed by position, called an index, instead of by a pile of separate variable names. This is an initializer list, the size gets inferred from how many values you list, and they're all set immediately.",
     },
     {
@@ -35,14 +36,22 @@ System.out.println(canBusIds[<span class="n">0</span>]);     <span class="c">// 
     },
     {
         "screen": '''<pre class="code"><code><span class="t">String</span>[] autoNames = {<span class="s">"3-Piece-Left"</span>, <span class="s">"1-Piece-Safe"</span>, <span class="s">"Mobility-Only"</span>};
-<span class="k">double</span>[] autoTimes = {<span class="n">14.2</span>, <span class="n">8.5</span>, <span class="n">3.1</span>}; <span class="c">// autoTimes[i] is the recorded time for autoNames[i]</span></code></pre>''',
+<span class="c">// autoTimes[i] is the recorded time for autoNames[i]</span>
+<span class="k">double</span>[] autoTimes = {<span class="n">14.2</span>, <span class="n">8.5</span>, <span class="n">3.1</span>};</code></pre>''',
         "speak": "A really common pattern is parallel arrays, two or more arrays kept in the same order, where a given index means the same thing in both. Here, index i in auto times is the recorded run time for the auto routine named at index i in auto names.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">TalonFX</span>[] driveMotors = <span class="k">new</span> <span class="t">TalonFX</span>[<span class="n">4</span>]; <span class="c">// 4 slots, all currently null</span>
-driveMotors[<span class="n">0</span>] = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">1</span>);        <span class="c">// must construct each element separately</span>
-driveMotors[<span class="n">0</span>].set(<span class="n">0.5</span>);                <span class="c">// then call methods through the index</span></code></pre>''',
-        "speak": "An array can hold any type at all, including your own classes, but there's a catch. New TalonFX bracket 4 gives you 4 slots, and every single one of them is null, not 4 ready-to-use motor objects. Each element still has to be constructed individually, on its own line, before you can call a method through it.",
+        "screen": '''<pre class="code"><code><span class="t">DriveMotor</span>[] driveMotors = <span class="k">new</span> <span class="t">DriveMotor</span>[<span class="n">4</span>]; <span class="c">// 4 slots, all currently null</span>
+driveMotors[<span class="n">0</span>] = <span class="k">new</span> <span class="t">DriveMotor</span>(<span class="n">1</span>);           <span class="c">// must construct each element separately</span>
+driveMotors[<span class="n">0</span>].setThrottle(<span class="n">0.5</span>);              <span class="c">// then call methods through the index</span></code></pre>''',
+        "speak": "An array can hold any type at all, including your own classes, but there's a catch. New DriveMotor bracket 4 gives you 4 slots, and every single one of them is null, not 4 ready-to-use motor objects. Each element still has to be constructed individually, on its own line, before you can call a method through it.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">import</span> java.util.Arrays;
+
+System.out.println(canBusIds); <span class="c">// [I@1a2b3c — not useful</span>
+System.out.println(Arrays.toString(canBusIds)); <span class="c">// [1, 2, 3, 4]</span></code></pre>''',
+        "speak": "One quick note before we move on. Printing an array directly with println doesn't print its values, arrays don't override toString, that's a Chapter 17 topic, so you just get an unreadable label. Arrays dot toString, from java dot util dot Arrays, is what actually gives you a readable, comma-separated list of the values.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>

@@ -17,7 +17,8 @@ BEATS = [
         "speak": "First, the accumulator pattern, for a sum or an average. Start a running total at 0, add every element to it inside the loop, and divide by the count once you're done.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">double</span> max = sensorReadings[<span class="n">0</span>]; <span class="c">// seed with the first element, not 0 — a reading could be negative</span>
+        "screen": '''<pre class="code"><code><span class="c">// seed with the first element, not 0 — a reading could be negative</span>
+<span class="k">double</span> max = sensorReadings[<span class="n">0</span>];
 <span class="k">for</span> (<span class="k">double</span> reading : sensorReadings)
 {
     <span class="k">if</span> (reading &gt; max)
@@ -39,7 +40,7 @@ BEATS = [
     }
     <span class="k">return false</span>; <span class="c">// only after checking every element</span>
 }</code></pre>''',
-        "speak": "Search has a rule that trips people up constantly: it's fine to return early the instant you find a match, but you can only return not-found after the loop has genuinely checked every single element. Returning false from inside the loop, on the first non-match, only ever actually checks the first element.",
+        "speak": "Search has a rule that trips people up constantly: it's fine to return early the instant you find a match, but you can only return not-found after the loop has genuinely checked every single element. Returning false from inside the loop, on the first non-match, only ever actually checks the first element. One more thing, double equals target only really makes sense when target is a value you know is exact, a literal, or a whole number count. Comparing computed or measured doubles this way is risky, use a tolerance comparison instead when either side came from a calculation or a sensor.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = values.length - <span class="n">1</span>; i &gt;= <span class="n">0</span>; i--)
@@ -50,16 +51,34 @@ BEATS = [
     },
     {
         "screen": '''<pre class="code"><code><span class="c">// at least one has the property</span>
-<span class="k">for</span> (<span class="k">double</span> v : values) { <span class="k">if</span> (isFaulty(v)) <span class="k">return true</span>; }
+<span class="k">for</span> (<span class="k">double</span> v : values)
+{
+    <span class="k">if</span> (isFaulty(v))
+    {
+        <span class="k">return true</span>;
+    }
+}
 <span class="k">return false</span>;
 
 <span class="c">// all have the property (check the NEGATION, bail early on a counter-example)</span>
-<span class="k">for</span> (<span class="k">double</span> v : values) { <span class="k">if</span> (!isFaulty(v)) <span class="k">return false</span>; }
+<span class="k">for</span> (<span class="k">double</span> v : values)
+{
+    <span class="k">if</span> (!isFaulty(v))
+    {
+        <span class="k">return false</span>;
+    }
+}
 <span class="k">return true</span>;
 
 <span class="c">// count how many have the property</span>
 <span class="k">int</span> count = <span class="n">0</span>;
-<span class="k">for</span> (<span class="k">double</span> v : values) { <span class="k">if</span> (isFaulty(v)) count++; }</code></pre>''',
+<span class="k">for</span> (<span class="k">double</span> v : values)
+{
+    <span class="k">if</span> (isFaulty(v))
+    {
+        count++;
+    }
+}</code></pre>''',
         "speak": "Three closely related patterns. At least one has some property, return true the moment you find one, and only fall through to false at the very end. All have the property, flip it around, check the negation, and bail out false the instant you find a single counter-example. And counting how many have the property is just the accumulator pattern again, with a counter instead of a sum.",
     },
     {
@@ -80,7 +99,8 @@ BEATS = [
         "speak": "But duplicates could be anywhere, not just next to each other, and catching that needs a nested loop, comparing every single pair. j always starts one past i, so no pair ever gets compared against itself, or checked twice.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="k">int</span> start = <span class="n">0</span>, end = values.length - <span class="n">1</span>;
+        "screen": '''<pre class="code"><code><span class="k">int</span> start = <span class="n">0</span>;
+<span class="k">int</span> end = values.length - <span class="n">1</span>;
 <span class="k">while</span> (start &lt; end)
 {
     <span class="k">double</span> temp = values[start];
@@ -97,7 +117,7 @@ BEATS = [
       <li><span class="check">!</span>Returning "not found" from inside the loop, before every element's been checked.</li>
       <li><span class="check">!</span>Comparing values[i] to values[i+1] all the way to the last index &mdash; reads one past the end.</li>
     </ul></div>''',
-        "speak": "Three pitfalls to keep in mind. Don't seed min or max with 0, if every real value happens to be negative, or all sit above some baseline, 0 is simply the wrong starting point. Don't return not-found from inside the loop, only a genuine match should return early, not-found has to wait for the loop to finish. And don't let an adjacent-duplicate check compare all the way to the very last index, that reads one element past the end, the loop has to stop at length minus 2.",
+        "speak": "Three pitfalls to keep in mind. Don't seed min or max with 0, if every real value is negative, 0 looks like a wrong max that never gets beaten, and if every real value is positive, 0 looks like a wrong min that never gets beaten either. Seeding with the first element sidesteps both. Don't return not-found from inside the loop, only a genuine match should return early, not-found has to wait for the loop to finish. And don't let an adjacent-duplicate check compare all the way to the very last index, that reads one element past the end, the loop has to stop at length minus 2.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
