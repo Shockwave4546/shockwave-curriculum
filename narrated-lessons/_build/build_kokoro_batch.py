@@ -33,6 +33,7 @@ CHAPTER_SLUGS = {
     20: 'ch20-the-io-layer-pattern', 21: 'ch21-static-factories',
     22: 'ch22-the-builder-pattern', 23: 'ch23-encapsulation-and-final',
     24: 'ch24-optional-avoiding-null-pointer-exceptions',
+    25: 'ch25-command-based-programming',
     26: 'ch26-architecture-takeaways', 27: 'ch27-program-design-and-abstraction',
     28: 'ch28-algorithms-searching-sorting-recursion',
 }
@@ -47,6 +48,7 @@ CHAPTER_NAMES = {
     18: 'Polymorphism: Many Forms', 19: 'Interfaces as Contracts',
     20: 'The IO-Layer Pattern', 21: 'Static Factories', 22: 'The Builder Pattern',
     23: 'Encapsulation & final', 24: 'Optional: Avoiding NullPointerExceptions',
+    25: 'Command-Based Programming',
     26: 'Architecture Takeaways', 27: 'Program Design & Abstraction',
     28: 'Algorithms: Searching, Sorting & Recursion',
 }
@@ -57,8 +59,8 @@ CHAPTER_VOICES = {
     7: 'bf_emma', 8: 'am_echo', 9: 'af_jessica', 10: 'am_puck', 11: 'af_heart',
     12: 'bm_fable', 13: 'bf_emma', 14: 'af_jessica', 15: 'am_echo', 16: 'af_heart',
     17: 'am_puck', 18: 'bf_emma', 19: 'bm_fable', 20: 'af_jessica', 21: 'am_echo',
-    22: 'af_heart', 23: 'am_puck', 24: 'bf_emma', 26: 'af_jessica', 27: 'bm_fable',
-    28: 'af_heart',
+    22: 'af_heart', 23: 'am_puck', 24: 'bf_emma', 25: 'am_echo',
+    26: 'af_jessica', 27: 'bm_fable', 28: 'af_heart',
 }
 
 

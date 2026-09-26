@@ -3,8 +3,10 @@
 Confirmed working process for generating lesson narration audio locally, via HyperFrames'
 bundled Kokoro-82M model — free, offline, no API key, no per-character cost. Chosen for
 Ch.2 onward after a direct A/B test against the existing Azure pipeline
-([azure-tts-process.md](azure-tts-process.md)) on Ch.1's own script. Ch.1 and Ch.25 stay
-on Azure since they're already built — this is for everything built from here forward.
+([azure-tts-process.md](azure-tts-process.md)) on Ch.1's own script. Ch.1 stays on Azure
+since it's already built. **Ch.25 update (2026-09-25):** Ch.25 was rewritten for Commands
+v3 as part of the content audit, and its narration was re-scripted and re-voiced with
+Kokoro (`am_echo`) as part of that rewrite — it's no longer an Azure exception.
 
 **Status (2026-09-22): Ch.2-13 (Java I) fully built** — 45 lessons, 492 beats, via the
 batch pipeline described below. Ch.14-28 (Java II + Advanced Java Topics) still need
@@ -128,14 +130,15 @@ Java I → Java II seam (Ch.13/14) rather than mid-track.
 | 8 | Echo | | 22 | Heart |
 | 9 | Jessica | | 23 | Puck |
 | 10 | Puck | | 24 | Emma |
-| 11 | Heart | | 25 | (Azure, existing, male — voice name never recorded, not re-built) |
+| 11 | Heart | | 25 | Echo (Kokoro `am_echo`, re-voiced 2026-09-25 for the Commands v3 rewrite) |
 | 12 | Fable | | 26 | Jessica |
 | 13 | Emma | | 27 | Fable |
 | 14 | Jessica *(deliberate same-gender pair, Java I/II boundary)* | | 28 | Heart |
 
 Each voice lands 4-5 times across the 26 Kokoro-narrated chapters — reasonably balanced,
-not a strict round-robin count. Ch.2-13 are built as of 2026-09-22; Ch.14-28 are assigned
-here but not yet scripted or synthesized.
+not a strict round-robin count. Ch.2-13 are built as of 2026-09-22; Ch.25 was built
+2026-09-25 as part of its Commands v3 rewrite; the rest of Ch.14-28 are assigned here but
+not yet scripted or synthesized.
 
 ## Everything else stays the same as Azure
 

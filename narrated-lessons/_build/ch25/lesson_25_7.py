@@ -3,126 +3,169 @@ BEATS = [
         "screen": '''<div class="scr-title">
       <div class="scr-eyebrow">Ch. 25.7 &middot; Command-Based Programming</div>
       <h1>Structuring a Command-Based Project</h1>
-      <p class="scr-sub">Putting Subsystems, Commands, the Scheduler, and Triggers together.</p>
+      <p class="scr-sub">The official WPILib 2027 v3 template &mdash; plus a guide to reading v2 code.</p>
     </div>''',
-        "speak": "WPILib's own project template organizes a command-based robot around four root-level classes, plus two subdirectories.",
+        "speak": "WPILib 2027's official Commands v3 project template organizes a robot around a thin Robot class, one class per opmode, and two packages.",
     },
     {
-        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">The Standard Project Shape</h2><ul>
-      <li><span class="num">1</span><span><strong>Robot</strong> &mdash; the entry point, kept intentionally thin.</span></li>
-      <li><span class="num">2</span><span><strong>RobotContainer</strong> &mdash; subsystems, commands, and trigger bindings.</span></li>
-      <li><span class="num">3</span><span><strong>Constants</strong> &mdash; every tunable number, in one place.</span></li>
-      <li><span class="num">4</span><span><strong>Subsystems / Commands</strong> &mdash; one file per class.</span></li>
+        "screen": '''<div class="scr-h2" style="text-align:center;">The Standard Project Shape</div>
+    <pre class="code"><code>Robot.java          the entry point: mechanisms, controllers, and the scheduler call
+ExampleAuto.java    an autonomous opmode, marked @Autonomous
+ExampleTeleop.java  a teleop opmode, marked @Teleop
+constants/          one small constants class per topic, like DriverConstants
+mechanisms/         one file per mechanism, like ExampleMechanism</code></pre>''',
+        "speak": "An opmode is one selectable mode of robot behavior, score and back up or two-piece auto for autonomous, driver teleop for teleop. The drive team picks one on the Driver Station before enabling. This OpModeRobot framework is new for 2027, so details may still shift before the season.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">Robot: Deliberately Thin</div>
+    <pre class="code"><code><span class="k">public class</span> Robot <span class="k">extends</span> OpModeRobot
+{
+    <span class="k">final</span> CommandXboxController driverController =
+        <span class="k">new</span> CommandXboxController(DriverConstants.DRIVER_CONTROLLER_PORT);
+    <span class="k">final</span> Intake intake = <span class="k">new</span> Intake(driverController.a(), driverController.b());
+    <span class="k">final</span> Drive drive = <span class="k">new</span> Drive();
+    <span class="k">final</span> Shooter shooter = <span class="k">new</span> Shooter();
+
+    <span class="k">public</span> Robot()
+    {
+        intake.setDefaultCommand(intake.stateMachineCommand()); <span class="c">// Lesson 25.5's machine</span>
+    }
+
+    <span class="me">@Override</span>
+    <span class="k">public void</span> robotPeriodic()
+    {
+        Scheduler.getDefault().run(); <span class="c">// the most important line in the project</span>
+    }
+}</code></pre>''',
+        "speak": "Robot extends WPILib's OpModeRobot. It creates the mechanisms and controllers, sets any default commands that apply everywhere, and runs the scheduler, and almost nothing else. The fields are final and package-private, so opmode classes in the same package can read robot dot intake, but code outside the package can't. Piling large amounts of imperative logic directly into Robot dot java fights the entire declarative philosophy from Lesson 25.1.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">One Class per Mode</div>
+    <pre class="code"><code><span class="me">@Teleop</span>
+<span class="k">public class</span> DriverTeleop <span class="k">implements</span> OpMode
+{
+    <span class="k">public</span> DriverTeleop(Robot robot)
+    {
+        robot.driverController.rightBumper().whileTrue(robot.intake.ejectCommand());
+    }
+}</code></pre>''',
+        "speak": "An opmode implements WPILib's OpMode interface and is marked with an annotation, Autonomous or Teleop, so the framework finds it automatically. Its constructor receives the Robot, and bindings made there belong to that opmode's scope, they only work while it's selected. Passing the Robot into each opmode's constructor is dependency injection, first seen in Lesson 25.2's factories.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">Autonomous: Scheduled in start()</div>
+    <pre class="code"><code><span class="me">@Autonomous</span>(name = <span class="s">"Drive Then Shoot"</span>)
+<span class="k">public class</span> DriveThenShoot <span class="k">implements</span> OpMode
+{
+    <span class="k">private final</span> Command routine;
+
+    <span class="k">public</span> DriveThenShoot(Robot robot)
+    {
+        routine = Autos.driveThenShoot(robot.drive, robot.shooter);
+    }
+
+    <span class="me">@Override</span>
+    <span class="k">public void</span> start()
+    {
+        Scheduler.getDefault().schedule(routine);
+    }
+}</code></pre>''',
+        "speak": "An autonomous opmode usually schedules its routine in start, which runs once, when the robot is enabled, not in the constructor, which runs when the opmode is merely selected while the robot is still disabled. Because the routine is scheduled inside the autonomous opmode, the scheduler cancels it automatically when autonomous ends, there's no separate cancel-in-teleop step to remember.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">Constants: One Place for Every Tunable Number</div>
+    <pre class="code"><code><span class="k">public final class</span> IntakeConstants
+{
+    <span class="k">public static final int</span> MOTOR_CHANNEL = 5; <span class="c">// PWM channel</span>
+    <span class="k">public static final double</span> INTAKE_SPEED = 0.8;
+}</code></pre>''',
+        "speak": "Every constant is public static final and named in ALL CAPS, the constants convention from Lesson 7.4, which WPILib 2027's own template uses too. The template gives each topic its own small class in the constants package. Changing one tunable value, like the intake speed, means editing exactly one line.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">Choosing How to Define a Reusable Command</div>
+    <pre class="code"><code><span class="k">public class</span> Shooter <span class="k">implements</span> Mechanism
+{
+    <span class="c">// built with run(...), so it implicitly requires this shooter</span>
+    <span class="k">public</span> Command spinUpCommand()
+    {
+        <span class="k">return</span> run(coroutine -&gt; {
+            setSpeed(ShooterConstants.SPIN_SPEED);
+            coroutine.park();
+        }).whenExited(() -&gt; setSpeed(0.0)).named(<span class="s">"Spin Up"</span>);
+    }
+}</code></pre>''',
+        "speak": "For a command tied to exactly one mechanism, an instance factory method like this one is the natural home. A command that needs to coordinate several mechanisms at once is better as a static factory, and a class that implements Command directly is for genuine internal state or unusually complex logic.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">A Static Factory for Multiple Mechanisms</div>
+    <pre class="code"><code><span class="k">public final class</span> Autos
+{
+    <span class="k">public static</span> Command driveThenShoot(Drive drive, Shooter shooter)
+    {
+        <span class="k">return</span> Command.sequence(
+            drive.driveForwardCommand().withTimeout(Seconds.of(2)),
+            shooter.shootCommand()
+        ).named(<span class="s">"Drive Then Shoot"</span>);
+    }
+}</code></pre>''',
+        "speak": "Here, driveThenShoot needs both the drive and the shooter, so it doesn't naturally belong to either one, a static factory taking both as parameters is dependency injection again, the method gets exactly what it needs, explicitly.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">Reading Commands v2 Code (2026 and Earlier)</div>
+    <pre class="code"><code><span class="c">// Commands v2 (2026 and earlier): for recognizing, not for writing new code</span>
+<span class="k">public class</span> Intake <span class="k">extends</span> SubsystemBase    <span class="c">// v3: implements Mechanism</span>
+{
+    <span class="k">public</span> Command runCommand()
+    {
+        <span class="c">// v3: run(...) with park(), plus whenExited(...), plus .named(...)</span>
+        <span class="k">return</span> startEnd(() -&gt; set(0.8), () -&gt; set(0.0));
+    }
+}
+
+<span class="k">public class</span> FeedUntilLoaded <span class="k">extends</span> Command  <span class="c">// v3: one factory method with one body</span>
+{
+    <span class="k">private final</span> Intake intake;
+
+    <span class="k">public</span> FeedUntilLoaded(Intake intake)
+    {
+        <span class="k">this</span>.intake = intake;
+        addRequirements(intake);              <span class="c">// v3: requirements come from the builder</span>
+    }
+
+    <span class="me">@Override</span>
+    <span class="k">public void</span> initialize() { intake.set(0.6); }            <span class="c">// v3: code before the loop</span>
+
+    <span class="me">@Override</span>
+    <span class="k">public boolean</span> isFinished() { <span class="k">return</span> intake.hasPiece(); } <span class="c">// v3: the loop condition</span>
+
+    <span class="me">@Override</span>
+    <span class="k">public void</span> end(<span class="k">boolean</span> interrupted) { intake.set(0.0); } <span class="c">// v3: whenExited(...)</span>
+}</code></pre>''',
+        "speak": "Commands v2 is what most existing team code, including our own older code, still uses, and it's what most examples online show. This section is for recognizing v2 code when you read it, not for writing new code. Here's one v2 mechanism and one v2 command class, extends SubsystemBase becomes implements Mechanism, addRequirements becomes requirements from the builder, and the four lifecycle methods, initialize, isFinished, end, all fold into one coroutine body.",
+        "continues": True,
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">v2 &rarr; v3, a Few More</h2><ul>
+      <li><span class="num">1</span><span><strong>CommandScheduler.getInstance()</strong> &rarr; <strong>Scheduler.getDefault()</strong></span></li>
+      <li><span class="num">2</span><span><strong>RobotContainer</strong> &rarr; <strong>Robot extends OpModeRobot</strong>, plus opmode classes</span></li>
+      <li><span class="num">3</span><span><strong>InterruptionBehavior</strong> &rarr; priorities; <strong>kMotorId</strong> &rarr; <strong>MOTOR_CHANNEL</strong></span></li>
     </ul></div>''',
-        "speak": "Robot is the entry point, kept intentionally thin. RobotContainer is where subsystems, commands, and trigger bindings actually get declared. Constants holds globally accessible constants, motor ports, PID gains, speeds. And Subsystems and Commands are subdirectories, one file per user-defined subsystem or command class.",
-    },
-    {
-        "screen": '''<pre class="code"><code><span class="k">public</span> Robot()
-{
-    robotContainer = <span class="k">new</span> RobotContainer(); <span class="c">// performs all the actual setup</span>
-}
-
-<span class="me">@Override</span>
-<span class="k">public void</span> robotPeriodic()
-{
-    CommandScheduler.getInstance().run(); <span class="c">// THE single most important line in the whole project</span>
-}</code></pre>''',
-        "speak": "Because command-based is declarative, Robot dot java should contain almost nothing beyond a handful of required calls. The constructor builds a RobotContainer, which does all the real setup. Robot periodic calls CommandScheduler dot get instance dot run, genuinely the single most important line in the whole project.",
-    },
-    {
-        "screen": '''<pre class="code"><code><span class="me">@Override</span>
-<span class="k">public void</span> autonomousInit()
-{
-    autonomousCommand = robotContainer.getAutonomousCommand();
-    <span class="k">if</span> (autonomousCommand != <span class="k">null</span>)
-    {
-        CommandScheduler.getInstance().schedule(autonomousCommand);
-    }
-}
-
-<span class="me">@Override</span>
-<span class="k">public void</span> teleopInit()
-{
-    <span class="k">if</span> (autonomousCommand != <span class="k">null</span>)
-    {
-        autonomousCommand.cancel(); <span class="c">// stop auto once teleop begins</span>
-    }
-}</code></pre>''',
-        "speak": "Two more overrides matter here. Autonomous init grabs the autonomous command from RobotContainer and schedules it. And teleop init cancels that autonomous command, so it doesn't keep running once teleop begins. Piling large amounts of imperative logic directly into Robot dot java fights the entire declarative philosophy from lesson 25.1, real setup belongs in RobotContainer.",
-        "continues": True,
-    },
-    {
-        "screen": '''<pre class="code"><code><span class="k">private final</span> <span class="t">Intake</span> intake = <span class="k">new</span> Intake();
-
-<span class="k">private void</span> configureBindings()
-{
-    driverController.b().whileTrue(intake.runIntakeCommand());
-}
-
-<span class="k">public</span> Command getAutonomousCommand()
-{
-    <span class="k">return</span> AutoRoutines.driveAndIntake(drivetrain, intake);
-}</code></pre>''',
-        "speak": "RobotContainer is where subsystems get declared as private fields, deliberately not global variables. That's dependency injection again, and it's deliberate: if subsystems were globally accessible, any code anywhere could call subsystem methods directly, completely bypassing the scheduler's resource-management guarantees, exactly the two-commands-fighting-over-one-motor problem command-based exists to prevent.",
-    },
-    {
-        "screen": '''<pre class="code"><code><span class="k">public static final class</span> <span class="t">IntakeConstants</span>
-{
-    <span class="k">public static final int</span> kMotorId = 5;
-    <span class="k">public static final double</span> kIntakeSpeed = 0.8;
-}</code></pre>''',
-        "speak": "Constants get grouped as public static final fields, often nested into classes per subsystem, one intake constants class holding a motor ID and an intake speed, for example. Public static final means it's globally reachable and impossible to accidentally reassign, which you'll remember from Chapter 23's discussion of final.",
-    },
-    {
-        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Choosing How to Define a Command</h2><ul>
-      <li><span class="num">1</span><span><strong>Instance factory</strong> &mdash; best for a command tied to exactly one subsystem.</span></li>
-      <li><span class="num">2</span><span><strong>Static factory</strong> &mdash; best when coordinating multiple subsystems at once.</span></li>
-      <li><span class="num">3</span><span><strong>Full Command subclass</strong> &mdash; best for genuine internal state or complex logic.</span></li>
-    </ul></div>''',
-        "speak": "When a command needs to be reused in more than one place, a button binding, an autonomous routine, a self-test, you've got a few options, each suited to a different case. An instance factory method on a single subsystem is best when the command is tied to exactly one subsystem. A static factory method is best when a command needs to coordinate multiple subsystems at once, so it doesn't naturally belong to any single one of them. And a full command subclass is best when a command needs its own genuine internal state, or unusually complex logic.",
-    },
-    {
-        "screen": '''<pre class="code" style="font-size:11.5px;"><code><span class="k">public class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">SubsystemBase</span>
-{
-    <span class="k">public</span> Command runIntakeCommand()
-    {
-        <span class="k">return this</span>.startEnd(() -&gt; <span class="k">this</span>.set(<span class="n">1.0</span>), () -&gt; <span class="k">this</span>.set(<span class="n">0.0</span>)); <span class="c">// implicitly requires this</span>
-    }
-}</code></pre>''',
-        "speak": "Here's what that looks like in code. Intake defines an instance factory, runIntakeCommand, tied to itself.",
-        "continues": True,
-    },
-    {
-        "screen": '''<pre class="code" style="font-size:11.5px;"><code><span class="k">public class</span> <span class="t">AutoRoutines</span>
-{
-    <span class="k">public static</span> Command driveAndIntake(<span class="t">Drivetrain</span> drivetrain, <span class="t">Intake</span> intake)
-    {
-        <span class="k">return</span> Commands.sequence(
-            Commands.parallel(drivetrain.driveCommand(<span class="n">0.5</span>, <span class="n">0.5</span>), intake.runIntakeCommand()).withTimeout(<span class="n">5.0</span>),
-            Commands.parallel(drivetrain.stopCommand(), intake.stopCommand())
-        );
-    }
-}</code></pre>''',
-        "speak": "And AutoRoutines defines a static factory, driveAndIntake, coordinating both a drivetrain and an intake together, exactly the multiple-subsystem case a static factory is built for.",
-        "continues": True,
+        "speak": "A few more mappings worth knowing by sight. CommandScheduler dot getInstance becomes Scheduler dot getDefault. RobotContainer becomes Robot extending OpModeRobot, plus separate opmode classes. Interruption behavior becomes priorities, and the old kMotorId constant style becomes ALL CAPS names like MOTOR underscore CHANNEL. Two more habits you'll spot: v2 commands don't have to be named, and v2 compositions return a finished command with no dot named at the end.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
-      <li><span class="check">!</span>Declaring subsystems as global or static fields for easy access.</li>
-      <li><span class="check">!</span>Forgetting to cancel the autonomous command in teleopInit().</li>
-      <li><span class="check">!</span>Scattering constants across many files instead of one Constants class.</li>
+      <li><span class="check">!</span>Declaring mechanisms as static fields for easy access.</li>
+      <li><span class="check">!</span>Scheduling an autonomous routine in the opmode's constructor instead of start().</li>
+      <li><span class="check">!</span>Pasting v2 code into a v3 project &mdash; translate it with the mapping table instead.</li>
     </ul></div>''',
-        "speak": "A few pitfalls to close on. Don't declare subsystems as global or static fields for easy access, that defeats the entire resource-management system's purpose, pass subsystems explicitly instead. Don't forget to cancel the autonomous command in teleop init, without it, an unfinished autonomous command can keep running, and keep its subsystem requirements locked, right into teleop. And don't scatter constants across many files instead of one Constants class, changing one tunable value should mean editing exactly one line, not hunting across the whole codebase.",
+        "speak": "A few pitfalls. Declaring mechanisms as static fields for easy access, that bypasses the scheduler's resource management entirely. Scheduling an autonomous routine in the opmode's constructor instead of start, the constructor runs while the robot is still disabled. And pasting v2 code straight into a v3 project, names like SubsystemBase and CommandScheduler simply don't exist in v3, translate the code instead of mixing the two frameworks.",
     },
     {
-        "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap: Ch. 25</h2><ul>
-      <li><span class="check">&#10003;</span>Command-based: describe what happens, once, and let the scheduler handle it.</li>
-      <li><span class="check">&#10003;</span>Commands: four lifecycle methods, built-in factories, composable.</li>
-      <li><span class="check">&#10003;</span>The scheduler runs a fixed 4-step order, every 20 milliseconds.</li>
-      <li><span class="check">&#10003;</span>State machines: an enum field, read and transitioned in periodic().</li>
-      <li><span class="check">&#10003;</span>Triggers bind conditions to commands, declaratively.</li>
-      <li><span class="check">&#10003;</span>Robot stays thin; RobotContainer, Constants, Subsystems, Commands hold the rest.</li>
+        "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
+      <li><span class="check">&#10003;</span>A thin Robot (extends OpModeRobot), one class per opmode, a constants and a mechanisms package.</li>
+      <li><span class="check">&#10003;</span>robotPeriodic() must call Scheduler.getDefault().run() &mdash; nothing works without it.</li>
+      <li><span class="check">&#10003;</span>Choose instance factory, static factory, or a Command class based on the command's shape.</li>
+      <li><span class="check">&#10003;</span>Most existing team code is still v2 &mdash; recognize it, translate it, don't mix it with v3.</li>
     </ul></div>''',
-        "speak": "So that's the whole of Chapter 25. Command-based programming describes what should happen, once, and lets the scheduler handle it every loop. Commands are built from four lifecycle methods, mostly through built-in factories, and compose into bigger commands. The scheduler runs a fixed four-step order, every 20 milliseconds. State machines use a single enum field, read and transitioned inside periodic. Triggers bind conditions to commands, declaratively, no manual polling. And a real project keeps Robot thin, with RobotContainer, Constants, Subsystems, and Commands holding everything else. That's command-based programming, start to finish. Nice work, see you in Chapter 26.",
+        "speak": "So: a thin Robot extending OpModeRobot, one class per opmode marked Autonomous or Teleop, a constants package and a mechanisms package, and that one robotPeriodic call that makes everything else in this entire chapter actually run. That wraps up Chapter 25. Great work making it through command-based programming, from a single command all the way to a full v3 project. See you in the next chapter.",
     },
 ]
