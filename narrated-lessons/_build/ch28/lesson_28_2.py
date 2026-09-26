@@ -26,7 +26,8 @@ BEATS = [
 {
     <span class="k">for</span> (<span class="t">int</span> j = <span class="n">0</span>; j &lt; sensorReadings.length - <span class="n">1</span>; j++)
     {
-        <span class="t">int</span> minIndex = j; <span class="c">// assume the current position holds the smallest remaining value</span>
+        <span class="c">// assume the current position holds the smallest remaining value</span>
+        <span class="t">int</span> minIndex = j;
         <span class="k">for</span> (<span class="t">int</span> k = j + <span class="n">1</span>; k &lt; sensorReadings.length; k++)
         {
             <span class="k">if</span> (sensorReadings[k] &lt; sensorReadings[minIndex])
@@ -47,14 +48,14 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">How Selection Sort Works</h2><ul>
-      <li><span class="num">1</span><span>The exact findMin pattern from Ch.9.5 &mdash; done once per position</span></li>
+      <li><span class="num">1</span><span>Ch.9.5&rsquo;s running min/max pattern, tracking the index &mdash; done once per position</span></li>
       <li><span class="num">2</span><span>Inner loop starts at <strong>j + 1</strong> &mdash; everything before j is already sorted</span></li>
     </ul></div>''',
-        "speak": "This is the exact find min pattern from lesson 9.5, just done once per position. The outer loop tracks which position is being filled next, and the inner loop always starts at j plus one, since everything before j is already sorted, and shouldn't be re-scanned.",
+        "speak": "This is lesson 9.5's running min or max pattern, but tracking the index of the best value instead of the value itself, done once per position. The outer loop tracks which position is being filled next, and the inner loop always starts at j plus one, since everything before j is already sorted, and shouldn't be re-scanned.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">How Selection Sort Works</h2><ul>
-      <li><span class="num">1</span><span>The exact findMin pattern from Ch.9.5 &mdash; done once per position</span></li>
+      <li><span class="num">1</span><span>Ch.9.5&rsquo;s running min/max pattern, tracking the index &mdash; done once per position</span></li>
       <li><span class="num">2</span><span>Inner loop starts at <strong>j + 1</strong> &mdash; everything before j is already sorted</span></li>
       <li><span class="num">3</span><span>Same work regardless of the data&rsquo;s initial order</span></li>
     </ul></div>''',
@@ -88,10 +89,12 @@ BEATS = [
         "screen": '''<div class="scr-h2" style="text-align:center;">insertionSort, continued</div>
     <pre class="code"><code>        <span class="k">while</span> (possibleIndex &gt; <span class="n">0</span> &amp;&amp; temp &lt; sensorReadings[possibleIndex - <span class="n">1</span>])
         {
-            sensorReadings[possibleIndex] = sensorReadings[possibleIndex - <span class="n">1</span>]; <span class="c">// shift right</span>
+            <span class="c">// shift right</span>
+            sensorReadings[possibleIndex] = sensorReadings[possibleIndex - <span class="n">1</span>];
             possibleIndex--;
         }
-        sensorReadings[possibleIndex] = temp; <span class="c">// place temp in its final spot for this pass</span>
+        <span class="c">// place temp in its final spot for this pass</span>
+        sensorReadings[possibleIndex] = temp;
     }
 }</code></pre>''',
         "speak": "The while loop keeps going as long as there's still room to the left, and temp is smaller than the element there. Each time, that larger element shifts right one spot, and possible index moves left. When the loop stops, temp drops into its final spot for this pass.",
@@ -124,6 +127,23 @@ BEATS = [
       <div class="namerow"><code>typical use</code><span class="nlabel">selection: predictable cost &nbsp;&middot;&nbsp; insertion: mostly-sorted data</span></div>
     </div>''',
         "speak": "Already sorted ascending? Selection sort gets no speedup, it's the same work every time, while insertion sort is much faster, because it's adaptive. Already sorted descending? Selection sort, still no change. Insertion sort, worst case, maximum shifting. So selection sort is simple, with a predictable cost, and insertion sort is a good fit when the data's already mostly sorted.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">In Real Code</div>
+    <p style="text-align:center;color:var(--ink-soft);font-size:15px;max-width:56ch;margin:0 auto;">Real Java code almost never hand-writes selection or insertion sort &mdash; the standard library already provides one.</p>''',
+        "speak": "One more thing before moving on. Real Java code almost never hand-writes selection or insertion sort. They're taught here to build the underlying intuition, not because production code should use them. The standard library already provides a sort, and it's both correct and far more heavily optimized than a hand-rolled version.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="t">int</span>[] readings = {<span class="n">31</span>, <span class="n">19</span>, <span class="n">42</span>, <span class="n">8</span>, <span class="n">3</span>};
+<span class="t">Arrays</span>.<span class="me">sort</span>(readings); <span class="c">// sorts the array in place, ascending</span>
+
+<span class="t">List</span>&lt;String&gt; names = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;(<span class="t">List</span>.<span class="me">of</span>(<span class="s">"Shooter"</span>, <span class="s">"Intake"</span>, <span class="s">"Climber"</span>));
+<span class="t">Collections</span>.<span class="me">sort</span>(names);   <span class="c">// sorts a List in place</span>
+names.<span class="me">sort</span>(<span class="k">null</span>);          <span class="c">// list.sort(...) does the same thing</span>
+
+<span class="c">// sort by a derived value instead of natural order</span>
+names.<span class="me">sort</span>(<span class="t">Comparator</span>.<span class="me">comparing</span>(String::length));</code></pre>''',
+        "speak": "Arrays dot sort handles arrays. Collections dot sort, or a List's own dot sort, handles a List. Both rely on natural ordering by default, which is why the element type has to implement Comparable, Strings and the wrapper classes already do, using compare to from lesson 6.1. And Comparator dot comparing builds a custom ordering on the fly, for when natural order isn't what you want, like sorting by length instead of alphabetically. One more everyday method: Arrays dot to String is how you actually see what's inside an array when you print it.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>

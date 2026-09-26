@@ -50,14 +50,14 @@ Use `public static final` constants (Ch.7.4, and the same `Constants` style as C
 ```java
 public class Climber
 {
-    public static final double kWinchSpeed = 0.5;
-    public static final double kLedBrightness = 0.5;
+    public static final double WINCH_SPEED = 0.5;
+    public static final double LED_BRIGHTNESS = 0.5;
 
     public static void main(String[] args)
     {
-        System.out.println("Extending at speed " + kWinchSpeed);
-        System.out.println("Retracting at speed " + kWinchSpeed);
-        System.out.println("Status light brightness " + kLedBrightness);
+        System.out.println("Extending at speed " + WINCH_SPEED);
+        System.out.println("Retracting at speed " + WINCH_SPEED);
+        System.out.println("Status light brightness " + LED_BRIGHTNESS);
     }
 }
 ```
@@ -69,7 +69,7 @@ The output is identical to Step 1 — refactoring for DRY changes where a value 
 Now the requested change is a single edit:
 
 ```java
-public static final double kWinchSpeed = 0.6;
+public static final double WINCH_SPEED = 0.6;
 ```
 
 With everything else left exactly as in Step 3, it prints:

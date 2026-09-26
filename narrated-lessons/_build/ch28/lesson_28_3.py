@@ -64,7 +64,7 @@ BEATS = [
       <li><span class="num">1</span><span>Each recursive call is pushed onto the <strong>call stack</strong></span></li>
       <li><span class="num">2</span><span>Each one gets its own independent copy of local variables and parameters</span></li>
     </ul></div>''',
-        "speak": "Each recursive call gets pushed onto the call stack, with its own independent copy of local variables and parameters. It's exactly the method call mechanics from chapter 4 and lesson 17.2, just calling the same method over and over.",
+        "speak": "Every method call, recursive or not, gets pushed onto the call stack, from chapter 12, with its own independent copy of local variables and parameters. Recursion just applies the same mechanics to a method calling itself repeatedly, so the stack ends up holding several frames for the same method at once, each with its own copy of n.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Tracing factorial(3)</div>
@@ -83,7 +83,7 @@ factorial(3) returns 3 * factorial(2) = 3 * 2 = 6</code></pre>
         "speak": "Then substitute the values back upward, starting from the base case. Factorial of one is one times one, which is one. Factorial of two is two times one, which is two. And factorial of three is three times two, so factorial of three returns six.",
     },
     {
-        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Why Bother? Loops for Trees</h2><ul>
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Why Bother? Recursion for Trees</h2><ul>
       <li><span class="num">1</span><span>Any loop can be rewritten recursively, and vice versa</span></li>
       <li><span class="num">2</span><span>Recursion shines on <strong>branching</strong> structures &mdash; &ldquo;trees&rdquo;</span></li>
     </ul></div>''',
@@ -108,10 +108,11 @@ factorial(3) returns 3 * factorial(2) = 3 * 2 = 6</code></pre>
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
       <li><span class="check">!</span>Forgetting the base case &mdash; the method is really just neverEnd() in disguise.</li>
+      <li><span class="check">!</span>A base case that can be skipped right over &mdash; a negative n sails past n == 0 and never stops.</li>
       <li><span class="check">!</span>A recursive call that doesn&rsquo;t shrink the problem &mdash; it never terminates, even with a base case.</li>
       <li><span class="check">!</span>Confusing &ldquo;elegant here&rdquo; with &ldquo;required here&rdquo; &mdash; flat, linear data is usually clearer as a loop.</li>
     </ul></div>''',
-        "speak": "Three pitfalls. Forgetting the base case entirely. Without one, every recursive method is really just never end in disguise: infinite recursion, and a crash. A recursive call that doesn't actually shrink the problem. If the argument passed to the next call doesn't move closer to the base case, the recursion never terminates, even with a base case defined. And confusing recursion is elegant here with recursion is required here. Simple linear traversal, an array, a String, is usually clearer and more efficient as a loop. Recursion earns its keep on genuinely branching structures.",
+        "speak": "Four pitfalls. Forgetting the base case entirely. Without one, every recursive method is really just never end in disguise: infinite recursion, and a crash. A base case that can be skipped right over. Factorial's base case only checks n equals zero. Call it with a negative n, and the recursive call sails past zero without ever matching it, recursing until Stack Overflow Error. A safer check is often a range, like n less than or equal to zero, rather than an exact match. A recursive call that doesn't actually shrink the problem. If the argument passed to the next call doesn't move closer to the base case, the recursion never terminates, even with a base case defined. And confusing recursion is elegant here with recursion is required here. Simple linear traversal, an array, a String, is usually clearer and more efficient as a loop. Recursion earns its keep on genuinely branching structures.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>

@@ -44,17 +44,19 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Linear Search Over a 2D Array</div>
-    <pre class="code"><code><span class="k">public</span> <span class="k">static</span> <span class="t">boolean</span> <span class="me">containsFault</span>(<span class="t">double</span>[][] moduleCurrents, <span class="t">double</span> faultValue)
+    <pre class="code"><code><span class="k">private</span> <span class="k">static</span> <span class="k">final</span> <span class="t">double</span> TOLERANCE = <span class="n">1e-9</span>;
+
+<span class="k">public</span> <span class="k">static</span> <span class="t">boolean</span> <span class="me">containsFault</span>(<span class="t">double</span>[][] moduleCurrents, <span class="t">double</span> faultValue)
 {
     <span class="k">for</span> (<span class="t">int</span> row = <span class="n">0</span>; row &lt; moduleCurrents.length; row++)
     {
-        <span class="k">for</span> (<span class="t">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[<span class="n">0</span>].length; col++)
+        <span class="k">for</span> (<span class="t">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[row].length; col++)
         {</code></pre>''',
-        "speak": "Extending linear search to a two-D array, from chapter 10, just means looping through every row, and searching within it. It's the same nested-loop shape from lesson 10.3: the outer loop walks the rows, and the inner loop walks the columns.",
+        "speak": "Extending linear search to a two-D array, from chapter 10, just means looping through every row, and searching within it. It's the same nested-loop shape from lesson 10.3: the outer loop walks the rows, and the inner loop walks the columns. Notice the inner bound reads moduleCurrents bracket row, not bracket zero: a jagged 2D array doesn't guarantee every row is the same length.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Linear Search Over a 2D Array, continued</div>
-    <pre class="code"><code>            <span class="k">if</span> (moduleCurrents[row][col] == faultValue)
+    <pre class="code"><code>            <span class="k">if</span> (Math.<span class="me">abs</span>(moduleCurrents[row][col] - faultValue) &lt; TOLERANCE)
             {
                 <span class="k">return</span> <span class="k">true</span>;
             }
@@ -62,7 +64,7 @@ BEATS = [
     }
     <span class="k">return</span> <span class="k">false</span>;
 }</code></pre>''',
-        "speak": "Inside, each cell gets compared against the fault value. The first match returns true, right away. If both loops run all the way through with no match, the method returns false.",
+        "speak": "Inside, each cell gets compared against the fault value, within a small tolerance, instead of with double equals. Comparing doubles for exact equality is exactly the trap lesson 2.4 warns about, and it applies here too. The first match within tolerance returns true, right away. If both loops run all the way through with no match, the method returns false.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Binary Search: Only Works on Sorted Data</h2><ul>
@@ -113,7 +115,7 @@ BEATS = [
       <div class="namerow"><code>str.compareTo(other)</code><span class="nlabel">negative, zero, or positive</span></div>
     </div>
     <p style="text-align:center;color:var(--ink-soft);font-size:14px;max-width:52ch;margin:14px auto 0;">Sorts before, equal to, or after &mdash; &lt; and &gt; only work on primitives.</p>''',
-        "speak": "For an array of Strings, compare to replaces less-than and greater-than, which only work on primitives. Calling compare to on one string, passing in another, returns negative, zero, or positive, depending on whether the first string sorts before, equal to, or after the other one.",
+        "speak": "For an array of Strings, compare to, from lesson 6.1, replaces less-than and greater-than, which only work on primitives. Calling compare to on one string, passing in another, returns negative, zero, or positive, depending on whether the first string sorts before, equal to, or after the other one.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Why Binary Search Is So Much Faster</h2><ul>

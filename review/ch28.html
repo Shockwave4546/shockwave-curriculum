@@ -115,13 +115,15 @@ const DATA = {
       <p>Searching for a <code class="inline">String</code> (like an autonomous route name) needs <code class="inline">.equals()</code> instead of <code class="inline">==</code> (Lesson 6.1/13). Linear search's slowest case is a target that isn't present at all; its fastest case is the target sitting at index 0.</p>
       <h2>Linear Search Over a 2D Array</h2>
       <p>Extending linear search to a 2D array (Ch.10) just means looping through every row and searching within it:</p>
-      <pre class="code"><code><span class="k">public static boolean</span> <span class="me">containsFault</span>(<span class="k">double</span>[][] moduleCurrents, <span class="k">double</span> faultValue)
+      <pre class="code"><code><span class="k">private static final double</span> TOLERANCE = <span class="n">1e-9</span>;
+
+<span class="k">public static boolean</span> <span class="me">containsFault</span>(<span class="k">double</span>[][] moduleCurrents, <span class="k">double</span> faultValue)
 {
     <span class="k">for</span> (<span class="k">int</span> row = <span class="n">0</span>; row &lt; moduleCurrents.length; row++)
     {
-        <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[<span class="n">0</span>].length; col++)
+        <span class="k">for</span> (<span class="k">int</span> col = <span class="n">0</span>; col &lt; moduleCurrents[row].length; col++)
         {
-            <span class="k">if</span> (moduleCurrents[row][col] == faultValue)
+            <span class="k">if</span> (Math.<span class="me">abs</span>(moduleCurrents[row][col] - faultValue) &lt; TOLERANCE)
             {
                 <span class="k">return true</span>;
             }
@@ -129,6 +131,7 @@ const DATA = {
     }
     <span class="k">return false</span>;
 }</code></pre>
+      <p>The inner loop bound is <code class="inline">moduleCurrents[row].length</code>, not <code class="inline">moduleCurrents[0].length</code> — a jagged 2D array (Ch.10) doesn't guarantee every row is the same length. And the comparison uses a small <code class="inline">TOLERANCE</code> constant instead of <code class="inline">==</code> — comparing <code class="inline">double</code>s for exact equality is exactly the trap Lesson 2.4 warns about.</p>
       <h2>Binary Search: Only Works on Sorted Data</h2>
       <p><strong>Binary search</strong> is dramatically faster than linear search, but only works on data that's already <strong>sorted</strong> — like looking up a name in a phone book by jumping to roughly the right spot. It keeps <code class="inline">left</code>/<code class="inline">right</code> bounds, checks the middle element, and eliminates half the remaining range every time:</p>
       <pre class="code"><code><span class="k">public static int</span> <span class="me">binarySearch</span>(<span class="k">int</span>[] sortedTemps, <span class="k">int</span> target)
@@ -153,7 +156,7 @@ const DATA = {
     }
     <span class="k">return</span> -<span class="n">1</span>; <span class="c">// left > right means the range is exhausted — not found</span>
 }</code></pre>
-      <p>For a <code class="inline">String[]</code>, <code class="inline">compareTo</code> replaces <code class="inline">&lt;</code>/<code class="inline">&gt;</code> (which only work on primitives).</p>
+      <p>For a <code class="inline">String[]</code>, <code class="inline">compareTo</code> (Ch.6.1) replaces <code class="inline">&lt;</code>/<code class="inline">&gt;</code> (which only work on primitives).</p>
       <h2>Why Binary Search Is So Much Faster</h2>
       <table class="cmp"><thead><tr><th>Elements (n)</th><th>Linear Search</th><th>Binary Search</th></tr></thead><tbody>
         <tr><td>8</td><td>8</td><td>4</td></tr>
@@ -162,6 +165,7 @@ const DATA = {
         <tr><td>500</td><td>500</td><td>~9</td></tr>
       </tbody></table>
       <p>Doubling the data size costs linear search twice the work, but only costs binary search <em>one more comparison</em>. This growth-rate distinction — O(n) vs. O(log n) in formal terms — is why sorted, frequently-searched data is worth keeping sorted specifically so binary search stays available.</p>
+      <p><em>(Aside: <code class="inline">(left + right) / 2</code> can theoretically overflow <code class="inline">int</code> on an enormous array; the overflow-safe form is <code class="inline">left + (right - left) / 2</code>. Not a concern at these array sizes, but worth knowing it exists.)</em></p>
     `,
     pitfalls: [
       "Running binary search on unsorted data. It will return wrong or missing results — binary search's entire correctness depends on the data already being sorted.",
@@ -189,7 +193,8 @@ const DATA = {
 {
     <span class="k">for</span> (<span class="k">int</span> j = <span class="n">0</span>; j &lt; sensorReadings.length - <span class="n">1</span>; j++)
     {
-        <span class="k">int</span> minIndex = j; <span class="c">// assume the current position holds the smallest remaining value</span>
+        <span class="c">// assume the current position holds the smallest remaining value</span>
+        <span class="k">int</span> minIndex = j;
         <span class="k">for</span> (<span class="k">int</span> k = j + <span class="n">1</span>; k &lt; sensorReadings.length; k++)
         {
             <span class="k">if</span> (sensorReadings[k] &lt; sensorReadings[minIndex])
@@ -202,7 +207,7 @@ const DATA = {
         sensorReadings[minIndex] = temp;
     }
 }</code></pre>
-      <p>This is the exact <code class="inline">findMin</code> pattern from Ch.9.5, done once per position. Selection sort takes the same amount of work regardless of the data's initial order — it always scans the entire unsorted remainder to find the minimum, every single pass.</p>
+      <p>This is Ch.9.5's running min/max pattern, tracking the index instead of the value, done once per position. Selection sort takes the same amount of work regardless of the data's initial order — it always scans the entire unsorted remainder to find the minimum, every single pass.</p>
       <h2>Insertion Sort</h2>
       <p><strong>Insertion sort</strong> instead takes each element and inserts it into its correct position among the already-sorted elements to its left, shifting larger values right to make room:</p>
       <pre class="code"><code><span class="k">public static void</span> <span class="me">insertionSort</span>(<span class="k">double</span>[] sensorReadings)
@@ -213,10 +218,12 @@ const DATA = {
         <span class="k">int</span> possibleIndex = j;
         <span class="k">while</span> (possibleIndex &gt; <span class="n">0</span> &amp;&amp; temp &lt; sensorReadings[possibleIndex - <span class="n">1</span>])
         {
-            sensorReadings[possibleIndex] = sensorReadings[possibleIndex - <span class="n">1</span>]; <span class="c">// shift right</span>
+            <span class="c">// shift right</span>
+            sensorReadings[possibleIndex] = sensorReadings[possibleIndex - <span class="n">1</span>];
             possibleIndex--;
         }
-        sensorReadings[possibleIndex] = temp; <span class="c">// place temp in its final spot for this pass</span>
+        <span class="c">// place temp in its final spot for this pass</span>
+        sensorReadings[possibleIndex] = temp;
     }
 }</code></pre>
       <p>Unlike selection sort, insertion sort is <strong>adaptive</strong> — if the data is already (or nearly) sorted, the <code class="inline">while</code> loop's condition fails almost immediately for most elements, doing very little actual shifting. Data sorted descending is insertion sort's worst case.</p>
@@ -226,6 +233,18 @@ const DATA = {
         <tr><td>Already sorted descending</td><td>No speedup</td><td>Worst case</td></tr>
         <tr><td>Typical use</td><td>Simple, predictable cost</td><td>Good on mostly-sorted data</td></tr>
       </tbody></table>
+      <h2>In Real Code</h2>
+      <p>Real Java code almost never hand-writes selection or insertion sort — the standard library already provides one:</p>
+      <pre class="code"><code><span class="k">int</span>[] readings = {<span class="n">31</span>, <span class="n">19</span>, <span class="n">42</span>, <span class="n">8</span>, <span class="n">3</span>};
+<span class="t">Arrays</span>.<span class="me">sort</span>(readings); <span class="c">// sorts the array in place, ascending</span>
+
+<span class="t">List</span>&lt;String&gt; names = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;(<span class="t">List</span>.<span class="me">of</span>(<span class="s">"Shooter"</span>, <span class="s">"Intake"</span>, <span class="s">"Climber"</span>));
+<span class="t">Collections</span>.<span class="me">sort</span>(names);   <span class="c">// sorts a List in place</span>
+names.<span class="me">sort</span>(<span class="k">null</span>);          <span class="c">// list.sort(...) does the same thing</span>
+
+<span class="c">// sort by a derived value instead of natural order</span>
+names.<span class="me">sort</span>(<span class="t">Comparator</span>.<span class="me">comparing</span>(String::length));</code></pre>
+      <p>Sorting by natural order requires the element type implement <code class="inline">Comparable</code> (<code class="inline">String</code> and the wrapper classes already do — <code class="inline">compareTo</code>, Ch.6.1, is what they compare with). <code class="inline">Arrays.toString(...)</code> is the everyday way to print an array's contents usefully.</p>
     `,
     pitfalls: [
       "Starting selection sort's inner loop at index 0 instead of j + 1. That re-scans (and can undo) already-correctly-placed elements from earlier passes.",
@@ -267,7 +286,7 @@ const DATA = {
     }
 }</code></pre>
       <h2>Tracing: The Call Stack</h2>
-      <p>Each recursive call gets pushed onto the <strong>call stack</strong> with its own independent copy of local variables and parameters. Tracing <code class="inline">factorial(3)</code>:</p>
+      <p>Every method call — recursive or not — gets pushed onto the <strong>call stack</strong> (Ch.12) with its own independent copy of local variables and parameters. Recursion just applies the same mechanics to a method calling itself repeatedly, so the stack ends up holding several frames for the same method at once. Tracing <code class="inline">factorial(3)</code>:</p>
       <pre class="code"><code>factorial(3) returns 3 * factorial(2)
 factorial(2) returns 2 * factorial(1)
 factorial(1) returns 1 * factorial(0)
@@ -277,11 +296,12 @@ factorial(0) returns 1</code></pre>
 factorial(2) returns 2 * factorial(1) = 2 * 1 = 2
 factorial(3) returns 3 * factorial(2) = 3 * 2 = 6</code></pre>
       <p><code class="inline">factorial(3)</code> returns <code class="inline">6</code>.</p>
-      <h2>Why Bother? Loops for Trees</h2>
+      <h2>Why Bother? Recursion for Trees</h2>
       <p>Any loop can, in principle, be rewritten recursively, and vice versa — so why use recursion at all? It shines on <strong>branching</strong> structures ("trees") rather than simple linear ones. A useful mental model: a <code class="inline">for</code> loop for a linear structure like an array (Ch.9), nested loops for a 2D array (Ch.10), and recursion for something that branches — like a nested equipment group that can itself contain further nested groups, where each nested group is <em>the same problem</em>, just smaller.</p>
     `,
     pitfalls: [
       "Forgetting the base case entirely. Without one, every recursive method is really just neverEnd() in disguise — infinite recursion and a crash.",
+      "A base case that can be skipped right over. factorial's base case only checks n == 0 — call it with a negative n (or with a step size that never lands exactly on the base value) and the recursive call sails past 0 without ever matching it, recursing until StackOverflowError. A safer check is often a range, like n <= 0, rather than an exact match.",
       "A recursive call that doesn't actually shrink the problem. If the argument passed to the next call doesn't move closer to the base case, the recursion never terminates, even with a base case defined.",
       "Confusing \"recursion is elegant here\" with \"recursion is required here.\" Simple linear traversal (an array, a String) is usually clearer and more efficient as a loop — recursion earns its keep on genuinely branching structures."
     ],
@@ -298,7 +318,7 @@ factorial(3) returns 3 * factorial(2) = 3 * 2 = 6</code></pre>
     ref: "28.4 — Recursive Searching and Sorting (CSA 4.17)",
     body: `
       <div class="optbadge">⚠ Optional</div>
-      <p>Closes out the curriculum by combining Lessons 28.1-28.3: the same searching/sorting ideas, rewritten recursively.</p>
+      <p>Combines Lessons 28.1-28.3: the same searching/sorting ideas, rewritten recursively.</p>
       <h2>Recursive Binary Search</h2>
       <p>The iterative binary search from Lesson 28.1 tracks <code class="inline">left</code>/<code class="inline">right</code> bounds in loop variables. A recursive version instead passes the shrinking range as parameters:</p>
       <pre class="code"><code><span class="k">public static int</span> <span class="me">recursiveBinarySearch</span>(<span class="k">int</span>[] elements, <span class="k">int</span> start, <span class="k">int</span> end, <span class="k">int</span> target)
@@ -314,14 +334,16 @@ factorial(3) returns 3 * factorial(2) = 3 * 2 = 6</code></pre>
     }
     <span class="k">else if</span> (target &lt; elements[middle])
     {
-        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, start, middle - <span class="n">1</span>, target); <span class="c">// search the left half</span>
+        <span class="c">// search the left half</span>
+        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, start, middle - <span class="n">1</span>, target);
     }
     <span class="k">else</span>
     {
-        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, middle + <span class="n">1</span>, end, target);   <span class="c">// search the right half</span>
+        <span class="c">// search the right half</span>
+        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, middle + <span class="n">1</span>, end, target);
     }
 }</code></pre>
-      <p>This has <strong>two base cases</strong>: a match at the middle, or an exhausted range. Removing the <code class="inline">end &lt; start</code> check would mean a not-found search keeps recursing into an already-empty range forever — exactly the missing-base-case bug from Lesson 28.3.</p>
+      <p>This has <strong>two base cases</strong>: a match at the middle, or an exhausted range. Removing the <code class="inline">end &lt; start</code> check wouldn't cause a true infinite loop — Java would run out of room first: a not-found search keeps calling itself into an already-empty range until it crashes with <code class="inline">StackOverflowError</code> (or, if the array is empty to begin with, an immediate <code class="inline">ArrayIndexOutOfBoundsException</code>) — exactly the missing-base-case bug from Lesson 28.3.</p>
       <h2>Merge Sort: A Third Sorting Algorithm</h2>
       <p>Selection sort and insertion sort (Lesson 28.2) both cost roughly n² in the worst case. <strong>Merge sort</strong> is a <strong>divide-and-conquer</strong> algorithm — like binary search, it splits the problem in half repeatedly, which makes it substantially faster on large data (roughly n log n instead of n²):</p>
       <ol>
@@ -344,14 +366,47 @@ factorial(3) returns 3 * factorial(2) = 3 * 2 = 6</code></pre>
     <span class="me">mergeSortHelper</span>(elements, middle + <span class="n">1</span>, to, temp);    <span class="c">// recursively sort the right half</span>
     <span class="me">merge</span>(elements, from, middle, to, temp);            <span class="c">// combine the two sorted halves</span>
 }</code></pre>
+      <p><code class="inline">merge</code> itself isn't recursive — it's the ordinary loop-based step that does the actual combining, using <code class="inline">temp</code> as scratch space:</p>
+      <pre class="code"><code><span class="k">private static void</span> <span class="me">merge</span>(<span class="k">int</span>[] elements, <span class="k">int</span> from, <span class="k">int</span> mid, <span class="k">int</span> to, <span class="k">int</span>[] temp)
+{
+    <span class="k">int</span> i = from;     <span class="c">// next unmerged element in the left half</span>
+    <span class="k">int</span> j = mid + <span class="n">1</span>;  <span class="c">// next unmerged element in the right half</span>
+    <span class="k">int</span> k = from;     <span class="c">// next open slot in temp</span>
+
+    <span class="k">while</span> (i &lt;= mid &amp;&amp; j &lt;= to)
+    {
+        <span class="k">if</span> (elements[i] &lt;= elements[j])
+        {
+            temp[k++] = elements[i++];
+        }
+        <span class="k">else</span>
+        {
+            temp[k++] = elements[j++];
+        }
+    }
+    <span class="k">while</span> (i &lt;= mid)   <span class="c">// copy over whatever's left of the left half</span>
+    {
+        temp[k++] = elements[i++];
+    }
+    <span class="k">while</span> (j &lt;= to)    <span class="c">// copy over whatever's left of the right half</span>
+    {
+        temp[k++] = elements[j++];
+    }
+    <span class="k">for</span> (<span class="k">int</span> m = from; m &lt;= to; m++) <span class="c">// copy the merged range back into elements</span>
+    {
+        elements[m] = temp[m];
+    }
+}</code></pre>
+      <p><code class="inline">merge</code> walks both sorted halves with two pointers, always taking the smaller of the two elements it's currently pointing at into <code class="inline">temp</code>. Once one half runs out, whatever's left of the other half is already in order, so it just gets copied straight over, and the merged range is copied back into <code class="inline">elements</code>.</p>
       <p>Tracing the split-then-merge structure for <code class="inline">{86, 3, 43, 5}</code>:</p>
       <pre class="code"><code>Split:  { {86, 3} , {43, 5} }
 Split:  { { {86}, {3} } , { {43}, {5} } }   &lt;- single elements: base case reached
 Merge:  { {3, 86} , {5, 43} }
 Merge:  { 3, 5, 43, 86 }</code></pre>
-      <p>Because its divide-and-conquer approach scales so much better than n² sorting, merge sort is the fastest of the three algorithms in this curriculum, most of the time, especially as the data set grows.</p>
+      <p>Like selection sort, merge sort's structure doesn't depend on the input's initial order — it always splits and merges the same way. But because its divide-and-conquer approach scales so much better than n² sorting, merge sort is the fastest of the three algorithms in this curriculum, most of the time, especially as the data set grows.</p>
       <h2>Iterative vs. Recursive: Same Algorithm, Different Shape</h2>
       <p>Binary search exists in both forms — a good concrete reminder of Lesson 28.3's point that many algorithms can be written either way. Iteration is usually preferred in real code (no risk of <code class="inline">StackOverflowError</code>, generally a bit more efficient) — but a recursive version can be more compact and can make a divide-and-conquer structure much more natural to express.</p>
+      <p><em>(Aside: like Lesson 28.1's <code class="inline">(left + right) / 2</code>, this lesson's <code class="inline">(start + end) / 2</code> and <code class="inline">(from + to) / 2</code> have the same theoretical overflow-safe alternative, <code class="inline">left + (right - left) / 2</code>.)</em></p>
     `,
     pitfalls: [
       "Forgetting either base case in recursive binary search. Both the \"found it\" and \"range exhausted\" cases are needed — missing the exhausted-range check risks infinite recursion on a not-found search.",

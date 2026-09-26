@@ -94,34 +94,119 @@ const DATA = {
     title: "Architecture Takeaways",
     ref: "26 — Architecture Takeaways (DRY/YAGNI/SOLID) (no citation — deck-original content)",
     body: `
-      <p>Java II opened (Ch.14) with why patterns matter at all. This closing chapter names the general software-engineering principles that everything since — inheritance, interfaces, the IO-Layer Pattern, factories, builders, command-based itself — has actually been demonstrating in FRC-specific form. These aren't FRC-specific or Java-specific ideas; they're widely known across the software industry, which is exactly why they're worth naming explicitly.</p>
+      <p>Java II opened (Ch.14) with why patterns matter at all. This chapter closes out Java II's core sequence by naming the general software-engineering principles that everything since — inheritance, interfaces, the IO-Layer Pattern, factories, builders, command-based itself — has actually been demonstrating in FRC-specific form. These aren't FRC-specific or Java-specific ideas; they're widely known across the software industry, which is exactly why they're worth naming explicitly.</p>
       <h2>DRY: Don't Repeat Yourself</h2>
       <p>If the same logic (or the same literal value) appears in more than one place, a future change has to remember to update every copy — and it's easy to miss one. The fix is almost always one of the tools this curriculum already covered: pull shared behavior into a common superclass (Ch.17), a shared utility method, or a single <code class="inline">Constants</code> class (Ch.25.7) instead of copy-pasting a magic number into five different files.</p>
       <pre class="code"><code><span class="c">// NOT DRY — the same speed value is hardcoded in three places</span>
-intakeMotor.<span class="me">set</span>(<span class="n">0.8</span>);
-indexerMotor.<span class="me">set</span>(<span class="n">0.8</span>);
-feederMotor.<span class="me">set</span>(<span class="n">0.8</span>);
+intakeMotor.<span class="me">setThrottle</span>(<span class="n">0.8</span>);
+indexerMotor.<span class="me">setThrottle</span>(<span class="n">0.8</span>);
+feederMotor.<span class="me">setThrottle</span>(<span class="n">0.8</span>);
 
 <span class="c">// DRY — one named constant, one place to change it</span>
-intakeMotor.<span class="me">set</span>(IntakeConstants.kRollerSpeed);
-indexerMotor.<span class="me">set</span>(IntakeConstants.kRollerSpeed);
-feederMotor.<span class="me">set</span>(IntakeConstants.kRollerSpeed);</code></pre>
+intakeMotor.<span class="me">setThrottle</span>(IntakeConstants.ROLLER_SPEED);
+indexerMotor.<span class="me">setThrottle</span>(IntakeConstants.ROLLER_SPEED);
+feederMotor.<span class="me">setThrottle</span>(IntakeConstants.ROLLER_SPEED);</code></pre>
       <h2>YAGNI: You Ain't Gonna Need It</h2>
       <p>Don't build flexibility or abstraction for a requirement that doesn't exist yet — every layer of abstraction (a <code class="inline">Builder</code>, Ch.22; a generic type, Ch.16; an extra interface) has a real cost in complexity, and that cost is only worth paying once the actual need shows up. A <code class="inline">Builder</code> for a 2-parameter class, or a factory (Ch.21) that only ever returns one concrete implementation, is YAGNI in practice: solving a problem the code doesn't actually have yet, at the expense of a codebase that's harder to read today for a payoff that may never arrive.</p>
+      <pre class="code"><code><span class="c">// YAGNI violation — a Builder for a class that only ever needs two values</span>
+<span class="k">public class</span> <span class="t">FieldPosition</span>
+{
+    <span class="k">public static class</span> <span class="t">Builder</span>
+    {
+        <span class="k">private double</span> x, y;
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">x</span>(<span class="k">double</span> x) { <span class="k">this</span>.x = x; <span class="k">return this</span>; }
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">y</span>(<span class="k">double</span> y) { <span class="k">this</span>.y = y; <span class="k">return this</span>; }
+        <span class="k">public</span> <span class="t">FieldPosition</span> <span class="me">build</span>() { <span class="k">return new</span> <span class="t">FieldPosition</span>(x, y); }
+    }
+    <span class="c">// ...</span>
+}
+
+<span class="c">// YAGNI-respecting — a two-parameter constructor is all this ever needs</span>
+<span class="k">public class</span> <span class="t">FieldPosition</span>
+{
+    <span class="k">public</span> <span class="t">FieldPosition</span>(<span class="k">double</span> x, <span class="k">double</span> y) { <span class="c">/* ... */</span> }
+}</code></pre>
       <h2>SOLID: Five Principles, One Letter Each</h2>
       <p>SOLID isn't a single idea — it's an acronym for five distinct principles, each addressing a different way a class or module's design can go wrong. All five show up somewhere in this curriculum already, even though they weren't named until now:</p>
-      <p><strong>S — Single Responsibility.</strong> A class should have one, and only one, reason to change. A <code class="inline">Subsystem</code> (Ch.20/25) that only manages one piece of hardware is a direct application of this.</p>
+      <p><strong>S — Single Responsibility.</strong> A class should have one, and only one, reason to change. A <code class="inline">Mechanism</code> (Ch.25) that only manages one piece of hardware is a direct application of this.</p>
+      <pre class="code"><code><span class="c">// Violates SRP — two unrelated reasons to change live in the same class</span>
+<span class="k">public class</span> <span class="t">MatchReport</span>
+{
+    <span class="k">public double</span> <span class="me">averageCycleTime</span>(<span class="k">double</span>[] cycleTimes) { <span class="c">/* ... */</span> }
+    <span class="k">public void</span> <span class="me">printToConsole</span>(<span class="k">double</span> average) { <span class="c">/* ... */</span> }
+}
+
+<span class="c">// Follows SRP — each class now has exactly one reason to change</span>
+<span class="k">public class</span> <span class="t">CycleTimeCalculator</span>
+{
+    <span class="k">public double</span> <span class="me">averageCycleTime</span>(<span class="k">double</span>[] cycleTimes) { <span class="c">/* ... */</span> }
+}
+<span class="k">public class</span> <span class="t">ReportPrinter</span>
+{
+    <span class="k">public void</span> <span class="me">printToConsole</span>(<span class="k">double</span> average) { <span class="c">/* ... */</span> }
+}</code></pre>
       <p><strong>O — Open/Closed.</strong> A module should be open for extension, but closed for modification. The IO-Layer Pattern (Ch.20) is a textbook example: adding a brand-new <code class="inline">IntakeIOSim</code> implementation never requires touching <code class="inline">Intake</code>'s own logic, since both honor the same <code class="inline">IntakeIO</code> contract.</p>
       <p><strong>L — Liskov Substitution.</strong> A subclass should be usable anywhere its superclass is expected, without breaking anything — exactly the is-a substitution test from Ch.17.1.</p>
-      <p><strong>I — Interface Segregation.</strong> Don't force a class to implement methods it doesn't actually need, just because they're bundled into one large interface. Several small, focused interfaces beat one bloated one.</p>
-      <p><strong>D — Dependency Inversion.</strong> Code should depend on abstractions (interfaces), not concrete implementations. Every constructor that accepts an <code class="inline">IntakeIO</code> instead of hardcoding <code class="inline">new IntakeIOSparkMax()</code> directly (Ch.20/21), and every static factory returning an interface type rather than a specific class (Ch.21), is dependency inversion in action.</p>
+      <p><strong>I — Interface Segregation (Ch.19).</strong> Don't force a class to implement methods it doesn't actually need, just because they're bundled into one large interface. Several small, focused interfaces beat one bloated one.</p>
+      <pre class="code"><code><span class="c">// Violates ISP — every implementer is forced to have a setAngle() method,</span>
+<span class="c">// even ones that can't rotate</span>
+<span class="k">public interface</span> <span class="t">PoweredDevice</span>
+{
+    <span class="k">void</span> <span class="me">setThrottle</span>(<span class="k">double</span> speed);
+    <span class="k">void</span> <span class="me">setAngle</span>(<span class="k">double</span> degrees);
+}
+
+<span class="k">public class</span> <span class="t">Roller</span> <span class="k">implements</span> <span class="t">PoweredDevice</span>
+{
+    <span class="k">public void</span> <span class="me">setThrottle</span>(<span class="k">double</span> speed) { <span class="c">/* ... */</span> }
+
+    <span class="k">public void</span> <span class="me">setAngle</span>(<span class="k">double</span> degrees) <span class="c">// forced, unused</span>
+    {
+        <span class="k">throw new</span> <span class="t">UnsupportedOperationException</span>(<span class="s">"can't rotate"</span>);
+    }
+}
+
+<span class="c">// Follows ISP — split into focused interfaces; implement only what you actually support</span>
+<span class="k">public interface</span> <span class="t">Throttled</span>
+{
+    <span class="k">void</span> <span class="me">setThrottle</span>(<span class="k">double</span> speed);
+}
+<span class="k">public interface</span> <span class="t">Rotatable</span>
+{
+    <span class="k">void</span> <span class="me">setAngle</span>(<span class="k">double</span> degrees);
+}
+
+<span class="k">public class</span> <span class="t">Roller</span> <span class="k">implements</span> <span class="t">Throttled</span>
+{
+    <span class="k">public void</span> <span class="me">setThrottle</span>(<span class="k">double</span> speed) { <span class="c">/* ... */</span> }
+}</code></pre>
+      <p><strong>D — Dependency Inversion.</strong> Code should depend on abstractions (interfaces), not concrete implementations. Every constructor that accepts an <code class="inline">IntakeIO</code> instead of hardcoding <code class="inline">new IntakeIOReal()</code> directly (Ch.20/21), and every static factory returning an interface type rather than a specific class (Ch.21), is dependency inversion in action.</p>
+      <pre class="code"><code><span class="c">// Violates DIP — IntakeController is hardcoded to one concrete implementation</span>
+<span class="k">public class</span> <span class="t">IntakeController</span>
+{
+    <span class="k">private final</span> <span class="t">IntakeIOReal</span> io = <span class="k">new</span> <span class="t">IntakeIOReal</span>(); <span class="c">// depends on a concrete class</span>
+    <span class="k">public void</span> <span class="me">run</span>(<span class="k">double</span> speed) { io.<span class="me">setThrottle</span>(speed); }
+}
+
+<span class="c">// Follows DIP — IntakeController depends on an abstraction, not a concrete class</span>
+<span class="k">public class</span> <span class="t">IntakeController</span>
+{
+    <span class="k">private final</span> <span class="t">IntakeIO</span> io;
+
+    <span class="k">public</span> <span class="t">IntakeController</span>(<span class="t">IntakeIO</span> io) <span class="c">// any IntakeIO implementation works</span>
+    {
+        <span class="k">this</span>.io = io;
+    }
+
+    <span class="k">public void</span> <span class="me">run</span>(<span class="k">double</span> speed) { io.<span class="me">setThrottle</span>(speed); }
+}</code></pre>
       <h2>Why Name These at All</h2>
       <p>None of DRY, YAGNI, or SOLID are FRC-specific or even Java-specific — they're widely-used vocabulary across the whole software industry, which is exactly the "common language" benefit Ch.14 opened with. Being able to say "this violates single responsibility" or "that's YAGNI" communicates a specific, well-understood critique in a few words, to any programmer familiar with these terms — not just people who've read this particular curriculum.</p>
     `,
     pitfalls: [
       "Applying DRY so aggressively that unrelated code gets forced together. Two pieces of code that happen to look similar today, but for unrelated reasons, don't necessarily belong in one shared abstraction — premature DRY-ing can create awkward, tangled dependencies between things that should stay separate.",
       "Treating YAGNI as an excuse to never plan ahead. YAGNI argues against building unneeded flexibility <em>now</em> — it doesn't mean ignoring architecture altogether; the IO-Layer Pattern (Ch.20) is worth its overhead in FRC precisely because simulation and hardware-swapping are real, common needs, not speculative ones.",
-      "Only remembering the \"S\" of SOLID. The deck's own shorthand (\"one class, one responsibility\") is genuinely just Single Responsibility — SOLID names four more distinct principles beyond that one."
+      "Only remembering the \"S\" of SOLID. The common shorthand (\"one class, one responsibility\") is genuinely just Single Responsibility — SOLID names four more distinct principles beyond that one."
     ],
     takeaways: [
       "DRY: don't duplicate logic or values — a single source of truth (a constant, a shared method, a superclass) means one place to fix or change something.",

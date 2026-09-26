@@ -5,7 +5,7 @@ BEATS = [
       <h1>Recursive Searching and Sorting</h1>
       <p class="scr-sub">The same searching and sorting ideas &mdash; rewritten recursively.</p>
     </div>''',
-        "speak": "This final optional lesson closes out the curriculum by combining lessons 28.1 through 28.3: the same searching and sorting ideas, rewritten recursively.",
+        "speak": "This optional lesson combines lessons 28.1 through 28.3: the same searching and sorting ideas, rewritten recursively.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Recursive Binary Search</h2><ul>
@@ -39,11 +39,13 @@ BEATS = [
         "screen": '''<div class="scr-h2" style="text-align:center;">recursiveBinarySearch, continued</div>
     <pre class="code"><code>    <span class="k">else</span> <span class="k">if</span> (target &lt; elements[middle])
     {
-        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, start, middle - <span class="n">1</span>, target); <span class="c">// search the left half</span>
+        <span class="c">// search the left half</span>
+        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, start, middle - <span class="n">1</span>, target);
     }
     <span class="k">else</span>
     {
-        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, middle + <span class="n">1</span>, end, target);   <span class="c">// search the right half</span>
+        <span class="c">// search the right half</span>
+        <span class="k">return</span> <span class="me">recursiveBinarySearch</span>(elements, middle + <span class="n">1</span>, end, target);
     }
 }</code></pre>''',
         "speak": "If neither base case hits, recurse into half the range. A smaller target searches the left half, start through middle minus one. A larger one searches the right half, middle plus one through end. Either way, each call passes a smaller range to the next one.",
@@ -51,9 +53,9 @@ BEATS = [
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Two Base Cases</h2><ul>
       <li><span class="num">1</span><span>A match at the middle &mdash; or an exhausted range</span></li>
-      <li><span class="num">2</span><span>Remove the <strong>end &lt; start</strong> check, and a not-found search recurses forever</span></li>
+      <li><span class="num">2</span><span>Remove the <strong>end &lt; start</strong> check, and a not-found search crashes with StackOverflowError</span></li>
     </ul></div>''',
-        "speak": "So this method has two base cases. The enum state machines from lesson 25.4 had a preview of that idea, more than one stopping condition, and it applies here too: a match at the middle, or an exhausted range. Removing the end less than start check would mean a not-found search keeps recursing into an already-empty range forever, exactly the missing base case bug from lesson 28.3.",
+        "speak": "So this method has two base cases: a match at the middle, or an exhausted range. Removing the end less than start check wouldn't cause a true infinite loop. Java would run out of room first. A not-found search keeps calling itself into an already-empty range until it crashes with a Stack Overflow Error, or, if the array is empty to begin with, an immediate Array Index Out Of Bounds Exception, exactly the missing base case bug from lesson 28.3.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Merge Sort: A Third Sorting Algorithm</h2><ul>
@@ -97,6 +99,44 @@ BEATS = [
     <span class="me">merge</span>(elements, from, middle, to, temp);            <span class="c">// combine the two sorted halves</span>
 }</code></pre>''',
         "speak": "The helper does the real work. Base case: if from is at least to, the range has zero or one elements, so it's already sorted. Otherwise, find the middle, recursively sort the left half, recursively sort the right half, and then merge the two sorted halves together.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">merge Isn&rsquo;t Recursive</div>
+    <pre class="code"><code><span class="k">private</span> <span class="k">static</span> <span class="k">void</span> <span class="me">merge</span>(<span class="t">int</span>[] elements, <span class="t">int</span> from, <span class="t">int</span> mid, <span class="t">int</span> to, <span class="t">int</span>[] temp)
+{
+    <span class="t">int</span> i = from;     <span class="c">// next unmerged element in the left half</span>
+    <span class="t">int</span> j = mid + <span class="n">1</span>;  <span class="c">// next unmerged element in the right half</span>
+    <span class="t">int</span> k = from;     <span class="c">// next open slot in temp</span>
+
+    <span class="k">while</span> (i &lt;= mid &amp;&amp; j &lt;= to)
+    {
+        <span class="k">if</span> (elements[i] &lt;= elements[j])
+        {
+            temp[k++] = elements[i++];
+        }</code></pre>''',
+        "speak": "Merge itself isn't recursive. It's the ordinary, loop-based step that does the actual combining, using temp as scratch space so it isn't overwriting values it still needs. Two pointers walk the sorted halves: i for the left half, j for the right. Every step, whichever pointer is looking at the smaller value gets copied into temp next.",
+    },
+    {
+        "screen": '''<div class="scr-h2" style="text-align:center;">merge, continued</div>
+    <pre class="code"><code>        <span class="k">else</span>
+        {
+            temp[k++] = elements[j++];
+        }
+    }
+    <span class="k">while</span> (i &lt;= mid)   <span class="c">// copy over whatever's left of the left half</span>
+    {
+        temp[k++] = elements[i++];
+    }
+    <span class="k">while</span> (j &lt;= to)    <span class="c">// copy over whatever's left of the right half</span>
+    {
+        temp[k++] = elements[j++];
+    }
+    <span class="k">for</span> (<span class="t">int</span> m = from; m &lt;= to; m++) <span class="c">// copy the merged range back into elements</span>
+    {
+        elements[m] = temp[m];
+    }
+}</code></pre>''',
+        "speak": "Once one half runs out, whatever's left of the other half is already in order, so it just gets copied straight over. Last step: copy the merged range from temp back into elements, since elements is the array being sorted in place.",
     },
     {
         "screen": '''<div class="scr-h2" style="text-align:center;">Tracing {86, 3, 43, 5}</div>
@@ -143,6 +183,6 @@ Merge:  { 3, 5, 43, 86 }</code></pre>''',
       <li><span class="check">&#10003;</span>Merge sort scales better on large data &mdash; n log n vs. n&sup2; &mdash; regardless of initial order.</li>
       <li><span class="check">&#10003;</span>Iterative or recursive is a real tradeoff, not a universal &ldquo;better&rdquo; answer.</li>
     </ul></div>''',
-        "speak": "So, to recap. Recursive binary search replaces loop-tracked bounds with a shrinking range passed as parameters, and it needs two base cases: a match, or an exhausted range. Merge sort is a recursive, divide-and-conquer sort: split in half, recursively sort each half, with one element as the base case, then merge the sorted halves back together. It scales better than selection or insertion sort on large data, n log n versus n squared, and its performance doesn't depend on the input's initial order. And the same algorithm can often be written iteratively or recursively. That choice is a real tradeoff, not a universal better answer either way. And that closes out the curriculum.",
+        "speak": "So, to recap. Recursive binary search replaces loop-tracked bounds with a shrinking range passed as parameters, and it needs two base cases: a match, or an exhausted range. Merge sort is a recursive, divide-and-conquer sort: split in half, recursively sort each half, with one element as the base case, then merge the sorted halves back together. It scales better than selection or insertion sort on large data, n log n versus n squared, and its performance doesn't depend on the input's initial order. And the same algorithm can often be written iteratively or recursively. That choice is a real tradeoff, not a universal better answer either way.",
     },
 ]

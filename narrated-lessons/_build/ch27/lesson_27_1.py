@@ -20,8 +20,8 @@ BEATS = [
       <div class="dbox active">Intake</div>
       <div class="dbox active">Shooter</div>
     </div></div>
-    <p style="text-align:center;color:var(--ink-soft);font-size:14px;max-width:52ch;margin:14px auto 0;">&rarr; the Subsystem subclasses (Ch.17/20) a real codebase ends up with</p>''',
-        "speak": "Those three nouns, drive train, intake, and shooter, are exactly the subsystem subclasses, from chapters 17 and 20, that a real codebase would end up with.",
+    <p style="text-align:center;color:var(--ink-soft);font-size:14px;max-width:52ch;margin:14px auto 0;">&rarr; the RobotPart subclasses (Ch.17/20) a real codebase ends up with</p>''',
+        "speak": "Those three nouns, drive train, intake, and shooter, are exactly the RobotPart subclasses, from chapters 17 and 20, that a real codebase would end up with.",
         "continues": True,
     },
     {
@@ -101,7 +101,7 @@ BEATS = [
       <div class="dbox active">Climber</div>
     </div>
     <p style="text-align:center;color:var(--ink-soft);font-size:14px;max-width:52ch;margin:14px auto 0;">Sketch the nouns, and what each one needs, before writing Robot.java.</p>''',
-        "speak": "Before writing Robot dot java, sketch out the nouns for an actual robot: drive train, intake, shooter, climber, and roughly what data and behavior each one needs. That's the same thinking that led to the subsystem abstraction in chapters 17 and 20 in the first place. Those weren't arbitrary class boundaries. They came from identifying the real, distinct nouns in a robot's actual hardware.",
+        "speak": "Before writing Robot dot java, sketch out the nouns for an actual robot: drive train, intake, shooter, climber, and roughly what data and behavior each one needs. That's the same thinking that led to the RobotPart abstraction in chapters 17 and 20 in the first place. Those weren't arbitrary class boundaries. They came from identifying the real, distinct nouns in a robot's actual hardware.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
