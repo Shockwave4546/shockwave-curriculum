@@ -97,17 +97,33 @@ const DATA = {
       <h2>Why Not Just new?</h2>
       <p>A <strong>static factory method</strong> is a <code class="inline">public static</code> method that returns an object, used <em>instead of</em> calling a constructor directly. At first glance this looks like extra ceremony for no reason — but it buys a few concrete things a plain constructor can't:</p>
       <ul>
-        <li><strong>A descriptive name.</strong> <code class="inline">Command.printMessage("Ready")</code> says exactly what you're getting; <code class="inline">new PrintCommand("Ready")</code> doesn't communicate intent nearly as clearly.</li>
-        <li><strong>The freedom to not construct a new object at all.</strong> A factory method can return a cached, already-existing instance instead of a fresh one.</li>
+        <li><strong>A descriptive name.</strong> <code class="inline">MyCommands.print("Ready")</code> says exactly what you're getting; a constructor overload chosen by argument types alone doesn't communicate intent nearly as clearly.</li>
+        <li><strong>The freedom to not construct a new object at all.</strong> A factory method can return a cached, already-existing instance instead of a fresh one — a constructor, by contrast, always creates something new.</li>
         <li><strong>The freedom to return a completely different concrete type</strong>, chosen by logic inside the method — the caller only ever sees the return type (often an interface), never which concrete class was actually picked.</li>
       </ul>
-      <pre class="code"><code><span class="k">public static</span> <span class="t">Command</span> <span class="me">printMessage</span>(<span class="t">String</span> msg)
+      <pre class="code"><code><span class="k">public class</span> <span class="t">MyCommands</span>
 {
-    <span class="k">return new</span> <span class="t">InstantCommand</span>(() -&gt; System.out.<span class="me">println</span>(msg));
+    <span class="k">public static</span> <span class="t">Command</span> <span class="me">print</span>(<span class="t">String</span> msg)
+    {
+        <span class="k">return</span> <span class="t">Command</span>.<span class="me">noRequirements</span>(coroutine -&gt; System.out.<span class="me">println</span>(msg))
+            .<span class="me">named</span>(<span class="s">"Print "</span> + msg);
+    }
 }</code></pre>
-      <p>Calling <code class="inline">printMessage("Ready")</code> reads clearly as "give me a command that prints this message" — the caller never needs to know or care that it's actually an <code class="inline">InstantCommand</code> wrapping a lambda underneath.</p>
+      <p>Calling <code class="inline">MyCommands.print("Ready")</code> reads clearly as "give me a command that prints this message" — the caller never needs to know or care that it's built from <code class="inline">Command.noRequirements</code> (Lesson 25.2) underneath.</p>
+      <h2>A Concrete Example: Returning a Cached Instance</h2>
+      <p>The "freedom to not construct a new object" isn't just theoretical — here it is in practice. A factory method can hand back the <em>same</em> object every time instead of building a fresh one:</p>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">SensorLog</span>
+{
+    <span class="k">private static final</span> <span class="t">SensorLog</span> <span class="t">INSTANCE</span> = <span class="k">new</span> <span class="t">SensorLog</span>();
+
+    <span class="k">public static</span> <span class="t">SensorLog</span> <span class="me">getInstance</span>()
+    {
+        <span class="k">return</span> <span class="t">INSTANCE</span>; <span class="c">// the same object every call — never a fresh one</span>
+    }
+}</code></pre>
+      <p>Every call to <code class="inline">SensorLog.getInstance()</code> returns the exact same <code class="inline">SensorLog</code> object. A constructor could never do this — <code class="inline">new SensorLog()</code> always builds a new one.</p>
       <h2>The Real Payoff: Choosing an Implementation by Condition</h2>
-      <p>The pattern's biggest use in FRC code is picking between real and simulated hardware — deciding <em>which</em> concrete class to construct, in exactly one place, based on a condition:</p>
+      <p>The pattern's biggest use in FRC code is picking between real and simulated hardware — deciding <em>which</em> concrete class to construct, in exactly one place, based on a condition. A factory class like this exists purely to hold <code class="inline">static</code> members, so it also gets a <code class="inline">private</code> constructor — nothing outside the class ever needs, or is allowed, to write <code class="inline">new DrivetrainFactory()</code> (each class below is in its own file):</p>
       <pre class="code"><code><span class="k">public interface</span> <span class="t">Drivetrain</span>
 {
     <span class="k">void</span> <span class="me">drive</span>(<span class="k">double</span> speed, <span class="k">double</span> turn);
@@ -115,19 +131,29 @@ const DATA = {
 
 <span class="k">public class</span> <span class="t">RealDrivetrain</span> <span class="k">implements</span> <span class="t">Drivetrain</span>
 {
-    <span class="k">public void</span> <span class="me">drive</span>(<span class="k">double</span> speed, <span class="k">double</span> turn) { <span class="c">/* control real Talons/Sparks */</span> }
+    <span class="me">@Override</span>
+    <span class="k">public void</span> <span class="me">drive</span>(<span class="k">double</span> speed, <span class="k">double</span> turn)
+    {
+        <span class="c">// control the real motor controllers</span>
+    }
 }
 
 <span class="k">public class</span> <span class="t">SimDrivetrain</span> <span class="k">implements</span> <span class="t">Drivetrain</span>
 {
-    <span class="k">public void</span> <span class="me">drive</span>(<span class="k">double</span> speed, <span class="k">double</span> turn) { <span class="c">/* simulate motion via WPILib sim */</span> }
+    <span class="me">@Override</span>
+    <span class="k">public void</span> <span class="me">drive</span>(<span class="k">double</span> speed, <span class="k">double</span> turn)
+    {
+        <span class="c">// simulate motion via WPILib sim</span>
+    }
 }
 
 <span class="k">public class</span> <span class="t">DrivetrainFactory</span>
 {
+    <span class="k">private</span> <span class="t">DrivetrainFactory</span>() {} <span class="c">// never instantiated — only static members</span>
+
     <span class="k">public static</span> <span class="t">Drivetrain</span> <span class="me">createDrivetrain</span>()
     {
-        <span class="k">if</span> (RobotBase.isReal())
+        <span class="k">if</span> (<span class="t">RobotBase</span>.<span class="me">isReal</span>())
         {
             <span class="k">return new</span> <span class="t">RealDrivetrain</span>();
         }
@@ -137,37 +163,44 @@ const DATA = {
         }
     }
 }</code></pre>
-      <pre class="code"><code><span class="t">Drivetrain</span> drivetrain = <span class="t">DrivetrainFactory</span>.<span class="me">createDrivetrain</span>(); <span class="c">// caller never picks the concrete class itself</span></code></pre>
-      <p>This is a genuine alternative to the constructor-injection style from the IO-Layer Pattern (Ch.20) — instead of the caller deciding which <code class="inline">IntakeIO</code> to pass in, the factory itself makes that decision, centralizing the real-vs-sim logic in one place instead of duplicating an <code class="inline">if (isReal())</code> check everywhere a subsystem gets built.</p>
+      <pre class="code"><code><span class="c">// caller never picks the concrete class itself</span>
+<span class="t">Drivetrain</span> drivetrain = <span class="t">DrivetrainFactory</span>.<span class="me">createDrivetrain</span>();</code></pre>
+      <p>This is a genuine alternative to the constructor-injection style from the IO-Layer Pattern (Ch.20) — <strong>constructor injection</strong> means the caller decides which implementation to use and passes ("injects") it in through a constructor parameter, the way Ch.20's <code class="inline">Robot</code> constructor builds <code class="inline">new Intake(new IntakeIOReal())</code> itself. A factory flips that: instead of the caller deciding, the factory itself makes the real-vs-sim decision, centralizing that one <code class="inline">if (RobotBase.isReal())</code> check inside <code class="inline">createDrivetrain()</code> rather than repeating it at every construction site. WPILib's own API uses this pattern too — <code class="inline">Rotation2d.fromDegrees(90)</code> (Lesson 4.5) is a real static factory, more descriptive than calling <code class="inline">Rotation2d</code>'s constructor with radians directly.</p>
       <h2>Factories for More Than Hardware</h2>
-      <p>The same idea works for building the right object out of a whole family of choices — not just two (real/sim), but any number, selected by some other input:</p>
+      <p>The same idea works for building the right object out of a whole family of choices — not just two (real/sim), but any number, selected by some other input. This is a <code class="inline">switch</code> <strong>expression</strong> (Lesson 5.12) over a <code class="inline">String</code>:</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">AutoFactory</span>
 {
     <span class="k">public static</span> <span class="t">Command</span> <span class="me">createAuto</span>(<span class="t">String</span> mode)
     {
         <span class="k">return switch</span> (mode)
         {
-            <span class="k">case</span> <span class="s">"Taxi"</span> -&gt; <span class="k">new</span> <span class="t">DriveForwardCommand</span>(<span class="n">3.0</span>);
-            <span class="k">case</span> <span class="s">"2 Ball"</span> -&gt; <span class="k">new</span> <span class="t">TwoBallAutoCommand</span>();
-            <span class="k">case</span> <span class="s">"Nothing"</span> -&gt; <span class="k">new</span> <span class="t">WaitCommand</span>(<span class="n">0.1</span>);
-            <span class="k">default</span> -&gt; <span class="k">new</span> <span class="t">PrintCommand</span>(<span class="s">"Unknown Auto Mode"</span>);
+            <span class="k">case</span> <span class="s">"Taxi"</span> -&gt; <span class="t">MyCommands</span>.<span class="me">driveForward</span>(<span class="n">3.0</span>);
+            <span class="k">case</span> <span class="s">"2 Ball"</span> -&gt; <span class="t">MyCommands</span>.<span class="me">twoBallAuto</span>();
+            <span class="k">case</span> <span class="s">"Nothing"</span> -&gt; <span class="t">Command</span>.<span class="me">waitFor</span>(<span class="t">Seconds</span>.<span class="me">of</span>(<span class="n">0.1</span>)).<span class="me">named</span>(<span class="s">"Do Nothing"</span>);
+            <span class="k">case</span> <span class="k">null</span>, <span class="k">default</span> -&gt; <span class="t">MyCommands</span>.<span class="me">print</span>(<span class="s">"Unknown Auto Mode"</span>);
         };
     }
 }</code></pre>
-      <pre class="code"><code><span class="t">Command</span> auto = <span class="t">AutoFactory</span>.<span class="me">createAuto</span>(chooser.<span class="me">getSelected</span>()); <span class="c">// built from whatever the driver station selected</span></code></pre>
+      <pre class="code"><code><span class="c">// org.wpilib.tunable — the 2027 driver-station chooser</span>
+<span class="t">Selectable</span>&lt;<span class="t">String</span>&gt; chooser = <span class="k">new</span> <span class="t">Selectable</span>&lt;&gt;();
+chooser.<span class="me">addDefault</span>(<span class="s">"Taxi"</span>, <span class="s">"Taxi"</span>);
+
+<span class="c">// built from whatever the driver station selected</span>
+<span class="t">Command</span> auto = <span class="t">AutoFactory</span>.<span class="me">createAuto</span>(chooser.<span class="me">getSelected</span>());</code></pre>
+      <p><code class="inline">chooser.getSelected()</code> can return <code class="inline">null</code> if nothing was ever selected <em>and</em> no default was set with <code class="inline">addDefault(...)</code> — a plain <code class="inline">default</code> case doesn't catch <code class="inline">null</code>, and switching on a <code class="inline">null</code> String otherwise throws a <code class="inline">NullPointerException</code>. <code class="inline">case null, default -&gt;</code> (Java 21+ pattern matching for switch) explicitly routes a <code class="inline">null</code> mode to the same fallback as any other unrecognized one.</p>
     `,
     pitfalls: [
       "Returning a concrete class instead of an interface. <code class=\"inline\">public static RealDrivetrain createDrivetrain()</code> locks callers into one specific implementation — return the interface type (<code class=\"inline\">Drivetrain</code>) so the real choice stays hidden inside the factory.",
-      "Duplicating the same real-vs-sim <code class=\"inline\">if</code> check in multiple places. The whole point of a factory is centralizing that decision in one method — scattering <code class=\"inline\">RobotBase.isReal()</code> checks throughout the codebase defeats the purpose.",
-      "Confusing a factory with a constructor. A factory method is just a regular <code class=\"inline\">static</code> method — it can validate arguments, return a cached instance, or pick any subtype, none of which a constructor is free to do (a constructor always returns a new instance of its own exact class)."
+      "Duplicating the same real-vs-sim <code class=\"inline\">if</code> check in multiple places. The whole point of a factory is centralizing that decision in one method — scattering <code class=\"inline\">RobotBase.isReal()</code> checks throughout the codebase (instead of injecting once, as Ch.20's <code class=\"inline\">Robot</code> constructor does, or factoring it into one method here) defeats the purpose.",
+      "Confusing a factory with a constructor. A factory method is just a regular <code class=\"inline\">static</code> method — it can return a cached instance or pick any subtype, neither of which a constructor is free to do (a constructor always returns a new instance of its own exact class). A factory method <em>can</em> validate its arguments, but so can a constructor (Lesson 12) — that part isn't a difference between them."
     ],
     takeaways: [
-      "A static factory method returns an object in place of a direct constructor call, with a descriptive name, the option to return a cached instance, and the freedom to choose the actual concrete type internally.",
-      "Its most common FRC use: centralizing real-vs-simulated (or comp-bot-vs-practice-bot) selection logic in one place, so callers only ever depend on an interface.",
-      "Factories generalize beyond hardware — anything selected by a condition (an autonomous mode, a config option) is a natural fit.",
-      "Always return the interface type from a factory method, not a specific concrete class, so the actual implementation choice stays hidden from callers."
+      "A static factory method returns an object in place of a direct constructor call, with a descriptive name, the option to return a cached instance (<code class=\"inline\">SensorLog.getInstance()</code>), and the freedom to choose the actual concrete type internally.",
+      "Its most common FRC use: centralizing real-vs-simulated (or comp-bot-vs-practice-bot) selection logic in one place, so callers only ever depend on an interface. This is an alternative to constructor injection (Ch.20) — the factory decides, instead of the caller.",
+      "Factories generalize beyond hardware — anything selected by a condition (an autonomous mode, a config option) is a natural fit; a <code class=\"inline\">switch</code> expression choosing between commands needs <code class=\"inline\">case null, default -&gt;</code> if the input could be <code class=\"inline\">null</code>.",
+      "Always return the interface type from a factory method, not a specific concrete class, so the actual implementation choice stays hidden from callers. A factory-only class gets a <code class=\"inline\">private</code> constructor, since nothing should ever build one with <code class=\"inline\">new</code>."
     ],
-    prov: "other-reference-repo: team-5817-training/design-patterns/factory.md (T5817 30.2) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 7 (\"Static Factories\")"
+    prov: "other-reference-repo: team-5817-training/design-patterns/factory.md (T5817 30.2); updated for Commands v3 from allwpilib main (commandsv3/…/command3/Command.java) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 7 (\"Static Factories\")"
   }
 };
 

@@ -33,22 +33,17 @@ A `ShooterIOSim` class that `implements ShooterIO` already exists. What has to c
 
 ## Micro-Parsons
 
-**Problem:** You're given everything in the program below except the body of `main`: the `FeederInputs` class, the `FeederIO` interface, its `FeederIOReal` and `FeederIOSim` implementations, the `Feeder` subsystem, and the `FeederDemo` class with `main`'s signature and braces. Reorder the fragments below into the body of `main`. It should pick the IO implementation once, based on `runningOnRobot` (hardcoded to `false`, as a stand-in for a real robot check), build the `Feeder` with it, and run one cycle. The program prints `Note detected: true`.
-
-Reorder the fragments below to complete it:
-
-- a. `        Feeder feeder = new Feeder(feederIO);`
-- b. `        FeederIO feederIO;`
-- c. `        feeder.periodic();`
-- d. `        if (runningOnRobot) feederIO = new FeederIOReal();`
-- e. `        boolean runningOnRobot = false;`
-- f. `        else feederIO = new FeederIOSim();`
-
-**Answer:** e, b, d, f, a, c
-
-**Interchangeable:** (e, b)
+**Problem:** You're given everything in the program below except the body of `main`: the `FeederInputs` class, the `FeederIO` interface, its `FeederIOReal` and `FeederIOSim` implementations, the `Feeder` subsystem, and the `FeederDemo` class with `main`'s signature and braces.
 
 ```java
+public class FeederDemo
+{
+    public static void main(String[] args)
+    {
+        // main body goes here
+    }
+}
+
 class FeederInputs
 {
     public boolean noteDetected = false;
@@ -56,7 +51,7 @@ class FeederInputs
 
 interface FeederIO
 {
-    default void updateInputs(FeederInputs inputs) {}
+    void updateInputs(FeederInputs inputs);
 }
 
 class FeederIOReal implements FeederIO
@@ -93,19 +88,95 @@ class Feeder
         System.out.println("Note detected: " + inputs.noteDetected);
     }
 }
+```
 
+(`FeederDemo`, the public class with `main`, comes first in the file — on Java 17, `java File.java` source-launch only runs the first class in the file; Java 25 is more lenient, but leading with the public class works on both.)
+
+Reorder the fragments below into the body of `main`. It should pick the IO implementation once, based on `runningOnRobot` (hardcoded to `false`, as a stand-in for a real robot check), build the `Feeder` with it, and run one cycle. The program prints `Note detected: true`.
+
+Reorder the fragments below to complete it:
+
+- a. `        Feeder feeder = new Feeder(feederIO);`
+- b. `        FeederIO feederIO;`
+- c. `        feeder.periodic();`
+- d. `        if (runningOnRobot)`
+- e. `        {`
+- f. `            feederIO = new FeederIOReal();`
+- g. `        }`
+- h. `        else`
+- i. `        {`
+- j. `            feederIO = new FeederIOSim();`
+- k. `        }`
+- l. `        boolean runningOnRobot = false;`
+
+**Answer:** l, b, d, e, f, g, h, i, j, k, a, c
+
+**Interchangeable:** (l, b)
+
+```java
 public class FeederDemo
 {
     public static void main(String[] args)
     {
         boolean runningOnRobot = false;
         FeederIO feederIO;
-        if (runningOnRobot) feederIO = new FeederIOReal();
-        else feederIO = new FeederIOSim();
+        if (runningOnRobot)
+        {
+            feederIO = new FeederIOReal();
+        }
+        else
+        {
+            feederIO = new FeederIOSim();
+        }
         Feeder feeder = new Feeder(feederIO);
         feeder.periodic();
     }
 }
+
+class FeederInputs
+{
+    public boolean noteDetected = false;
+}
+
+interface FeederIO
+{
+    void updateInputs(FeederInputs inputs);
+}
+
+class FeederIOReal implements FeederIO
+{
+    @Override
+    public void updateInputs(FeederInputs inputs)
+    {
+        System.out.println("[real] would read the beam-break sensor here");
+    }
+}
+
+class FeederIOSim implements FeederIO
+{
+    @Override
+    public void updateInputs(FeederInputs inputs)
+    {
+        inputs.noteDetected = true; // simulation: pretend a note is always loaded
+    }
+}
+
+class Feeder
+{
+    private FeederIO io;
+    private FeederInputs inputs = new FeederInputs();
+
+    public Feeder(FeederIO io)
+    {
+        this.io = io;
+    }
+
+    public void periodic()
+    {
+        io.updateInputs(inputs);
+        System.out.println("Note detected: " + inputs.noteDetected);
+    }
+}
 ```
 
-**Why this order:** `runningOnRobot` (`e`) and the declaration of `feederIO` (`b`) both have to exist before the `if` can read one and assign the other. Neither reads the other, so they can go in either order (hence **Interchangeable:** (e, b)). `feederIO` is declared with the *interface* type `FeederIO`, so it can hold either implementation. The `if` (`d`) has to come before its matching `else` (`f`), and between them, `feederIO` is guaranteed to be assigned no matter which branch runs. This is the one place the program decides real vs. simulated. Only after that can the `Feeder` be constructed with the chosen implementation (`a`). `periodic()` (`c`) runs last, since it needs a `feeder` to call. Inside `periodic()`, `Feeder` pulls fresh values into its cached `inputs` and reads from them. It never knows it was handed the simulated version.
+**Why this order:** `runningOnRobot` (`l`) and the declaration of `feederIO` (`b`) both have to exist before the `if` can read one and assign the other. Neither reads the other, so they can go in either order (hence **Interchangeable:** (l, b)). `feederIO` is declared with the *interface* type `FeederIO`, so it can hold either implementation. The braced `if` (`d`, `e`, `f`, `g`) has to come before its matching `else` (`h`, `i`, `j`, `k`) — every `if`/`else` here uses braces (Lesson 5.1) — and between them, `feederIO` is guaranteed to be assigned no matter which branch runs. This is the one place the program decides real vs. simulated. Only after that can the `Feeder` be constructed with the chosen implementation (`a`). `periodic()` (`c`) runs last, since it needs a `feeder` to call. Inside `periodic()`, `Feeder` pulls fresh values into its cached `inputs` and reads from them. It never knows it was handed the simulated version.

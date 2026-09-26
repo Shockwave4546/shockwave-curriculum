@@ -99,6 +99,24 @@ interface RangeFinder
 `checkWall` gets one more line here, printing the new `isTooClose()` check alongside the distance:
 
 ```java
+public class WallCheck
+{
+    public static void checkWall(RangeFinder sensor)
+    {
+        System.out.println("Wall is " + sensor.getDistanceMeters() + " m away");
+        System.out.println("Too close? " + sensor.isTooClose());
+    }
+
+    public static void main(String[] args)
+    {
+        RangeFinder laser = new LaserRangeFinder(1.25);
+        RangeFinder sonar = new SonarRangeFinder(10.0);
+
+        checkWall(laser);
+        checkWall(sonar);
+    }
+}
+
 interface RangeFinder
 {
     double getDistanceMeters();
@@ -140,25 +158,9 @@ class SonarRangeFinder implements RangeFinder
         return readingInches * 0.0254; // this sensor measures in inches, so convert
     }
 }
-
-public class WallCheck
-{
-    public static void checkWall(RangeFinder sensor)
-    {
-        System.out.println("Wall is " + sensor.getDistanceMeters() + " m away");
-        System.out.println("Too close? " + sensor.isTooClose());
-    }
-
-    public static void main(String[] args)
-    {
-        RangeFinder laser = new LaserRangeFinder(1.25);
-        RangeFinder sonar = new SonarRangeFinder(10.0);
-
-        checkWall(laser);
-        checkWall(sonar);
-    }
-}
 ```
+
+(The public class with `main`, `WallCheck`, comes first in the file — on Java 17, `java File.java` source-launch only runs the first class in the file; Java 25 is more lenient, but leading with the public class works on both.)
 
 ## What It Prints
 

@@ -95,7 +95,7 @@ const DATA = {
     ref: "19 — Interfaces as Contracts (ORACLE 15.1-6)",
     body: `
       <h2>What vs. How</h2>
-      <p>An <strong>interface</strong> defines <em>what</em> an object can do, without specifying <em>how</em> it does it. It's a "contract" — a set of method signatures any implementing class agrees to provide, with no implementation of its own for those methods. This matters enormously in real engineering: it lets two groups write code against a shared agreement without either needing to know the other's internals — a hardware vendor and an application team can each build against the same interface independently, as long as both honor it.</p>
+      <p>An <strong>interface</strong> defines <em>what</em> an object can do, without specifying <em>how</em> it does it. It's a "contract" — a set of method signatures any implementing class agrees to provide, with no implementation of its own for those methods (every one of those methods is <strong>abstract</strong>, Lesson 17.5's term for a signature with no body). This matters enormously in real engineering: it lets two groups write code against a shared agreement without either needing to know the other's internals — a hardware vendor and an application team can each build against the same interface independently, as long as both honor it.</p>
       <pre class="code"><code><span class="k">public interface</span> <span class="t">IntakeIO</span>
 {
     <span class="k">void</span> <span class="me">updateInputs</span>(<span class="t">IntakeInputs</span> inputs);
@@ -110,41 +110,85 @@ const DATA = {
     <span class="me">@Override</span>
     <span class="k">public void</span> <span class="me">setVoltage</span>(<span class="k">double</span> volts) { <span class="c">/* real motor.setVoltage(volts) */</span> }
 }</code></pre>
-      <p>A class implementing an interface must provide a real method body for <em>every</em> method the interface declares (default and static methods excepted — see below) — or the class fails to compile.</p>
+      <p>A class implementing an interface must provide a real method body for <em>every</em> method the interface declares (default and static methods excepted — see below) — or the class fails to compile. Every one of those methods is implicitly <code class="inline">public</code>, even though <code class="inline">IntakeIO</code> never writes the word — an implementing method has to be written <code class="inline">public</code> too, or it doesn't compile: a <code class="inline">private</code> or package-private <code class="inline">updateInputs</code> would be <em>weakening</em> access the interface already promised as <code class="inline">public</code>.</p>
       <h2>Multiple Interfaces, One Superclass</h2>
       <p>Unlike <code class="inline">extends</code> (limited to exactly one superclass — Lesson 17.1), a class can <code class="inline">implements</code> as many interfaces as it needs:</p>
-      <pre class="code"><code><span class="k">public class</span> <span class="t">Robot</span> <span class="k">implements</span> <span class="t">Loggable</span>, <span class="t">Sendable</span>
+      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span> <span class="k">implements</span> <span class="t">Stowable</span>, <span class="t">Diagnosable</span>
 {
-    <span class="c">// must provide every method declared by BOTH Loggable and Sendable</span>
+    <span class="c">// must provide every method declared by BOTH Stowable and Diagnosable</span>
 }</code></pre>
       <p>This is one of the biggest practical differences between inheritance and interfaces: a class has one parent, but can honor any number of separate contracts at once.</p>
       <h2>Using an Interface as a Type</h2>
       <p>Just like a superclass (Lesson 17.3), an interface is a real reference type — a variable, parameter, array, or collection can be declared against an interface type, and hold any object whose class implements it:</p>
       <pre class="code"><code><span class="k">public void</span> <span class="me">configureIntake</span>(<span class="t">IntakeIO</span> io)
 {
-    io.<span class="me">setVoltage</span>(<span class="n">0.0</span>); <span class="c">// works for RealIntakeIO, SimIntakeIO, or any other IntakeIO implementation</span>
+    <span class="c">// works for RealIntakeIO, SimIntakeIO, or any other IntakeIO implementation</span>
+    io.<span class="me">setVoltage</span>(<span class="n">0.0</span>);
 }</code></pre>
       <p>Code written against <code class="inline">IntakeIO</code> never needs to know or care which concrete implementation it's actually working with — real hardware, or a simulated stand-in (this exact pattern is the foundation of the IO-Layer Pattern, Ch.20).</p>
-      <h2>Default and Static Methods</h2>
-      <p>Normally every method in an interface is abstract (no body). A <strong>default method</strong> is the one exception — it provides a real implementation directly inside the interface, marked with the <code class="inline">default</code> keyword, which implementing classes inherit automatically without being forced to write it themselves:</p>
+      <h2>Interface Constants</h2>
+      <p>A field declared inside an interface is implicitly <code class="inline">public static final</code> — a shared constant, not per-object state (an interface has no object state of its own; it declares behavior, not fields to hold data):</p>
       <pre class="code"><code><span class="k">public interface</span> <span class="t">IntakeIO</span>
 {
-    <span class="k">default void</span> <span class="me">updateInputs</span>(<span class="t">IntakeInputs</span> inputs) {}  <span class="c">// default: does nothing unless overridden</span>
-    <span class="k">default void</span> <span class="me">setVoltage</span>(<span class="k">double</span> volts) {}           <span class="c">// default: does nothing unless overridden</span>
+    <span class="c">// implicitly public static final — same as Lesson 7.4's constants</span>
+    <span class="k">double</span> <span class="t">MAX_VOLTS</span> = <span class="n">12.0</span>;
+
+    <span class="k">void</span> <span class="me">setVoltage</span>(<span class="k">double</span> volts);
 }</code></pre>
-      <p>This matters for a very practical reason: default methods let an interface add new methods later without breaking every class that already implements it — existing implementations simply inherit the default behavior rather than suddenly failing to compile. A class can still override a default method with its own real implementation, exactly like overriding an inherited method from a superclass (Lesson 18.1).</p>
-      <p>An interface can also declare <strong>static methods</strong> — utility methods associated with the interface itself, not with any implementing object, called directly on the interface name rather than through an instance.</p>
+      <p><code class="inline">IntakeIO.MAX_VOLTS</code> reads it directly off the interface name, exactly like any other <code class="inline">static final</code> constant (Lesson 7.4).</p>
+      <h2>One Interface Extending Another</h2>
+      <p>An interface can <code class="inline">extends</code> another interface — not a class — to build a bigger contract out of a smaller one. Unlike a class, an interface can <code class="inline">extends</code> more than one interface at once, since there's no object state to conflict:</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">Diagnosable</span>
+{
+    <span class="t">String</span> <span class="me">getStatus</span>();
+}
+
+<span class="k">public interface</span> <span class="t">LoggingDiagnosable</span> <span class="k">extends</span> <span class="t">Diagnosable</span>
+{
+    <span class="k">void</span> <span class="me">logStatus</span>(); <span class="c">// LoggingDiagnosable now requires BOTH getStatus() and logStatus()</span>
+}</code></pre>
+      <p>A class that <code class="inline">implements LoggingDiagnosable</code> must provide both methods — the inherited one and the new one.</p>
+      <h2>Default and Static Methods</h2>
+      <p>Normally every method in an interface is abstract (no body). <strong>Default</strong> and <strong>static</strong> methods are the exceptions. A <strong>default method</strong> provides a real implementation directly inside the interface, marked with the <code class="inline">default</code> keyword, which implementing classes inherit automatically without being forced to write it themselves. The strongest default methods build on top of the interface's own abstract methods, adding real behavior without weakening the contract:</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">IntakeIO</span>
+{
+    <span class="k">void</span> <span class="me">updateInputs</span>(<span class="t">IntakeInputs</span> inputs);
+    <span class="k">void</span> <span class="me">setVoltage</span>(<span class="k">double</span> volts);
+
+    <span class="k">default void</span> <span class="me">stop</span>()
+    {
+        <span class="c">// built on top of the abstract method every implementer must provide</span>
+        <span class="me">setVoltage</span>(<span class="n">0.0</span>);
+    }
+}</code></pre>
+      <p><code class="inline">updateInputs</code> and <code class="inline">setVoltage</code> are still required — every implementing class must provide them, or it won't compile. <code class="inline">stop()</code> comes for free: it's written once, here, and every <code class="inline">IntakeIO</code> implementation inherits it automatically, calling that implementation's own <code class="inline">setVoltage</code>. This matters for a very practical reason: default methods let an interface add new methods later without breaking every class that already implements it — existing implementations simply inherit the default behavior rather than suddenly failing to compile. A class can still override a default method with its own real implementation, exactly like overriding an inherited method from a superclass (Lesson 18.1).</p>
+      <p>An interface can also declare <strong>static methods</strong> — utility methods associated with the interface itself, not with any implementing object, called directly on the interface name rather than through an instance:</p>
+      <pre class="code"><code><span class="k">public interface</span> <span class="t">IntakeIO</span>
+{
+    <span class="k">static double</span> <span class="me">clampVolts</span>(<span class="k">double</span> v)
+    {
+        <span class="k">return</span> <span class="t">Math</span>.<span class="me">max</span>(-<span class="n">12.0</span>, <span class="t">Math</span>.<span class="me">min</span>(<span class="n">12.0</span>, v));
+    }
+}</code></pre>
+      <p><code class="inline">IntakeIO.clampVolts(14.0)</code> calls it directly on the interface name — no <code class="inline">IntakeIO</code> object needed, the same way <code class="inline">Math.max(...)</code> needs no <code class="inline">Math</code> object.</p>
+      <p><strong>When two interfaces' defaults collide:</strong> if a class implements two interfaces that both supply a default method with the same signature, Java can't pick one for you — the class must override that method itself (calling one of them explicitly, e.g. <code class="inline">Stowable.super.stop()</code>, if that's what's wanted), or it's a compile error. This only comes up with defaults; two abstract methods with the same signature just merge into one requirement.</p>
+      <h2>Interface or Abstract Class?</h2>
+      <p>Lesson 17.5 introduced abstract classes as the other tool for "some methods without bodies, filled in by subclasses" — and promised this comparison. The short version: reach for an <strong>abstract class</strong> when the related classes share real state and code (fields, constructors, concrete helper methods) — like <code class="inline">RobotPart</code>'s <code class="inline">name</code> and <code class="inline">log()</code>. Reach for an <strong>interface</strong> when classes only need to share a set of methods, with no shared state, and especially when a class needs to honor more than one contract at once (a class can <code class="inline">implements</code> many interfaces, but <code class="inline">extends</code> only one class).</p>
+      <p>Abstract class: fields (state) allowed, constructors allowed, one per class (<code class="inline">extends</code>), method bodies allowed freely. Interface: only <code class="inline">public static final</code> constants, no constructors, any number per class (<code class="inline">implements</code>), method bodies only via <code class="inline">default</code>/<code class="inline">static</code>.</p>
     `,
     pitfalls: [
       "Forgetting to implement every abstract method an interface declares. A class that leaves even one required method unimplemented fails to compile — every non-default, non-static method is a firm requirement.",
       "Confusing <code class=\"inline\">extends</code> and <code class=\"inline\">implements</code>. A class <code class=\"inline\">extends</code> exactly one class, but can <code class=\"inline\">implements</code> any number of interfaces — these are two entirely separate mechanisms.",
-      "Assuming every interface method needs to be written from scratch. Default methods (like the empty ones in <code class=\"inline\">IntakeIO</code> above) come \"for free\" — only override one if the default behavior isn't what you want."
+      "Assuming every interface method needs to be written from scratch. Default methods (like <code class=\"inline\">stop()</code> on <code class=\"inline\">IntakeIO</code> above) come \"for free\" — only override one if the default behavior isn't what you want.",
+      "Writing an implementing method with weaker access than <code class=\"inline\">public</code>. Every interface method is implicitly <code class=\"inline\">public</code>; a <code class=\"inline\">RealIntakeIO.updateInputs</code> declared without <code class=\"inline\">public</code> (or as <code class=\"inline\">private</code>) fails to compile with \"attempting to assign weaker access privileges.\"",
+      "Making every interface method an empty default \"for convenience.\" That silently removes the compiler's guarantee that an implementation provides real behavior — a class that forgets to override an empty <code class=\"inline\">default setVoltage(double)</code> compiles fine and simply never moves the motor. Keep methods abstract unless a default genuinely builds useful shared behavior on top of them."
     ],
     takeaways: [
-      "An interface is a contract: method signatures with no implementation (default/static methods aside), specifying <em>what</em> a class can do, not <em>how</em>.",
-      "A class agrees to an interface's contract with <code class=\"inline\">implements</code>, and can implement any number of interfaces at once — unlike the single-superclass limit of <code class=\"inline\">extends</code>.",
+      "An interface is a contract: method signatures with no implementation (default/static methods aside), specifying <em>what</em> a class can do, not <em>how</em> — every abstract method is implicitly <code class=\"inline\">public</code>, and every field is implicitly <code class=\"inline\">public static final</code>.",
+      "A class agrees to an interface's contract with <code class=\"inline\">implements</code>, and can implement any number of interfaces at once — unlike the single-superclass limit of <code class=\"inline\">extends</code>. An interface can itself <code class=\"inline\">extends</code> one or more other interfaces.",
       "An interface is a real type — variables, parameters, arrays, and collections can all be declared against it, holding any object whose class implements it.",
-      "A <code class=\"inline\">default</code> method provides a real implementation directly in the interface, letting implementing classes inherit it without writing their own — the mechanism behind adding new interface methods without breaking existing code."
+      "A <code class=\"inline\">default</code> method provides a real implementation directly in the interface, letting implementing classes inherit it without writing their own; a <code class=\"inline\">static</code> method belongs to the interface itself, called on its name. Two colliding defaults force the implementing class to override and resolve them.",
+      "Abstract class vs. interface (Lesson 17.5): shared state and code → abstract class; shared behavior only, or multiple contracts at once → interface."
     ],
     prov: "other-reference-repo: oracle-java-tutorials/interfaces/01-06 (ORACLE 15.1-6) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 6 (\"Interfaces as Contracts\") — IntakeIO example"
   },
@@ -152,33 +196,43 @@ const DATA = {
     title: "Lambdas & Method References",
     ref: "19.1 — Lambdas & Method References (ORACLE 12.1-2) — relocated here since a lambda is really shorthand for a functional interface",
     body: `
-      <h2>The Problem Lambdas Solve</h2>
-      <p>When an interface declares exactly <strong>one</strong> abstract method (a <strong>functional interface</strong>), implementing it with a full named class — or even an anonymous class — is a lot of ceremony for something conceptually simple: "here's the one bit of behavior you asked for." A <strong>lambda expression</strong> lets you write that one method's body directly, with no class declaration at all:</p>
-      <pre class="code"><code><span class="k">public interface</span> <span class="t">DoubleSupplier</span>
+      <h2>Anonymous Classes: An Interface, Implemented Without a Name</h2>
+      <p>Lesson 19's <code class="inline">implements</code> always names a class. Java also lets you implement an interface <strong>inline</strong>, right where an object is needed, with no separate class declaration at all — an <strong>anonymous class</strong>. The syntax is <code class="inline">new InterfaceName() { ...method bodies... }</code>:</p>
+      <pre class="code"><code><span class="k">interface</span> <span class="t">SpeedSource</span>
 {
-    <span class="k">double</span> <span class="me">getAsDouble</span>(); <span class="c">// exactly one abstract method — this is a functional interface</span>
+    <span class="k">double</span> <span class="me">get</span>(); <span class="c">// exactly one abstract method (Lesson 19) — a method with no body</span>
 }</code></pre>
-      <pre class="code"><code><span class="c">// Without a lambda: a full anonymous class just to supply one value</span>
-<span class="t">DoubleSupplier</span> speed = <span class="k">new</span> <span class="t">DoubleSupplier</span>()
+      <pre class="code"><code><span class="t">SpeedSource</span> speed = <span class="k">new</span> <span class="t">SpeedSource</span>()
 {
     <span class="me">@Override</span>
-    <span class="k">public double</span> <span class="me">getAsDouble</span>() { <span class="k">return</span> joystick.<span class="me">getY</span>(); }
+    <span class="k">public double</span> <span class="me">get</span>() { <span class="k">return</span> joystick.<span class="me">getY</span>(); }
+};</code></pre>
+      <p>This creates one object of a brand-new, unnamed class that <code class="inline">implements SpeedSource</code> — built and used in a single expression, with none of the ceremony of a separate <code class="inline">.java</code> file or a named top-level class. It's most useful for a one-off implementation that nothing else in the program needs to refer to by name.</p>
+      <h2>The Problem Lambdas Solve</h2>
+      <p>When an interface declares exactly <strong>one</strong> abstract method (a <strong>functional interface</strong>), an anonymous class is still a lot of ceremony for something conceptually simple: "here's the one bit of behavior you asked for." A <strong>lambda expression</strong> lets you write that one method's body directly, with no class declaration — named or anonymous — at all:</p>
+      <pre class="code"><code><span class="c">// Anonymous class: still a full class body just to supply one value</span>
+<span class="t">SpeedSource</span> speed = <span class="k">new</span> <span class="t">SpeedSource</span>()
+{
+    <span class="me">@Override</span>
+    <span class="k">public double</span> <span class="me">get</span>() { <span class="k">return</span> joystick.<span class="me">getY</span>(); }
 };
 
 <span class="c">// With a lambda: the same thing, far more directly</span>
-<span class="t">DoubleSupplier</span> speed = () -&gt; joystick.<span class="me">getY</span>();</code></pre>
+<span class="t">SpeedSource</span> speed = () -&gt; joystick.<span class="me">getY</span>();</code></pre>
       <p><code class="inline">WPILib</code> commands and suppliers are built almost entirely on this pattern — this is exactly what makes lambdas so central to command-based programming (Ch.25).</p>
       <h2>Lambda Syntax</h2>
       <p>A lambda expression has three parts: a parameter list in parentheses, the arrow <code class="inline">-&gt;</code>, and a body:</p>
       <pre class="code"><code>(parameters) -&gt; expression</code></pre>
       <ul>
-        <li><strong>Parameter types are inferred</strong>, not written — the compiler already knows them from the functional interface being implemented.</li>
+        <li><strong>Parameter types are usually left out</strong>, not written — the compiler already knows them from the functional interface being implemented. Writing them explicitly is legal (see Common Pitfalls) but not the normal style.</li>
         <li><strong>Parentheses can be dropped</strong> around a single parameter: <code class="inline">p -&gt; p.getY()</code> is valid, just like <code class="inline">(p) -&gt; p.getY()</code>.</li>
-        <li><strong>A single expression is the return value automatically</strong> — no <code class="inline">return</code> keyword needed. A multi-statement body needs braces and an explicit <code class="inline">return</code>.</li>
+        <li><strong>A single expression is the return value automatically</strong> — no <code class="inline">return</code> keyword needed. A multi-statement body needs braces and an explicit <code class="inline">return</code>:</li>
       </ul>
-      <pre class="code"><code><span class="t">DoubleSupplier</span> speed = () -&gt; joystick.<span class="me">getY</span>();              <span class="c">// single expression — auto-returned</span>
+      <pre class="code"><code><span class="c">// single expression — auto-returned</span>
+<span class="t">SpeedSource</span> speed = () -&gt; joystick.<span class="me">getY</span>();
 
-<span class="t">DoubleSupplier</span> clampedSpeed = () -&gt; {                       <span class="c">// multi-statement body needs braces + return</span>
+<span class="c">// multi-statement body needs braces + return</span>
+<span class="t">SpeedSource</span> clampedSpeed = () -&gt; {
     <span class="k">double</span> raw = joystick.<span class="me">getY</span>();
     <span class="k">return</span> <span class="t">Math</span>.<span class="me">max</span>(-<span class="n">1.0</span>, <span class="t">Math</span>.<span class="me">min</span>(<span class="n">1.0</span>, raw));
 };</code></pre>
@@ -189,27 +243,49 @@ const DATA = {
 }
 
 <span class="t">IntBinaryOperation</span> add = (a, b) -&gt; a + b;</code></pre>
-      <h2>Common Functional Interfaces You'll Actually Use</h2>
-      <p>Java (and WPILib) ship several ready-made functional interfaces, so you rarely need to declare your own:</p>
-      <pre class="code"><code><span class="t">Runnable</span> stopAll = () -&gt; intake.<span class="me">stop</span>();                 <span class="c">// no arguments, no return value</span>
-<span class="t">DoubleSupplier</span> speed = () -&gt; joystick.<span class="me">getY</span>();            <span class="c">// no arguments, returns a double</span>
-<span class="t">BooleanSupplier</span> hasGamePiece = () -&gt; intake.<span class="me">hasPiece</span>();  <span class="c">// no arguments, returns a boolean</span></code></pre>
+      <h2>A Lambda Can Only Capture Final (or Effectively Final) Locals</h2>
+      <p>A lambda body can read local variables and parameters from the method around it — but only ones that are never reassigned after being given a value (<strong>effectively final</strong>, even without writing the <code class="inline">final</code> keyword). Reassigning one after the lambda is written is a compile error, not a runtime surprise — the exact message is <code class="inline">local variables referenced from a lambda expression must be final or effectively final</code>:</p>
+      <pre class="code"><code><span class="k">double</span> base = <span class="n">1.0</span>;
+base = <span class="n">2.0</span>; <span class="c">// reassigned — base is no longer effectively final</span>
+
+<span class="c">// does NOT compile — base is no longer effectively final</span>
+<span class="t">SpeedSource</span> s = () -&gt; base;</code></pre>
+      <p>If a value genuinely needs to change and be read from inside a lambda, it has to live somewhere other than a local variable — a field (Lesson 7.2's "Where Variables Live") is the usual fix.</p>
+      <h2>Functional Interfaces You'll Actually Use</h2>
+      <p>Java ships a whole family of ready-made functional interfaces in the <code class="inline">java.util.function</code> package, so you rarely need to declare your own. Each one is marked <code class="inline">@FunctionalInterface</code> (a compiler check confirming it has exactly one abstract method) and named after the shape of the one method it declares:</p>
+      <p><code class="inline">Supplier&lt;T&gt;</code>: <code class="inline">T get()</code>, no input, returns a value, e.g. <code class="inline">Supplier&lt;String&gt; name = () -&gt; "Intake";</code>. <code class="inline">Consumer&lt;T&gt;</code>: <code class="inline">void accept(T t)</code>, takes a value, returns nothing, e.g. <code class="inline">Consumer&lt;String&gt; print = s -&gt; System.out.println(s);</code>. <code class="inline">Function&lt;T,R&gt;</code>: <code class="inline">R apply(T t)</code>, takes a value, returns a (possibly different-typed) value, e.g. <code class="inline">Function&lt;String,Integer&gt; len = s -&gt; s.length();</code>. <code class="inline">Predicate&lt;T&gt;</code>: <code class="inline">boolean test(T t)</code>, takes a value, returns true/false, e.g. <code class="inline">Predicate&lt;String&gt; isEmpty = s -&gt; s.isEmpty();</code>.</p>
+      <p><code class="inline">Supplier</code>, <code class="inline">Consumer</code>, <code class="inline">Function</code> and <code class="inline">Predicate</code> all need <code class="inline">import java.util.function.___;</code> — they live in that package, not <code class="inline">java.lang</code>. Two more specialized ones show up constantly in robot code — <code class="inline">DoubleSupplier</code> (no arguments, returns a <code class="inline">double</code>) and <code class="inline">BooleanSupplier</code> (no arguments, returns a <code class="inline">boolean</code>) — these also come from <code class="inline">java.util.function</code> and need the same import. <code class="inline">Runnable</code> (no arguments, no return value) is the one exception: it lives in <code class="inline">java.lang</code>, so it never needs an import.</p>
+      <pre class="code"><code><span class="k">import</span> java.util.function.DoubleSupplier;
+<span class="k">import</span> java.util.function.BooleanSupplier;
+
+<span class="t">Runnable</span> stopAll = () -&gt; intake.<span class="me">stop</span>();                 <span class="c">// java.lang — no import needed</span>
+
+<span class="c">// java.util.function — needs the import above</span>
+<span class="t">DoubleSupplier</span> speed = () -&gt; joystick.<span class="me">getY</span>();
+<span class="t">BooleanSupplier</span> hasGamePiece = () -&gt; intake.<span class="me">hasPiece</span>();</code></pre>
       <h2>Method References: An Even Shorter Form</h2>
-      <p>When a lambda's <em>entire</em> body is just calling one existing method, a <strong>method reference</strong> (<code class="inline">::</code>) says the same thing even more directly:</p>
-      <pre class="code"><code><span class="t">Runnable</span> stopAll = () -&gt; intake.<span class="me">stop</span>(); <span class="c">// a lambda...</span>
-<span class="t">Runnable</span> stopAll2 = intake::stop;       <span class="c">// ...is exactly equivalent to this method reference</span></code></pre>
-      <p><code class="inline">intake::stop</code> reads as "the <code class="inline">stop</code> method, called on <code class="inline">intake</code>" — Java fills in the call automatically, with whatever arguments the functional interface's method expects. Method references exist purely as a shorthand for a lambda that does nothing but forward to an existing method.</p>
+      <p>When a lambda's <em>entire</em> body is just calling one existing method, a <strong>method reference</strong> (<code class="inline">::</code>) says the same thing even more directly. There are four kinds:</p>
+      <p><strong>Bound instance reference</strong>: <code class="inline">intake::stop</code> ≡ <code class="inline">() -&gt; intake.stop()</code>. <strong>Unbound instance reference</strong>: <code class="inline">String::isEmpty</code> ≡ <code class="inline">s -&gt; s.isEmpty()</code>. <strong>Static reference</strong>: <code class="inline">Math::abs</code> ≡ <code class="inline">x -&gt; Math.abs(x)</code>. <strong>Constructor reference</strong>: <code class="inline">IllegalStateException::new</code> ≡ <code class="inline">() -&gt; new IllegalStateException()</code>.</p>
+      <p>A <strong>bound</strong> reference already has its object (<code class="inline">intake</code>) — Java calls <code class="inline">stop()</code> on that exact object. An <strong>unbound</strong> reference names only a class (<code class="inline">String</code>); the object to call the method on arrives as the functional interface's own argument, e.g. a <code class="inline">Predicate&lt;String&gt;</code> supplies the <code class="inline">String</code> itself. A <strong>static</strong> reference calls a <code class="inline">static</code> method directly, with the functional interface's argument(s) forwarded to it. A <strong>constructor</strong> reference (<code class="inline">ClassName::new</code>) calls <code class="inline">new ClassName(...)</code>, forwarding whatever arguments the functional interface's method supplies — this is exactly how Ch.24's <code class="inline">IllegalStateException::new</code> works, as a <code class="inline">Supplier&lt;IllegalStateException&gt;</code>.</p>
+      <pre class="code"><code><span class="c">// a lambda...</span>
+<span class="t">Runnable</span> stopAll = () -&gt; intake.<span class="me">stop</span>();
+<span class="c">// ...is exactly equivalent to this bound method reference</span>
+<span class="t">Runnable</span> stopAll2 = intake::stop;</code></pre>
+      <p><code class="inline">intake::stop</code> reads as "the <code class="inline">stop</code> method, called on <code class="inline">intake</code>" — Java fills in the call automatically, with whatever arguments the functional interface's method expects. Method references exist purely as a shorthand for a lambda that does nothing but forward to an existing method — but they aren't <em>quite</em> identical in one respect (see Common Pitfalls).</p>
     `,
     pitfalls: [
       "Writing parameter types into a lambda. <code class=\"inline\">(Person p) -&gt; p.getAge()</code> — while technically legal — is unusual style; letting the compiler infer the type (<code class=\"inline\">p -&gt; p.getAge()</code>) is the normal convention, since the functional interface already pins down what type <code class=\"inline\">p</code> has to be.",
       "Forgetting <code class=\"inline\">return</code> in a multi-statement lambda body. A single-expression lambda auto-returns its value, but a <code class=\"inline\">{ }</code> block body needs an explicit <code class=\"inline\">return</code>, exactly like a regular method.",
-      "Reaching for a method reference when the lambda does more than forward one call. <code class=\"inline\">() -&gt; { intake.stop(); logEvent(\"stopped\"); }</code> genuinely needs a lambda — a method reference only replaces a lambda that does nothing but call one existing method."
+      "Reaching for a method reference when the lambda does more than forward one call. <code class=\"inline\">() -&gt; { intake.stop(); logEvent(\"stopped\"); }</code> genuinely needs a lambda — a method reference only replaces a lambda that does nothing but call one existing method.",
+      "Reassigning a local variable a lambda reads. A lambda can only capture locals that are final or effectively final — see above; reassigning one after (or before) the lambda reads it is a compile error.",
+      "Assuming a bound method reference and its equivalent lambda behave identically. <code class=\"inline\">intake::stop</code> reads (and can throw on) <code class=\"inline\">intake</code> the moment the reference is <em>created</em>; the equivalent lambda <code class=\"inline\">() -&gt; intake.stop()</code> only reads <code class=\"inline\">intake</code> when it's actually <em>called</em>. If <code class=\"inline\">intake</code> could be <code class=\"inline\">null</code> at the time the reference is written, this timing difference matters."
     ],
     takeaways: [
-      "A lambda expression is a compact way to implement a functional interface (an interface with exactly one abstract method) inline, without writing a class.",
-      "Syntax: <code class=\"inline\">(parameters) -&gt; expression</code> (or <code class=\"inline\">{ statements; return value; }</code> for a multi-statement body); parameter types are inferred, and parentheses can be dropped for a single parameter.",
-      "<code class=\"inline\">Runnable</code>, <code class=\"inline\">DoubleSupplier</code>, and <code class=\"inline\">BooleanSupplier</code> are common ready-made functional interfaces WPILib code uses constantly.",
-      "A method reference (<code class=\"inline\">object::method</code>) is exact shorthand for a lambda that does nothing but call one existing method."
+      "An anonymous class (<code class=\"inline\">new InterfaceName() { ... }</code>) implements an interface inline, with no separate named class — a lambda goes one step further for a functional interface (exactly one abstract method), skipping the class syntax entirely.",
+      "Syntax: <code class=\"inline\">(parameters) -&gt; expression</code> (or <code class=\"inline\">{ statements; return value; }</code> for a multi-statement body); parameter types are normally inferred, and parentheses can be dropped for a single parameter.",
+      "A lambda can only read local variables that are final or effectively final (never reassigned); a value that needs to change belongs in a field instead.",
+      "<code class=\"inline\">java.util.function</code> ships <code class=\"inline\">Supplier&lt;T&gt;</code>, <code class=\"inline\">Consumer&lt;T&gt;</code>, <code class=\"inline\">Function&lt;T,R&gt;</code>, <code class=\"inline\">Predicate&lt;T&gt;</code>, <code class=\"inline\">DoubleSupplier</code> and <code class=\"inline\">BooleanSupplier</code> — all need an import; <code class=\"inline\">Runnable</code> (<code class=\"inline\">java.lang</code>) doesn't.",
+      "A method reference (<code class=\"inline\">object::method</code>, <code class=\"inline\">Class::staticMethod</code>, <code class=\"inline\">Class::instanceMethod</code>, or <code class=\"inline\">Class::new</code>) is shorthand for a lambda that does nothing but call one existing method or constructor — a bound reference evaluates its target object immediately, not when called."
     ],
     prov: "other-reference-repo: oracle-java-tutorials/lambdas/lambda-expressions.md (ORACLE 12.2) · Deck context: mechacoder-test/src/lessons/java-1.js, slide 12 (\"Lambdas & Method References\")"
   }

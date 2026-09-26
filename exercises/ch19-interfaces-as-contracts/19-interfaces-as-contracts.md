@@ -66,13 +66,6 @@ class Turret implements Aimable, Reportable
 **Problem:** Given this `Scorer` interface and `main` method, reorder the fragments below into the `SpeakerShot` class that goes where the comment is. `SpeakerShot` must implement the `Scorer` contract, returning `2` points, so the program prints `Points: 2`.
 
 ```java
-interface Scorer
-{
-    int getPoints();
-}
-
-// SpeakerShot class goes here
-
 public class ScoreTest
 {
     public static void main(String[] args)
@@ -81,7 +74,16 @@ public class ScoreTest
         System.out.println("Points: " + shot.getPoints());
     }
 }
+
+interface Scorer
+{
+    int getPoints();
+}
+
+// SpeakerShot class goes here
 ```
+
+(`ScoreTest`, the public class with `main`, comes first in the file — on Java 17, `java File.java` source-launch only runs the first class in the file; Java 25 is more lenient, but leading with the public class works on both.)
 
 Reorder the fragments below to complete it:
 
@@ -97,6 +99,15 @@ Reorder the fragments below to complete it:
 **Answer:** b, g, h, f, a, d, c, e
 
 ```java
+public class ScoreTest
+{
+    public static void main(String[] args)
+    {
+        Scorer shot = new SpeakerShot();
+        System.out.println("Points: " + shot.getPoints());
+    }
+}
+
 interface Scorer
 {
     int getPoints();
@@ -110,15 +121,6 @@ class SpeakerShot implements Scorer
         return 2;
     }
 }
-
-public class ScoreTest
-{
-    public static void main(String[] args)
-    {
-        Scorer shot = new SpeakerShot();
-        System.out.println("Points: " + shot.getPoints());
-    }
-}
 ```
 
-**Why this order:** The class declaration (`b`) comes first — `implements Scorer` is what signs the contract, and it's also what lets `main` store a `SpeakerShot` in a `Scorer`-typed variable. The class's opening brace (`g`) follows. `@Override` (`h`) goes directly above the method signature (`f`), which has to match the interface's `int getPoints()` — without this method, `SpeakerShot` would be missing a required part of the contract and wouldn't compile. The method's opening brace (`a`), its `return` statement (`d`), and its closing brace (`c`) follow, and the class's closing brace (`e`) comes last. The `Scorer` interface and `ScoreTest`'s `main` are the given scaffold.
+**Why this order:** The class declaration (`b`) comes first — `implements Scorer` is what signs the contract, and it's also what lets `main` store a `SpeakerShot` in a `Scorer`-typed variable. The class's opening brace (`g`) follows. `@Override` (`h`) goes directly above the method signature (`f`), which has to match the interface's `int getPoints()` — without this method, `SpeakerShot` would be missing a required part of the contract and wouldn't compile. The method's opening brace (`a`), its `return` statement (`d`), and its closing brace (`c`) follow, and the class's closing brace (`e`) comes last. `ScoreTest` and the `Scorer` interface are the given scaffold, with `SpeakerShot` inserted where the comment was.

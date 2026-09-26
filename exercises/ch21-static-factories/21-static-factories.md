@@ -27,22 +27,81 @@ status: "new — authored exercises (Multiple Choice + Micro-Parsons)"
 
 ## Micro-Parsons
 
-**Problem:** You're given everything in the program below except the `GripperFactory` class: the `Gripper` interface, its `RealGripper` and `SimGripper` implementations, and the `GripperDemo` class with `main`. Reorder the fragments below into the `GripperFactory` class. It holds one static factory method that returns a `RealGripper` when `onRobot` is `true` and a `SimGripper` otherwise, with `Gripper` as the return type. `main` calls it with `false`, so the program prints `sim gripper: holding`.
+**Problem:** You're given everything in the program below except the `GripperFactory` class: the `Gripper` interface, its `RealGripper` and `SimGripper` implementations, and the `GripperDemo` class with `main`.
+
+```java
+public class GripperDemo
+{
+    public static void main(String[] args)
+    {
+        Gripper gripper = GripperFactory.createGripper(false);
+        System.out.println(gripper.status());
+    }
+}
+
+interface Gripper
+{
+    String status();
+}
+
+class RealGripper implements Gripper
+{
+    @Override
+    public String status()
+    {
+        return "real gripper: reading the real sensor";
+    }
+}
+
+class SimGripper implements Gripper
+{
+    @Override
+    public String status()
+    {
+        return "sim gripper: holding";
+    }
+}
+
+// GripperFactory class goes here
+```
+
+Reorder the fragments below into the `GripperFactory` class. It holds one static factory method that returns a `RealGripper` when `onRobot` is `true` and a `SimGripper` otherwise, with `Gripper` as the return type. `main` calls it with `false`, so the program prints `sim gripper: holding`.
 
 Reorder the fragments below to complete it:
 
-- a. `        if (onRobot) return new RealGripper();`
-- b. `}`
-- c. `    public static Gripper createGripper(boolean onRobot)`
-- d. `class GripperFactory`
-- e. `    }`
-- f. `    {`
-- g. `        else return new SimGripper();`
-- h. `{`
+- a.
+  ```java
+  class GripperFactory
+  {
+  ```
+- b. `    public static Gripper createGripper(boolean onRobot)`
+- c. `    {`
+- d. `        if (onRobot)`
+- e. `        {`
+- f. `            return new RealGripper();`
+- g. `        }`
+- h. `        else`
+- i. `        {`
+- j. `            return new SimGripper();`
+- k. `        }`
+- l.
+  ```java
+      }
+  }
+  ```
 
-**Answer:** d, h, c, f, a, g, e, b
+**Answer:** a, b, c, d, e, f, g, h, i, j, k, l
 
 ```java
+public class GripperDemo
+{
+    public static void main(String[] args)
+    {
+        Gripper gripper = GripperFactory.createGripper(false);
+        System.out.println(gripper.status());
+    }
+}
+
 interface Gripper
 {
     String status();
@@ -70,19 +129,18 @@ class GripperFactory
 {
     public static Gripper createGripper(boolean onRobot)
     {
-        if (onRobot) return new RealGripper();
-        else return new SimGripper();
-    }
-}
-
-public class GripperDemo
-{
-    public static void main(String[] args)
-    {
-        Gripper gripper = GripperFactory.createGripper(false);
-        System.out.println(gripper.status());
+        if (onRobot)
+        {
+            return new RealGripper();
+        }
+        else
+        {
+            return new SimGripper();
+        }
     }
 }
 ```
 
-**Why this order:** The class line (`d`) and its opening brace (`h`) come first. Then the factory method's signature (`c`), which is `public static` so `main` can call it as `GripperFactory.createGripper(...)` without any `GripperFactory` object, and which returns the interface type `Gripper` so it's free to hand back either implementation. The method's opening brace (`f`) follows. Inside, the `if` branch (`a`) has to come before its matching `else` (`g`). Together they're the one place the real-vs-simulated decision is made. The braces close in reverse: the method's (`e`), then the class's (`b`). `main` only ever sees a `Gripper`, and never mentions `RealGripper` or `SimGripper` itself.
+(`GripperDemo`, the public class with `main`, comes first in the file — on Java 17, `java File.java` source-launch only runs the first class in the file; Java 25 is more lenient, but leading with the public class works on both.)
+
+**Why this order:** The class line and its opening brace (`a`, merged — two lines with nothing valid between them) come first. Then the factory method's signature (`b`), which is `public static` so `main` can call it as `GripperFactory.createGripper(...)` without any `GripperFactory` object, and which returns the interface type `Gripper` so it's free to hand back either implementation. The method's opening brace (`c`) follows. Inside, the braced `if` (`d`, `e`, `f`, `g`) has to come before its matching `else` (`h`, `i`, `j`, `k`) — every `if`/`else` here uses braces (Lesson 5.1). Together they're the one place the real-vs-simulated decision is made. The trailing braces close in reverse, the method's then the class's, merged into one fragment (`l`) since nothing valid can go between two closing braces. `main` only ever sees a `Gripper`, and never mentions `RealGripper` or `SimGripper` itself.

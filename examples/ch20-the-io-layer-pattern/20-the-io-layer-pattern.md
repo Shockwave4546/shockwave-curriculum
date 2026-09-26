@@ -30,19 +30,19 @@ class ClimberInputs
 }
 ```
 
-This is the object the rest of the subsystem reads from. (In a real AdvantageKit project this class would also get the `toLog`/`fromLog` methods from the lesson, so the framework can save and replay it. This example leaves logging out and focuses on the structure.)
+This is the object the rest of the subsystem reads from. (A logging framework, Ch.33, can record and replay a class shaped like this. This example leaves logging out and focuses on the structure.)
 
 ## Step 3: The IO Interface (the "Port")
 
 ```java
 interface ClimberIO
 {
-    default void updateInputs(ClimberInputs inputs) {}
-    default void setVoltage(double volts) {}
+    void updateInputs(ClimberInputs inputs);
+    void setVoltage(double volts);
 }
 ```
 
-Just like the lesson's `IntakeIO`, this says *what* a climber can do and nothing about *how*. The empty `default` methods (Lesson 19) mean an implementation only has to override the methods it actually needs.
+Just like the lesson's `IntakeIO`, this says *what* a climber can do and nothing about *how*. Both methods are abstract (Lesson 19) — neither has a sensible default, since both real implementations below need their own body anyway.
 
 ## Step 4: Two Implementations (the "Adapters")
 
@@ -154,13 +154,36 @@ public class ClimberDemo
 }
 ```
 
-This `if`/`else` plays the same role as the lesson's `RobotContainer`: it's the one and only place that decides real vs. simulated. `runningOnRobot` is hardcoded to `false` here as a stand-in for a real robot check. The `for` loop stands in for the robot calling `periodic()` once per loop cycle.
+This `if`/`else` plays the same role as the lesson's `Robot` constructor: it's the one and only place that decides real vs. simulated. `runningOnRobot` is hardcoded to `false` here as a stand-in for the lesson's `RobotBase.isReal()` check. The `for` loop stands in for the robot calling `periodic()` once per loop cycle.
 
 ## Step 7: The Whole Program
 
-All five pieces go in one file. Only `ClimberDemo` is `public`, since it holds `main`:
+All five pieces go in one file. Only `ClimberDemo` is `public`, since it holds `main` — it comes first in the file (on Java 17, `java File.java` source-launch only runs the first class in the file; Java 25 is more lenient, but leading with the public class works on both):
 
 ```java
+public class ClimberDemo
+{
+    public static void main(String[] args)
+    {
+        boolean runningOnRobot = false; // stand-in for the real "am I on the robot?" check
+
+        Climber climber;
+        if (runningOnRobot)
+        {
+            climber = new Climber(new ClimberIOReal());
+        }
+        else
+        {
+            climber = new Climber(new ClimberIOSim());
+        }
+
+        for (int cycle = 1; cycle <= 5; cycle++)
+        {
+            climber.periodic();
+        }
+    }
+}
+
 class ClimberInputs
 {
     public double positionMeters = 0.0;
@@ -169,8 +192,8 @@ class ClimberInputs
 
 interface ClimberIO
 {
-    default void updateInputs(ClimberInputs inputs) {}
-    default void setVoltage(double volts) {}
+    void updateInputs(ClimberInputs inputs);
+    void setVoltage(double volts);
 }
 
 class ClimberIOReal implements ClimberIO
@@ -231,29 +254,6 @@ class Climber
         else
         {
             io.setVoltage(0.0); // reached the target height: stop
-        }
-    }
-}
-
-public class ClimberDemo
-{
-    public static void main(String[] args)
-    {
-        boolean runningOnRobot = false; // stand-in for the real "am I on the robot?" check
-
-        Climber climber;
-        if (runningOnRobot)
-        {
-            climber = new Climber(new ClimberIOReal());
-        }
-        else
-        {
-            climber = new Climber(new ClimberIOSim());
-        }
-
-        for (int cycle = 1; cycle <= 5; cycle++)
-        {
-            climber.periodic();
         }
     }
 }

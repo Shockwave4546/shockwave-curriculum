@@ -110,7 +110,21 @@ Neither line in `main` says `new`, and neither mentions `SolidColor` or `Blinkin
 
 ## Step 6: The Whole Program
 
+`LedDemo`, the public class with `main`, comes first in the file (on Java 17, `java File.java` source-launch only runs the first class in the file; Java 25 is more lenient, but leading with the public class works on both):
+
 ```java
+public class LedDemo
+{
+    public static void main(String[] args)
+    {
+        LedPattern blueLights = LedPatterns.forAlliance("Blue");
+        LedPattern unknownLights = LedPatterns.forAlliance("");
+
+        System.out.println("Blue alliance: " + blueLights.describe());
+        System.out.println("No alliance yet: " + unknownLights.describe());
+    }
+}
+
 interface LedPattern
 {
     String describe();
@@ -157,18 +171,6 @@ class LedPatterns
         {
             return new BlinkingYellow(); // alliance not known yet: warn the drive team
         }
-    }
-}
-
-public class LedDemo
-{
-    public static void main(String[] args)
-    {
-        LedPattern blueLights = LedPatterns.forAlliance("Blue");
-        LedPattern unknownLights = LedPatterns.forAlliance("");
-
-        System.out.println("Blue alliance: " + blueLights.describe());
-        System.out.println("No alliance yet: " + unknownLights.describe());
     }
 }
 ```
