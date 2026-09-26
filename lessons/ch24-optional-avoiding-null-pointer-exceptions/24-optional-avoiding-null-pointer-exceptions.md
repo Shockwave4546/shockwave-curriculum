@@ -31,9 +31,13 @@ Just by reading `Optional<Pose2d> getPose()`'s signature, a caller already knows
 ## Creating an Optional
 
 ```java
-Optional<Pose2d> empty = Optional.empty();           // definitely no value
-Optional<Pose2d> present = Optional.of(currentPose);  // wraps a value — throws immediately if currentPose is null
-Optional<Pose2d> maybe = Optional.ofNullable(currentPose); // empty if currentPose is null, present otherwise
+Optional<Pose2d> empty = Optional.empty();       // definitely no value
+
+// wraps a value — throws immediately if currentPose is null
+Optional<Pose2d> present = Optional.of(currentPose);
+
+// empty if currentPose is null, present otherwise
+Optional<Pose2d> maybe = Optional.ofNullable(currentPose);
 ```
 
 `Optional.of(...)` is a deliberate safety check: if you accidentally pass it a `null`, it throws right away — better to fail loudly at the source than to silently wrap a `null` and have it surface as a confusing failure somewhere else later.
@@ -47,20 +51,24 @@ Optional<Pose2d> visionPose = vision.getPose();
 visionPose.ifPresent(pose -> estimator.addVisionMeasurement(pose, timestamp));
 
 // Or supply a fallback value for the empty case
-Pose2d pose = visionPose.orElse(lastKnownPose);
+Pose2d fallbackPose = visionPose.orElse(lastKnownPose);
 
 // Or throw a specific exception if a value was truly required
-Pose2d requiredPose = visionPose.orElseThrow(IllegalStateException::new);
+Pose2d requiredPose = visionPose.orElseThrow(
+    () -> new IllegalStateException("No vision pose"));
 ```
 
-`ifPresent` runs a lambda (Lesson 19.1) only if a value is actually there — nothing happens otherwise. `orElse` supplies a fallback value for the empty case. `orElseThrow` is for the rarer case where an empty `Optional` really does mean something has gone wrong, and continuing anyway wouldn't make sense.
+`ifPresent` runs a lambda (Lesson 19.1) only if a value is actually there — nothing happens otherwise. `orElse` supplies a fallback value for the empty case. `orElseThrow` is for the rarer case where an empty `Optional` really does mean something has gone wrong, and continuing anyway wouldn't make sense — passing it a lambda that builds the exception (rather than a bare `new IllegalStateException(...)`) matters here: `orElseThrow` only constructs and throws that exception when the `Optional` really is empty, instead of building it eagerly every time. (You'll also see `orElseThrow(IllegalStateException::new)` written as a constructor reference in other code — Lesson 19.1 has the full table of method-reference kinds, including that one.)
+
+`Optional` also has a few less common but genuinely useful methods: a no-argument `orElseThrow()` (throws `NoSuchElementException` when nothing more specific is needed), `orElseGet(supplier)` (like `orElse`, but only computes its fallback value when it's actually needed, instead of always), and `ifPresentOrElse(consumer, runnable)` (runs one callback if a value is present, and a different one if it's empty — `ifPresent` alone has no "else").
 
 ## The One Pitfall That Defeats the Whole Point
 
 `Optional` has an `isPresent()` check and a `get()` method that returns the wrapped value — but calling `get()` without checking `isPresent()` first throws `NoSuchElementException` on an empty `Optional`, which is exactly the same class of crash `Optional` exists to prevent, just under a different exception name:
 
 ```java
-Pose2d pose = visionPose.get(); // never do this blind — this is a NullPointerException with extra steps
+// never do this blind — this is a NullPointerException with extra steps
+Pose2d uncheckedPose = visionPose.get();
 ```
 
 Even the safer `isPresent()` + `get()` pairing is discouraged — it's really just a nested-null-check in disguise. `ifPresent`, `orElse`, and `orElseThrow` all handle both cases directly, without ever needing to call bare `get()`.
@@ -71,9 +79,18 @@ Beyond the core methods above, `Optional` supports `filter` (keep the value only
 
 ```java
 visionPose
-    .filter(pose -> pose.getX() >= 0)         // only proceed if the pose has a valid X coordinate
+    // only proceed if the pose has a valid X coordinate
+    .filter(pose -> pose.getX() >= 0)
     .ifPresent(pose -> estimator.addVisionMeasurement(pose, timestamp));
 ```
+
+`map` transforms the value inside an `Optional`, without ever having to check `isPresent()` first — on an empty `Optional`, it just stays empty:
+
+```java
+double dashboardX = visionPose.map(pose -> pose.getX()).orElse(0.0);
+```
+
+`visionPose.map(pose -> pose.getX())` turns an `Optional<Pose2d>` into an `Optional<Double>` — present with the X coordinate if `visionPose` had a value, empty otherwise — and `.orElse(0.0)` then unwraps that down to a plain `double` either way.
 
 These compose well for simple cases; genuinely complex chains of `Optional` transformations are a more advanced topic than this curriculum covers in depth.
 
@@ -89,6 +106,7 @@ These compose well for simple cases; genuinely complex chains of `Optional` tran
 - Create one with `Optional.empty()`, `Optional.of(value)` (throws if `value` is null), or `Optional.ofNullable(value)` (safe either way).
 - Handle both cases with `ifPresent(...)`, `orElse(fallback)`, or `orElseThrow(...)` — never call bare `.get()` without checking first.
 - `filter` and `map` let you chain a couple of extra conditions/transformations without falling back into nested `if` checks.
+- Beyond the core methods: a no-argument `orElseThrow()`, `orElseGet(supplier)` (lazy, unlike eager `orElse`), and `ifPresentOrElse(consumer, runnable)` (a present/empty pair of callbacks) cover the less common cases.
 
 Derived from `other-reference-repo`: `oracle-java-tutorials/optional/java8-optional.md` (ORACLE 16.1)
 **Deck context:** mechacoder-test/src/lessons/java-2.js, slide 9b ("Optional: Maybe a Value") — vision pose estimator example

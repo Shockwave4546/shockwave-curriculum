@@ -109,9 +109,13 @@ const DATA = {
 }</code></pre>
       <p>Just by reading <code class="inline">Optional&lt;Pose2d&gt; getPose()</code>'s signature, a caller already knows the pose might not be there this frame — the type itself documents it, instead of relying on a comment or tribal knowledge.</p>
       <h2>Creating an Optional</h2>
-      <pre class="code"><code><span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; empty = <span class="t">Optional</span>.<span class="me">empty</span>();           <span class="c">// definitely no value</span>
-<span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; present = <span class="t">Optional</span>.<span class="me">of</span>(currentPose);  <span class="c">// wraps a value — throws immediately if currentPose is null</span>
-<span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; maybe = <span class="t">Optional</span>.<span class="me">ofNullable</span>(currentPose); <span class="c">// empty if currentPose is null, present otherwise</span></code></pre>
+      <pre class="code"><code><span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; empty = <span class="t">Optional</span>.<span class="me">empty</span>();       <span class="c">// definitely no value</span>
+
+<span class="c">// wraps a value — throws immediately if currentPose is null</span>
+<span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; present = <span class="t">Optional</span>.<span class="me">of</span>(currentPose);
+
+<span class="c">// empty if currentPose is null, present otherwise</span>
+<span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; maybe = <span class="t">Optional</span>.<span class="me">ofNullable</span>(currentPose);</code></pre>
       <p><code class="inline">Optional.of(...)</code> is a deliberate safety check: if you accidentally pass it a <code class="inline">null</code>, it throws right away — better to fail loudly at the source than to silently wrap a <code class="inline">null</code> and have it surface as a confusing failure somewhere else later.</p>
       <h2>Handling Both Cases Honestly</h2>
       <pre class="code"><code><span class="t">Optional</span>&lt;<span class="t">Pose2d</span>&gt; visionPose = vision.<span class="me">getPose</span>();
@@ -120,20 +124,27 @@ const DATA = {
 visionPose.<span class="me">ifPresent</span>(pose -&gt; estimator.<span class="me">addVisionMeasurement</span>(pose, timestamp));
 
 <span class="c">// Or supply a fallback value for the empty case</span>
-<span class="t">Pose2d</span> pose = visionPose.<span class="me">orElse</span>(lastKnownPose);
+<span class="t">Pose2d</span> fallbackPose = visionPose.<span class="me">orElse</span>(lastKnownPose);
 
 <span class="c">// Or throw a specific exception if a value was truly required</span>
-<span class="t">Pose2d</span> requiredPose = visionPose.<span class="me">orElseThrow</span>(IllegalStateException::<span class="k">new</span>);</code></pre>
-      <p><code class="inline">ifPresent</code> runs a lambda (Lesson 19.1) only if a value is actually there — nothing happens otherwise. <code class="inline">orElse</code> supplies a fallback value for the empty case. <code class="inline">orElseThrow</code> is for the rarer case where an empty <code class="inline">Optional</code> really does mean something has gone wrong, and continuing anyway wouldn't make sense.</p>
+<span class="t">Pose2d</span> requiredPose = visionPose.<span class="me">orElseThrow</span>(
+    () -&gt; <span class="k">new</span> <span class="t">IllegalStateException</span>(<span class="s">"No vision pose"</span>));</code></pre>
+      <p><code class="inline">ifPresent</code> runs a lambda (Lesson 19.1) only if a value is actually there — nothing happens otherwise. <code class="inline">orElse</code> supplies a fallback value for the empty case. <code class="inline">orElseThrow</code> is for the rarer case where an empty <code class="inline">Optional</code> really does mean something has gone wrong, and continuing anyway wouldn't make sense — passing it a lambda that builds the exception (rather than a bare <code class="inline">new IllegalStateException(...)</code>) matters here: <code class="inline">orElseThrow</code> only constructs and throws that exception when the <code class="inline">Optional</code> really is empty, instead of building it eagerly every time. (You'll also see <code class="inline">orElseThrow(IllegalStateException::new)</code> written as a constructor reference in other code — Lesson 19.1 has the full table of method-reference kinds, including that one.)</p>
+      <p><code class="inline">Optional</code> also has a few less common but genuinely useful methods: a no-argument <code class="inline">orElseThrow()</code> (throws <code class="inline">NoSuchElementException</code> when nothing more specific is needed), <code class="inline">orElseGet(supplier)</code> (like <code class="inline">orElse</code>, but only computes its fallback value when it's actually needed, instead of always), and <code class="inline">ifPresentOrElse(consumer, runnable)</code> (runs one callback if a value is present, and a different one if it's empty — <code class="inline">ifPresent</code> alone has no "else").</p>
       <h2>The One Pitfall That Defeats the Whole Point</h2>
       <p><code class="inline">Optional</code> has an <code class="inline">isPresent()</code> check and a <code class="inline">get()</code> method that returns the wrapped value — but calling <code class="inline">get()</code> without checking <code class="inline">isPresent()</code> first throws <code class="inline">NoSuchElementException</code> on an empty <code class="inline">Optional</code>, which is exactly the same class of crash <code class="inline">Optional</code> exists to prevent, just under a different exception name:</p>
-      <pre class="code"><code><span class="t">Pose2d</span> pose = visionPose.<span class="me">get</span>(); <span class="c">// never do this blind — this is a NullPointerException with extra steps</span></code></pre>
+      <pre class="code"><code><span class="c">// never do this blind — this is a NullPointerException with extra steps</span>
+<span class="t">Pose2d</span> uncheckedPose = visionPose.<span class="me">get</span>();</code></pre>
       <p>Even the safer <code class="inline">isPresent()</code> + <code class="inline">get()</code> pairing is discouraged — it's really just a nested-null-check in disguise. <code class="inline">ifPresent</code>, <code class="inline">orElse</code>, and <code class="inline">orElseThrow</code> all handle both cases directly, without ever needing to call bare <code class="inline">get()</code>.</p>
       <h2>Filtering and Transforming (a Brief Look)</h2>
       <p>Beyond the core methods above, <code class="inline">Optional</code> supports <code class="inline">filter</code> (keep the value only if it matches a condition, otherwise become empty) and <code class="inline">map</code> (transform the value, if present, into something else) — useful for chaining a couple of extra checks without falling back into nested <code class="inline">if</code> statements:</p>
       <pre class="code"><code>visionPose
-    .<span class="me">filter</span>(pose -&gt; pose.<span class="me">getX</span>() &gt;= <span class="n">0</span>)         <span class="c">// only proceed if the pose has a valid X coordinate</span>
+    <span class="c">// only proceed if the pose has a valid X coordinate</span>
+    .<span class="me">filter</span>(pose -&gt; pose.<span class="me">getX</span>() &gt;= <span class="n">0</span>)
     .<span class="me">ifPresent</span>(pose -&gt; estimator.<span class="me">addVisionMeasurement</span>(pose, timestamp));</code></pre>
+      <p><code class="inline">map</code> transforms the value inside an <code class="inline">Optional</code>, without ever having to check <code class="inline">isPresent()</code> first — on an empty <code class="inline">Optional</code>, it just stays empty:</p>
+      <pre class="code"><code><span class="k">double</span> dashboardX = visionPose.<span class="me">map</span>(pose -&gt; pose.<span class="me">getX</span>()).<span class="me">orElse</span>(<span class="n">0.0</span>);</code></pre>
+      <p><code class="inline">visionPose.map(pose -> pose.getX())</code> turns an <code class="inline">Optional&lt;Pose2d&gt;</code> into an <code class="inline">Optional&lt;Double&gt;</code> — present with the X coordinate if <code class="inline">visionPose</code> had a value, empty otherwise — and <code class="inline">.orElse(0.0)</code> then unwraps that down to a plain <code class="inline">double</code> either way.</p>
       <p>These compose well for simple cases; genuinely complex chains of <code class="inline">Optional</code> transformations are a more advanced topic than this curriculum covers in depth.</p>
     `,
     pitfalls: [
@@ -145,7 +156,8 @@ visionPose.<span class="me">ifPresent</span>(pose -&gt; estimator.<span class="m
       "<code class=\"inline\">Optional&lt;T&gt;</code> makes \"this might not have a value\" visible directly in a method's return type, instead of relying on an invisible, easy-to-forget <code class=\"inline\">null</code> check.",
       "Create one with <code class=\"inline\">Optional.empty()</code>, <code class=\"inline\">Optional.of(value)</code> (throws if value is null), or <code class=\"inline\">Optional.ofNullable(value)</code> (safe either way).",
       "Handle both cases with <code class=\"inline\">ifPresent(...)</code>, <code class=\"inline\">orElse(fallback)</code>, or <code class=\"inline\">orElseThrow(...)</code> — never call bare <code class=\"inline\">.get()</code> without checking first.",
-      "<code class=\"inline\">filter</code> and <code class=\"inline\">map</code> let you chain a couple of extra conditions/transformations without falling back into nested <code class=\"inline\">if</code> checks."
+      "<code class=\"inline\">filter</code> and <code class=\"inline\">map</code> let you chain a couple of extra conditions/transformations without falling back into nested <code class=\"inline\">if</code> checks.",
+      "Beyond the core methods: a no-argument <code class=\"inline\">orElseThrow()</code>, <code class=\"inline\">orElseGet(supplier)</code> (lazy, unlike eager <code class=\"inline\">orElse</code>), and <code class=\"inline\">ifPresentOrElse(consumer, runnable)</code> (a present/empty pair of callbacks) cover the less common cases."
     ],
     prov: "other-reference-repo: oracle-java-tutorials/optional/java8-optional.md (ORACLE 16.1) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 9b (\"Optional: Maybe a Value\") — vision pose estimator example"
   }

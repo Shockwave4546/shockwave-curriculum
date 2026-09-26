@@ -70,6 +70,9 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 pre.code{background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:8px;padding:16px 18px;margin:0 0 20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;}
 pre.code code{display:block;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;}
 .k{color:var(--vsc-kw);} .t{color:var(--vsc-ty);} .s{color:var(--vsc-st);} .n{color:var(--vsc-nu);} .c{color:var(--vsc-cm);} .me{color:var(--vsc-me);}
+table.cmp{width:100%;border-collapse:collapse;margin:0 0 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+table.cmp th,table.cmp td{border:1px solid var(--card-line);padding:8px 10px;text-align:left;}
+table.cmp th{background:var(--card);font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--ink-soft);font-size:11px;text-transform:uppercase;letter-spacing:0.03em;}
 .prov{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:16px;margin-top:8px;}
 .prov strong{color:var(--accent);font-weight:500;}
 ::-webkit-scrollbar{width:10px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;} ::-webkit-scrollbar-track{background:transparent;}
@@ -91,80 +94,124 @@ pre.code code{display:block;white-space:pre-wrap;word-break:break-word;overflow-
 <script>
 const DATA = {
   "23.1": {
-    title: "Scope and Access",
+    title: "Access, final, and Immutability",
     ref: "23.1 — Scope and Access (CSA 3.8)",
     body: `
-      <h2>What Scope Means</h2>
-      <p>A variable's <strong>scope</strong> is where it's accessible — where it "lives and exists." Scope is determined by the nearest enclosing pair of curly braces <code class="inline">{}</code> around wherever the variable was declared. Trying to use a variable outside its scope isn't just bad practice — the variable genuinely doesn't exist there, and the code won't compile.</p>
-      <h2>Three Levels of Scope</h2>
+      <p>Lesson 7.2 already covered where a variable lives — class, method, or block scope — and what happens when a local variable or parameter shadows a field. This lesson builds on that background rather than repeating it: it's about two different questions. Who, outside a class, is allowed to touch a piece of its data? And what can be guaranteed to never change once it's set?</p>
+      <h2>Access Modifiers: Four Levels</h2>
+      <p>Java actually has four access levels, not two. <code class="inline">public</code> and <code class="inline">private</code> are the ones used everywhere so far; the other two sit in between:</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span>
 {
-    <span class="k">private boolean</span> hasGamePiece;             <span class="c">// CLASS scope — visible to every method in Intake</span>
+    <span class="k">public</span> <span class="t">String</span> status;        <span class="c">// reachable from anywhere</span>
+    <span class="k">protected double</span> maxSpeed;   <span class="c">// reachable from the same package, or any subclass</span>
+    <span class="k">double</span> gearRatio;            <span class="c">// no modifier — reachable only from the same package</span>
+    <span class="k">private boolean</span> calibrated;  <span class="c">// reachable only from inside Intake itself</span>
+}</code></pre>
+      <table class="cmp"><thead><tr><th>Modifier</th><th>Same class</th><th>Same package</th><th>Subclass (different package)</th><th>Everywhere</th></tr></thead><tbody>
+        <tr><td><code class="inline">public</code></td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td><code class="inline">protected</code></td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+        <tr><td><em>(none)</em> — package-private</td><td>Yes</td><td>Yes</td><td>No</td><td>No</td></tr>
+        <tr><td><code class="inline">private</code></td><td>Yes</td><td>No</td><td>No</td><td>No</td></tr>
+      </tbody></table>
+      <p><code class="inline">protected</code> came up briefly in Lesson 17.2: it's what lets a subclass reach a superclass's member directly, without going through a getter — this table is the full picture, including package-private (no keyword at all, the default when a field or class has none of the other three). This course keeps fields <code class="inline">private</code> and reaches them through getters/setters or <code class="inline">super(...)</code>, but real WPILib code uses all four.</p>
+      <h2>final: Not Just for Fields</h2>
+      <p><code class="inline">final</code> can mark a local variable, a parameter, a field, a method, or a whole class — and it means something related but slightly different in each place.</p>
+      <p><strong>Locals and parameters:</strong> a <code class="inline">final</code> local variable or parameter can be assigned exactly once, same as a field:</p>
+      <pre class="code"><code><span class="k">public double</span> <span class="me">clamp</span>(<span class="k">final double</span> target, <span class="k">double</span> limit)
+{
+    <span class="c">// target = -target; would be a compile error here — target is final</span>
+    <span class="k">return</span> Math.<span class="me">min</span>(target, limit);
+}</code></pre>
+      <p><strong>Fields, and the blank final rule:</strong> a <code class="inline">final</code> field doesn't have to be given a value in its declaration — it can stay <em>blank</em> there, as long as every constructor assigns it exactly once, on every path through that constructor:</p>
+      <pre class="code"><code><span class="k">class</span> <span class="t">BatteryMonitor</span>
+{
+    <span class="k">private final</span> <span class="t">String</span> label;   <span class="c">// no initializer here — that's legal</span>
 
-    <span class="k">public void</span> <span class="me">setState</span>(<span class="k">boolean</span> detected)    <span class="c">// detected is a parameter — METHOD scope</span>
+    <span class="k">public</span> <span class="me">BatteryMonitor</span>(<span class="t">String</span> label)
     {
-        <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; <span class="n">3</span>; i++)           <span class="c">// i is a loop variable — BLOCK scope</span>
-        {
-            <span class="k">boolean</span> sample = detected;        <span class="c">// BLOCK scope — only exists inside this loop's braces</span>
-        }
-        hasGamePiece = detected;              <span class="c">// fine: class-scope field, reachable anywhere in the class</span>
+        <span class="k">this</span>.label = label;       <span class="c">// as long as every constructor assigns it exactly once</span>
     }
 }</code></pre>
-      <ul>
-        <li><strong>Class scope</strong> — instance variables (fields), visible to every method in the class, regardless of whether they're <code class="inline">public</code> or <code class="inline">private</code>.</li>
-        <li><strong>Method scope</strong> — local variables and parameters, declared inside a method or constructor; they exist only for that one method call, and can never be declared <code class="inline">public</code>/<code class="inline">private</code> themselves.</li>
-        <li><strong>Block scope</strong> — variables declared inside any <code class="inline">{}</code> block narrower than a whole method (a loop, an <code class="inline">if</code>, etc.); they stop existing the instant that block ends.</li>
-      </ul>
-      <h2>Local Variables Only Live Where They're Declared</h2>
-      <pre class="code"><code><span class="k">public</span> <span class="t">String</span> <span class="me">getStatus</span>()
+      <p>Leave a blank <code class="inline">final</code> field unassigned in some constructor, and it's a compile error — <code class="inline">variable label might not have been initialized</code> — not a <code class="inline">null</code> at runtime.</p>
+      <p><strong>Methods:</strong> a <code class="inline">final</code> method can't be overridden by a subclass, full stop:</p>
+      <pre class="code"><code><span class="k">class</span> <span class="t">RobotPart</span>
 {
-    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; <span class="n">3</span>; i++)
-    {
-        <span class="k">int</span> sample = i;
-    }
-    System.out.<span class="me">println</span>(sample); <span class="c">// COMPILE ERROR — sample only existed inside the loop's braces</span>
-    <span class="k">return</span> <span class="s">"done"</span>;
-}</code></pre>
-      <p>Parameters follow the same rule: a constructor's parameter only exists for that constructor call, and isn't reachable from any other method in the class — including <code class="inline">toString()</code> or any other method that seems related.</p>
-      <h2>Shadowing: When a Local Name Matches a Field Name</h2>
-      <p>If a local variable (or parameter) shares a name with an instance variable, the <em>local</em> one wins inside that method — this is called <strong>shadowing</strong>:</p>
-      <pre class="code"><code><span class="k">public class</span> <span class="t">Intake</span>
-{
-    <span class="k">private</span> <span class="t">String</span> name;
+    <span class="k">public final</span> <span class="t">String</span> <span class="me">getName</span>() { <span class="k">return</span> name; }
+    <span class="c">// ...</span>
+}
 
+<span class="k">class</span> <span class="t">Intake</span> <span class="k">extends</span> <span class="t">RobotPart</span>
+{
     <span class="me">@Override</span>
-    <span class="k">public</span> <span class="t">String</span> <span class="me">toString</span>()
+    <span class="k">public</span> <span class="t">String</span> <span class="me">getName</span>() { <span class="k">return</span> <span class="s">"Intake"</span>; }
+    <span class="c">// COMPILE ERROR — getName() is final in RobotPart</span>
+}</code></pre>
+      <p><strong>Classes:</strong> a <code class="inline">final</code> class can't be extended by anything, anywhere — <code class="inline">String</code> is one, which is why <code class="inline">class MyString extends String</code> never compiles. Records (below) are implicitly <code class="inline">final</code> too.</p>
+      <p><strong>Effectively final:</strong> a local variable captured by a lambda (Lesson 19.1) doesn't have to be declared <code class="inline">final</code>, but it does have to <em>behave</em> like one — never reassigned anywhere after its first assignment, anywhere in the method:</p>
+      <pre class="code"><code><span class="k">double</span> baseSpeed = <span class="n">0.5</span>;
+baseSpeed = <span class="n">0.6</span>;
+<span class="t">Runnable</span> r = () -&gt; System.out.<span class="me">println</span>(baseSpeed);
+<span class="c">// COMPILE ERROR — baseSpeed isn't effectively final</span></code></pre>
+      <p>That reassignment on the line before disqualifies <code class="inline">baseSpeed</code> the moment the lambda tries to capture it: <code class="inline">local variables referenced from a lambda expression must be final or effectively final</code>.</p>
+      <p>On an object reference, all of this only ever locks <em>the reference itself</em> — a <code class="inline">final Encoder armEncoder = new Encoder(0, 1);</code> can never be pointed at a different <code class="inline">Encoder</code> (WPILib's real <code class="inline">org.wpilib.hardware.rotation.Encoder</code>, <code class="inline">getRate()</code> reads its current rate), but nothing about <code class="inline">final</code> stops <code class="inline">armEncoder</code>'s own internal state from changing as it spins. That gap between "the reference can't change" and "nothing about the object can change" is exactly what the rest of this lesson is about.</p>
+      <h2>Encapsulation Leaks: Defensive Copies</h2>
+      <p>Marking a field <code class="inline">private</code> isn't automatically enough to protect it — a getter that hands back a direct reference to a mutable field leaks the class's internal state anyway:</p>
+      <pre class="code"><code><span class="k">class</span> <span class="t">PitNotes</span>
+{
+    <span class="k">private final</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt; notes = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt;();
+
+    <span class="k">public</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt; <span class="me">getNotes</span>()
     {
-        <span class="t">String</span> name = <span class="s">"unknown"</span>;  <span class="c">// this local variable shadows the instance variable name</span>
-        <span class="k">return</span> name;              <span class="c">// returns "unknown", NOT the instance variable's real value</span>
+        <span class="k">return</span> notes; <span class="c">// leak — the caller now holds the SAME list object</span>
     }
 }</code></pre>
-      <p>Ch.8 already introduced the fix for this exact situation inside constructors — <code class="inline">this.name</code> explicitly reaches the instance variable even when a same-named local variable or parameter is shadowing it.</p>
-      <h2>Connecting Scope to Encapsulation</h2>
-      <p>Encapsulation (Ch.7) is really scope applied deliberately: marking a field <code class="inline">private</code> doesn't change its <em>class</em> scope (every method in the class can still see it) — it restricts <em>outside</em> code from reaching it directly, forcing access through public getters/setters instead. Scope and access modifiers (<code class="inline">public</code>/<code class="inline">private</code>) are two separate but related ideas: scope is about <em>where a variable exists at all</em>; access modifiers are about <em>who outside the class is allowed to touch it</em>.</p>
-      <h2>The final Keyword</h2>
-      <p>A field, parameter, or local variable marked <code class="inline">final</code> can be assigned exactly once — any attempt to reassign it afterward is a compile error. This matters for anything that genuinely should never change after it's set:</p>
-      <pre class="code"><code><span class="k">private final</span> <span class="t">TalonFX</span> motor = <span class="k">new</span> <span class="t">TalonFX</span>(<span class="n">1</span>); <span class="c">// this reference can never be reassigned to a different motor</span>
-
-<span class="k">public double</span> <span class="me">getVelocity</span>()
+      <p>Even though <code class="inline">notes</code> is <code class="inline">private</code> and <code class="inline">final</code>, this getter hands out a reference to the exact list <code class="inline">PitNotes</code> uses internally. Anything the caller does to that returned list — <code class="inline">getNotes().clear()</code>, <code class="inline">getNotes().add(...)</code> — changes <code class="inline">PitNotes</code>'s own data, without ever calling one of <code class="inline">PitNotes</code>'s own methods. <code class="inline">private</code> only stops outside code from writing <code class="inline">somePitNotes.notes</code> directly; it does nothing once a reference to the same object escapes through a getter.</p>
+      <p>The fix is a <strong>defensive copy</strong> — hand back a new object with the same contents, instead of the original:</p>
+      <pre class="code"><code><span class="k">public</span> <span class="t">List</span>&lt;<span class="t">String</span>&gt; <span class="me">getNotes</span>()
 {
-    <span class="k">return</span> motor.<span class="me">getVelocity</span>().<span class="me">getValue</span>();
+    <span class="c">// a defensive copy — an unmodifiable snapshot, not the real list</span>
+    <span class="k">return</span> <span class="t">List</span>.<span class="me">copyOf</span>(notes);
 }</code></pre>
-      <p><code class="inline">final</code> on an object reference only locks the <em>reference</em> itself — it doesn't make the object's own internal state unchangeable (<code class="inline">motor</code> can't be pointed at a different <code class="inline">TalonFX</code>, but the real <code class="inline">TalonFX</code> object it points to can still have its own state change via its own methods). True <strong>immutability</strong> — an object whose internal state can never change at all once constructed — is a stronger guarantee, and it's exactly why immutable classes like WPILib's <code class="inline">Pose2d</code> are thread-safe and predictable: nothing can ever be halfway through changing one, because nothing can change it at all.</p>
+      <p>Now the caller gets its own snapshot; mutating it can't touch <code class="inline">PitNotes</code>'s real data at all, and <code class="inline">List.copyOf(...)</code> refuses to be modified even by accident.</p>
+      <h2>Records: Immutable Data, Built In</h2>
+      <p>When a class is really just a bundle of values — no behavior beyond holding them — Java's <code class="inline">record</code> (16+) writes the immutable version of it for you:</p>
+      <pre class="code"><code><span class="k">public record</span> <span class="t">Reading</span>(<span class="k">double</span> volts, <span class="k">double</span> timestampSeconds)
+{
+    <span class="k">public</span> <span class="me">Reading</span>
+    {
+        <span class="k">if</span> (volts &lt; <span class="n">0</span>)
+        {
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"volts can't be negative"</span>);
+        }
+    }
+}</code></pre>
+      <pre class="code"><code><span class="t">Reading</span> r = <span class="k">new</span> <span class="t">Reading</span>(<span class="n">12.6</span>, <span class="n">41.2</span>);
+System.out.<span class="me">println</span>(r.<span class="me">volts</span>());   <span class="c">// an accessor named after the field, not getVolts()</span>
+System.out.<span class="me">println</span>(r);           <span class="c">// Reading[volts=12.6, timestampSeconds=41.2]</span></code></pre>
+      <p>One line — <code class="inline">record Reading(double volts, double timestampSeconds)</code> — generates <code class="inline">private final</code> fields for both, a constructor, read-only accessors (<code class="inline">volts()</code>, <code class="inline">timestampSeconds()</code>, no <code class="inline">get</code> prefix), and working <code class="inline">equals</code>, <code class="inline">hashCode</code>, and <code class="inline">toString</code>, all for free. The block after the field list, called a <em>compact constructor</em>, is optional — it runs before the fields are assigned, purely to validate the arguments (as above); no <code class="inline">this.volts = volts;</code> is written or needed there, since that assignment still happens automatically. A record is implicitly <code class="inline">final</code> — nothing can extend it.</p>
+      <h2>An Immutability Checklist</h2>
+      <p>Pulling the pieces above together, a class is genuinely immutable once every one of these holds:</p>
+      <ul>
+        <li>Every field is <code class="inline">private final</code>.</li>
+        <li>Nothing but a constructor (or compact constructor, for a record) ever assigns a field — no setters.</li>
+        <li>Any field that's itself a mutable type (an array, or a collection like <code class="inline">ArrayList</code>) is defensively copied going <em>in</em>, through the constructor, and copied going <em>out</em>, through any getter — <code class="inline">final</code> alone only locks the reference, not the referenced object's own contents.</li>
+        <li>When the class is really just a bundle of values, reach for a <code class="inline">record</code> first — it satisfies every bullet above by construction.</li>
+      </ul>
     `,
     pitfalls: [
-      "Trying to use a loop or block-scoped variable after its block ends. It stops existing the instant the enclosing <code class=\"inline\">{}</code> closes — declare it at method scope instead if it needs to survive past the block.",
-      "Assuming a shadowed local variable is the instance variable. Inside a method with a same-named local variable/parameter, the local one always wins — use <code class=\"inline\">this.fieldName</code> to reach the instance variable explicitly.",
-      "Confusing <code class=\"inline\">final</code> with true immutability. <code class=\"inline\">final</code> only prevents reassigning a reference — the object it refers to can still have its own internal state changed, unless that object's own class was specifically designed to be immutable."
+      "Returning a mutable field directly from a getter. <code class=\"inline\">private</code> doesn't protect a field once a reference to it escapes through a getter — return a defensive copy (<code class=\"inline\">List.copyOf(...)</code>, or <code class=\"inline\">new ArrayList<>(original)</code>) instead of the original object.",
+      "Leaving a blank <code class=\"inline\">final</code> field unassigned on some constructor path. Every constructor must assign it exactly once — missing it on even one path is a compile error, not a <code class=\"inline\">null</code> waiting to happen.",
+      "Reassigning a variable after using it in a lambda. A captured local only has to be <em>effectively</em> final, but reassigning it anywhere in the method — even after the lambda — breaks that, and the lambda's capture is what fails to compile."
     ],
     takeaways: [
-      "A variable's scope — class, method, or block — is set by the nearest enclosing <code class=\"inline\">{}</code> around its declaration; using it outside that scope doesn't compile.",
-      "Local variables and parameters exist only for their method/constructor call; instance variables exist for the whole object, reachable from every method regardless of access modifier.",
-      "A local variable or parameter sharing a name with an instance variable shadows it inside that method — <code class=\"inline\">this.fieldName</code> is how to reach the real instance variable when that happens.",
-      "<code class=\"inline\">final</code> allows exactly one assignment to a variable — for object references, it locks the reference, not necessarily the referenced object's internal state.",
-      "True immutability (an object whose state can never change after construction) is a stronger, separate guarantee from <code class=\"inline\">final</code> — and it's what makes classes like <code class=\"inline\">Pose2d</code> safe to share and reason about."
+      "Java has four access levels — <code class=\"inline\">public</code>, <code class=\"inline\">protected</code>, package-private (no modifier), and <code class=\"inline\">private</code> — differing in whether same-package code and subclasses in other packages can reach a member; Lesson 17.2 introduced <code class=\"inline\">protected</code>, this table is the full comparison.",
+      "<code class=\"inline\">final</code> means \"assign exactly once\" for locals, parameters, and fields (with the blank-final rule allowing one later assignment per constructor); on a method it blocks overriding, and on a class it blocks extending entirely.",
+      "A lambda can only capture a local variable that's final or <em>effectively</em> final — never reassigned anywhere in the method.",
+      "A <code class=\"inline\">private</code> field isn't automatically safe from outside mutation — a getter that hands back the same mutable object leaks it; return a defensive copy instead.",
+      "A <code class=\"inline\">record</code> generates an immutable, implicitly-<code class=\"inline\">final</code> class — fields, accessors, <code class=\"inline\">equals</code>, <code class=\"inline\">hashCode</code>, and <code class=\"inline\">toString</code> — from one line, with an optional compact constructor for validation.",
+      "Scope and shadowing (where a variable lives, and what happens when a local name matches a field's) were covered in Lesson 7.2."
     ],
-    prov: "csawesome-2026: unit-3-class-creation/3.08-scope-and-access.md (CSA 3.8) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 9 (\"Encapsulation & Final\") — final TalonFX/Pose2d example"
+    prov: "csawesome-2026: unit-3-class-creation/3.08-scope-and-access.md (CSA 3.8) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 9 (\"Encapsulation & Final\") — refocused 2026-09-25 on access modifiers, final, encapsulation leaks, and records (scope moved to Lesson 7.2); real-API check: org.wpilib.hardware.rotation.Encoder (getRate()), allwpilib main commit e985b0fdfce935cb1484d4b9e8d1b98bd391bb51 (2026-09-25)"
   }
 };
 

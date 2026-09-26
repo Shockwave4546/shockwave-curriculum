@@ -40,7 +40,7 @@ IntakeConfig config = new IntakeConfig.Builder()
 
 ## Micro-Parsons
 
-**Problem:** You're given everything in the program below except the body of `main`: the `ArmConfig` class, with its `private` constructor and nested `Builder`, and the `ArmSetup` class with `main`'s signature and braces. Reorder the fragments below into the body of `main`. It should use the builder to set the arm's maximum angle to `110.0`, turn brake mode on, and set the gear ratio to `50.0`, then print the finished configuration: `max 110.0 deg, brake true, ratio 50.0:1`.
+**Problem:** You're given everything in the program below except the body of `main`: the `ArmSetup` class (with `main`'s signature and braces, placed first so the file also runs correctly on Java 17 — the class holding `main` has to come first in a multi-class file), and the `ArmConfig` class, with its `private` constructor and nested `Builder`. Reorder the fragments below into the body of `main`. It should use the builder to set the arm's maximum angle to `110.0`, turn brake mode on, and set the gear ratio to `50.0`, then print the finished configuration: `max 110.0 deg, brake true, ratio 50.0:1`.
 
 Reorder the fragments below to complete it:
 
@@ -56,6 +56,19 @@ Reorder the fragments below to complete it:
 **Interchangeable:** (e, f, a)
 
 ```java
+public class ArmSetup
+{
+    public static void main(String[] args)
+    {
+        ArmConfig config = new ArmConfig.Builder()
+            .setMaxAngle(110.0)
+            .setBrakeMode(true)
+            .setGearRatio(50.0)
+            .build();
+        System.out.println(config.describe());
+    }
+}
+
 class ArmConfig
 {
     private final double maxAngle;
@@ -85,19 +98,6 @@ class ArmConfig
         public Builder setGearRatio(double gearRatio) { this.gearRatio = gearRatio; return this; }
 
         public ArmConfig build() { return new ArmConfig(this); }
-    }
-}
-
-public class ArmSetup
-{
-    public static void main(String[] args)
-    {
-        ArmConfig config = new ArmConfig.Builder()
-            .setMaxAngle(110.0)
-            .setBrakeMode(true)
-            .setGearRatio(50.0)
-            .build();
-        System.out.println(config.describe());
     }
 }
 ```

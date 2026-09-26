@@ -36,6 +36,7 @@ public static Optional<Double> firstOverLimit(double[] temps, double limit)
 - The signature says `Optional<Double>`, so anyone calling it knows from the type alone that there might not be an answer.
 - The loop is the same "find the first match" traversal from Ch.9. The moment a reading is over the limit, it's wrapped with `Optional.of(t)` and returned. `t` is a real number here, never `null`, so `of` is the right choice.
 - If the loop finishes without finding one, the method returns `Optional.empty()`. That means "no value," and it isn't `null`.
+- `Optional<Double>` relies on the same autoboxing from Lesson 9.2 to wrap a `double` as a `Double`. Java also has a specialized `OptionalDouble` (plus `OptionalInt` and `OptionalLong`) that skips the boxing — this example sticks with `Optional<Double>` since it composes with `ifPresent`/`orElse` exactly like every other `Optional<T>` in this lesson.
 
 `Optional` lives in `java.util`, so the file needs `import java.util.Optional;`.
 

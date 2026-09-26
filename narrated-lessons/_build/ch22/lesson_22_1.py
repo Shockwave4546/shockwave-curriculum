@@ -8,7 +8,7 @@ BEATS = [
         "speak": "Welcome to Chapter 22, the Builder Pattern. It's the fix for a problem that shows up the moment a class needs a lot of settings to get built.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">Shooter</span> shooter = <span class="k">new</span> Shooter(<span class="n">0.01</span>, <span class="n">0.3</span>, <span class="n">0.02</span>, <span class="k">true</span>, <span class="k">false</span>, <span class="n">12.0</span>, <span class="n">0.5</span>);</code></pre>''',
+        "screen": '''<pre class="code"><code><span class="t">Shooter</span> shooter = <span class="k">new</span> Shooter(<span class="n">0.01</span>, <span class="n">0.0</span>, <span class="n">0.02</span>, <span class="k">true</span>, <span class="n">5000.0</span>, <span class="n">1000.0</span>);</code></pre>''',
         "speak": "Here's that problem. A constructor with many parameters, especially several of the same type, or several optional ones, becomes genuinely hard to read, and easy to get wrong. Look at this call. What does each number actually mean?",
     },
     {
@@ -36,11 +36,11 @@ BEATS = [
     {
         "screen": '''<pre class="code"><code><span class="t">Shooter</span> shooter = <span class="k">new</span> Shooter.Builder()
     .setKP(<span class="n">0.01</span>)
-    .setKI(<span class="n">0.3</span>)
+    .setKI(<span class="n">0.0</span>)
     .setKD(<span class="n">0.02</span>)
     .enableFeedforward(<span class="k">true</span>)
-    .setMaxRPM(<span class="n">12.0</span>)
-    .setMinRPM(<span class="n">0.5</span>)
+    .setMaxRPM(<span class="n">5000.0</span>)
+    .setMinRPM(<span class="n">1000.0</span>)
     .build();</code></pre>''',
         "speak": "Here's the same shooter, built with a builder. Every call is now self-documenting. Set K P, zero point zero one, says exactly what that zero point zero one means, in a way a bare constructor argument never could.",
     },
@@ -79,7 +79,7 @@ BEATS = [
         <span class="k">public</span> <span class="t">Builder</span> <span class="me">setKP</span>(<span class="k">double</span> kP) { <span class="k">this</span>.kP = kP; <span class="k">return this</span>; }
         <span class="k">public</span> <span class="t">Builder</span> <span class="me">setKI</span>(<span class="k">double</span> kI) { <span class="k">this</span>.kI = kI; <span class="k">return this</span>; }
         <span class="k">public</span> <span class="t">Builder</span> <span class="me">setKD</span>(<span class="k">double</span> kD) { <span class="k">this</span>.kD = kD; <span class="k">return this</span>; }
-        <span class="k">public</span> <span class="t">Builder</span> <span class="me">enableFeedforward</span>(<span class="k">boolean</span> ff) { <span class="k">this</span>.feedforward = ff; <span class="k">return this</span>; }
+        <span class="k">public</span> <span class="t">Builder</span> <span class="me">enableFeedforward</span>(<span class="k">boolean</span> ff) { feedforward = ff; <span class="k">return this</span>; }
         <span class="k">public</span> <span class="t">Builder</span> <span class="me">setMaxRPM</span>(<span class="k">double</span> max) { <span class="k">this</span>.maxRPM = max; <span class="k">return this</span>; }
         <span class="k">public</span> <span class="t">Builder</span> <span class="me">setMinRPM</span>(<span class="k">double</span> min) { <span class="k">this</span>.minRPM = min; <span class="k">return this</span>; }
 
@@ -106,16 +106,24 @@ BEATS = [
         "speak": "And the result is safer, not just prettier. Every setting has a readable name at the call site, instead of an anonymous position in an argument list. Optional settings simply aren't called, rather than needing a separate constructor overload for every combination. And the final Shooter is typically built as immutable, every field final, and set exactly once, inside the private constructor, from the builder's already finished values.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">TrajectoryConfig</span> config = <span class="k">new</span> TrajectoryConfig(maxSpeed, maxAccel)
-    .setKinematics(driveKinematics)
-    .addConstraint(voltageConstraint);</code></pre>''',
-        "speak": "You've likely seen this style already. Several real WPILib classes use builder-like chaining, even without a nested Builder class. Trajectory Config is one, created with a max speed and acceleration, then chained with set kinematics and add constraint.",
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Classes Inside Classes</h2><ul>
+      <li><span class="num">1</span><span><code>Builder</code> is a <strong>static nested class</strong> &mdash; full name <code>Shooter.Builder</code></span></li>
+      <li><span class="num">2</span><span>A class and its nested class can reach each other's <code>private</code> members directly</span></li>
+    </ul></div>''',
+        "speak": "One more thing about that Builder class before moving on. Writing it as public static class Builder, entirely inside Shooter's own braces, makes it a static nested class. Its full name is Shooter dot Builder, which is exactly why building one starts with new Shooter dot Builder. And nesting one class inside another grants both classes a special privilege: Shooter and Shooter dot Builder can reach each other's private members directly. That's how the Shooter constructor can read builder dot k p, even though k p is private inside Builder.",
     },
     {
-        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">The Same Idea in Command Groups</h2><ul>
-      <li><span class="num">1</span><span><code>SequentialCommandGroup</code> and <code>ParallelCommandGroup</code> build a larger thing out of smaller declared pieces</span></li>
+        "screen": '''<pre class="code"><code><span class="t">TrajectoryConfig</span> config = <span class="k">new</span> TrajectoryConfig(maxVelocity, maxAccel)
+    .setKinematics(driveKinematics)
+    .addConstraint(voltageConstraint);</code></pre>''',
+        "speak": "Several real WPILib classes use builder-like chaining, even without a nested Builder class. Trajectory Config is one, created with a max velocity and acceleration, then chained with set kinematics and add constraint.",
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">The Same Idea in Commands v3</h2><ul>
+      <li><span class="num">1</span><span><code>Command.sequence(intake, shoot).named("Auto")</code> builds a bigger command from smaller ones</span></li>
+      <li><span class="num">2</span><span>Staged builders like <code>Command.requiring(...).executing(...).named(...)</code> lock in requirements first</span></li>
     </ul></div>''',
-        "speak": "Sequential Command Group and Parallel Command Group follow the same underlying idea, building up a larger thing step by step, out of smaller declared pieces, rather than one giant constructor call.",
+        "speak": "Commands v3, in Chapter 25, leans on the same idea even harder. Building a command is itself a staged builder chain, where each stage only offers the methods legal to call next. Command dot sequence, intake, shoot, dot named, Auto, builds a bigger command out of smaller ones. And Command dot requiring, drive, arm, dot executing, dot named, is a builder whose required mechanisms are locked in before you can even call executing.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">When Not to Reach for a Builder</h2><ul>
@@ -126,20 +134,20 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
-      <li><span class="check">!</span>Forgetting <code>return this;</code> in a builder method &mdash; chaining the next call won't compile.</li>
+      <li><span class="check">!</span>Forgetting <code>return this;</code> in a builder method &mdash; a <code>Builder</code>-returning method won't compile at all, and a <code>void</code> one breaks the next call in the chain.</li>
       <li><span class="check">!</span>Making the target class's constructor <code>public</code> alongside the builder.</li>
       <li><span class="check">!</span>Reaching for a builder on a simple, 2&ndash;3-parameter class.</li>
     </ul></div>''',
-        "speak": "Three pitfalls. Forgetting return this in a builder method, without it, the method returns void, and chaining the next call fails to compile. Making the target class's constructor public alongside the builder, that defeats the pattern's purpose, callers should only ever construct the object through the builder, which is why the real constructor stays private. And reaching for a builder on a simple, two or three parameter class, that's exactly the case the pattern isn't meant for, and the extra ceremony isn't worth it there.",
+        "speak": "Three pitfalls. Forgetting return this in a builder method. If the method still returns Builder, that's a missing return statement, a compile error right there. If its return type was also changed to void, the error shows up one call later instead: the next call in the chain fails with void cannot be dereferenced. Making the target class's constructor public alongside the builder, that defeats the pattern's purpose, callers should only ever construct the object through the builder, which is why the real constructor stays private. And reaching for a builder on a simple, two or three parameter class, that's exactly the case the pattern isn't meant for, and the extra ceremony isn't worth it there.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
       <li><span class="check">&#10003;</span>A builder separates step-by-step construction from usage, avoiding constructor hell.</li>
       <li><span class="check">&#10003;</span>A nested static class with named, chainable methods (each returning this), finishing with build().</li>
       <li><span class="check">&#10003;</span>The real constructor is private, copying the builder's values into final fields.</li>
-      <li><span class="check">&#10003;</span>WPILib's TrajectoryConfig and command groups use the same chaining idea.</li>
+      <li><span class="check">&#10003;</span>WPILib's TrajectoryConfig and Commands v3's staged builders use the same chaining idea.</li>
       <li><span class="check">&#10003;</span>Skip it for simple classes &mdash; a constructor or static factory is simpler there.</li>
     </ul></div>''',
-        "speak": "So, to recap. The Builder Pattern separates step by step construction from a class's actual usage, avoiding constructor hell, many same-typed or optional parameters. A builder is a nested static class that collects settings through named, chainable methods, each returning this, a fluent interface, and finishes with build. The target class's real constructor is private, taking the finished builder and copying its values into final fields, producing an immutable, safely configured result. Real WPILib classes, Trajectory Config and the command groups, already use this same chaining idea. And skip the builder for simple classes with few, always required parameters, a constructor or static factory is simpler there. Next up, Chapter 23: encapsulation, and the final keyword.",
+        "speak": "So, to recap. The Builder Pattern separates step by step construction from a class's actual usage, avoiding constructor hell, many same-typed or optional parameters. A builder is a nested static class that collects settings through named, chainable methods, each returning this, a fluent interface, and finishes with build. The target class's real constructor is private, taking the finished builder and copying its values into final fields, producing an immutable, safely configured result. Real WPILib classes, Trajectory Config, and Commands v3's staged builders, already use this same chaining idea. And skip the builder for simple classes with few, always required parameters, a constructor or static factory is simpler there. Next up, Chapter 23: encapsulation, and the final keyword.",
     },
 ]

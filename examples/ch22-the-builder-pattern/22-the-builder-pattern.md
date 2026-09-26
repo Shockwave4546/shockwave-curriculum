@@ -81,7 +81,22 @@ Read it top to bottom. `new ElevatorConfig.Builder()` creates a builder with the
 
 ## Step 5: The Whole Program
 
+To run this as one file, both classes go in `ElevatorSetup.java`. Java allows only one `public` class per file — the one whose name matches the file — so `ElevatorConfig` is written without `public`. The class holding `main` goes first: on Java 17, running a file with `java ElevatorSetup.java` starts the *first* class in the file, so `main` must live there. Java 25 is more forgiving (it also finds the class named after the file), but main-class-first works on both, so every multi-class program in this course uses it.
+
 ```java
+public class ElevatorSetup
+{
+    public static void main(String[] args)
+    {
+        ElevatorConfig compBot = new ElevatorConfig.Builder()
+            .setMaxHeightMeters(1.4)
+            .setInverted(true)
+            .build();
+
+        System.out.println("Comp bot elevator: " + compBot.describe());
+    }
+}
+
 class ElevatorConfig
 {
     private final double maxHeightMeters;
@@ -116,19 +131,6 @@ class ElevatorConfig
         public Builder setInverted(boolean inverted) { this.inverted = inverted; return this; }
 
         public ElevatorConfig build() { return new ElevatorConfig(this); }
-    }
-}
-
-public class ElevatorSetup
-{
-    public static void main(String[] args)
-    {
-        ElevatorConfig compBot = new ElevatorConfig.Builder()
-            .setMaxHeightMeters(1.4)
-            .setInverted(true)
-            .build();
-
-        System.out.println("Comp bot elevator: " + compBot.describe());
     }
 }
 ```

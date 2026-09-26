@@ -54,9 +54,13 @@ BEATS = [
         "speak": "Just by reading that signature, an Optional of Pose2d, a caller already knows the pose might not be there this frame. The type itself documents it, instead of relying on a comment, or on tribal knowledge.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">Optional&lt;Pose2d&gt;</span> empty = Optional.empty();           <span class="c">// definitely no value</span>
-<span class="t">Optional&lt;Pose2d&gt;</span> present = Optional.of(currentPose);  <span class="c">// wraps a value — throws immediately if currentPose is null</span>
-<span class="t">Optional&lt;Pose2d&gt;</span> maybe = Optional.ofNullable(currentPose); <span class="c">// empty if currentPose is null, present otherwise</span></code></pre>''',
+        "screen": '''<pre class="code"><code><span class="t">Optional&lt;Pose2d&gt;</span> empty = Optional.empty();       <span class="c">// definitely no value</span>
+
+<span class="c">// wraps a value — throws immediately if currentPose is null</span>
+<span class="t">Optional&lt;Pose2d&gt;</span> present = Optional.of(currentPose);
+
+<span class="c">// empty if currentPose is null, present otherwise</span>
+<span class="t">Optional&lt;Pose2d&gt;</span> maybe = Optional.ofNullable(currentPose);</code></pre>''',
         "speak": "There are three ways to create one. Optional dot empty, definitely no value. Optional dot of, which wraps a value, and throws immediately if that value is null. And Optional dot of nullable, which gives you an empty Optional if the value is null, and a present one otherwise.",
     },
     {
@@ -73,11 +77,12 @@ BEATS = [
 visionPose.ifPresent(pose -&gt; estimator.addVisionMeasurement(pose, timestamp));
 
 <span class="c">// Or supply a fallback value for the empty case</span>
-<span class="t">Pose2d</span> pose = visionPose.orElse(lastKnownPose);
+<span class="t">Pose2d</span> fallbackPose = visionPose.orElse(lastKnownPose);
 
 <span class="c">// Or throw a specific exception if a value was truly required</span>
-<span class="t">Pose2d</span> requiredPose = visionPose.orElseThrow(IllegalStateException::new);</code></pre>''',
-        "speak": "Now the caller's side, handling both cases honestly. Three options. If present runs some logic only when a value exists. Or else supplies a fallback value for the empty case. And or else throw throws a specific exception, here an Illegal State Exception, if a value was truly required.",
+<span class="t">Pose2d</span> requiredPose = visionPose.orElseThrow(
+    () -&gt; <span class="k">new</span> IllegalStateException(<span class="s">"No vision pose"</span>));</code></pre>''',
+        "speak": "Now the caller's side, handling both cases honestly. Three options. If present runs some logic only when a value exists. Or else supplies a fallback value for the empty case. And or else throw, given a lambda that builds the exception, throws a specific exception, here an Illegal State Exception, only if a value was truly required and never found.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Three Honest Ways to Handle It</h2><ul>
@@ -88,7 +93,16 @@ visionPose.ifPresent(pose -&gt; estimator.addVisionMeasurement(pose, timestamp))
         "speak": "If present runs a lambda, from Lesson 19.1, only if a value is actually there, and nothing happens otherwise. Or else supplies a fallback value for the empty case. And or else throw is for the rarer case where an empty Optional really does mean something has gone wrong, and continuing anyway wouldn't make sense.",
     },
     {
-        "screen": '''<pre class="code"><code><span class="t">Pose2d</span> pose = visionPose.get(); <span class="c">// never do this blind — this is a NullPointerException with extra steps</span></code></pre>''',
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">A Few More Useful Methods</h2><ul>
+      <li><span class="num">1</span><span>No-argument <code>orElseThrow()</code> &mdash; throws <code>NoSuchElementException</code></span></li>
+      <li><span class="num">2</span><span><code>orElseGet(supplier)</code> &mdash; lazy, unlike eager <code>orElse</code></span></li>
+      <li><span class="num">3</span><span><code>ifPresentOrElse(consumer, runnable)</code> &mdash; a present/empty pair of callbacks</span></li>
+    </ul></div>''',
+        "speak": "A few less common, but genuinely useful, methods round this out. A no-argument or else throw, which throws No Such Element Exception when nothing more specific is needed. Or else get, like or else, but it only computes its fallback value when it's actually needed, instead of always. And if present or else, which runs one callback if a value is present, and a different one if it's empty, since if present alone has no else.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="c">// never do this blind — this is a NullPointerException with extra steps</span>
+<span class="t">Pose2d</span> uncheckedPose = visionPose.get();</code></pre>''',
         "speak": "Now the one pitfall that defeats the whole point. Optional also has a get method, that returns the wrapped value. But calling get on an empty Optional, without checking first, throws a No Such Element Exception. That's exactly the same class of crash Optional exists to prevent, just under a different exception name, a null pointer exception with extra steps.",
     },
     {
@@ -100,16 +114,21 @@ visionPose.ifPresent(pose -&gt; estimator.addVisionMeasurement(pose, timestamp))
     },
     {
         "screen": '''<pre class="code"><code>visionPose
-    .filter(pose -&gt; pose.getX() &gt;= <span class="n">0</span>)         <span class="c">// only proceed if the pose has a valid X coordinate</span>
+    <span class="c">// only proceed if the pose has a valid X coordinate</span>
+    .filter(pose -&gt; pose.getX() &gt;= <span class="n">0</span>)
     .ifPresent(pose -&gt; estimator.addVisionMeasurement(pose, timestamp));</code></pre>''',
         "speak": "One brief look beyond the core methods. Filter keeps the value only if it matches a condition, and otherwise becomes empty. Here, a pose only gets passed on to the estimator if it has a valid X coordinate.",
+    },
+    {
+        "screen": '''<pre class="code"><code><span class="k">double</span> dashboardX = visionPose.map(pose -&gt; pose.getX()).orElse(<span class="n">0.0</span>);</code></pre>''',
+        "speak": "Map transforms the value inside an Optional, without ever having to check is present first. Here, visionPose dot map, pose arrow pose dot get X, turns an Optional of Pose2d into an Optional of Double, present with the X coordinate if visionPose had a value, empty otherwise. And or else zero point zero then unwraps that down to a plain double either way.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">Filtering and Transforming</h2><ul>
       <li><span class="num">1</span><span><code>filter</code> &mdash; keep the value only if it matches a condition</span></li>
       <li><span class="num">2</span><span><code>map</code> &mdash; transform the value, if present, into something else</span></li>
     </ul></div>''',
-        "speak": "Alongside filter, there's map, which transforms the value, if one is present, into something else. Together, they're useful for chaining a couple of extra checks without falling back into nested if statements. They compose well for simple cases, though genuinely complex chains of Optional transformations are a more advanced topic than this curriculum covers in depth.",
+        "speak": "Filter and map are useful for chaining a couple of extra checks without falling back into nested if statements. They compose well for simple cases, though genuinely complex chains of Optional transformations are a more advanced topic than this curriculum covers in depth.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
@@ -125,7 +144,8 @@ visionPose.ifPresent(pose -&gt; estimator.addVisionMeasurement(pose, timestamp))
       <li><span class="check">&#10003;</span>Create with empty(), of(value), or ofNullable(value).</li>
       <li><span class="check">&#10003;</span>Handle with ifPresent, orElse, or orElseThrow &mdash; never bare get().</li>
       <li><span class="check">&#10003;</span>filter and map chain extra checks without nested ifs.</li>
+      <li><span class="check">&#10003;</span>orElseGet, ifPresentOrElse, and no-arg orElseThrow cover the less common cases.</li>
     </ul></div>''',
-        "speak": "So, to recap. Optional makes this might not have a value visible directly in a method's return type, instead of relying on an invisible, easy to forget null check. Create one with Optional dot empty, Optional dot of, which throws if the value is null, or Optional dot of nullable, which is safe either way. Handle both cases with if present, with or else, or with or else throw, and never call bare get without checking first. And filter and map let you chain a couple of extra conditions and transformations, without falling back into nested if checks. Next up, Chapter 25: command-based programming.",
+        "speak": "So, to recap. Optional makes this might not have a value visible directly in a method's return type, instead of relying on an invisible, easy to forget null check. Create one with Optional dot empty, Optional dot of, which throws if the value is null, or Optional dot of nullable, which is safe either way. Handle both cases with if present, with or else, or with or else throw, and never call bare get without checking first. Filter and map let you chain a couple of extra conditions and transformations, without falling back into nested if checks. And or else get, if present or else, and a no-argument or else throw round out the less common cases. Next up, Chapter 25: command-based programming.",
     },
 ]
