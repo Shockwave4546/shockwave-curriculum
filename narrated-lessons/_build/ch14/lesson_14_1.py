@@ -9,13 +9,13 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">What Changes Now</h2><ul>
-      <li><span class="num">1</span><span>Through Ch.13: single-class, mostly single-file Java &mdash; variables, control flow, arrays, one class with a few methods</span></li>
+      <li><span class="num">1</span><span>Through Ch.13: mostly one class at a time, with a few helper classes along the way</span></li>
     </ul></div>''',
-        "speak": "Everything up through Chapter 13 was single-class, mostly single-file Java. Variables, control flow, arrays, one class with a few methods.",
+        "speak": "Everything up through Chapter 13 was mostly one class at a time, with a few helper classes along the way. Variables, control flow, arrays, a class with a few methods.",
     },
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">What Changes Now</h2><ul>
-      <li><span class="num">1</span><span>Through Ch.13: single-class, mostly single-file Java &mdash; variables, control flow, arrays, one class with a few methods</span></li>
+      <li><span class="num">1</span><span>Through Ch.13: mostly one class at a time, with a few helper classes along the way</span></li>
       <li><span class="num">2</span><span>From here on: how <strong>multiple</strong> classes work together as a codebase grows &mdash; organization, reuse, and change over time</span></li>
     </ul></div>''',
         "speak": "From here on, the focus shifts to how multiple classes work together as a codebase grows. The concerns become organization, reuse, and change over time, not just, does this one method work.",
@@ -37,13 +37,13 @@ BEATS = [
     },
     {
         "screen": '''<div class="scr-diagram">
-      <div class="dbox">Builder Pattern</div>
-      <div class="dbox">Static Factories</div>
       <div class="dbox">IO-Layer Pattern</div>
+      <div class="dbox">Static Factories</div>
+      <div class="dbox">Builder Pattern</div>
       <div class="dbox active">Command-Based Programming</div>
     </div>
-    <p style="text-align:center;color:var(--ink-soft);font-size:13px;margin-top:16px;">Real patterns actually used in FRC codebases &mdash; one per chapter.</p>''',
-        "speak": "The chapters that follow each cover one real pattern actually used in FRC codebases. The Builder Pattern, Static Factories, the IO Layer Pattern, and eventually the biggest one of all, Command-Based Programming itself.",
+    <p style="text-align:center;color:var(--ink-soft);font-size:13px;margin-top:16px;">Real patterns actually used in FRC codebases &mdash; one per chapter, after the language-tool chapters build up to them.</p>''',
+        "speak": "The chapters that follow first build the language tools patterns depend on: collections, generics, inheritance, polymorphism, and interfaces. Then, in chapter order, come the real patterns actually used in FRC codebases. The IO Layer Pattern, Static Factories, the Builder Pattern, and eventually the biggest one of all, Command-Based Programming itself.",
     },
     {
         "screen": '''<div class="scr-title">
@@ -95,9 +95,9 @@ BEATS = [
     {
         "screen": '''<div class="scr-bullets"><h2 class="scr-h2">What This Chapter Is Not</h2><ul>
       <li><span class="num">1</span><span>It doesn&rsquo;t teach a specific pattern &mdash; the chapters right after it do, one at a time</span></li>
-      <li><span class="num">2</span><span>Next up: Advanced Collections, Generics, Inheritance &mdash; then the named patterns</span></li>
+      <li><span class="num">2</span><span>Next up: language tools (Collections, Generics, Inheritance, Polymorphism, Interfaces) &mdash; then the named patterns</span></li>
     </ul></div>''',
-        "speak": "This chapter doesn't teach a specific pattern. The chapters immediately following it do that, one at a time. Its only job is to answer why any of this matters, before the actual mechanics of Advanced Collections, Generics, Inheritance, and the named patterns begin.",
+        "speak": "This chapter doesn't teach a specific pattern. The chapters immediately following it do that, one at a time. Its only job is to answer why any of this matters, before two kinds of chapters begin: language tools, like Advanced Collections, Generics, Inheritance, Polymorphism, and Interfaces, and the named patterns themselves.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>

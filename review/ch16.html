@@ -94,18 +94,20 @@ const DATA = {
     title: "Writing Your Own Generics",
     ref: "16 — Writing Your Own Generics (ORACLE 14.1-5)",
     body: `
-      <p><code class="inline">List&lt;String&gt;</code>, <code class="inline">Map&lt;Integer, Double&gt;</code>, <code class="inline">ArrayList&lt;TalonFX&gt;</code> — every collection since Ch.9 has <em>used</em> a generic type someone else wrote. This chapter is about writing your own.</p>
+      <p><code class="inline">List&lt;String&gt;</code>, <code class="inline">Map&lt;Integer, Double&gt;</code>, <code class="inline">ArrayList&lt;Double&gt;</code> — every collection since Ch.9 has <em>used</em> a generic type someone else wrote. This chapter is about writing your own.</p>
       <h2>Why Generics Exist</h2>
       <p>Before generics, a reusable container had to work with the generic <code class="inline">Object</code> type, requiring an explicit cast every time you got something back out — and nothing stopped the wrong type from going in in the first place:</p>
       <pre class="code"><code><span class="t">List</span> list = <span class="k">new</span> <span class="t">ArrayList</span>();         <span class="c">// no generics</span>
 list.<span class="me">add</span>(<span class="s">"hello"</span>);
 <span class="t">String</span> s = (<span class="t">String</span>) list.<span class="me">get</span>(<span class="n">0</span>);     <span class="c">// cast required, and could fail at runtime</span></code></pre>
+      <p>The <code class="inline">(String)</code> is a <strong>cast</strong>: it forces the compiler to treat the value as that type. If the object handed back weren't actually a <code class="inline">String</code>, this line would compile fine and then throw <code class="inline">ClassCastException</code> at runtime instead of failing to compile.</p>
       <p>With a type parameter, the compiler enforces correctness <em>before</em> the program ever runs, and the cast disappears entirely:</p>
       <pre class="code"><code><span class="t">List</span>&lt;<span class="t">String</span>&gt; list = <span class="k">new</span> <span class="t">ArrayList</span>&lt;<span class="t">String</span>&gt;();
 list.<span class="me">add</span>(<span class="s">"hello"</span>);
-<span class="t">String</span> s = list.<span class="me">get</span>(<span class="n">0</span>);              <span class="c">// no cast — the compiler already knows it's a String</span></code></pre>
+<span class="c">// no cast — the compiler already knows it's a String</span>
+<span class="t">String</span> s = list.<span class="me">get</span>(<span class="n">0</span>);</code></pre>
       <h2>Writing a Generic Class</h2>
-      <p>A generic class introduces one or more <strong>type parameters</strong> in angle brackets after the class name. Here's a value wrapper — a natural fit for logging a tunable robot value alongside its current setpoint, using a placeholder type instead of committing to <code class="inline">double</code> or <code class="inline">String</code> up front:</p>
+      <p>A generic class introduces one or more <strong>type parameters</strong> in angle brackets after the class name. Here's a value wrapper — a natural fit for logging one tunable robot value (a setpoint, a gain, a mode name) without having to commit to <code class="inline">double</code> or <code class="inline">String</code> up front, using a placeholder type instead:</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">LoggedValue</span>&lt;<span class="t">T</span>&gt;
 {
     <span class="k">private</span> <span class="t">T</span> value;
@@ -114,9 +116,11 @@ list.<span class="me">add</span>(<span class="s">"hello"</span>);
     <span class="k">public</span> <span class="t">T</span> <span class="me">get</span>() { <span class="k">return</span> value; }
 }</code></pre>
       <p><code class="inline">T</code> isn't a real type — it's a <strong>type variable</strong>, a placeholder standing in for whatever concrete type gets supplied when the class is actually used:</p>
-      <pre class="code"><code><span class="t">LoggedValue</span>&lt;<span class="t">Double</span>&gt; setpoint = <span class="k">new</span> <span class="t">LoggedValue</span>&lt;&gt;(); <span class="c">// the "diamond" <> — compiler infers Double from the left side</span>
+      <pre class="code"><code><span class="c">// the "diamond" &lt;&gt; — compiler infers Double from the left side</span>
+<span class="t">LoggedValue</span>&lt;<span class="t">Double</span>&gt; setpoint = <span class="k">new</span> <span class="t">LoggedValue</span>&lt;&gt;();
 setpoint.<span class="me">set</span>(<span class="n">3.5</span>);    <span class="c">// OK</span>
-setpoint.<span class="me">set</span>(<span class="s">"fast"</span>); <span class="c">// compile error — a String doesn't belong in a LoggedValue&lt;Double&gt;</span></code></pre>
+<span class="c">// compile error — a String doesn't belong in a LoggedValue&lt;Double&gt;</span>
+setpoint.<span class="me">set</span>(<span class="s">"fast"</span>);</code></pre>
       <p>By convention, type parameters are single uppercase letters — <code class="inline">T</code> (Type), <code class="inline">E</code> (Element, used throughout the collections you already know), <code class="inline">K</code>/<code class="inline">V</code> (Key/Value, as in <code class="inline">Map&lt;K, V&gt;</code>), <code class="inline">N</code> (Number). This convention exists specifically so a type variable is instantly recognizable and never confused with a real class name.</p>
       <p>A generic class can take more than one type parameter, exactly like <code class="inline">Map&lt;K, V&gt;</code> does:</p>
       <pre class="code"><code><span class="k">public class</span> <span class="t">Pair</span>&lt;<span class="t">K</span>, <span class="t">V</span>&gt;
@@ -146,6 +150,7 @@ setpoint.<span class="me">set</span>(<span class="s">"fast"</span>); <span class
 }</code></pre>
       <p>Almost always, the compiler figures out the type on its own from how you call it — this is <strong>type inference</strong> — so you can call <code class="inline">Util.sameEntry(p1, p2)</code> directly, without ever writing the type parameter yourself.</p>
       <h2>Bounded Type Parameters</h2>
+      <p>A quick primer before this section's example: <code class="inline">Number</code> is a Java class — like <code class="inline">Object</code>, the ultimate parent of every class in Java (Ch.17 covers what that relationship means for classes you write yourself) — that <code class="inline">Integer</code>, <code class="inline">Double</code>, and the other numeric wrapper classes all <code class="inline">extends</code>. That's what makes "any subtype of <code class="inline">Number</code>" a meaningful thing to say, and it's the same "is a more specific kind of" relationship Ch.17 covers in full.</p>
       <p>Sometimes a generic type shouldn't accept <em>just anything</em> — a method built around numeric comparisons only makes sense for actual numbers. <code class="inline">extends</code> restricts a type parameter to a specific type (or subtype of it) — here meaning "any subtype of <code class="inline">Number</code>," which covers <code class="inline">Integer</code>, <code class="inline">Double</code>, and the rest:</p>
       <pre class="code"><code><span class="k">public static</span> &lt;<span class="t">T</span> <span class="k">extends</span> <span class="t">Number</span>&gt; <span class="k">double</span> <span class="me">clampedValue</span>(<span class="t">T</span> value, <span class="k">double</span> min, <span class="k">double</span> max)
 {
@@ -157,17 +162,27 @@ setpoint.<span class="me">set</span>(<span class="s">"fast"</span>); <span class
       <p>Without the <code class="inline">extends Number</code> bound, <code class="inline">value.doubleValue()</code> wouldn't compile at all — the compiler would only know <code class="inline">value</code> is <em>some</em> type, with no guarantee it has a <code class="inline">doubleValue()</code> method to call. The bound is what unlocks calling methods that only <code class="inline">Number</code> (and its subtypes) actually have.</p>
       <h2>Wildcards: A Quick Preview</h2>
       <p>The <code class="inline">?</code> wildcard represents an unknown type, mostly useful for parameters and fields where you want to accept "a <code class="inline">List</code> of anything" without pinning down exactly what. Wildcard variations (upper-bounded, lower-bounded) go beyond what this chapter covers — the short version to remember for now is: <code class="inline">?</code> is never used when <em>creating</em> a generic type (<code class="inline">new Box&lt;?&gt;()</code> isn't a thing) — only when referring to one you don't need to be specific about.</p>
+      <h2>What Generics Can't Do</h2>
+      <p>Generics only exist at compile time — the compiler checks everything, then largely erases the type information before the program runs (this is called <strong>type erasure</strong>). That limits what a generic class can do with its own type parameter:</p>
+      <ul>
+        <li>No <code class="inline">new T()</code> — the compiler doesn't know at runtime which constructor to call.</li>
+        <li>No <code class="inline">new T[10]</code> — creating an array of the type parameter doesn't compile, for the same reason.</li>
+        <li>No <code class="inline">static</code> field or method of type <code class="inline">T</code> — a type parameter belongs to each individual object, not to the class itself.</li>
+      </ul>
+      <p>Skipping the type argument entirely (<code class="inline">List list = new ArrayList();</code>, this lesson's very first snippet) is called a <strong>raw type</strong> — it compiles, but with an "unchecked" warning, not a hard error. Java kept raw types working only so pre-generics code (written before Java 5) wouldn't break; never write one on purpose in new code.</p>
     `,
     pitfalls: [
       "Forgetting the <code class=\"inline\">&lt;T&gt;</code> on the class declaration itself. <code class=\"inline\">public class Box { private T t; }</code> doesn't compile — <code class=\"inline\">T</code> has to be introduced with <code class=\"inline\">public class Box&lt;T&gt;</code> before it can be used anywhere inside the class.",
       "Using a primitive as a type argument. <code class=\"inline\">LoggedValue&lt;double&gt;</code> doesn't compile — type arguments must be reference types, so use the wrapper (<code class=\"inline\">LoggedValue&lt;Double&gt;</code>) instead, same rule as <code class=\"inline\">ArrayList</code> (Lesson 9.2).",
-      "Calling a bound-specific method without the bound. <code class=\"inline\">value.doubleValue()</code> only compiles once <code class=\"inline\">T</code> is declared <code class=\"inline\">extends Number</code> — without the bound, the compiler only knows <code class=\"inline\">T</code> is <em>some</em> type, with no guaranteed methods beyond what every <code class=\"inline\">Object</code> has."
+      "Calling a bound-specific method without the bound. <code class=\"inline\">value.doubleValue()</code> only compiles once <code class=\"inline\">T</code> is declared <code class=\"inline\">extends Number</code> — without the bound, the compiler only knows <code class=\"inline\">T</code> is <em>some</em> type, with no guaranteed methods beyond what every <code class=\"inline\">Object</code> has.",
+      "Expecting <code class=\"inline\">new T()</code>, <code class=\"inline\">new T[]</code>, or a <code class=\"inline\">static T</code> to work. Type erasure means none of them compile — see \"What Generics Can't Do\" above."
     ],
     takeaways: [
       "A generic class introduces type parameters in angle brackets after its name (<code class=\"inline\">class LoggedValue&lt;T&gt;</code>); the type variable then stands in for a real type anywhere in the class.",
       "Generic types replace the old cast-from-<code class=\"inline\">Object</code> pattern with compile-time type safety — a wrong type is now a compile error, not a runtime surprise.",
       "A generic method can introduce its own type parameter, scoped to just that method; the compiler usually infers the type automatically.",
       "<code class=\"inline\">&lt;T extends SomeType&gt;</code> restricts what a type parameter can be, and unlocks calling <code class=\"inline\">SomeType</code>'s own methods on values of that type.",
+      "Type erasure means a generic class can't <code class=\"inline\">new T()</code>, <code class=\"inline\">new T[]</code>, or use <code class=\"inline\">T</code> statically; skipping the type argument entirely compiles as a raw type, with an unchecked warning.",
       "The <code class=\"inline\">?</code> wildcard represents an unknown type for referring to a generic type generically — it's never used when constructing one."
     ],
     prov: "other-reference-repo: oracle-java-tutorials/generics/01-05 (ORACLE 14.1-5) · Deck context: mechacoder-test/src/lessons/java-2.js, slide 2 (\"Writing Your Own Generics\")"

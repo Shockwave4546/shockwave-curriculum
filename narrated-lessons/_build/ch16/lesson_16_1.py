@@ -5,7 +5,7 @@ BEATS = [
       <h1>Writing Your Own Generics</h1>
       <p class="scr-sub">From using generic types to writing them.</p>
     </div>''',
-        "speak": "List of String, Map of Integer and Double, ArrayList of Talon F X. Every collection since Chapter 9 has used a generic type someone else wrote. Chapter 16 is about writing your own.",
+        "speak": "List of String, Map of Integer and Double, ArrayList of Double. Every collection since Chapter 9 has used a generic type someone else wrote. Chapter 16 is about writing your own.",
     },
     {
         "screen": '''<div class="scr-title">
@@ -19,12 +19,13 @@ BEATS = [
         "screen": '''<pre class="code"><code>List list = <span class="k">new</span> ArrayList();         <span class="c">// no generics</span>
 list.add(<span class="s">"hello"</span>);
 String s = (String) list.get(<span class="n">0</span>);     <span class="c">// cast required, and could fail at runtime</span></code></pre>''',
-        "speak": "Before generics, a reusable container had to work with the generic Object type. That meant an explicit cast every time you got something back out, and nothing stopped the wrong type from going in in the first place. If it did, that cast could fail at runtime.",
+        "speak": "Before generics, a reusable container had to work with the generic Object type. That meant an explicit cast every time you got something back out, and nothing stopped the wrong type from going in in the first place. The open parenthesis String close parenthesis is a cast: it forces the compiler to treat the value as that type. If the object handed back weren't actually a String, this line would compile fine and then throw a Class Cast Exception at runtime instead of failing to compile.",
     },
     {
         "screen": '''<pre class="code"><code>List&lt;String&gt; list = <span class="k">new</span> ArrayList&lt;String&gt;();
 list.add(<span class="s">"hello"</span>);
-String s = list.get(<span class="n">0</span>);              <span class="c">// no cast — the compiler already knows it's a String</span></code></pre>''',
+<span class="c">// no cast — the compiler already knows it's a String</span>
+String s = list.get(<span class="n">0</span>);</code></pre>''',
         "speak": "With a type parameter, the compiler enforces correctness before the program ever runs, and the cast disappears entirely. The compiler already knows get returns a String.",
     },
     {
@@ -43,12 +44,14 @@ String s = list.get(<span class="n">0</span>);              <span class="c">// n
     <span class="k">public void</span> <span class="me">set</span>(T v) { value = v; }
     <span class="k">public</span> T <span class="me">get</span>() { <span class="k">return</span> value; }
 }</code></pre>''',
-        "speak": "Here's a value wrapper, a natural fit for logging a tunable robot value alongside its current setpoint. Instead of committing to double or String up front, it uses a placeholder type, T. T isn't a real type. It's a type variable, a placeholder standing in for whatever concrete type gets supplied when the class is actually used.",
+        "speak": "Here's a value wrapper, a natural fit for logging one tunable robot value, a setpoint, a gain, a mode name, without having to commit to double or String up front. Instead, it uses a placeholder type, T. T isn't a real type. It's a type variable, a placeholder standing in for whatever concrete type gets supplied when the class is actually used.",
     },
     {
-        "screen": '''<pre class="code"><code>LoggedValue&lt;Double&gt; setpoint = <span class="k">new</span> LoggedValue&lt;&gt;(); <span class="c">// the "diamond" &lt;&gt; — compiler infers Double from the left side</span>
+        "screen": '''<pre class="code"><code><span class="c">// the "diamond" &lt;&gt; — compiler infers Double from the left side</span>
+LoggedValue&lt;Double&gt; setpoint = <span class="k">new</span> LoggedValue&lt;&gt;();
 setpoint.set(<span class="n">3.5</span>);    <span class="c">// OK</span>
-setpoint.set(<span class="s">"fast"</span>); <span class="c">// compile error — a String doesn't belong in a LoggedValue&lt;Double&gt;</span></code></pre>''',
+<span class="c">// compile error — a String doesn't belong in a LoggedValue&lt;Double&gt;</span>
+setpoint.set(<span class="s">"fast"</span>);</code></pre>''',
         "speak": "Using it: a Logged Value of Double. The empty angle brackets on the right are called the diamond. The compiler infers Double from the left side. Setting three point five is fine, but setting the String fast is a compile error. A String doesn't belong in a Logged Value of Double.",
     },
     {
@@ -114,7 +117,7 @@ Pair&lt;String, Double&gt; reading = <span class="k">new</span> Pair&lt;&gt;(<sp
       <h1>Bounded Type Parameters</h1>
       <p class="scr-sub"><code>extends</code> restricts what a type parameter can be.</p>
     </div>''',
-        "speak": "Sometimes a generic type shouldn't accept just anything. A method built around numeric comparisons only makes sense for actual numbers. The extends keyword restricts a type parameter to a specific type, or any subtype of it.",
+        "speak": "A quick primer first: Number is a Java class, like Object, the ultimate parent of every class in Java, that Integer, Double, and the other numeric wrapper classes all extend. Chapter 17 covers what that relationship means for classes you write yourself. Now, sometimes a generic type shouldn't accept just anything. A method built around numeric comparisons only makes sense for actual numbers. The extends keyword restricts a type parameter to a specific type, or any subtype of it.",
     },
     {
         "screen": '''<pre class="code"><code><span class="k">public static</span> &lt;T <span class="k">extends</span> Number&gt; <span class="t">double</span> <span class="me">clampedValue</span>(T value, <span class="t">double</span> min, <span class="t">double</span> max)
@@ -138,15 +141,32 @@ Pair&lt;String, Double&gt; reading = <span class="k">new</span> Pair&lt;&gt;(<sp
       <li><span class="num">1</span><span><code>?</code> represents an unknown type &mdash; e.g. accepting &ldquo;a <code>List</code> of anything&rdquo;</span></li>
       <li><span class="num">2</span><span>Never used when <em>creating</em> a generic type &mdash; <code>new Box&lt;?&gt;()</code> isn&rsquo;t a thing</span></li>
     </ul></div>''',
-        "speak": "Last, a quick preview of wildcards. The question mark wildcard represents an unknown type. It's mostly useful for parameters and fields where you want to accept a List of anything, without pinning down exactly what. The upper-bounded and lower-bounded variations go beyond this chapter. The short version to remember for now: the wildcard is never used when creating a generic type, only when referring to one you don't need to be specific about.",
+        "speak": "Next, a quick preview of wildcards. The question mark wildcard represents an unknown type. It's mostly useful for parameters and fields where you want to accept a List of anything, without pinning down exactly what. The upper-bounded and lower-bounded variations go beyond this chapter. The short version to remember for now: the wildcard is never used when creating a generic type, only when referring to one you don't need to be specific about.",
+    },
+    {
+        "screen": '''<div class="scr-title">
+      <div class="scr-eyebrow">Ch. 16 &middot; Writing Your Own Generics</div>
+      <h1>What Generics Can't Do</h1>
+      <p class="scr-sub">Type erasure: generics only exist at compile time.</p>
+    </div>''',
+        "speak": "Last, what generics can't do. Generics only exist at compile time. The compiler checks everything, then largely erases the type information before the program runs — this is called type erasure.",
+    },
+    {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">What Type Erasure Rules Out</h2><ul>
+      <li><span class="num">1</span><span>No <code>new T()</code> &mdash; the compiler doesn&rsquo;t know at runtime which constructor to call</span></li>
+      <li><span class="num">2</span><span>No <code>new T[10]</code> &mdash; creating an array of the type parameter doesn&rsquo;t compile, same reason</span></li>
+      <li><span class="num">3</span><span>No <code>static</code> field or method of type <code>T</code> &mdash; T belongs to each object, not the class</span></li>
+    </ul></div>''',
+        "speak": "That limits what a generic class can do with its own type parameter. No new T, since the compiler doesn't know at runtime which constructor to call. No new T array, for the same reason. And no static field or method of type T, since a type parameter belongs to each individual object, not to the class itself. Skipping the type argument entirely, the raw type from this lesson's very first snippet, still compiles, but with an unchecked warning, not a hard error. Java kept raw types working only so pre-generics code wouldn't break — never write one on purpose in new code.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Common Pitfalls</h2><ul>
       <li><span class="check">!</span>Forgetting the &lt;T&gt; on the class declaration &mdash; T has to be introduced with <code>class Box&lt;T&gt;</code> before it&rsquo;s used.</li>
       <li><span class="check">!</span>Using a primitive as a type argument &mdash; LoggedValue&lt;double&gt; doesn&rsquo;t compile; use LoggedValue&lt;Double&gt;.</li>
       <li><span class="check">!</span>Calling a bound-specific method without the bound &mdash; doubleValue() needs T declared extends Number.</li>
+      <li><span class="check">!</span>Expecting <code>new T()</code>, <code>new T[]</code>, or a <code>static T</code> to work &mdash; type erasure rules out all three.</li>
     </ul></div>''',
-        "speak": "Common pitfalls. Don't forget the T in angle brackets on the class declaration itself. T has to be introduced in the class header before it can be used anywhere inside the class. Don't use a primitive as a type argument. A Logged Value of lowercase double doesn't compile, since type arguments must be reference types, so use the wrapper, capital Double, same rule as ArrayList in lesson 9.2. And don't call a bound-specific method without the bound. double Value only compiles once T is declared extends Number. Without it, the compiler only knows T is some type, with no guaranteed methods beyond what every Object has.",
+        "speak": "Common pitfalls. Don't forget the T in angle brackets on the class declaration itself. T has to be introduced in the class header before it can be used anywhere inside the class. Don't use a primitive as a type argument. A Logged Value of lowercase double doesn't compile, since type arguments must be reference types, so use the wrapper, capital Double, same rule as ArrayList in lesson 9.2. Don't call a bound-specific method without the bound. double Value only compiles once T is declared extends Number. Without it, the compiler only knows T is some type, with no guaranteed methods beyond what every Object has. And don't expect new T, new T array, or a static T to work — type erasure rules out all three.",
     },
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
@@ -159,9 +179,10 @@ Pair&lt;String, Double&gt; reading = <span class="k">new</span> Pair&lt;&gt;(<sp
     {
         "screen": '''<div class="scr-recap"><h2 class="scr-h2">Recap</h2><ul>
       <li><span class="check">&#10003;</span>&lt;T extends SomeType&gt; restricts what T can be, and unlocks calling SomeType&rsquo;s own methods.</li>
+      <li><span class="check">&#10003;</span>Type erasure rules out <code>new T()</code>, <code>new T[]</code>, and a <code>static T</code>; skipping the type argument compiles as a raw type.</li>
       <li><span class="check">&#10003;</span>The ? wildcard refers to an unknown type &mdash; it&rsquo;s never used when constructing one.</li>
     </ul></div>''',
-        "speak": "T extends some type restricts what a type parameter can be, and unlocks calling that type's own methods on its values. And the question mark wildcard represents an unknown type, for referring to a generic type generically. It's never used when constructing one. Next up, Chapter 17: inheritance and abstractions.",
+        "speak": "T extends some type restricts what a type parameter can be, and unlocks calling that type's own methods on its values. Type erasure rules out new T, new T array, and a static T, and skipping the type argument entirely compiles as a raw type. And the question mark wildcard represents an unknown type, for referring to a generic type generically. It's never used when constructing one. Next up, Chapter 17: inheritance and abstractions.",
         "continues": True,
     },
 ]

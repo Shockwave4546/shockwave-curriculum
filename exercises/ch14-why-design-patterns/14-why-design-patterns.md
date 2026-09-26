@@ -15,7 +15,7 @@ status: "new — authored exercises (Multiple Choice only — concept-only lesso
 - A. Scalability — keeping a growing codebase organized
 - B. A common language — shared vocabulary for describing a design
 - C. Testability — decoupled pieces can be simulated or tested independently
-- D. Speed — code built around patterns runs faster on the roboRIO
+- D. Speed — code built around patterns runs faster on the robot controller
 
 **Answer:** C
 

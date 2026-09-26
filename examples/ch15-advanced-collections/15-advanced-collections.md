@@ -22,6 +22,8 @@ At an event, the team's scouting tablets need to sync up before alliance selecti
 
 Each job uses its own collection on its own data. None of them feeds into another.
 
+Each step below shows one piece of a single program: every `import` shown actually belongs at the top of the file (once each, even though they're introduced step by step here), and every statement runs inside one `main` method.
+
 ## Step 2: Flag Repeats and Count Unique Teams — `Set`
 
 ```java

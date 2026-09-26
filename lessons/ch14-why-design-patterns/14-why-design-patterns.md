@@ -8,9 +8,9 @@ noWorkedExample: true
 
 ## What This Chapter Starts
 
-Everything up to Ch.13 was single-class, mostly single-file Java: variables, control flow, arrays, one class with a few methods. From here on ("Java II"), the curriculum shifts to how *multiple* classes work together as a codebase grows — the concerns become organization, reuse, and change over time, not just "does this one method work."
+Everything up to Ch.13 was mostly one class at a time, with a few interacting helper classes along the way (7.3's `MotorConfig` and `Subsystem`, for instance) — variables, control flow, arrays, a class with a few methods. From here on ("Java II"), the curriculum shifts to how *multiple* classes work together as a codebase grows — the concerns become organization, reuse, and change over time, not just "does this one method work."
 
-A **design pattern** is a named, reusable solution to a problem that keeps showing up across different programs — not a specific piece of code to copy-paste, but a *shape* of solution (which classes exist, how they relate) that's been proven to work well for that kind of problem. The chapters that follow each cover one real pattern actually used in FRC codebases: the Builder Pattern, Static Factories, the IO-Layer Pattern, and eventually the biggest one, Command-Based Programming itself.
+A **design pattern** is a named, reusable solution to a problem that keeps showing up across different programs — not a specific piece of code to copy-paste, but a *shape* of solution (which classes exist, how they relate) that's been proven to work well for that kind of problem. The chapters that follow first build the **language tools** patterns depend on — collections (Ch.15), generics (Ch.16), inheritance and polymorphism (Ch.17–18), and interfaces (Ch.19) — then walk through the real patterns used in FRC codebases, in chapter order: the IO-Layer Pattern (Ch.20), Static Factories (Ch.21), the Builder Pattern (Ch.22), and eventually the biggest one, Command-Based Programming itself (Ch.25).
 
 > "Code is read much more often than it is written." — Guido van Rossum (adapted)
 
@@ -26,7 +26,7 @@ That quote is the real motivation for this whole unit. A robot's codebase gets r
 
 ## What This Chapter Is Not
 
-This chapter doesn't teach a specific pattern — the chapters immediately following it do that one at a time. Its only job is to answer "why does any of this matter," before the actual mechanics of Advanced Collections, Generics, Inheritance, and the named patterns begin.
+This chapter doesn't teach a specific pattern — the chapters immediately following it do that one at a time. Its only job is to answer "why does any of this matter," before two kinds of chapters begin: language tools (Advanced Collections Ch.15, Generics Ch.16, Inheritance and Polymorphism Ch.17–18, Interfaces Ch.19, and later Encapsulation & `final` Ch.23, `Optional` Ch.24) and the named patterns themselves (Ch.20–22 and Ch.25).
 
 ## Common Pitfalls
 
