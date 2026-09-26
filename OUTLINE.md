@@ -80,6 +80,7 @@ JAVA 1
     5.9 Implementing Selection and Iteration Algorithms CSA 2.9    [new]
     5.10 Nested Iteration                              CSA 2.11    [new]
     5.11 Informal Runtime Analysis of Loops            CSA 2.12    [new]
+    5.12 switch Statements and Expressions             —           [new, 2026-09 audit]
 6   Strings                                            [header, no existing anchor] ← moved to right after Control
     Structures finishes (not mid-chapter) — a concrete thing to loop over right after loops are taught, and this also
     resolves the old two-parent dependency flag on String Algorithms (now cleanly follows both Strings and all of Loops)
@@ -96,7 +97,7 @@ JAVA 1
 9   Storing Data                                                [header]
     9.1 Array Creation and Access                      CSA 4.3     [existing]
     9.2 ArrayList and its Methods                      CSA 4.8     [existing]
-    9.3 Optional: HashMap (Dictionary) Data Structure CSA 4.60    [existing]
+    9.3 HashMap (Dictionary) Data Structure           CSA 4.60    [existing]
     — Arrays & ArrayLists: Traversal Patterns —
     9.4 Array Traversals                               CSA 4.4     [new]
     9.5 Implementing Array Algorithms                  CSA 4.5     [new]
@@ -126,6 +127,7 @@ JAVA 2
     17.2 Inheritance and Constructors                  CSA 5.2     [new]
     17.3 Inheritance Hierarchies                       CSA 5.5     [new]
     17.4 Object Superclass                             CSA 5.7     [new]
+    17.5 Abstract Classes and Methods                  —           [new, 2026-09 audit]
 18  Polymorphism: Many Forms                                    [header]
     18.1 Overriding Methods                            CSA 5.3     [existing]
     18.2 super Keyword                                 CSA 5.4     [existing]
@@ -141,7 +143,7 @@ JAVA 2
 21  Static Factories                                 T5817 30.2   [existing]
 22  The Builder Pattern                              T5817 30.1   [existing]
 23  Encapsulation & Final                                       [header]
-    23.1 Scope and Access                              CSA 3.8     [existing]
+    23.1 Access, final, and Immutability               CSA 3.8     [existing] (scope moved to 7.2)
 24  Optional: Avoiding Null Pointer Exceptions        ORACLE 16.1  [existing] ✓ captured — renamed
     from "Optional: Maybe a Value" to disambiguate from optional method parameters, per the label
     concern raised earlier; the deck's actual slide heading is unchanged (mechacoder-test is
