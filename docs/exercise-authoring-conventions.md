@@ -291,11 +291,31 @@ Add to the `## Coding` section:
 - WPILib/REVLib jars still aren't wired into the Piston Java packages (see below); needed
   before any compile-only exercise can actually run.
 
-## Open items
+## 2026-09 content audit — conventions now in force (Ch.1-28)
 
-- This convention doc covers Ch.1-9 (beginner tier, MC/Micro-Parsons) and the Coding
-  advanced tier's design (above, Ch.10+). Extend it here, don't start a new doc, if/when
-  Ch.10+ worked examples or exercises are actually authored.
+Ch.10-28 worked examples and exercises were authored, then every chapter was audited and fixed
+(tracker: `docs/content-audit/tracker.md`; brief: `docs/content-audit/fix-brief.md`). These rules
+apply to all new or edited content:
+
+- **Java 25** is the target; add a brief "On Java 17, …" note wherever 17 behaves differently.
+  Multi-class single-file programs put the **public class with `main` first** (runs on 17 and 25).
+- **WPILib 2027 / SystemCore** (`org.wpilib.*`, `setThrottle`, etc.) and **Commands v3**; verify
+  every real WPILib name against allwpilib `main`. **FRC only** — never FTC-only classes
+  (`org.wpilib.hardware.expansionhub.*`).
+- **No vendor classes** in Java I/II. Motors use the invented `DriveMotor(int channel)` with
+  `setThrottle(double)` / `getThrottle()` (defined in Ch.4); WPILib's `MotorController` interface
+  only for interface/polymorphism lessons. The invented robot base class is `RobotPart` (Ch.17.1).
+- Constants are ALL_CAPS. Say "PWM channel", not "CAN ID".
+- **Micro-Parsons:** fragments with identical text must be declared together in
+  `**Interchangeable:**` (the app grades by letter position); fragments differing only by
+  indentation are distinct. Where Java allows whole-block reordering, pin the order in the
+  Problem text. Fixed-scaffold puzzles show the scaffold as a ```java block in the Problem text
+  (the app takes the Answer program from the code block after `**Answer:**`). Use one Answer
+  sequence only — the app cannot parse "Blank 1 / Blank 2".
+- MC-only exercise files (no Micro-Parsons section) are supported; a lesson with
+  `noWorkedExample: true` in its frontmatter hides the Example step (Ch.14, 27.2).
+- Keep derived copies in sync in the same pass: narration script (`narrated-lessons/_build/`),
+  `review/chNN.html` (checked by `tools/check_lesson_review_consistency.py`).
 
 ## Piston local dev environment (set up 2026-09-20, not yet wired into any exercise)
 

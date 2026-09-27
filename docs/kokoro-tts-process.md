@@ -8,9 +8,7 @@ since it's already built. **Ch.25 update (2026-09-25):** Ch.25 was rewritten for
 v3 as part of the content audit, and its narration was re-scripted and re-voiced with
 Kokoro (`am_echo`) as part of that rewrite — it's no longer an Azure exception.
 
-**Status (2026-09-22): Ch.2-13 (Java I) fully built** — 45 lessons, 492 beats, via the
-batch pipeline described below. Ch.14-28 (Java II + Advanced Java Topics) still need
-narration scripts written and synthesized — same process, just not done yet.
+**Status (2026-09-27): all 80 narrated lessons (Ch.1-28) are Kokoro-built** at `SPEED = 0.88`, via `build_kokoro_batch.py` (Ch.1 re-voiced `af_heart` and Ch.25 `am_echo`, replacing the old Azure builds). After the Sept 2026 content audit every changed lesson was re-synthesized. The builder reuses any existing `beat-NN.mp3`, so **delete a lesson's audio folder (`chNN-audio/<item>/`) before rebuilding it after its speak text changes**.
 
 **2026-09-23 — narration speed was NOT actually the same as Azure, despite the "everything
 else stays the same" section below.** Azure's build applies `<prosody rate='-8%'>` (see
