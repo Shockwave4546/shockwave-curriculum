@@ -113,16 +113,18 @@ and reviewed the results.
 ## Ch.25 (added 2026-10-06)
 
 Authored by the lead agent, not the subagents (it needs real WPILib API knowledge). Six
-`full-program` exercises, 25.2-25.7; **25.1 skipped** (conceptual). Design: "Ch.25: construct and
-inspect" in `docs/exercise-authoring-conventions.md`. Needs the WPILib jars in Piston
-(`tools/piston/install-wpilib-jars.sh`). All six pass the checker and the app's own runner, and
-every wrong solution tried (e.g. `noRequirements`, parallel instead of sequence, a missing
-`LOWEST_PRIORITY`, a state machine that cascades transitions, a missing `onFalse`) fails a test.
+`full-program` exercises, 25.2-25.7; **25.1 skipped** (conceptual). 25.2, 25.3, 25.5, 25.6 and 25.7
+run the **real Commands v3 scheduler** headlessly; design and quirks are in "Ch.25: the real
+Commands v3 scheduler, headless" in `docs/exercise-authoring-conventions.md`. Needs the Piston
+install from `tools/piston/install-wpilib-jars.sh`. All six pass the checker and the app's own
+runner, and every wrong solution tried fails a test (e.g. `noRequirements`, parallel instead of
+sequence, a pause of the wrong length, a missing `yield()`, a missing `LOWEST_PRIORITY`, a
+hardcoded or negated priority, a state machine that cascades transitions, `onTrue` for
+`whileTrue`, `toggleOnTrue` for `onTrue`).
 
 Known weak spots:
-- 25.2: the length of the pause (2 seconds) isn't visible in the printed facts.
-- 25.3: the commands are only built, never run, so what the priority *does* isn't exercised.
-- 25.6 is a source scan, not a behaviour test: it confirms the calls are present and the code
-  compiles. `.toggleOnTrue(` in place of `.onTrue(` fails only a visible scenario.
-- 25.7: the routine's members and order are checked through its automatic name; the timeout is
-  checked through the same name.
+- Real controllers (`CommandXboxController`) can't be created without WPILib's native library, so
+  25.6 uses triggers built from flags.
+- 25.4 is plain-Java logic, so it only checks the machine's behaviour, not any Commands v3 API.
+- The headless setup depends on an alpha (WPILib `2027.0.0-alpha-7`): re-run the checker on all of
+  Ch.25 when the jars are bumped.

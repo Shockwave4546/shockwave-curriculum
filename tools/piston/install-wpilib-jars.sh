@@ -2,15 +2,25 @@
 # Installs the WPILib 2027 jars that Ch.25 (Commands v3) exercises compile against into
 # Piston's Java 25 package, and puts them on that package's CLASSPATH.
 #
-# Why: Ch.25 exercises are compile-only (see docs/exercise-authoring-conventions.md), so the
-# student's code must see the real org.wpilib.command3 API at compile time. Running commands
-# is NOT supported: the Scheduler also needs the third-party `quickbuf` library, which has
-# not been approved for this project.
+# Why: the Ch.25 exercises build and RUN real Commands v3 objects (see "Ch.25: construct and
+# inspect" in docs/exercise-authoring-conventions.md), so student code must see the real
+# org.wpilib.command3 API, and the scheduler has to run without a robot. That takes:
+#   - the 8 WPILib jars (WPILib's Maven server),
+#   - quickbuf-runtime 1.4 (Maven Central): the Scheduler's protobuf runtime (approved by Joe
+#     2026-10-06; WPILib's own build pins the same version),
+#   - command3-test-support.jar: ~40 lines of OUR code (tools/piston/command3-test-support/) that
+#     replaces the two things that need WPILib's native hardware library, the Driver Station
+#     opmode lookup and the robot clock, with a fixed opmode and a clock that only moves when told
+#     (TestSupport.init() / TestSupport.advance(seconds)),
+#   - two JVM flags (`--add-opens`) that the scheduler's coroutines need.
 #
 # What it does (idempotent, safe to re-run):
-#   1. downloads the jars from WPILib's Maven server and verifies each against Maven's SHA-1
-#   2. with sudo, copies them to <piston-data>/packages/java/<version>/wpilib/
-#   3. with sudo, adds a CLASSPATH line to that package's `environment` and `.env` files
+#   1. downloads the jars and verifies each against the repository's published SHA-1
+#   2. builds command3-test-support.jar with Piston's own JDK
+#   3. with sudo, copies all jars to <piston-data>/packages/java/<version>/wpilib/
+#   4. with sudo, adds a CLASSPATH line to that package's `environment` and `.env` files
+#   5. with sudo, adds the `--add-opens` flags to that package's `run` script
+# Restart Piston afterwards (`sudo podman restart piston_api`) so it re-reads `.env`.
 #
 # Usage:  bash tools/piston/install-wpilib-jars.sh [--dry-run]
 #   PISTON_DATA   Piston data dir on the host (default ~/piston-data)
@@ -30,6 +40,11 @@ ARTIFACTS=(
   ntcore/ntcore-java
   datalog/datalog-java
 )
+
+QUICKBUF_URL="https://repo1.maven.org/maven2/us/hebi/quickbuf/quickbuf-runtime/1.4"
+QUICKBUF_JAR="quickbuf-runtime-1.4.jar"
+OPENS="--add-opens java.base/jdk.internal.vm=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PISTON_DATA="${PISTON_DATA:-$HOME/piston-data}"
 JAVA_PKG="${JAVA_PKG:-25.0.1}"
@@ -56,6 +71,22 @@ for path in "${ARTIFACTS[@]}"; do
   echo "   ok  $jar  $(stat -c%s "$WORK/$jar") bytes"
 done
 
+echo "== Downloading and verifying $QUICKBUF_JAR (Maven Central)"
+curl -fsSL -o "$WORK/$QUICKBUF_JAR"      "$QUICKBUF_URL/$QUICKBUF_JAR"
+curl -fsSL -o "$WORK/$QUICKBUF_JAR.sha1" "$QUICKBUF_URL/$QUICKBUF_JAR.sha1"
+want="$(tr -d ' \n\r' < "$WORK/$QUICKBUF_JAR.sha1" | cut -c1-40)"
+got="$(sha1sum "$WORK/$QUICKBUF_JAR" | cut -d' ' -f1)"
+if [ "$want" != "$got" ]; then echo "CHECKSUM MISMATCH: $QUICKBUF_JAR (want $want, got $got)" >&2; exit 1; fi
+echo "   ok  $QUICKBUF_JAR  $(stat -c%s "$WORK/$QUICKBUF_JAR") bytes"
+
+echo "== Building command3-test-support.jar with Piston's own JDK"
+JDK_BIN="$PKG_DIR/bin"
+CP="$(ls "$WORK"/*.jar | paste -sd:)"
+mkdir -p "$WORK/support-classes"
+"$JDK_BIN/javac" -cp "$CP" -d "$WORK/support-classes" "$SCRIPT_DIR/command3-test-support/org/wpilib/command3/TestSupport.java"
+"$JDK_BIN/jar" cf "$WORK/command3-test-support.jar" -C "$WORK/support-classes" .
+echo "   ok  command3-test-support.jar  $(stat -c%s "$WORK/command3-test-support.jar") bytes"
+
 if $DRY_RUN; then
   echo "== Dry run: stopping before any change to $PKG_DIR"
   exit 0
@@ -71,6 +102,12 @@ ENV_LINE="CLASSPATH=$IN_CONTAINER_DIR/*"
 grep -qxF "$CP_LINE"  "$PKG_DIR/environment" || echo "$CP_LINE"  | sudo tee -a "$PKG_DIR/environment" >/dev/null
 grep -qxF "$ENV_LINE" "$PKG_DIR/.env"        || echo "$ENV_LINE" | sudo tee -a "$PKG_DIR/.env"        >/dev/null
 
-echo "== Done. Check it:"
+RUN_FILE="$PKG_DIR/run"
+if ! grep -q -- "--add-opens" "$RUN_FILE"; then
+  sudo sed -i "s#^java \$filename#java $OPENS \$filename#" "$RUN_FILE"
+fi
+grep -q -- "--add-opens" "$RUN_FILE" || { echo "Could not add the JVM flags to $RUN_FILE" >&2; exit 1; }
+
+echo "== Done. Restart Piston (sudo podman restart piston_api), then check it:"
 echo "   curl -s -X POST localhost:2000/api/v2/execute -H 'Content-Type: application/json' \\"
 echo "     -d '{\"language\":\"java\",\"version\":\"$JAVA_PKG\",\"files\":[{\"name\":\"Main\",\"content\":\"import org.wpilib.command3.Command; public class Main { public static void main(String[] a){ System.out.println(Command.class.getName()); } }\"}]}'"

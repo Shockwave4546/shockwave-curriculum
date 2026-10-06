@@ -350,35 +350,48 @@ Add to the `## Coding` section:
   lot. The app already tells these apart from a timeout (status `TO`), but the deployed Piston
   should raise `PISTON_OUTPUT_MAX_SIZE` (e.g. 65536) so students see complete error messages.
 - **WPILib 2027 jars are installed in Piston's Java 25 package** (2026-10-06, version
-  `2027.0.0-alpha-7`, 8 jars) by `tools/piston/install-wpilib-jars.sh`; run it again on any new
+  `2027.0.0-alpha-7`, 8 jars, plus `quickbuf-runtime-1.4`, our headless test helper, and the JVM
+  flags the scheduler needs) by `tools/piston/install-wpilib-jars.sh`; run it again on any new
   Piston host (the Azure VM). The jars are on the package's `CLASSPATH` for every Java run, so
   Java I/II exercises see them too (harmless). Piston must be restarted after installing. No
   vendor jars (REVLib etc.) are needed: Java I/II use no vendor classes. The jars are an alpha:
   re-check the exercises when the WPILib version is bumped.
 
-### Ch.25: construct and inspect
+### Ch.25: the real Commands v3 scheduler, headless
 
 The six Ch.25 exercises (25.2-25.7; 25.1 is conceptual and has none) are `full-program`
-exercises that **build** Commands v3 objects and **print facts about them**, without running the
-scheduler. A fixed `main` calls the student's factory methods and prints what a command can report
-right after it is built: `name()`, `requires(mechanism)`, `requirements().size()`, `priority()`,
-`isLowerPriorityThan(...)`, `conflictsWith(...)`. `withAutomaticName()` makes a composition's name
-expose its structure (`A -> B` is a sequence, `(A & B)` a parallel group, and a timeout shows as
-`[2.0 Second timeout]`), which is how the order and the shape of a group are checked.
+exercises that build real Commands v3 objects and **run the real `Scheduler`** (on a fake clock),
+printing what happened. 25.4 is plain Java (an enum state machine); the rest use WPILib:
 
-- **Why not compile-only:** it would only prove the code compiles. Commands can be built and
-  inspected headlessly (only the jars, no hardware), which checks names, requirements, priorities
-  and structure.
-- **What can't be done:** running a command, a `Trigger`, or `Scheduler` needs the third-party
-  `quickbuf` library (`Scheduler`'s static initializer throws `NoClassDefFoundError:
-  us/hebi/quickbuf/ProtoMessage`), which hasn't been approved. Getting it (plus likely the
-  `--add-exports java.base/jdk.internal.vm=ALL-UNNAMED` JVM flag) would allow real behaviour tests
-  with `Scheduler.createIndependentScheduler()`.
-- **25.6 (triggers)** can't even construct a `Trigger` headlessly, so it is a structure check:
-  the fixed `main` reads its own `Main.java`, strips comments, and reports whether a given call
-  (`.onTrue(`, `.whileTrue(` ...) appears. The student's method is also type-checked at compile
-  time through a lambda that is never run. Piston keeps the source as `Main.java` in the working
-  directory, so this works there.
+| Exercise | What the fixed `main` does |
+|---|---|
+| 25.2 | prints a command's name and requirements, runs it until a limit flag trips, then runs a sequence on a simulated clock (checks the 2 s pause) |
+| 25.3 | runs two priority warnings against a default `Glow` command and prints what runs on the mechanism |
+| 25.5 | installs the state machine as the default command, feeds inputs, and fires a manual eject command that pauses it |
+| 25.6 | binds commands to `Trigger`s built from flags and prints what ran each loop (`onTrue`, `onFalse`, `whileTrue`) |
+| 25.7 | runs `driveThenShoot` second by second (timeout, then shoot) and checks the constants class by reflection |
+
+How it works:
+
+- **Setup in `main`:** `TestSupport.init();` (from `org.wpilib.command3`, our own helper, see
+  below) replaces the two things that need WPILib's native hardware library, the Driver Station
+  opmode lookup and the robot clock. `TestSupport.advance(seconds)` moves the fake clock, so timing
+  is deterministic. Use `Scheduler.getDefault()` (mechanisms register their default commands there).
+- **What can't be done:** `CommandXboxController` and other real controllers (they need the native
+  library), so triggers are built from plain flags (`new Trigger(scheduler, () -> flag)`) and the
+  student's method takes `Trigger`s.
+- **Quirks of this alpha, found while authoring:** a trigger whose condition is `false` at its
+  first poll fires `onFalse` once, so `main` runs one idle loop first. A command that needs the
+  same mechanism as a running one replaces it when its priority is equal or higher, so give
+  one-shot commands that must not interfere their own mechanism. When a command ends, a default
+  command is re-queued on the **next** loop, so there is one loop with nothing running.
+  `withTimeout` cancels the wrapped command in the same loop it starts the next step.
+- **Naming:** `withAutomaticName()` makes a composition's name expose its structure (`A -> B`
+  sequence, `(A & B)` parallel, `[2.0 Second timeout]`).
+- **Piston setup:** see the "WPILib 2027 jars" note above and `tools/piston/install-wpilib-jars.sh`.
+  Besides the 8 WPILib jars it installs `quickbuf-runtime-1.4` (approved 2026-10-06), our
+  `command3-test-support.jar` (source in `tools/piston/command3-test-support/`), and adds two
+  `--add-opens` flags to the Java package's `run` script. Restart Piston afterwards.
 - Classes the student writes live in the same single file (`Main` first). Mechanism stand-ins
   such as `DriveMotor(int channel)` are given and marked `// Don't change`.
 
