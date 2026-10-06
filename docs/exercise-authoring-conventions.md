@@ -191,8 +191,8 @@ FRC only: never use FTC-only classes (`org.wpilib.hardware.expansionhub.*`).
 
 ## Coding exercises (advanced tier, Piston-checked)
 
-Designed 2026-09-22, not yet authored for any chapter or wired into the app — see "What's
-still open" below. Applies to Ch.10+ `exercises/chNN-*/N.N-*.md` files as an optional
+Designed 2026-09-22. First exercise authored 2026-10-05 (10.3); not yet wired into the app —
+see "What's still open" below. Applies to Ch.10+ `exercises/chNN-*/N.N-*.md` files as an optional
 third `## Coding` section alongside the existing `## Multiple Choice` and
 `## Micro-Parsons` sections — not a separate file or tree. Present only for lessons that
 get this tier; MC/Micro-Parsons keep existing independently (per the Academy app's
@@ -267,6 +267,24 @@ Add to the `## Coding` section:
   from special-casing against the visible inputs instead of solving the real problem;
   never introduce new logic only in a hidden case.
 
+**Concrete layout (first used in `exercises/ch10-2d-arrays/10.3-…md`, 2026-10-05):**
+`**Mode:** harness`, `**Problem:**` (with the visible examples), `**Signature:**`,
+`**Starter:**` (```java block), `**Tests:**` as a markdown table
+`| Visible | Arguments | Expected |` with `yes`/`no` in the first column, then `**Solution:**`
+(```java model answer) and `**Why:**`, mirroring the MC/Micro-Parsons Answer/Why.
+
+- **Arguments and Expected are written as Java source** (`new double[][] { {5.0, 1.0} }`,
+  `2`, `"text"`), not JSON. The test runner pastes them straight into
+  `check(n, Solution.method(<Arguments>), <Expected>)` and compares with
+  `java.util.Objects.deepEquals`, so no per-type conversion code is needed. Write `double`
+  values with a decimal point, and avoid expected values that depend on floating-point
+  rounding (prefer exercises that return an index, count, or boolean).
+- **Hidden tests aren't secret.** The app reads exercise files through Nuxt Content, which
+  ships them to the browser. That's accepted: exercises are self-check practice, not tests,
+  and grading runs in the browser (decided 2026-10-05).
+- Verify every new Coding exercise against real Piston before committing: the model solution
+  must pass every test, and at least one realistic wrong solution must fail a hidden test.
+
 ### Full-program-mode authoring format
 
 Add to the `## Coding` section:
@@ -280,16 +298,31 @@ Add to the `## Coding` section:
 
 ### What's still open (deferred, not part of this design)
 
-- The runtime mechanics — constructing the wrapper class that injects a harness-mode
-  method body, calling Piston's `execute` API, parsing per-test-case pass/fail out of
-  stdout — is app-side implementation work for `shockwave-programming-academy`, not
-  decided here. This convention only defines what content authors write; it must contain
-  everything that future code needs (signature, scaffold, test cases) to build that
-  mechanically.
-- No Coding-tier exercise has been authored yet for any chapter — Ch.10 is the natural
-  first candidate whenever this work resumes.
-- WPILib/REVLib jars still aren't wired into the Piston Java packages (see below); needed
-  before any compile-only exercise can actually run.
+- **Runtime design (decided 2026-10-05, not built yet):** the app grades in the browser. It
+  builds a `Main` test runner from the Tests table, sends `Main` + the student's
+  `Solution.java` to Piston, and reads one `PASS n …`/`FAIL n …` line per test from stdout.
+  Request path: browser → back end (checks the login session) → a small Python gateway
+  (shared secret, 2-3 concurrent jobs, per-student rate limit) → Piston. The gateway forwards
+  any code — it must not restrict submissions to exercise-shaped programs, because an open
+  "playground" at the end of each section is planned.
+- **Piston file-name quirk:** the Java package's `run` script renames the *first* file by
+  appending `.java`, then runs it with the source launcher. Send the runner as `Main` (no
+  extension) first and the student's class as `Solution.java`; Java 25's multi-file source
+  launch finds `Solution.java` in the same directory. Sending `Main.java` produces
+  `Main.java.java` and a compile error.
+- First Coding exercise authored: 10.3 `getPeakSampleIndex` (verified on Piston: model
+  solution 7/7; a row-sum bug and a tie-handling bug each fail hidden tests).
+- **App support (built 2026-10-05, local only):** `shockwave-programming-academy` parses the
+  `## Coding` section (`app/utils/parseExercise.ts`), builds and runs the test runner
+  (`app/utils/codingRunner.ts`), and shows a code box with per-test results
+  (`app/components/InteractiveCoding.vue`). Harness mode only so far. In `nuxt dev`,
+  `/piston/execute` is proxied to the local Piston container; no deployed host serves that
+  path yet.
+- **Next (Joe, 2026-10-05):** author the remaining Coding exercises across the curriculum
+  before choosing the final host, since exercises are content and don't depend on it.
+- WPILib 2027 jars still aren't wired into the Piston Java packages (see below); needed
+  before any compile-only exercise (Ch.25) can run. No vendor jars (REVLib etc.) are needed:
+  Java I/II use no vendor classes.
 
 ## 2026-09 content audit — conventions now in force (Ch.1-28)
 
@@ -339,5 +372,7 @@ need is running and verified:
   exercises (no hardware simulation); full compile+run (Piston's native behavior) for
   plain-Java exercises with no outside libraries. WPILib/REVLib/AdvantageKit jars aren't
   wired into either Java package yet — next step when this work resumes.
-- Full architecture context (VM sizing, Entra ID gating, gateway design) is in Joe's Azure
-  planning session, not duplicated here.
+- The `25.0.1` package actually reports `java.version` = `25.0.4.1` (its `build.sh` pulls
+  Temurin's latest 25 release), so the label is a pinned name, not the exact patch.
+- VM sizing is in Joe's Azure planning session. Entra ID gating there is superseded: sign-in
+  is now accounts in MySQL (see the academy repo's `docs/dreamhost-deployment.md`).
