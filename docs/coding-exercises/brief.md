@@ -61,10 +61,11 @@ Joe agreed to add Coding exercises to Ch.5-9. Same rules as above, plus the Java
   nothing testable fits.
 - **9.8 (text files):** Piston has no input files, so a program must write a file before it reads
   it, or read from `Scanner(System.in)`. If a file exercise can't be done cleanly, skip it and say so.
-- **F (classes):** full-program exercises use the course's invented classes. Ch.7-8 are where
-  `DriveMotor(int channel)` with `setThrottle(double)` / `getThrottle()` is defined (Ch.4 uses it
-  as a given class), so students may write small classes like `Battery` or `Intake` themselves.
-  The student writes the class; the fixed `main` reads input and prints what the class does.
+- **F (classes):** Ch.7-8 are where students first **write their own classes**. `DriveMotor(int
+  channel)` with `setThrottle(double)` / `getThrottle()` is the course's invented motor class
+  (introduced as a given class in Ch.4); use it as a given class if you need a motor, and let
+  students write small classes of their own like `Battery` or `Intake`. The student writes the
+  class; the fixed `main` reads input and prints what the class does.
 
 ## Rules (on top of the conventions doc)
 
