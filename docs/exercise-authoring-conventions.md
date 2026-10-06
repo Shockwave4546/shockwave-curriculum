@@ -296,6 +296,22 @@ Add to the `## Coding` section:
   exact byte-for-byte formatting beyond that; minor `println` formatting differences aren't
   the concept being tested.
 
+**Concrete layout (pinned 2026-10-06):** `**Mode:** full-program`, `**Problem:**`,
+`**Starter:**` (```java block), then one block per scenario —
+`**Scenario 1 (visible):**`, `**Scenario 3 (hidden):**`, … — each with an optional
+`**Input:**` ```text block (stdin) and a required `**Expected output:**` ```text block, then
+`**Solution:**` (```java, the complete program) and `**Why:**`. 2-3 visible scenarios, at least
+2 hidden. Each scenario is one separate Piston run with its own stdin.
+
+- **Give the student a fixed `main` that reads the input.** Scenarios only differ if the
+  program reads input, but `Scanner` on `System.in` isn't taught as a skill of its own. So the
+  Starter contains the complete `main` (reading stdin with `Scanner`, calling the student's
+  classes, printing results) marked `// Don't change main`, plus the class(es) the student
+  writes as stubs. The student's work is the class structure the lesson teaches.
+- The public class with `main` comes first in the file (runs on Java 17 and 25). The whole
+  program is one file; Piston runs it with the single-file source launcher, so the file name
+  doesn't need to match the class name.
+
 ### What's still open (deferred, not part of this design)
 
 - **Runtime design (decided 2026-10-05, not built yet):** the app grades in the browser. It
@@ -320,6 +336,14 @@ Add to the `## Coding` section:
   path yet.
 - **Next (Joe, 2026-10-05):** author the remaining Coding exercises across the curriculum
   before choosing the final host, since exercises are content and don't depend on it.
+  Scope: Ch.10-28 (Ch.25 last, once WPILib 2027 jars are in Piston); whether Ch.5-9 also get
+  Coding exercises is still to be discussed. Authoring brief: `docs/coding-exercises/brief.md`.
+- **Checker:** `tools/verify_coding_exercises.py` runs every file's model solution (or a
+  `--solution-file`) against Piston, for harness and full-program modes. Its harness runner
+  must stay identical in behaviour to the app's `codingRunner.ts`.
+- **The app only shows harness mode so far.** Full-program and compile-only sections are
+  skipped (hidden) by the app's parser until their UI is built; the rest of the file stays
+  interactive.
 - WPILib 2027 jars still aren't wired into the Piston Java packages (see below); needed
   before any compile-only exercise (Ch.25) can run. No vendor jars (REVLib etc.) are needed:
   Java I/II use no vendor classes.
