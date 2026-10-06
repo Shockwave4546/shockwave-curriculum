@@ -349,6 +349,14 @@ Add to the `## Coding` section:
   signal SIGKILL. A long compiler error list hits this, and so would a program that prints a
   lot. The app already tells these apart from a timeout (status `TO`), but the deployed Piston
   should raise `PISTON_OUTPUT_MAX_SIZE` (e.g. 65536) so students see complete error messages.
+- **Piston kills a run at 3 CPU-seconds, not just 3 wall-seconds.** A default Java 25 JVM spends
+  ~2.1 CPU-seconds on a 0.8 s run (parallel GC and JIT threads), so with 3 simultaneous scheduler
+  runs on this 8-core machine nearly every run hit `Time limit exceeded` (status `TO`), and the full
+  checker failed intermittently while agents were also using Piston. The Piston Java package's
+  `run` script now passes `-XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Xshare:auto -Xmx256m
+  -XX:CICompilerCount=1` (set by `tools/piston/install-wpilib-jars.sh`), which halves the CPU time:
+  0 failures in 360 runs at 1, 3, 6 and 8 simultaneous. At 8 simultaneous, wall time reaches ~2.6 s,
+  close to the 3 s wall limit, so the gateway in front of Piston should still cap concurrency at 2-3.
 - **WPILib 2027 jars are installed in Piston's Java 25 package** (2026-10-06, version
   `2027.0.0-alpha-7`, 8 jars, plus `quickbuf-runtime-1.4`, our headless test helper, and the JVM
   flags the scheduler needs) by `tools/piston/install-wpilib-jars.sh`; run it again on any new

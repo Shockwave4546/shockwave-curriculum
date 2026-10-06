@@ -12,14 +12,17 @@
 #     replaces the two things that need WPILib's native hardware library, the Driver Station
 #     opmode lookup and the robot clock, with a fixed opmode and a clock that only moves when told
 #     (TestSupport.init() / TestSupport.advance(seconds)),
-#   - two JVM flags (`--add-opens`) that the scheduler's coroutines need.
+#   - two JVM flags (`--add-opens`) that the scheduler's coroutines need,
+#   - CPU-saving JVM flags: Piston kills a run at 3 CPU-seconds, and a default JVM spends about
+#     2.1 CPU-seconds on even a 0.8 s scheduler run (parallel GC and JIT threads), so a few students
+#     at once pushed nearly every run over the limit. SerialGC + C1-only roughly halves the CPU time.
 #
 # What it does (idempotent, safe to re-run):
 #   1. downloads the jars and verifies each against the repository's published SHA-1
 #   2. builds command3-test-support.jar with Piston's own JDK
 #   3. with sudo, copies all jars to <piston-data>/packages/java/<version>/wpilib/
 #   4. with sudo, adds a CLASSPATH line to that package's `environment` and `.env` files
-#   5. with sudo, adds the `--add-opens` flags to that package's `run` script
+#   5. with sudo, sets the JVM flags on that package's `run` script (it is read on every job)
 # Restart Piston afterwards (`sudo podman restart piston_api`) so it re-reads `.env`.
 #
 # Usage:  bash tools/piston/install-wpilib-jars.sh [--dry-run]
@@ -43,7 +46,7 @@ ARTIFACTS=(
 
 QUICKBUF_URL="https://repo1.maven.org/maven2/us/hebi/quickbuf/quickbuf-runtime/1.4"
 QUICKBUF_JAR="quickbuf-runtime-1.4.jar"
-OPENS="--add-opens java.base/jdk.internal.vm=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED"
+JVM_FLAGS="--add-opens java.base/jdk.internal.vm=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Xshare:auto -Xmx256m -XX:CICompilerCount=1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PISTON_DATA="${PISTON_DATA:-$HOME/piston-data}"
@@ -103,10 +106,9 @@ grep -qxF "$CP_LINE"  "$PKG_DIR/environment" || echo "$CP_LINE"  | sudo tee -a "
 grep -qxF "$ENV_LINE" "$PKG_DIR/.env"        || echo "$ENV_LINE" | sudo tee -a "$PKG_DIR/.env"        >/dev/null
 
 RUN_FILE="$PKG_DIR/run"
-if ! grep -q -- "--add-opens" "$RUN_FILE"; then
-  sudo sed -i "s#^java \$filename#java $OPENS \$filename#" "$RUN_FILE"
-fi
-grep -q -- "--add-opens" "$RUN_FILE" || { echo "Could not add the JVM flags to $RUN_FILE" >&2; exit 1; }
+# Rewrites the `java ... $filename` line each time, so re-running picks up changed flags.
+sudo sed -i "s#^java .*\$filename#java $JVM_FLAGS \$filename#" "$RUN_FILE"
+grep -q -- "UseSerialGC" "$RUN_FILE" || { echo "Could not set the JVM flags in $RUN_FILE" >&2; exit 1; }
 
 echo "== Done. Restart Piston (sudo podman restart piston_api), then check it:"
 echo "   curl -s -X POST localhost:2000/api/v2/execute -H 'Content-Type: application/json' \\"

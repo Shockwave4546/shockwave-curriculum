@@ -159,3 +159,25 @@ Known weak spots:
 - 25.4 is plain-Java logic, so it only checks the machine's behaviour, not any Commands v3 API.
 - The headless setup depends on an alpha (WPILib `2027.0.0-alpha-7`): re-run the checker on all of
   Ch.25 when the jars are bumped.
+
+## Outcome: Ch.5-9 (2026-10-06)
+
+Groups D, E and F ran as three Sonnet/medium agents; the lead agent re-ran the checker on all 60
+coding exercises, checked every untouched Starter, and ran all 60 through the app's own parser and
+runner.
+
+- **26 files, none skipped:** D = all 11 Ch.5 files (harness); E = 6.1, 6.2 and 9.1-9.7 (harness);
+  F = 7.1-7.4, 8.1-8.2 and 9.8 (full-program). **60 coding exercises in total now** (Ch.5-13, 15-26, 28).
+  Not covered: Ch.1-4 (MC and Micro-Parsons only), 14, 27.1, 27.2 (conceptual), 25.1.
+- **Fixed by the lead:** 9.8's Starter returned `"none"`, which already passed the no-match scenarios;
+  it now returns `null`.
+
+Known weak spots:
+- 5.7 (no `!`), 5.11 (no loops), 7.1 (`private` fields) and 8.1-8.2 (`this(...)` delegation) can't be
+  enforced by output alone: a student who ignores that instruction can still pass.
+- 5.6 uses `% 0` and `ArithmeticException` as its short-circuit hazard; 5.9 uses a computed sequence
+  (`t*t - 6*t`) rather than a collection; 5.3, 5.4 and 5.6 are very small.
+- 9.3 (optional HashMap) is a small exercise. 9.8's fixed `main` uses `PrintWriter`, which the
+  lesson doesn't teach (a comment explains it).
+- In E's test tables, lists are written as `new java.util.ArrayList<>(java.util.List.of(...))` so the
+  runner can paste them in; the app rewrites them as `[5, 7]` for display, so students never see that.
