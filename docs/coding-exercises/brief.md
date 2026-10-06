@@ -97,8 +97,9 @@ and reviewed the results.
   Starter passes on its own.
 - **Skipped as conceptual, no code to write:** 14 (why design patterns), 27.1 (abstraction and
   program design), 27.2 (ethics and licensing, MC-only). Ch.25 is later (needs WPILib 2027 jars).
-- **App support:** harness exercises are interactive now; the 18 full-program sections are
-  hidden by the app's parser until the full-program screen (scenario input/output) is built.
+- **App support:** harness and full-program exercises are both interactive (full-program screen
+  added 2026-10-06; every one of the 28 was run through the app's own parser and runner with its
+  model solution and its untouched Starter).
 - **Known weak spots** (a wrong solution can still pass these checks):
   - 17.1: nothing stops `Robot extends Intake` instead of "has an Intake".
   - 17.5: a non-abstract `RobotPart` with an empty `stop()` passes; abstractness isn't checked.

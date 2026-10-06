@@ -341,9 +341,16 @@ Add to the `## Coding` section:
 - **Checker:** `tools/verify_coding_exercises.py` runs every file's model solution (or a
   `--solution-file`) against Piston, for harness and full-program modes. Its harness runner
   must stay identical in behaviour to the app's `codingRunner.ts`.
-- **The app only shows harness mode so far.** Full-program and compile-only sections are
-  skipped (hidden) by the app's parser until their UI is built; the rest of the file stays
-  interactive.
+- **The app shows harness and full-program modes** (full-program screen built 2026-10-06).
+  Full-program runs the student's whole program once per scenario, each with its own stdin,
+  one run after another, and shows expected vs actual output for visible scenarios. Compile-only
+  sections are skipped (hidden) by the app's parser until their UI is built; the rest of the
+  file stays interactive.
+- **Piston limits to raise before deployment:** Piston kills a run that writes more than its
+  output limit (default **1024 bytes**) to stdout or stderr, reporting status `OL`/`EL` with
+  signal SIGKILL. A long compiler error list hits this, and so would a program that prints a
+  lot. The app already tells these apart from a timeout (status `TO`), but the deployed Piston
+  should raise `PISTON_OUTPUT_MAX_SIZE` (e.g. 65536) so students see complete error messages.
 - WPILib 2027 jars still aren't wired into the Piston Java packages (see below); needed
   before any compile-only exercise (Ch.25) can run. No vendor jars (REVLib etc.) are needed:
   Java I/II use no vendor classes.
