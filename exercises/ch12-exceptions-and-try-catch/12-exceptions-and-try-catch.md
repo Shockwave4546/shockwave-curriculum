@@ -1,7 +1,7 @@
 ---
 outlineRef: "12 — Exceptions & try/catch (ORACLE 11.1-16)"
 pairsWith: "[`lessons/ch12-exceptions-and-try-catch/12-exceptions-and-try-catch.md`](../../lessons/ch12-exceptions-and-try-catch/12-exceptions-and-try-catch.md)"
-status: "new — authored exercises (Multiple Choice + Micro-Parsons)"
+status: "new — authored exercises (Multiple Choice + Micro-Parsons + Coding)"
 ---
 
 # Exceptions & try/catch — Exercises
@@ -93,3 +93,93 @@ public class PitNotes
 If `pit_notes.txt` is missing, the output is `No pit notes found - starting fresh`. If it exists, the output is its first line.
 
 **Why this order:** `try` (`g`) and its opening brace (`c`) come first, because the code that might throw has to be inside the `try` block. Inside it, the `Scanner` has to be created (`e`) before anything can be read from it (`a`), and it can only be closed (`i`) after the reading is done. Line `e`, the `Scanner` constructor, is the one that can throw `FileNotFoundException`, which is why it sits inside `try`. The `try` block closes (`h`), and the `catch` (`b`) follows it directly. Its body (`j`, `f`, `d`) holds the fallback message, which only runs if opening the file failed. If opening the file fails, the rest of the `try` block (`a`, `i`) is skipped and execution jumps straight to `f`. Note that `c` and `j` (both an eight-space `{`) are identical, and so are `h` and `d` (both an eight-space `}`). One of each pair belongs to `try` and the other to `catch`, so it doesn't matter which copy goes where, as long as each block gets one opening and one closing brace.
+
+## Coding
+
+**Mode:** harness
+
+**Problem:** A turret only accepts target angles from `0.0` to `180.0` degrees, inclusive. Write two
+methods.
+
+`checkAngle` throws an `IllegalArgumentException` whose message is exactly
+`"Angle out of range: " + degrees` when `degrees` is below `0.0` or above `180.0`, and does nothing
+otherwise.
+
+`firstRejection` takes an array of requested angles and calls `checkAngle` on each one, in order.
+It returns the **message** of the **first** exception that `checkAngle` throws (use `try`/`catch`
+and `getMessage()`). If no request is rejected, it returns `"all accepted"`.
+
+Examples:
+
+- `firstRejection(new double[] {10.0, 240.0, 90.0})` returns `"Angle out of range: 240.0"`
+- `firstRejection(new double[] {0.0, 180.0})` returns `"all accepted"`
+- `firstRejection(new double[] {-5.0})` returns `"Angle out of range: -5.0"`
+
+**Signature:** `public static String firstRejection(double[] requests)`
+
+**Starter:**
+
+```java
+public class Solution
+{
+    public static void checkAngle(double degrees)
+    {
+        // TODO: throw IllegalArgumentException when degrees is out of range
+    }
+
+    public static String firstRejection(double[] requests)
+    {
+        // TODO: return the first rejection's message, or "all accepted"
+    }
+}
+```
+
+**Tests:**
+
+| Visible | Arguments | Expected |
+|---|---|---|
+| yes | `new double[] {10.0, 240.0, 90.0}` | `"Angle out of range: 240.0"` |
+| yes | `new double[] {0.0, 180.0}` | `"all accepted"` |
+| yes | `new double[] {-5.0}` | `"Angle out of range: -5.0"` |
+| no | `new double[] {200.5, 300.0}` | `"Angle out of range: 200.5"` |
+| no | `new double[] {90.0, 181.0}` | `"Angle out of range: 181.0"` |
+| no | `new double[] {}` | `"all accepted"` |
+| no | `new double[] {180.0, 0.0, -0.5, 400.0}` | `"Angle out of range: -0.5"` |
+
+**Solution:**
+
+```java
+public class Solution
+{
+    public static void checkAngle(double degrees)
+    {
+        if (degrees < 0.0 || degrees > 180.0)
+        {
+            throw new IllegalArgumentException("Angle out of range: " + degrees);
+        }
+    }
+
+    public static String firstRejection(double[] requests)
+    {
+        for (double angle : requests)
+        {
+            try
+            {
+                checkAngle(angle);
+            }
+            catch (IllegalArgumentException e)
+            {
+                return e.getMessage();
+            }
+        }
+        return "all accepted";
+    }
+}
+```
+
+**Why:** `checkAngle` is the `throw` side: it builds the exception with a message that includes the
+bad value. `firstRejection` is the `catch` side: the `try` wraps the call that might throw,
+and the `catch` for `IllegalArgumentException` reports `e.getMessage()` instead of ignoring the
+problem. Returning from inside the `catch` stops at the first rejection. Without that, the loop
+keeps going and ends up reporting a later rejection, which the hidden tests with two bad angles
+catch. The `<` and `>` (not `<=` and `>=`) keep `0.0` and `180.0` legal.

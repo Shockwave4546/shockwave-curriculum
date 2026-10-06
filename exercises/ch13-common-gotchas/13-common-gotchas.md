@@ -1,7 +1,7 @@
 ---
 outlineRef: "13 — Common Gotchas (no citation — deck-original content)"
 pairsWith: "[`lessons/ch13-common-gotchas/13-common-gotchas.md`](../../lessons/ch13-common-gotchas/13-common-gotchas.md)"
-status: "new — authored exercises (Multiple Choice + Micro-Parsons)"
+status: "new — authored exercises (Multiple Choice + Micro-Parsons + Coding)"
 ---
 
 # Common Gotchas — Exercises
@@ -78,3 +78,76 @@ public class PitRepairs
 Output: `1`
 
 **Why this order:** The `import` (`h`) comes before the class that uses `ArrayList`. The class line and its brace (`b`, `j`) come next, then the field (`d`), placed at the top of the class as the problem states. `main`'s signature and brace (`g`, `k`) follow. Inside `main`, order is the whole point. The field starts out `null`, so the list has to be constructed (`e`) before anything calls a method on it. Putting `a` first compiles fine but crashes at run time with a `NullPointerException`, because there's no list yet to add to. After construction, the repair is added (`a`), and only then does `size()` (`i`) report `1`. The braces close in reverse: `main`'s body (`c`), then the class's body (`f`).
+
+## Coding
+
+**Mode:** harness
+
+**Problem:** A scouting sheet lists the teams seen in each match as `String`s typed by hand, so they
+are messy: random capitalisation, stray spaces around the name, and `null` where nobody entered
+anything. Write `countMatches`, which returns how many entries in `scouted` name the same team as
+`target`. An entry matches when, after removing the spaces at its start and end, it equals `target`
+ignoring upper/lower case. A `null` entry never matches. `target` is never `null` and has no extra
+spaces.
+
+Examples:
+
+- `countMatches(new String[] {"Shockwave", "Other", "shockwave "}, "Shockwave")` returns `2`
+- `countMatches(new String[] {"  SHOCKWAVE"}, "Shockwave")` returns `1`
+- `countMatches(new String[] {"Alpha", "Beta"}, "Gamma")` returns `0`
+
+**Signature:** `public static int countMatches(String[] scouted, String target)`
+
+**Starter:**
+
+```java
+public class Solution
+{
+    public static int countMatches(String[] scouted, String target)
+    {
+        // TODO: count the entries that name the same team as target
+    }
+}
+```
+
+**Tests:**
+
+| Visible | Arguments | Expected |
+|---|---|---|
+| yes | `new String[] {"Shockwave", "Other", "shockwave "}, "Shockwave"` | `2` |
+| yes | `new String[] {"  SHOCKWAVE"}, "Shockwave"` | `1` |
+| yes | `new String[] {"Alpha", "Beta"}, "Gamma"` | `0` |
+| no | `new String[] {null, "Shockwave", null}, "Shockwave"` | `1` |
+| no | `new String[] {new String("Shockwave"), new String("Shockwave")}, "Shockwave"` | `2` |
+| no | `new String[] {" shockWAVE ", null, "Shock wave", "SHOCKWAVE"}, "Shockwave"` | `2` |
+| no | `new String[] {}, "Shockwave"` | `0` |
+
+**Solution:**
+
+```java
+public class Solution
+{
+    public static int countMatches(String[] scouted, String target)
+    {
+        int count = 0;
+        for (String entry : scouted)
+        {
+            if (entry != null)
+            {
+                String cleaned = entry.trim();
+                if (cleaned.equalsIgnoreCase(target))
+                {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+}
+```
+
+**Why:** This stacks three gotchas from the chapter. `==` on `String`s compares identity, so two
+equal-looking strings can fail it (the `new String(...)` test shows this), and `equalsIgnoreCase`
+compares the characters. `trim()` does not change `entry` because `String` is immutable, so its
+result has to be kept (`cleaned`); calling `entry.trim();` alone does nothing. And calling a method
+on a `null` entry throws `NullPointerException`, so the `null` check has to come first.

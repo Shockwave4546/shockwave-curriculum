@@ -86,3 +86,25 @@ isn't, stop and report it — don't skip verification.
 - Visible/hidden test counts and the checker result
 - The wrong solution(s) tried, and which tests caught them
 - Anything you were unsure about
+
+## Outcome (2026-10-06)
+
+Groups A, B and C ran as three Sonnet/medium agents; the lead re-ran the checker on every file
+and reviewed the results.
+
+- **28 exercise files now have a `## Coding` section** (including 10.3): 10 harness (Ch.10-13,
+  28) and 18 full-program (Ch.15-24, 26). All pass `tools/verify_coding_exercises.py`, and no
+  Starter passes on its own.
+- **Skipped as conceptual, no code to write:** 14 (why design patterns), 27.1 (abstraction and
+  program design), 27.2 (ethics and licensing, MC-only). Ch.25 is later (needs WPILib 2027 jars).
+- **App support:** harness exercises are interactive now; the 18 full-program sections are
+  hidden by the app's parser until the full-program screen (scenario input/output) is built.
+- **Known weak spots** (a wrong solution can still pass these checks):
+  - 17.1: nothing stops `Robot extends Intake` instead of "has an Intake".
+  - 17.5: a non-abstract `RobotPart` with an empty `stop()` passes; abstractness isn't checked.
+  - 28.2 and 28.3: "write it by hand / recursively" isn't enforced (a student could call
+    `Arrays.sort` or use a loop).
+  - 28.1 uses `int[][]` rather than the lesson's `double[][]` with a tolerance, so the
+    tolerance pitfall isn't tested.
+  - 26 (architecture takeaways): the DRY rule (one shared constant) isn't tested.
+  - 11 and 12 ask for slightly more than 10.3 (a nested enum; two methods).

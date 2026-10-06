@@ -1,7 +1,7 @@
 ---
 outlineRef: "15 — Advanced Collections (Set/Queue/Map) (ORACLE 13.1-4)"
 pairsWith: "[`lessons/ch15-advanced-collections/15-advanced-collections.md`](../../lessons/ch15-advanced-collections/15-advanced-collections.md)"
-status: "new — authored exercises (Multiple Choice + Micro-Parsons)"
+status: "new — authored exercises (Multiple Choice + Micro-Parsons + Coding)"
 ---
 
 # Advanced Collections (Set/Queue/Map) — Exercises
@@ -73,3 +73,171 @@ public class HopperStack
 ```
 
 **Why this order:** Both imports (`i`, `d`) come before the class, in either order, since neither depends on the other. The usual class/main scaffolding (`b`, `f`, `h`, `l`) follows. The `Deque` has to be created (`e`) before anything can be added to it. `"Note 1"` must be added (`k`) before `"Note 2"` (`a`). Swapping those two would make `"Note 1"` the most recent piece and change what gets printed. `removeLast()` (`g`) then takes from the same end the pieces were added to, so it returns the most recently added piece, `"Note 2"`. The braces close in reverse: `main`'s body (`c`), then the class's body (`j`).
+
+
+## Coding
+
+**Mode:** full-program
+
+**Problem:** Before a match, the wiring team lists every CAN ID on the robot. Write the class
+`CanChecker` with a static method `findDuplicates` that takes the array of IDs and returns a
+`Set<Integer>` of every ID that appears **more than once**. The set must list the duplicates in the
+order each one was **first caught as a duplicate** while reading the array left to right (the first
+time an ID shows up a second time). Each duplicate ID appears in the set only once, even if it is
+wired three times. If nothing is duplicated, return an empty set.
+
+The fixed `main` reads the number of IDs, then the IDs, and prints the set you return.
+
+For example, the IDs `4 7 4 2 7 7` print `[4, 7]`: `4` repeats at index 2 and `7` repeats at index 4,
+so `4` is caught first. The IDs `1 2 3` print `[]`.
+
+**Starter:**
+
+```java
+import java.util.*;
+
+public class Main
+{
+    // Don't change main
+    public static void main(String[] args)
+    {
+        Scanner in = new Scanner(System.in);
+        int count = in.nextInt();
+        int[] ids = new int[count];
+        for (int i = 0; i < count; i++)
+        {
+            ids[i] = in.nextInt();
+        }
+        System.out.println(CanChecker.findDuplicates(ids));
+    }
+}
+
+class CanChecker
+{
+    public static Set<Integer> findDuplicates(int[] ids)
+    {
+        // TODO: return the IDs that appear more than once, in the order each was first caught
+        return null;
+    }
+}
+```
+
+**Scenario 1 (visible):**
+
+**Input:**
+
+```text
+6
+4 7 4 2 7 7
+```
+
+**Expected output:**
+
+```text
+[4, 7]
+```
+
+**Scenario 2 (visible):**
+
+**Input:**
+
+```text
+3
+1 2 3
+```
+
+**Expected output:**
+
+```text
+[]
+```
+
+**Scenario 3 (hidden):**
+
+**Input:**
+
+```text
+7
+9 3 3 9 12 3 9
+```
+
+**Expected output:**
+
+```text
+[3, 9]
+```
+
+**Scenario 4 (hidden):**
+
+**Input:**
+
+```text
+5
+20 9 9 20 20
+```
+
+**Expected output:**
+
+```text
+[9, 20]
+```
+
+**Scenario 5 (hidden):**
+
+**Input:**
+
+```text
+8
+15 2 31 31 2 8 15 15
+```
+
+**Expected output:**
+
+```text
+[31, 2, 15]
+```
+
+**Solution:**
+
+```java
+import java.util.*;
+
+public class Main
+{
+    // Don't change main
+    public static void main(String[] args)
+    {
+        Scanner in = new Scanner(System.in);
+        int count = in.nextInt();
+        int[] ids = new int[count];
+        for (int i = 0; i < count; i++)
+        {
+            ids[i] = in.nextInt();
+        }
+        System.out.println(CanChecker.findDuplicates(ids));
+    }
+}
+
+class CanChecker
+{
+    public static Set<Integer> findDuplicates(int[] ids)
+    {
+        Set<Integer> seen = new HashSet<Integer>();
+        Set<Integer> duplicates = new LinkedHashSet<Integer>();
+        for (int id : ids)
+        {
+            if (!seen.add(id))
+            {
+                duplicates.add(id);
+            }
+        }
+        return duplicates;
+    }
+}
+```
+
+**Why:** Two sets do two different jobs. `seen` is the lesson's duplicate-ID check: `add` returns
+`false` when the ID is already there, which is exactly the "second time" signal. `duplicates` has to
+remember the order each repeat was caught, so it is a `LinkedHashSet` rather than a `HashSet`; it
+also silently ignores a third `add` of the same ID, so each duplicate is listed once. A plain
+`HashSet` promises no order at all, so it can print `[20, 9]` where scenario 4 expects `[9, 20]`.

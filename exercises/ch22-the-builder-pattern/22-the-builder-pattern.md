@@ -1,7 +1,7 @@
 ---
 outlineRef: "22 — The Builder Pattern (T5817 30.1)"
 pairsWith: "[`lessons/ch22-the-builder-pattern/22-the-builder-pattern.md`](../../lessons/ch22-the-builder-pattern/22-the-builder-pattern.md)"
-status: "new — authored exercises (Multiple Choice + Micro-Parsons)"
+status: "new — authored exercises (Multiple Choice + Micro-Parsons + Coding)"
 ---
 
 # The Builder Pattern — Exercises
@@ -103,3 +103,268 @@ class ArmConfig
 ```
 
 **Why this order:** The chain has to start with the line that creates the builder (`c`). Every other call in the chain is made on the object it produces. The three setters (`e`, `f`, `a`) each set a different, independent field and each return the same builder, so they can go in any order (hence **Interchangeable:** (e, f, a)). `.build();` (`d`) has to come last in the chain. It's the call that turns the builder into the real `ArmConfig`, and it's the only fragment with the semicolon that ends the statement. After it, nothing else can chain on as a builder call. `println` (`b`) comes last, since `config` only exists once the whole chain has finished.
+
+## Coding
+
+**Mode:** full-program
+
+**Problem:** Write the class `MotorConfig` using the Builder Pattern.
+
+- `MotorConfig` has a **`private` constructor** that takes a `Builder`, and `private final` fields for `kP`, `maxRPM`, `minRPM` and
+  `feedforward`. It has getters `double getKP()`, `double getMaxRPM()`, `double getMinRPM()` and `boolean isFeedforward()`.
+- It contains a `public static class Builder` with chainable setters `setKP(double)`, `setMaxRPM(double)`, `setMinRPM(double)` and
+  `enableFeedforward(boolean)`. Each returns the same builder. Every setting starts at `0` (feedforward starts as `false`).
+- `Builder.build()` returns the new `MotorConfig`, **but** if `minRPM` is greater than `maxRPM` it throws an
+  `IllegalArgumentException` with the message `min RPM is above max RPM` instead. Equal values are allowed.
+
+`main` reads the settings (the word `yes` turns feedforward on; any other word leaves the default) and prints the result, or `Invalid: ` plus the exception message.
+
+**Starter:**
+
+```java
+import java.util.Scanner;
+
+public class Main
+{
+    public static void main(String[] args) // Don't change main
+    {
+        Scanner in = new Scanner(System.in);
+        double kP = in.nextDouble();
+        double maxRpm = in.nextDouble();
+        double minRpm = in.nextDouble();
+        String feedforward = in.next();
+        try
+        {
+            MotorConfig.Builder builder = new MotorConfig.Builder()
+                .setKP(kP)
+                .setMaxRPM(maxRpm)
+                .setMinRPM(minRpm);
+            if (feedforward.equals("yes"))
+            {
+                builder.enableFeedforward(true);
+            }
+            MotorConfig config = builder.build();
+            System.out.println("kP: " + config.getKP());
+            System.out.println("RPM range: " + config.getMinRPM() + " to " + config.getMaxRPM());
+            System.out.println("Feedforward: " + config.isFeedforward());
+        }
+        catch (IllegalArgumentException e)
+        {
+            System.out.println("Invalid: " + e.getMessage());
+        }
+    }
+}
+
+// TODO: write the class MotorConfig, with its nested Builder
+```
+
+**Scenario 1 (visible):**
+
+**Input:**
+
+```text
+0.01 5000.0 1000.0 yes
+```
+
+**Expected output:**
+
+```text
+kP: 0.01
+RPM range: 1000.0 to 5000.0
+Feedforward: true
+```
+
+**Scenario 2 (visible):**
+
+**Input:**
+
+```text
+0.5 300.0 -300.0 no
+```
+
+**Expected output:**
+
+```text
+kP: 0.5
+RPM range: -300.0 to 300.0
+Feedforward: false
+```
+
+**Scenario 3 (visible):**
+
+**Input:**
+
+```text
+0.02 100.0 200.0 no
+```
+
+**Expected output:**
+
+```text
+Invalid: min RPM is above max RPM
+```
+
+**Scenario 4 (hidden):**
+
+**Input:**
+
+```text
+0.25 1500.0 1500.0 no
+```
+
+**Expected output:**
+
+```text
+kP: 0.25
+RPM range: 1500.0 to 1500.0
+Feedforward: false
+```
+
+**Scenario 5 (hidden):**
+
+**Input:**
+
+```text
+1.5 6000.0 0.0 yes
+```
+
+**Expected output:**
+
+```text
+kP: 1.5
+RPM range: 0.0 to 6000.0
+Feedforward: true
+```
+
+**Scenario 6 (hidden):**
+
+**Input:**
+
+```text
+0.1 -50.0 -10.0 yes
+```
+
+**Expected output:**
+
+```text
+Invalid: min RPM is above max RPM
+```
+
+**Solution:**
+
+```java
+import java.util.Scanner;
+
+public class Main
+{
+    public static void main(String[] args) // Don't change main
+    {
+        Scanner in = new Scanner(System.in);
+        double kP = in.nextDouble();
+        double maxRpm = in.nextDouble();
+        double minRpm = in.nextDouble();
+        String feedforward = in.next();
+        try
+        {
+            MotorConfig.Builder builder = new MotorConfig.Builder()
+                .setKP(kP)
+                .setMaxRPM(maxRpm)
+                .setMinRPM(minRpm);
+            if (feedforward.equals("yes"))
+            {
+                builder.enableFeedforward(true);
+            }
+            MotorConfig config = builder.build();
+            System.out.println("kP: " + config.getKP());
+            System.out.println("RPM range: " + config.getMinRPM() + " to " + config.getMaxRPM());
+            System.out.println("Feedforward: " + config.isFeedforward());
+        }
+        catch (IllegalArgumentException e)
+        {
+            System.out.println("Invalid: " + e.getMessage());
+        }
+    }
+}
+
+class MotorConfig
+{
+    private final double kP;
+    private final double maxRPM;
+    private final double minRPM;
+    private final boolean feedforward;
+
+    private MotorConfig(Builder builder)
+    {
+        this.kP = builder.kP;
+        this.maxRPM = builder.maxRPM;
+        this.minRPM = builder.minRPM;
+        this.feedforward = builder.feedforward;
+    }
+
+    public double getKP()
+    {
+        return kP;
+    }
+
+    public double getMaxRPM()
+    {
+        return maxRPM;
+    }
+
+    public double getMinRPM()
+    {
+        return minRPM;
+    }
+
+    public boolean isFeedforward()
+    {
+        return feedforward;
+    }
+
+    public static class Builder
+    {
+        private double kP = 0;
+        private double maxRPM = 0;
+        private double minRPM = 0;
+        private boolean feedforward = false;
+
+        public Builder setKP(double kP)
+        {
+            this.kP = kP;
+            return this;
+        }
+
+        public Builder setMaxRPM(double max)
+        {
+            this.maxRPM = max;
+            return this;
+        }
+
+        public Builder setMinRPM(double min)
+        {
+            this.minRPM = min;
+            return this;
+        }
+
+        public Builder enableFeedforward(boolean ff)
+        {
+            this.feedforward = ff;
+            return this;
+        }
+
+        public MotorConfig build()
+        {
+            if (minRPM > maxRPM)
+            {
+                throw new IllegalArgumentException("min RPM is above max RPM");
+            }
+            return new MotorConfig(this);
+        }
+    }
+}
+```
+
+**Why:** Each setter ends with `return this;`, which is what lets `main` chain them, and the target class's constructor is `private` so the only way in is through `build()`. The
+`MotorConfig` constructor copies the builder's finished values into `final` fields. Because `build()` is the one place the object is created, it is also the place to validate. The
+hidden scenarios catch two common mistakes: no validation at all (the `min > max` case builds a nonsense config), and a `>=` check that wrongly rejects `min == max`.
+A builder that forgets to copy a field into the constructor shows up as `0.0` values in the output.

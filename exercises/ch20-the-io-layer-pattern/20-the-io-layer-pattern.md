@@ -1,7 +1,7 @@
 ---
 outlineRef: "20 — The IO-Layer Pattern (ADVKIT 40.1-11, JDP 50.1)"
 pairsWith: "[`lessons/ch20-the-io-layer-pattern/20-the-io-layer-pattern.md`](../../lessons/ch20-the-io-layer-pattern/20-the-io-layer-pattern.md)"
-status: "new — authored exercises (Multiple Choice + Micro-Parsons)"
+status: "new — authored exercises (Multiple Choice + Micro-Parsons + Coding)"
 ---
 
 # The IO-Layer Pattern — Exercises
@@ -180,3 +180,275 @@ class Feeder
 ```
 
 **Why this order:** `runningOnRobot` (`l`) and the declaration of `feederIO` (`b`) both have to exist before the `if` can read one and assign the other. Neither reads the other, so they can go in either order (hence **Interchangeable:** (l, b)). `feederIO` is declared with the *interface* type `FeederIO`, so it can hold either implementation. The braced `if` (`d`, `e`, `f`, `g`) has to come before its matching `else` (`h`, `i`, `j`, `k`) — every `if`/`else` here uses braces (Lesson 5.1) — and between them, `feederIO` is guaranteed to be assigned no matter which branch runs. This is the one place the program decides real vs. simulated. Only after that can the `Feeder` be constructed with the chosen implementation (`a`). `periodic()` (`c`) runs last, since it needs a `feeder` to call. Inside `periodic()`, `Feeder` pulls fresh values into its cached `inputs` and reads from them. It never knows it was handed the simulated version.
+
+## Coding
+
+**Mode:** full-program
+
+**Problem:** Build the simulated hardware layer and the subsystem that uses it. `IntakeIO` and the plain data holder `IntakeInputs`
+are given. You write two classes:
+
+**`IntakeIOSim implements IntakeIO`** pretends to be the motor. It remembers the last voltage it was commanded (starting at `0.0`).
+`updateInputs(inputs)` copies the current state into the inputs object: `inputs.appliedVolts` gets that voltage and
+`inputs.velocityRpm` gets `volts * 400.0`.
+
+**`Intake`** is the subsystem. Its constructor takes an `IntakeIO` (any implementation) and stores it, and it keeps its own `IntakeInputs`
+object. It has four methods:
+
+- `void run(double volts)` sends the command with `io.setVoltage(volts)`.
+- `void periodic()` pulls fresh data **once**, with `io.updateInputs(...)` into its inputs object.
+- `double getAppliedVolts()` and `double getVelocityRpm()` read from the **cached inputs object**, never from the IO layer.
+
+So after `run(...)` the reported values do not change until `periodic()` is called. `main` reads commands until the input ends.
+
+**Starter:**
+
+```java
+import java.util.Scanner;
+
+public class Main
+{
+    public static void main(String[] args) // Don't change main
+    {
+        Scanner in = new Scanner(System.in);
+        Intake intake = new Intake(new IntakeIOSim());
+        while (in.hasNext())
+        {
+            String command = in.next();
+            if (command.equals("run"))
+            {
+                intake.run(in.nextDouble());
+            }
+            else if (command.equals("periodic"))
+            {
+                intake.periodic();
+            }
+            else if (command.equals("report"))
+            {
+                System.out.println("Volts " + intake.getAppliedVolts() + ", velocity " + intake.getVelocityRpm());
+            }
+        }
+    }
+}
+
+interface IntakeIO
+{
+    void updateInputs(IntakeInputs inputs);
+
+    void setVoltage(double volts);
+}
+
+class IntakeInputs
+{
+    public double appliedVolts = 0.0;
+    public double velocityRpm = 0.0;
+}
+
+// TODO: write the class IntakeIOSim
+
+// TODO: write the class Intake
+```
+
+**Scenario 1 (visible):**
+
+**Input:**
+
+```text
+report
+run 6.0
+report
+periodic
+report
+```
+
+**Expected output:**
+
+```text
+Volts 0.0, velocity 0.0
+Volts 0.0, velocity 0.0
+Volts 6.0, velocity 2400.0
+```
+
+**Scenario 2 (visible):**
+
+**Input:**
+
+```text
+run -3.5
+periodic
+report
+```
+
+**Expected output:**
+
+```text
+Volts -3.5, velocity -1400.0
+```
+
+**Scenario 3 (visible):**
+
+**Input:**
+
+```text
+report
+```
+
+**Expected output:**
+
+```text
+Volts 0.0, velocity 0.0
+```
+
+**Scenario 4 (hidden):**
+
+**Input:**
+
+```text
+run 5.0
+periodic
+run 10.0
+report
+periodic
+report
+```
+
+**Expected output:**
+
+```text
+Volts 5.0, velocity 2000.0
+Volts 10.0, velocity 4000.0
+```
+
+**Scenario 5 (hidden):**
+
+**Input:**
+
+```text
+run 2.5
+run 8.0
+periodic
+report
+```
+
+**Expected output:**
+
+```text
+Volts 8.0, velocity 3200.0
+```
+
+**Scenario 6 (hidden):**
+
+**Input:**
+
+```text
+run 1.0
+report
+run 0.0
+periodic
+report
+```
+
+**Expected output:**
+
+```text
+Volts 0.0, velocity 0.0
+Volts 0.0, velocity 0.0
+```
+
+**Solution:**
+
+```java
+import java.util.Scanner;
+
+public class Main
+{
+    public static void main(String[] args) // Don't change main
+    {
+        Scanner in = new Scanner(System.in);
+        Intake intake = new Intake(new IntakeIOSim());
+        while (in.hasNext())
+        {
+            String command = in.next();
+            if (command.equals("run"))
+            {
+                intake.run(in.nextDouble());
+            }
+            else if (command.equals("periodic"))
+            {
+                intake.periodic();
+            }
+            else if (command.equals("report"))
+            {
+                System.out.println("Volts " + intake.getAppliedVolts() + ", velocity " + intake.getVelocityRpm());
+            }
+        }
+    }
+}
+
+interface IntakeIO
+{
+    void updateInputs(IntakeInputs inputs);
+
+    void setVoltage(double volts);
+}
+
+class IntakeInputs
+{
+    public double appliedVolts = 0.0;
+    public double velocityRpm = 0.0;
+}
+
+class IntakeIOSim implements IntakeIO
+{
+    private double volts = 0.0;
+
+    @Override
+    public void updateInputs(IntakeInputs inputs)
+    {
+        inputs.appliedVolts = volts;
+        inputs.velocityRpm = volts * 400.0;
+    }
+
+    @Override
+    public void setVoltage(double volts)
+    {
+        this.volts = volts;
+    }
+}
+
+class Intake
+{
+    private final IntakeIO io;
+    private final IntakeInputs inputs = new IntakeInputs();
+
+    public Intake(IntakeIO io)
+    {
+        this.io = io;
+    }
+
+    public void run(double volts)
+    {
+        io.setVoltage(volts);
+    }
+
+    public void periodic()
+    {
+        io.updateInputs(inputs);
+    }
+
+    public double getAppliedVolts()
+    {
+        return inputs.appliedVolts;
+    }
+
+    public double getVelocityRpm()
+    {
+        return inputs.velocityRpm;
+    }
+}
+```
+
+**Why:** `Intake` only ever holds an `IntakeIO`, so it works with `IntakeIOSim` today and a real-hardware class tomorrow. Commands go out through `setVoltage`;
+inputs come in through `updateInputs`, once per cycle, into one shared `IntakeInputs` object that every getter reads. The scenarios that call `run`
+and then `report` *before* `periodic` expose the classic mistake: a getter or `run` that refreshes the inputs itself would show the new numbers immediately,
+while a correct subsystem still reports the snapshot from the last `periodic()`. Another mistake is `periodic()` that never calls `updateInputs`, so the reports stay at zero forever.
