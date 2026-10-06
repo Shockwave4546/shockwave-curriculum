@@ -36,6 +36,36 @@ The default mode can be overridden for a lesson whose unit of work is clearly th
 **Skipping a lesson is allowed** when a coding exercise genuinely doesn't fit (e.g. a purely
 conceptual lesson like 14 or 27.2). Don't add a section; explain in your report.
 
+## Groups for Ch.5-9 (added 2026-10-06, Java I)
+
+Joe agreed to add Coding exercises to Ch.5-9. Same rules as above, plus the Java I notes below.
+
+| Group | Chapters | Default mode | Files |
+|---|---|---|---|
+| D | 5 | harness | 5.1-5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.12 |
+| E | 6, 9 (except 9.8) | harness | 6.1, 6.2, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7 |
+| F | 7, 8, 9.8 | full-program | 7.1, 7.2, 7.3, 7.4, 8.1-8.2, 9.8 |
+
+**Java I notes (students here have only just learned the language):**
+
+- Use **only what that lesson and the lessons before it teach.** Check the lesson order: no
+  classes before Ch.7, no `ArrayList` before 9.2, no `switch` before 5.12, no recursion, no lambdas.
+  Harness methods in Ch.5-6 and 9 are plain `public static` methods on primitives, `String`s and
+  arrays or `ArrayList`s.
+- **Difficulty:** easier than 10.3. Solvable in 5-12 lines by a student who just finished the
+  lesson. One concept per exercise (a loop, a boolean expression, a `switch`, a string method).
+- **Hidden tests should target the lesson's own Common Pitfalls** (off-by-one, `==` on `String`s,
+  integer division, empty input, the first/last element), not exotic inputs.
+- **Lessons that are theory** (5.11 informal runtime analysis, 5.7 De Morgan as pure logic) can still
+  have a small harness method (e.g. returning a count or a boolean); skip with a reason only if
+  nothing testable fits.
+- **9.8 (text files):** Piston has no input files, so a program must write a file before it reads
+  it, or read from `Scanner(System.in)`. If a file exercise can't be done cleanly, skip it and say so.
+- **F (classes):** full-program exercises use the course's invented classes. Ch.7-8 are where
+  `DriveMotor(int channel)` with `setThrottle(double)` / `getThrottle()` is defined (Ch.4 uses it
+  as a given class), so students may write small classes like `Battery` or `Intake` themselves.
+  The student writes the class; the fixed `main` reads input and prints what the class does.
+
 ## Rules (on top of the conventions doc)
 
 - **Harness mode:** the method must **return** its result (a `void` method can't be checked).
