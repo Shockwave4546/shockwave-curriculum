@@ -228,13 +228,11 @@ shape — an author judgment call per lesson, not a rigid table.
 
 ### Compile-only vs. compile+run
 
-- **Compile-only**: for exercises whose class genuinely needs real WPILib/vendor API
-  surface (verified against actual library source — same rule as the "Real vs. invented
-  API names" section above) where hardware/simulation isn't available under Piston. Ch.25
-  (Command-Based Programming) is the one confirmed case today. Grading is binary — does it
-  compile against the real jar — not logic-correctness; pair with an MC or Micro-Parsons
-  question in the same file if the lesson also needs a correctness check, since
-  compile-only can't provide one on its own.
+- **Compile-only** (original plan, never needed as its own mode): for exercises whose class
+  genuinely needs real WPILib API surface (verified against actual library source — same rule
+  as the "Real vs. invented API names" section above) where hardware/simulation isn't
+  available under Piston. Ch.25 (Command-Based Programming) is the one such case. **Ch.25 was
+  authored as `full-program` instead (2026-10-06): see "Ch.25: construct and inspect" below.**
 - **Compile+run**: everything else — full execution, real pass/fail against test cases.
 - Custom classes standing in for the student's own robot code (`DriveMotor`, `Shooter`,
   etc.) don't need real WPILib jars just because the scenario is robot-flavored — only
@@ -336,7 +334,7 @@ Add to the `## Coding` section:
   path yet.
 - **Next (Joe, 2026-10-05):** author the remaining Coding exercises across the curriculum
   before choosing the final host, since exercises are content and don't depend on it.
-  Scope: Ch.10-28 (Ch.25 last, once WPILib 2027 jars are in Piston); whether Ch.5-9 also get
+  Scope: Ch.10-28 (Ch.25 done 2026-10-06); whether Ch.5-9 also get
   Coding exercises is still to be discussed. Authoring brief: `docs/coding-exercises/brief.md`.
 - **Checker:** `tools/verify_coding_exercises.py` runs every file's model solution (or a
   `--solution-file`) against Piston, for harness and full-program modes. Its harness runner
@@ -351,9 +349,38 @@ Add to the `## Coding` section:
   signal SIGKILL. A long compiler error list hits this, and so would a program that prints a
   lot. The app already tells these apart from a timeout (status `TO`), but the deployed Piston
   should raise `PISTON_OUTPUT_MAX_SIZE` (e.g. 65536) so students see complete error messages.
-- WPILib 2027 jars still aren't wired into the Piston Java packages (see below); needed
-  before any compile-only exercise (Ch.25) can run. No vendor jars (REVLib etc.) are needed:
-  Java I/II use no vendor classes.
+- **WPILib 2027 jars are installed in Piston's Java 25 package** (2026-10-06, version
+  `2027.0.0-alpha-7`, 8 jars) by `tools/piston/install-wpilib-jars.sh`; run it again on any new
+  Piston host (the Azure VM). The jars are on the package's `CLASSPATH` for every Java run, so
+  Java I/II exercises see them too (harmless). Piston must be restarted after installing. No
+  vendor jars (REVLib etc.) are needed: Java I/II use no vendor classes. The jars are an alpha:
+  re-check the exercises when the WPILib version is bumped.
+
+### Ch.25: construct and inspect
+
+The six Ch.25 exercises (25.2-25.7; 25.1 is conceptual and has none) are `full-program`
+exercises that **build** Commands v3 objects and **print facts about them**, without running the
+scheduler. A fixed `main` calls the student's factory methods and prints what a command can report
+right after it is built: `name()`, `requires(mechanism)`, `requirements().size()`, `priority()`,
+`isLowerPriorityThan(...)`, `conflictsWith(...)`. `withAutomaticName()` makes a composition's name
+expose its structure (`A -> B` is a sequence, `(A & B)` a parallel group, and a timeout shows as
+`[2.0 Second timeout]`), which is how the order and the shape of a group are checked.
+
+- **Why not compile-only:** it would only prove the code compiles. Commands can be built and
+  inspected headlessly (only the jars, no hardware), which checks names, requirements, priorities
+  and structure.
+- **What can't be done:** running a command, a `Trigger`, or `Scheduler` needs the third-party
+  `quickbuf` library (`Scheduler`'s static initializer throws `NoClassDefFoundError:
+  us/hebi/quickbuf/ProtoMessage`), which hasn't been approved. Getting it (plus likely the
+  `--add-exports java.base/jdk.internal.vm=ALL-UNNAMED` JVM flag) would allow real behaviour tests
+  with `Scheduler.createIndependentScheduler()`.
+- **25.6 (triggers)** can't even construct a `Trigger` headlessly, so it is a structure check:
+  the fixed `main` reads its own `Main.java`, strips comments, and reports whether a given call
+  (`.onTrue(`, `.whileTrue(` ...) appears. The student's method is also type-checked at compile
+  time through a lambda that is never run. Piston keeps the source as `Main.java` in the working
+  directory, so this works there.
+- Classes the student writes live in the same single file (`Main` first). Mechanism stand-ins
+  such as `DriveMotor(int channel)` are given and marked `// Don't change`.
 
 ## 2026-09 content audit — conventions now in force (Ch.1-28)
 
@@ -399,10 +426,10 @@ need is running and verified:
   `engineer-man/piston`, local commit only, not pushed). Ready-to-deploy built package
   binaries + install instructions are in `~/dev/piston-packages/README.md` — reuse these
   directly on the eventual Azure VM instead of rebuilding.
-- Scope decided so far, not yet built: compile-only checking for WPILib/vendor-library
-  exercises (no hardware simulation); full compile+run (Piston's native behavior) for
-  plain-Java exercises with no outside libraries. WPILib/REVLib/AdvantageKit jars aren't
-  wired into either Java package yet — next step when this work resumes.
+- Scope: full compile+run (Piston's native behavior) for plain-Java exercises; Ch.25 builds
+  and inspects real WPILib 2027 Commands v3 objects without running them (see "Ch.25: construct
+  and inspect"). The WPILib jars are installed in the Java 25 package; no vendor jars
+  (REVLib/AdvantageKit) are used.
 - The `25.0.1` package actually reports `java.version` = `25.0.4.1` (its `build.sh` pulls
   Temurin's latest 25 release), so the label is a pinned name, not the exact patch.
 - VM sizing is in Joe's Azure planning session. Entra ID gating there is superseded: sign-in

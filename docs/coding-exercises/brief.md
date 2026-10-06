@@ -109,3 +109,20 @@ and reviewed the results.
     tolerance pitfall isn't tested.
   - 26 (architecture takeaways): the DRY rule (one shared constant) isn't tested.
   - 11 and 12 ask for slightly more than 10.3 (a nested enum; two methods).
+
+## Ch.25 (added 2026-10-06)
+
+Authored by the lead agent, not the subagents (it needs real WPILib API knowledge). Six
+`full-program` exercises, 25.2-25.7; **25.1 skipped** (conceptual). Design: "Ch.25: construct and
+inspect" in `docs/exercise-authoring-conventions.md`. Needs the WPILib jars in Piston
+(`tools/piston/install-wpilib-jars.sh`). All six pass the checker and the app's own runner, and
+every wrong solution tried (e.g. `noRequirements`, parallel instead of sequence, a missing
+`LOWEST_PRIORITY`, a state machine that cascades transitions, a missing `onFalse`) fails a test.
+
+Known weak spots:
+- 25.2: the length of the pause (2 seconds) isn't visible in the printed facts.
+- 25.3: the commands are only built, never run, so what the priority *does* isn't exercised.
+- 25.6 is a source scan, not a behaviour test: it confirms the calls are present and the code
+  compiles. `.toggleOnTrue(` in place of `.onTrue(` fails only a visible scenario.
+- 25.7: the routine's members and order are checked through its automatic name; the timeout is
+  checked through the same name.
