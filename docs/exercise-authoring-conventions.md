@@ -315,8 +315,9 @@ Add to the `## Coding` section:
 - **Runtime design (decided 2026-10-05, not built yet):** the app grades in the browser. It
   builds a `Main` test runner from the Tests table, sends `Main` + the student's
   `Solution.java` to Piston, and reads one `PASS n …`/`FAIL n …` line per test from stdout.
-  Request path: browser → back end (checks the login session) → a small Python gateway
-  (shared secret, 2-3 concurrent jobs, per-student rate limit) → Piston. The gateway forwards
+  Request path: browser → back end (checks the login session) → the Python gateway
+  (built 2026-10-07 in `tools/piston/gateway/`: shared secret, capped concurrent jobs, per-student
+  limits) → Piston. VM choice and the cap: `tools/piston/README.md`. The gateway forwards
   any code — it must not restrict submissions to exercise-shaped programs, because an open
   "playground" at the end of each section is planned.
 - **Piston file-name quirk:** the Java package's `run` script renames the *first* file by
@@ -356,7 +357,8 @@ Add to the `## Coding` section:
   `run` script now passes `-XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Xshare:auto -Xmx256m
   -XX:CICompilerCount=1` (set by `tools/piston/install-wpilib-jars.sh`), which halves the CPU time:
   0 failures in 360 runs at 1, 3, 6 and 8 simultaneous. At 8 simultaneous, wall time reaches ~2.6 s,
-  close to the 3 s wall limit, so the gateway in front of Piston should still cap concurrency at 2-3.
+  close to the 3 s wall limit, so the gateway in front of Piston caps concurrency (default 3, a setting;
+  measure on the real VM with `tools/piston/gateway/loadtest.py`).
 - **WPILib 2027 jars are installed in Piston's Java 25 package** (2026-10-06, version
   `2027.0.0-alpha-7`, 8 jars, plus `quickbuf-runtime-1.4`, our headless test helper, and the JVM
   flags the scheduler needs) by `tools/piston/install-wpilib-jars.sh`; run it again on any new

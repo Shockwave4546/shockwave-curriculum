@@ -1,0 +1,31 @@
+# Example systemd unit for the Piston gateway. Copy to /etc/systemd/system/piston-gateway.service,
+# put the settings in /etc/piston-gateway.env (chmod 600, owned by root), then:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now piston-gateway
+#
+# /etc/piston-gateway.env, for example:
+#   GATEWAY_SECRET=<output of: python3 -c "import secrets; print(secrets.token_urlsafe(32))">
+#   GATEWAY_HOST=10.0.0.4            # this VM's private address; never a public one
+#   GATEWAY_MAX_CONCURRENT=3         # measure on this VM with loadtest.py, then adjust
+[Unit]
+Description=Piston gateway (limits and forwards student code runs)
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/piston-gateway.env
+ExecStart=/usr/bin/python3 /opt/piston-gateway/gateway.py
+DynamicUser=yes
+Restart=on-failure
+RestartSec=2
+# The gateway only needs to listen and talk to Piston, so lock the rest down.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target
