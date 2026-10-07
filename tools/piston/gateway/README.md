@@ -59,9 +59,29 @@ settings in a root-only env file).
 
 ## Choosing `GATEWAY_MAX_CONCURRENT`
 
-Piston kills a run at 3 CPU-seconds, and a Java run uses about 1.2 CPU-seconds even with the JVM
-flags the installer sets. A machine with N CPUs therefore finishes about N / 1.2 runs per second, and
-runs slow down as they share the CPUs. Measure instead of guessing:
+**The cap is not a limit on how many students can use it.** Once the CPUs are busy, running more at
+once does not finish more runs per second; it only makes each run slower, and Piston kills a run at
+3 seconds. So the cap exists to keep each run well under that limit. Per-run CPU cost: about 0.7-1.0
+CPU-seconds for a simple Java program, about 1.0-1.4 for a Ch.25 scheduler program.
+
+Measured by pinning real runs (the same JVM flags Piston uses) to just 2 CPUs on the dev laptop:
+
+| At once | 2 separate cores: simple / scheduler | 2 threads of one core: simple / scheduler |
+|---|---|---|
+| 1 | 0.44 s / 0.61 s | 0.53 s / 0.75 s |
+| 3 | 1.0 s / 1.5 s | 1.5 s / 2.0 s |
+| 4 | 1.4 s / 2.0 s | 2.0 s / 2.8 s |
+| 5 | 1.7 s / 2.4 s | 2.5 s / **3.4 s** |
+| 6 | 2.1 s / 2.9 s | **3.0 s** / **4.1 s** |
+| 8 | 2.8 s / **3.8 s** | **4.0 s** / **5.5 s** |
+| throughput | 2.8 / 2.0 runs per second | 2.0 / 1.4 runs per second |
+
+(Wall time per run; bold = at or over Piston's 3 s limit. Throughput stays flat from 2 at once upward.)
+
+So a 2-vCPU machine **can** run more than 3 at once: the default of 3 is conservative. Cloud vCPUs are
+usually hardware threads, so use the right-hand column: **3** keeps even the heaviest exercise near 2 s,
+**4** is fine for simple Java but reaches 2.8 s for scheduler programs. A bigger or faster VM allows
+more. Measure on the real VM instead of guessing:
 
 ```bash
 # on the Piston VM, with the gateway running:
@@ -70,8 +90,8 @@ GATEWAY_SECRET=... python3 tools/piston/gateway/loadtest.py --students 12 --runs
 ```
 
 It prints failures, how long a student waits (median and slowest), Piston's CPU time per run, and the
-gateway's peak in-flight. Raise the cap while there are **no failures** and the CPU time stays well
-under 3000 ms and wall time under 3 s; keep it a notch below the point where those degrade.
+gateway's peak in-flight. Raise the cap while there are **no failures** and the slowest wait stays
+around 2 s; keep it a notch below where that degrades.
 
 Measured on the dev laptop (8 cores), cap 3, real Commands v3 scheduler runs, students submitting
 back to back: 0 failures in 138 runs at 3, 8 and 12 students; about 1.17 CPU-seconds per run; 3.7 runs
