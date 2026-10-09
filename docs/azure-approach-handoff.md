@@ -5,6 +5,96 @@ Everything here was checked on the dates shown; prices are West US 2 pay-as-you-
 Prices API, 2026-10-07) and should be re-checked before a purchase. Nothing in this document has been
 deployed to Azure yet except the old Static Web App and test storage listed below.
 
+## 0. Decision (2026-10-08 session): three separate Azure VMs
+
+Joe re-evaluated the hosting and **chose three separate x64 VMs on Azure** (Web, Piston, OpenProject),
+paid from the **Azure Sponsorship credit: $2,000/year, confirmed by Joe in the portal on 2026-10-08**.
+This supersedes the open A/B/C question in section 3 (it is closest to the old option B, with OpenProject
+added and MySQL/MariaDB instead of SQLite). Prices below are **East US 2** pay-as-you-go retail from the
+Azure Retail Prices API on 2026-10-08, 730 h/month; re-check before creating anything.
+
+### 0.1 Configuration and cost
+
+| | OpenProject | Web (Academy) | Piston |
+|---|---|---|---|
+| Size | `Standard_B2als_v2` | `Standard_B2als_v2` | `Standard_B2als_v2` |
+| CPU / RAM | 2 vCPU AMD x64 (burstable) / 4 GiB | same | same |
+| OS | Ubuntu 26.04 LTS (`Canonical:ubuntu-26_04-lts`, offered in eastus2) or 24.04 LTS | same | same |
+| Compute ($0.0376/h) | $27.448 | $27.448 | $27.448 |
+| OS disk: Premium SSD **P4 32 GiB LRS** (OS + app + data, one per VM) | $4.800 | $4.800 | $4.800 |
+| Standard static public IPv4 ($0.005/h) | $3.650 | $3.650 | **none: private, reached from Web over the VNet** |
+| **Per month / per year** | **$35.898 / $430.78** | **$35.898 / $430.78** | **$32.248 / $386.98** |
+
+**Total: $104.04/month, $1,248.53/year** (about $751 of the credit left). Database backups add under
+$1/year (0.3). Not included: outbound data over the free 100 GB/month.
+
+Free or no charge: VNet, network security groups, the Linux OS, DNS (stays on **DreamHost**), TLS
+(**Let's Encrypt**). Admin SSH to Piston goes through the Web VM (jump host).
+
+### 0.2 Why this choice (alternatives checked and rejected)
+
+- **x64 only.** `B2als_v2` is x64 (AMD); the "p" sizes (`B2pls_v2`) are Arm and are not used. **No x64 size
+  has 4 vCPU with 4 GiB**; the smallest 4-vCPU x64 size has 8 GiB, and the cheapest is `B4als_v2` ($97.09/mo).
+- **Combining Web + Piston on one bigger VM costs more:** `B4als_v2` is more than two `B2als_v2`
+  ($0.133/h vs 2 x $0.0376/h). Option "Web + Piston on a B4als_v2" = $1,697/yr. Sharing one `B2als_v2`
+  ($862/yr) was cheaper but rejected: CPU contention during class, and the privileged Piston sandbox would
+  sit on the internet-facing machine.
+- **Container services:** Container Apps and Container Instances **don't allow privileged containers**, so
+  **Piston can't run there**. For OpenProject (always on) they cost more than a VM: Container Apps about
+  $46-152/mo + a separate Postgres ($12.41/mo B1ms + storage); Container Instances about $72/mo + Postgres;
+  App Service B3 about $65 with Postgres. AKS nodes are VMs, so no saving.
+- **OpenProject sizing:** the official minimum (4 cores, 4 GB) is for up to 200 users. Ours: **at most 4
+  active users and 10 accounts**, so 2 vCPU / 4 GiB is enough. Watch memory; resizing to `B2as_v2` (8 GiB)
+  adds $27.45/mo.
+- **Regions:** no US region is cheaper than East US 2 / West US 2 / West US 3 (East US is $1.44/mo more).
+  Central India is about 30% cheaper but means US-India latency and minors' data abroad. Israel Northwest
+  and Jio India are not available to this subscription.
+- **Extra disk later (not needed now):** a second P4 32 GiB data disk is +$4.80/mo; growing the OS disk to
+  P6 64 GiB is +$4.48/mo; a Standard SSD E4 data disk is +$2.40/mo plus per-operation fees.
+
+### 0.3 Backups: databases only
+
+Only the databases hold data that can't be rebuilt. The Web app comes from GitHub, OpenProject from its
+image, Piston from `tools/piston/`, and Let's Encrypt certificates are reissued. **No VM-level backup**:
+Azure Backup would be $5/VM/month plus vault storage, and wasn't chosen.
+
+| What | How | Schedule |
+|---|---|---|
+| Users / progress (**MySQL/MariaDB**, planned) | `mysqldump`, compressed | daily cron on the database VM |
+| OpenProject database **and attachments** (attachments are on disk, not in the database) | OpenProject's built-in backup command | daily cron on the OpenProject VM |
+| Upload | `curl` with a **write-only SAS** (stored access policy, so it can be revoked); no new tool | same cron job |
+
+**Retention:** 14 daily copies (can drop to 7) + 6 monthly copies (the last day of each month).
+
+| Container | Tier | Immutability (WORM) | Lifecycle delete rule |
+|---|---|---|---|
+| `daily` | **Hot** (Cool/Cold have 30/90-day minimum charges) | time-based retention **14 days**, locked | delete after **15 days** |
+| `monthly` | **Cold** (set on upload) | time-based retention **183 days**, locked | delete after **184 days** |
+
+- **Estimated size:** about 1-40 GB in total (MySQL about 1-5 MB/copy, OpenProject database about 10-50
+  MB/copy, attachments 0-2 GB/copy). **Cost: about $0.03-0.56/month.**
+- **Cron job:** dump, compress, upload to `daily/` with a **date-stamped name** (immutable files can't be
+  overwritten). On the last day of the month, also upload to `monthly/` with tier Cold.
+- **Azure does the deleting** (lifecycle rules), so the upload key needs no delete right. Write-only key +
+  locked WORM: neither a compromised VM nor a stolen admin login can delete backups.
+- **Setup:**
+  1. In the portal, once (about 20 minutes): create the storage account, the 2 containers, the lifecycle rules and the SAS.
+  2. Add a retention policy on each container (container > Access policy > Add policy > Time-based retention).
+  3. **While still unlocked, test:** confirm a delete is refused, and confirm the lifecycle rule deletes a copy once it expires.
+  4. Lock both policies.
+  5. Write and test the cron script (about 1 hour).
+- **WORM catches:** a locked policy can't be removed or shortened (it can be extended up to 5 times). The
+  storage account can't be deleted until the last copy expires (up to about 6 months). Microsoft says immutability
+  has no extra charge. **Unverified:** what happens if a lifecycle delete fires before retention ends
+  (hence the 1-day margin and the test before locking).
+
+### 0.4 Still open
+
+- Back-end language and Joe's data-structure draft (section 5). The database is planned to be MySQL/MariaDB,
+  on the Web VM or a different VM (not decided).
+- Measure Piston on the real VM with `loadtest.py`; raise `PISTON_OUTPUT_MAX_SIZE`.
+- Sections 3 and 6 below are kept as history.
+
 ## 1. What Joe wants to decide
 
 How and where to host the **Shockwave Programming Academy** (the Nuxt app in `shockwave-programming-academy`,
@@ -41,7 +131,7 @@ DreamHost with a PHP + MySQL back end and keep only **Piston and OpenProject** o
 may move the web app back to an Azure VM for ease. The SWA workflow is **disabled** (manual only) so pushes
 don't deploy.
 
-## 3. The open decision: where the web app lives
+## 3. The open decision: where the web app lives (superseded 2026-10-08: see section 0)
 
 | | **A: DreamHost web + Azure Piston VM** | **B: everything on Azure VMs** | **C: SWA Free + Blob + Functions + Azure SQL free** |
 |---|---|---|---|
