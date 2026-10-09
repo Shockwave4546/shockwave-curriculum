@@ -10,7 +10,7 @@ deployed to Azure yet except the old Static Web App and test storage listed belo
 Joe re-evaluated the hosting and **chose three separate x64 VMs on Azure** (Web, Piston, OpenProject),
 paid from the **Azure Sponsorship credit: $2,000/year, confirmed by Joe in the portal on 2026-10-08**.
 This supersedes the open A/B/C question in section 3 (it is closest to the old option B, with OpenProject
-added and MySQL/MariaDB instead of SQLite). Prices below are **East US 2** pay-as-you-go retail from the
+added and MariaDB instead of SQLite). Prices below are **East US 2** pay-as-you-go retail from the
 Azure Retail Prices API on 2026-10-08, 730 h/month; re-check before creating anything.
 
 ### 0.1 Configuration and cost
@@ -60,7 +60,7 @@ Azure Backup would be $5/VM/month plus vault storage, and wasn't chosen.
 
 | What | How | Schedule |
 |---|---|---|
-| Users / progress (**MySQL/MariaDB**, planned) | `mysqldump`, compressed | daily cron on the database VM |
+| Users / progress (**MariaDB**, on the Web VM) | `mariadb-dump`, compressed | daily cron on the Web VM |
 | OpenProject database **and attachments** (attachments are on disk, not in the database) | OpenProject's built-in backup command | daily cron on the OpenProject VM |
 | Upload | `curl` with a **write-only SAS** (stored access policy, so it can be revoked); no new tool | same cron job |
 
@@ -71,7 +71,7 @@ Azure Backup would be $5/VM/month plus vault storage, and wasn't chosen.
 | `daily` | **Hot** (Cool/Cold have 30/90-day minimum charges) | time-based retention **14 days**, locked | delete after **15 days** |
 | `monthly` | **Cold** (set on upload) | time-based retention **183 days**, locked | delete after **184 days** |
 
-- **Estimated size:** about 1-40 GB in total (MySQL about 1-5 MB/copy, OpenProject database about 10-50
+- **Estimated size:** about 1-40 GB in total (MariaDB about 1-5 MB/copy, OpenProject database about 10-50
   MB/copy, attachments 0-2 GB/copy). **Cost: about $0.03-0.56/month.**
 - **Cron job:** dump, compress, upload to `daily/` with a **date-stamped name** (immutable files can't be
   overwritten). On the last day of the month, also upload to `monthly/` with tier Cold.
@@ -90,8 +90,8 @@ Azure Backup would be $5/VM/month plus vault storage, and wasn't chosen.
 
 ### 0.4 Still open
 
-- Back-end language and Joe's data-structure draft (section 5). The database is planned to be MySQL/MariaDB,
-  on the Web VM or a different VM (not decided).
+- **Back-end language** (not decided). The data structure is decided (2026-10-09): see the academy repo's
+  `docs/data-structure.md`. **MariaDB on the Web VM.**
 - Measure Piston on the real VM with `loadtest.py`; raise `PISTON_OUTPUT_MAX_SIZE`.
 - Sections 3 and 6 below are kept as history.
 
@@ -213,10 +213,10 @@ student's login, then call the gateway).
 
 ## 5. Not done / loose ends
 
-- **Host decision** (section 3), then the **back end** (login with `password_hash`/scrypt, sessions,
-  progress, teams) and Joe's **data-structure draft** (Team, Admin Mentor, Mentor, Parent, Student; he is
-  writing it; five open design questions were listed: who creates accounts, parent-student links, multiple
-  roles/teams, a site-wide admin, password resets by email).
+- ~~Host decision~~ (done, section 0) and ~~data structure~~ (done 2026-10-09: academy repo
+  `docs/data-structure.md`, which answers the five old questions: who creates accounts, parent-student
+  links, multiple roles/teams, a site-wide admin, password resets by admin, no email). Next: the **back
+  end** (language not decided; login with `password_hash`/scrypt, sessions, progress, teams).
 - Create the **Piston VM** (private, no public IP unless option A/C), install Podman + Piston, run the install
   script, deploy the gateway (example systemd unit provided), raise `PISTON_OUTPUT_MAX_SIZE`, then run
   `loadtest.py` to set the cap. Also the **OpenProject VM** from the older plan
