@@ -90,7 +90,11 @@ Azure Backup would be $5/VM/month plus vault storage, and wasn't chosen.
 
 ### 0.4 Still open
 
-- **Back-end language** (not decided). The data structure is decided (2026-10-09): see the academy repo's
+- **Back end: FastAPI (Python)**, decided 2026-10-09; Nuxt stays a static front end. The reverse proxy routes
+  `/api` and `/piston` to FastAPI. Packages to install once approved: 14 for FastAPI + `PyMySQL`.
+- **Reverse proxy: nginx** (decided 2026-10-09). Ubuntu 26.04 `main`, 1.28.3, with Canonical security updates.
+  Caddy was rejected: its Ubuntu package is 2.6.2 from 2022, in `universe`. TLS comes from `certbot`; the
+  install method (Ubuntu `universe` package v4.0, or the certbot project's snap) is chosen at setup. The data structure is decided (2026-10-09): see the academy repo's
   `docs/data-structure.md`. **MariaDB on the Web VM.**
 - Measure Piston on the real VM with `loadtest.py`; raise `PISTON_OUTPUT_MAX_SIZE`.
 - Sections 3 and 6 below are kept as history.
@@ -216,7 +220,7 @@ student's login, then call the gateway).
 - ~~Host decision~~ (done, section 0) and ~~data structure~~ (done 2026-10-09: academy repo
   `docs/data-structure.md`, which answers the five old questions: who creates accounts, parent-student
   links, multiple roles/teams, a site-wide admin, password resets by admin, no email). Next: the **back
-  end** (language not decided; login with `password_hash`/scrypt, sessions, progress, teams).
+  end** (FastAPI; login with `password_hash`/scrypt, sessions, progress, teams).
 - Create the **Piston VM** (private, no public IP unless option A/C), install Podman + Piston, run the install
   script, deploy the gateway (example systemd unit provided), raise `PISTON_OUTPUT_MAX_SIZE`, then run
   `loadtest.py` to set the cap. Also the **OpenProject VM** from the older plan
