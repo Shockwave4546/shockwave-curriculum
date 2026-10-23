@@ -21,6 +21,36 @@
         "dev"
       ],
       "port": 3000
+    },
+    {
+      "name": "academy-api-demo",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "MARIADB_DATABASE=academy_test",
+        "/home/cjoe/dev/shockwave-programming-academy/backend-api/.venv/bin/uvicorn",
+        "app.main:app",
+        "--app-dir",
+        "/home/cjoe/dev/shockwave-programming-academy/backend-api",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
+      "port": 8000
+    },
+    {
+      "name": "academy-docs",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8744",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "/home/cjoe/dev/shockwave-programming-academy/docs"
+      ],
+      "port": 8744
     }
   ]
 }
