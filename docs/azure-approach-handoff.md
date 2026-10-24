@@ -2,8 +2,16 @@
 
 Written so a new session can revisit the whole Azure and hosting direction **without the old chat**.
 Everything here was checked on the dates shown; prices are West US 2 pay-as-you-go retail (Azure Retail
-Prices API, 2026-10-07) and should be re-checked before a purchase. Nothing in this document has been
-deployed to Azure yet except the old Static Web App and test storage listed below.
+Prices API, 2026-10-07) and should be re-checked before a purchase.
+
+> **Status 2026-10-24: everything in section 0 is deployed and running.** Sections 1-6 below are
+> history from 2026-10-08 (their "not built / not created" rows are out of date). Current docs:
+> academy repo `docs/deploy-azure-academy.md` (Web + Piston VMs, codeacademy.dovershockwave.org),
+> `docs/backups.md` (locked WORM backups, daily report email), `docs/data-structure.md` (accounts and
+> rules); shockwave-openproject repo `docs/deploy-azure.md` (OpenProject VM, projects.dovershockwave.org)
+> and `docs/instructor-guide.md` (the bootcamp). Since then: an admin password reset or new account no
+> longer forces a password change unless the admin ticks the box (2026-10-24); OpenProject's Enterprise
+> banners are hidden and its sample projects are private (2026-10-24).
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
