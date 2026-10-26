@@ -12,6 +12,22 @@ Prices API, 2026-10-07) and should be re-checked before a purchase.
 > and `docs/instructor-guide.md` (the bootcamp). Since then: an admin password reset or new account no
 > longer forces a password change unless the admin ticks the box (2026-10-24); OpenProject's Enterprise
 > banners are hidden and its sample projects are private (2026-10-24).
+>
+> **2026-10-25/26:**
+>
+> - **OpenProject bootcamp revamp (built and live):**
+>   - 49 lessons, a Practice Season with stage reviews, an Engineering Journal wiki, and an illustrated
+>     guide at codeacademy `/bootcamp-guide/`.
+>   - Site working days are the meeting days (Mon/Wed/Thu/Sat/Sun).
+>   - See shockwave-openproject `docs/bootcamp-revamp.md` (status and every decision) and
+>     `docs/instructor-guide.md`.
+> - **Academy:**
+>   - Chapter 1.2 text and narration say the Piston code checker is live.
+>   - 1.1 explains how progress is saved, with **Mark complete** on lessons that have no exercises.
+>   - Tracks after Optional Advanced are staff-only for now.
+>   - See the academy's `docs/site-wireflow.html`, "As built".
+> - **Deploys of the academy site:** Joe runs the rsync himself (Claude Code's auto mode blocks it as a
+>   production deploy).
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
