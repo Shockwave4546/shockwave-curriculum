@@ -170,7 +170,17 @@ const DATA = {
           <li>Use your own IDE, like <strong>VS Code</strong> with the Java extension — genuinely how most FRC teams write real robot code, so it's good practice either way.</li>
           <li>Use an online IDE, like <strong>Replit</strong>, if you don't want to install anything yet.</li>
         </ul>
-        <p>Write and run your code in one of those to see it actually work. This lesson's own exercises are multiple-choice and reorder (Micro-Parsons) puzzles, so you don't need to submit code anywhere to complete them — a text-submit coding checker, for later chapters, is still being built.</p>
+        <p>Write and run your code in one of those for your own projects. Starting in <strong>Chapter 5</strong>, many exercises also have a <strong>Coding</strong> part: you type Java right on the page and press <strong>Run tests</strong>. Your code runs on the academy's own code runner (called <em>Piston</em>) and is checked against tests, so you see straight away which ones pass. You need to be signed in to run code, and your latest version is saved automatically.</p>
+        <p><strong>What it can do:</strong> run the exercise's Java code, show its output and any error messages, and test it against several inputs. The robot chapters use the real FRC libraries (WPILib), without needing a robot.</p>
+        <p><strong>What it can't do:</strong></p>
+        <ul>
+          <li>It isn't a full IDE. It runs only the exercise in front of you, not your own projects.</li>
+          <li>It can't read files from your computer or reach the internet.</li>
+          <li>Your program can't stop and wait for you to type something in. Any input it needs comes from the exercise's tests.</li>
+          <li>It stops any run after a few seconds, so a loop that never ends shows "Took too long".</li>
+          <li>It's practice that checks your own work, not a graded test.</li>
+        </ul>
+        <p>This lesson's own exercises are multiple-choice and reorder (Micro-Parsons) puzzles, so there's no code to run yet.</p>
         <h2>Keywords and Naming</h2>
         <p>Words like <code class="inline">public</code>, <code class="inline">class</code>, and <code class="inline">void</code> are <strong>keywords</strong> — reserved words with a fixed meaning in Java. Keywords are always lowercase.</p>
         <p>Everything else — every name you pick yourself — follows one of three styles:</p>
@@ -203,7 +213,7 @@ System.out.<span class="me">println</span>(<span class="s">"Hi there!"</span>); 
         "Every statement ends with <code class=\"inline\">;</code>.",
         "Three naming styles: lowerCamelCase (variables/methods), PascalCase (classes/interfaces), SCREAMING_SNAKE_CASE (constants).",
         "A compiler checks your code and translates it to run; a syntax error is a mistake it catches before your program ever runs.",
-        "Write and run code in a real IDE (like VS Code) or an online one; this lesson's exercises are multiple-choice and reorder puzzles, not a code checker.",
+        "Write and run your own code in a real IDE (like VS Code) or an online one; from Chapter 5, Coding exercises run on the page with <strong>Run tests</strong> (sign-in needed).",
         "<code class=\"inline\">//</code> and <code class=\"inline\">/* */</code> are comments — the compiler ignores them completely."
       ],
       prov: "csawesome-2026: unit-1-using-objects-and-methods/1.01-introduction-to-algorithms-programming-and-compilers.md (CSA 1.1)"
