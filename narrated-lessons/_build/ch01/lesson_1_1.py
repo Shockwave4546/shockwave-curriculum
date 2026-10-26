@@ -46,6 +46,14 @@ BEATS = [
         "continues": True,
     },
     {
+        "screen": '''<div class="scr-bullets"><h2 class="scr-h2">How Your Progress Is Saved</h2><ul>
+      <li><span class="num">1</span><span>Opening a lesson marks it <strong>viewed</strong>, so <strong>Resume</strong> brings you back.</span></li>
+      <li><span class="num">2</span><span>Solve every part of the <strong>Exercises</strong> tab and the lesson is <strong>done</strong>, or tick <strong>Mark complete</strong> there.</span></li>
+      <li><span class="num">3</span><span>No exercises here: tick <strong>Mark complete</strong> at the end of this lesson.</span></li>
+    </ul></div>''',
+        "speak": "One more thing before we move on: how the academy saves your progress. When you're signed in, opening a lesson marks it as viewed, so Resume on your dashboard brings you right back. A lesson counts as done when you solve every part of its Exercises tab, and that's marked for you automatically. You can also tick Mark complete at the bottom of the Exercises tab yourself. This lesson has no exercises, so when you've finished it, tick Mark complete at the end of the lesson.",
+    },
+    {
         "screen": '''<div class="scr-title">
       <div class="scr-eyebrow">Ch. 1 &middot; Java Foundations</div>
       <h1>Up Next: 1.2</h1>
