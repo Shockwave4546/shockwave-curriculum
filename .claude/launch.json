@@ -65,6 +65,20 @@
         "/home/cjoe/dev/shockwave-openproject/guide"
       ],
       "port": 8745
+    },
+    {
+      "name": "java-tracks",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8746",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "/home/cjoe/dev/shockwave-programming-academy/public"
+      ],
+      "port": 8746
     }
   ]
 }
