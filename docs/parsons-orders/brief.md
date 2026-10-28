@@ -101,6 +101,20 @@ Write the harness in `tools/parsons_orders/`, so it stays in the repo. It must:
 
    If neither works, flag the question.
 
+## Memory limits (required, added after the 10-27 out-of-memory crash)
+
+The first run used up the laptop's memory: three agents had 8 JVMs going at once plus a 2.5 GB Python
+process. The kernel then killed the Claude app. So:
+
+- **Run every harness command inside a memory cap**, so only the harness dies if it grows too big:
+  `systemd-run --user --scope -q -p MemoryMax=1500M -p MemorySwapMax=0 <command>`. Exit code 137
+  means the cap was hit. Make the harness leaner; don't raise the cap.
+- **One JVM at a time** per agent, started with `-Xmx384m`, compiling in batches of at most a few
+  hundred classes. No process pools or parallel JVMs.
+- **Generate permutations lazily** (`itertools.permutations` in a loop, written out in chunks). Never
+  build the whole list in memory, and don't keep every compiled result: keep only the passing orders.
+- Clean up compiled class files between batches.
+
 ## Rules
 
 - **Only edit** the Micro-Parsons sections of `exercises/ch*/*.md`: the new `**Also accepted:**`
