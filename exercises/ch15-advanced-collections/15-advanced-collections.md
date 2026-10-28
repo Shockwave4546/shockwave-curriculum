@@ -56,6 +56,8 @@ Reorder the fragments below into a working program:
 
 **Interchangeable:** (i, d)
 
+**Also accepted:** d, i, b, f, h, l, e, k, a, g, c, j
+
 ```java
 import java.util.ArrayDeque;
 import java.util.Deque;

@@ -41,7 +41,7 @@ else
 
 ## Micro-Parsons
 
-**Problem:** These lines, once correctly ordered, form a complete program that keeps a list of pit repairs. The list is declared as a field at the top of the class, and `main` adds one repair and prints how many repairs are on the list. Watch the order inside `main`: a field that's declared but never assigned an object is `null`, so any method called on it before `new` runs throws a `NullPointerException`.
+**Problem:** These lines, once correctly ordered, form a complete program that keeps a list of pit repairs. The list is declared as a field of the class, and `main` adds one repair and prints how many repairs are on the list. Watch the order inside `main`: a field that's declared but never assigned an object is `null`, so any method called on it before `new` runs throws a `NullPointerException`.
 
 Reorder the fragments below into a working program:
 
@@ -58,6 +58,8 @@ Reorder the fragments below into a working program:
 - k. `    {`
 
 **Answer:** h, b, j, d, g, k, e, a, i, c, f
+
+**Also accepted:** h, b, j, g, k, e, a, i, c, d, f
 
 ```java
 import java.util.ArrayList;
@@ -77,7 +79,7 @@ public class PitRepairs
 
 Output: `1`
 
-**Why this order:** The `import` (`h`) comes before the class that uses `ArrayList`. The class line and its brace (`b`, `j`) come next, then the field (`d`), placed at the top of the class as the problem states. `main`'s signature and brace (`g`, `k`) follow. Inside `main`, order is the whole point. The field starts out `null`, so the list has to be constructed (`e`) before anything calls a method on it. Putting `a` first compiles fine but crashes at run time with a `NullPointerException`, because there's no list yet to add to. After construction, the repair is added (`a`), and only then does `size()` (`i`) report `1`. The braces close in reverse: `main`'s body (`c`), then the class's body (`f`).
+**Why this order:** The `import` (`h`) comes before the class that uses `ArrayList`. The class line and its brace (`b`, `j`) come next, then the field (`d`). The field is conventionally placed at the top of the class, but Java accepts it anywhere in the class body, even below `main`, because it's a class member, not a local variable. `main`'s signature and brace (`g`, `k`) follow. Inside `main`, order is the whole point. The field starts out `null`, so the list has to be constructed (`e`) before anything calls a method on it. Putting `a` first compiles fine but crashes at run time with a `NullPointerException`, because there's no list yet to add to. After construction, the repair is added (`a`), and only then does `size()` (`i`) report `1`. The braces close in reverse: `main`'s body (`c`), then the class's body (`f`).
 
 ## Coding
 

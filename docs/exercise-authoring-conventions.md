@@ -111,19 +111,30 @@ more than once; don't reuse an intermediate version from git history):
    were verified by actually compiling and running the reconstructed program (JDK, no
    external dependencies) rather than just diffing text — worth doing whenever a JDK is
    available, since it catches errors text-diffing alone would miss.
-6. **If two or more fragments are genuinely order-independent relative to each other**
-   (e.g. two unrelated variable declarations, neither reading the other), declare it
-   explicitly with a `**Interchangeable:** (letter, letter, ...)` line right after
-   `**Answer:**` — e.g. `**Interchangeable:** (a, i)`. Multiple independent groups can each
-   get their own parenthesized set on the same line. This isn't optional cosmetic
-   detail — the interactive academy app grades a student's own ordering against the
-   Answer sequence exactly, position by position; an order-independent pair left
-   undeclared gets marked wrong for a legitimately correct answer the moment a student
-   picks the other valid order. Only declare a group when swapping those specific
-   fragments truly doesn't change program behavior — don't declare one just because a
-   fragment's exact position "feels" flexible; verify it the same mechanical way as the
-   Answer sequence itself (reassemble with the swap applied and confirm it still compiles
-   and behaves identically).
+6. **List every other correct order in an `**Also accepted:**` line** (rule since 10-28-2026;
+   it replaces `**Interchangeable:**` for new work). Put it as its own paragraph right after
+   `**Answer:**` (after an existing `**Interchangeable:**` line), before the code block:
+   `**Also accepted:** b, e, f, g, i, h, a, j, c, d; b, e, f, g, h, i, a, j, c, d`. Orders use
+   the Answer's letter format and are separated by `; `, all on one line however long. The
+   academy accepts the Answer, any Interchangeable variant, or any listed order, and highlights
+   a wrong answer against the closest one. An order counts as correct only if **all** of these
+   hold (Joe's decisions, 10-27/10-28-2026):
+   - it compiles, runs and prints byte-identical output with the same exit status;
+   - it still matches with **changed input values** — no orders that match only by luck of the
+     sample data (an empty `if` with its statement moved after the loop, a call moved out of a
+     loop because the data has one match, code moved into a branch that doesn't run here);
+   - **braces stay with their own block**: each `{` directly follows its header at the
+     header's indent, each `}` matches its opener's indent, inner lines are indented deeper —
+     and the order leaves no block empty that isn't empty in the Answer;
+   - it does what the Problem text describes (e.g. 19.1's "inside the lambda", 15's "loads two
+     pieces, then feeds out").
+
+   Independent declarations, reordered methods/members and other genuinely equivalent orders
+   all count. Find them mechanically, never by eye: the harnesses in `tools/parsons_orders/`
+   search every order and verify the list (`docs/parsons-orders/brief.md`). Fragments with
+   identical text are listed once, with the Answer's letter assignment. If the Answer is the
+   only correct order, add no line. Don't make the Problem text pin an order that has no real
+   effect; only pin orders that matter (e.g. 3.1's "reset, then read").
 
 Corrections made while converging on this rule (kept here so the *reasoning* survives,
 not just the current state):
@@ -420,10 +431,9 @@ apply to all new or edited content:
   `setThrottle(double)` / `getThrottle()` (defined in Ch.4); WPILib's `MotorController` interface
   only for interface/polymorphism lessons. The invented robot base class is `RobotPart` (Ch.17.1).
 - Constants are ALL_CAPS. Say "PWM channel", not "CAN ID".
-- **Micro-Parsons:** fragments with identical text must be declared together in
-  `**Interchangeable:**` (the app grades by letter position); fragments differing only by
-  indentation are distinct. Where Java allows whole-block reordering, pin the order in the
-  Problem text. Fixed-scaffold puzzles show the scaffold as a ```java block in the Problem text
+- **Micro-Parsons:** every other correct order goes in `**Also accepted:**` (see rule 6 above;
+  this replaced the old "pin the order in the Problem text" rule on 10-28-2026); fragments
+  differing only by indentation are distinct. Fixed-scaffold puzzles show the scaffold as a ```java block in the Problem text
   (the app takes the Answer program from the code block after `**Answer:**`). Use one Answer
   sequence only — the app cannot parse "Blank 1 / Blank 2".
 - MC-only exercise files (no Micro-Parsons section) are supported; a lesson with

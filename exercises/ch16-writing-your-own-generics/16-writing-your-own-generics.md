@@ -27,7 +27,7 @@ status: "new — authored exercises (Multiple Choice + Micro-Parsons + Coding)"
 
 ## Micro-Parsons
 
-**Problem:** These lines, once correctly ordered, form a complete program: a generic `Tunable<T>` class that can hold a tuning value of any type, plus a `main` method that uses it to store a `Double` gain of `0.05` and print it. The program should print `0.05`. Put the class's field and methods above `main`.
+**Problem:** These lines, once correctly ordered, form a complete program: a generic `Tunable<T>` class that can hold a tuning value of any type, plus a `main` method that uses it to store a `Double` gain of `0.05` and print it. The program should print `0.05`.
 
 Reorder the fragments below into a working program:
 
@@ -48,6 +48,8 @@ Reorder the fragments below into a working program:
 
 **Interchangeable:** (g, k, b)
 
+**Also accepted:** i, c, g, k, e, l, h, a, d, j, b, f; i, c, g, b, k, e, l, h, a, d, j, f; i, c, g, b, e, l, h, a, d, j, k, f; i, c, g, e, l, h, a, d, j, k, b, f; i, c, g, e, l, h, a, d, j, b, k, f; i, c, k, g, b, e, l, h, a, d, j, f; i, c, k, g, e, l, h, a, d, j, b, f; i, c, k, b, g, e, l, h, a, d, j, f; i, c, k, b, e, l, h, a, d, j, g, f; i, c, k, e, l, h, a, d, j, g, b, f; i, c, k, e, l, h, a, d, j, b, g, f; i, c, b, g, k, e, l, h, a, d, j, f; i, c, b, g, e, l, h, a, d, j, k, f; i, c, b, k, g, e, l, h, a, d, j, f; i, c, b, k, e, l, h, a, d, j, g, f; i, c, b, e, l, h, a, d, j, g, k, f; i, c, b, e, l, h, a, d, j, k, g, f; i, c, e, l, h, a, d, j, g, k, b, f; i, c, e, l, h, a, d, j, g, b, k, f; i, c, e, l, h, a, d, j, k, g, b, f; i, c, e, l, h, a, d, j, k, b, g, f; i, c, e, l, h, a, d, j, b, g, k, f; i, c, e, l, h, a, d, j, b, k, g, f
+
 ```java
 public class Tunable<T>
 {
@@ -64,7 +66,7 @@ public class Tunable<T>
 }
 ```
 
-**Why this order:** The class line (`i`) comes first, since it introduces `T`, and its opening brace (`c`) follows. Inside the class, the field (`g`) and the two methods (`k`, `b`) can go in any order among themselves: Java doesn't care whether a field is declared above or below the methods that use it. Putting the field first is just the usual convention. `main` (`e`) and its opening brace (`l`) come next. Inside `main`, the `Tunable<Double>` has to be created (`h`) before anything can be stored in it. The value must be `set` (`a`) before `get` (`d`) can print it, or `get()` would print `null`. The braces close in reverse: `main`'s body (`j`), then the class's body (`f`).
+**Why this order:** The class line (`i`) comes first, since it introduces `T`, and its opening brace (`c`) follows. Inside the class, the field (`g`), the two methods (`k`, `b`) and `main` (`e` with its opening brace `l` and closing brace `j`) can go in any order: Java doesn't care whether a field is declared above or below the methods that use it, or whether `main` comes before or after the other methods. Putting the field first and `main` last is just the usual convention. Inside `main`, the `Tunable<Double>` has to be created (`h`) before anything can be stored in it. The value must be `set` (`a`) before `get` (`d`) can print it, or `get()` would print `null`. The braces close in reverse: `main`'s body (`j`), then the class's body (`f`).
 
 
 ## Coding

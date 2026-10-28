@@ -55,6 +55,8 @@ Reorder the fragments below to complete it:
 
 **Interchangeable:** (e, f, a)
 
+**Also accepted:** c, e, a, f, d, b; c, f, e, a, d, b; c, f, a, e, d, b; c, a, e, f, d, b; c, a, f, e, d, b
+
 ```java
 public class ArmSetup
 {

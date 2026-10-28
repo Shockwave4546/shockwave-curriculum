@@ -15,6 +15,22 @@ to justify it.
 output** as the Answer program. The order in which independent variables are declared or set is not
 something we grade. The Problem text no longer fixes an order that has no real effect.
 
+**Joe's decision (10-28-2026): no orders that match only by luck.** An order that prints the same output
+only because of the specific data or input values in the program is **not** correct. Examples: an
+empty `if` body with its statement moved after the loop; a call moved out of a loop that works only
+because the sample data has one match; code moved into a branch that happens not to run. Check this by
+re-running each candidate with changed input values. Leave such orders out of **Also accepted** and
+leave the Problem/Why text alone for them.
+
+**Joe's decision (10-28-2026): braces stay with their own block.** An order is correct only if the
+assembled code is properly laid out:
+- every `{` belongs to the header line it follows (no bare `{ ... }` blocks made by moving a brace);
+- every `}` has the same indentation as the line that opened its block;
+- every line inside a block is indented further than that block's opening line.
+
+Swapping two brace-only fragments that differ only by indentation therefore makes the order wrong.
+Moving whole methods/members (with their own braces) is still fine.
+
 ## What to do, for every Micro-Parsons question in `exercises/ch*/`
 
 There are about 81, in every exercise file that has a `## Micro-Parsons` section. Some files have more

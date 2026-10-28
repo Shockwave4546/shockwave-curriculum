@@ -113,6 +113,8 @@ Reorder the fragments below to complete it:
 
 **Interchangeable:** (l, b)
 
+**Also accepted:** b, l, d, e, f, g, h, i, j, k, a, c
+
 ```java
 public class FeederDemo
 {

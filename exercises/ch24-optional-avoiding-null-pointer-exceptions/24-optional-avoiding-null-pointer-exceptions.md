@@ -50,8 +50,6 @@ Reorder the fragments below into a working program:
 
 **Answer:** h, e, k, b, j, g, d, a, i, f, c
 
-**Interchangeable:** (a, i)
-
 ```java
 import java.util.Optional;
 
@@ -67,7 +65,7 @@ public class AutoSelection
 }
 ```
 
-**Why this order:** The `import` (`h`) has to come before the class that uses `Optional`. Then come the usual class and `main` lines (`e`, `k`, `b`, `j`). `chosenAuto` (`g`) has to exist before it can be wrapped. `ofNullable` (`d`) is the right way to wrap it, because it might be `null`. `Optional.of(chosenAuto)` would throw immediately on a `null`. Both uses of `auto` (`a` and `i`) have to come after it's created. They can go in either order (hence **Interchangeable:** (a, i)): `auto` is empty here, so `ifPresent` does nothing, and the output is `Selected: None` either way. (That's specific to `chosenAuto` being `null` in *this* program — if a routine had actually been chosen, `ifPresent` would print a "Running ..." line, and swapping the two statements would change which line prints first. Both orders still print the same two lines either way, just in a different sequence.) The braces close in reverse: `main`'s body (`f`), then the class's body (`c`).
+**Why this order:** The `import` (`h`) has to come before the class that uses `Optional`. Then come the usual class and `main` lines (`e`, `k`, `b`, `j`). `chosenAuto` (`g`) has to exist before it can be wrapped. `ofNullable` (`d`) is the right way to wrap it, because it might be `null`. `Optional.of(chosenAuto)` would throw immediately on a `null`. Both uses of `auto` (`a` and `i`) have to come after it's created. `ifPresent` (`a`) comes before the `Selected:` line (`i`): `auto` is empty here, so `ifPresent` does nothing, but once a routine is chosen, the program should print `Running <name>` first and then `Selected: <name>`. The braces close in reverse: `main`'s body (`f`), then the class's body (`c`).
 
 ## Coding
 

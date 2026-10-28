@@ -27,7 +27,7 @@ status: "new — authored exercises (Multiple Choice + Micro-Parsons + Coding)"
 
 ## Micro-Parsons
 
-**Problem:** These lines, once correctly ordered, form a complete program that prints the controller rumble strength for the driver first, then for the operator — with the strength defined once, as a single named constant, instead of repeating the same number in both places. Declare the constant field before `main`.
+**Problem:** These lines, once correctly ordered, form a complete program that prints the controller rumble strength for the driver first, then for the operator — with the strength defined once, as a single named constant, instead of repeating the same number in both places. Declare the constant as a field of the class, not inside `main`.
 
 Reorder the fragments below into a working program:
 
@@ -43,6 +43,8 @@ Reorder the fragments below into a working program:
 
 **Answer:** c, g, e, h, b, f, a, i, d
 
+**Also accepted:** c, g, h, b, f, a, i, e, d
+
 ```java
 public class RumbleAlert
 {
@@ -56,7 +58,7 @@ public class RumbleAlert
 }
 ```
 
-**Why this order:** The class line (`c`) comes first, with its opening brace (`g`) right after. The constant (`e`) is declared at the class level, not inside `main` — a `public static final` field belongs to the class itself, and that's what makes it the single source of truth both `println` lines can read. `main` (`h`) and its opening brace (`b`) come next. The driver's line (`f`) goes before the operator's line (`a`) because the Problem asks for the driver's value to print first — both read the same `RUMBLE_STRENGTH`, so changing the strength later means editing only `e`, never either `println`. Then the braces close in reverse order: `main`'s body (`i`), then the class's body (`d`).
+**Why this order:** The class line (`c`) comes first, with its opening brace (`g`) right after. The constant (`e`) is declared at the class level, not inside `main` — a `public static final` field belongs to the class itself, and that's what makes it the single source of truth both `println` lines can read. Putting it above `main` is the usual style, but Java accepts a field anywhere inside the class, even after `main`. `main` (`h`) and its opening brace (`b`) come next. The driver's line (`f`) goes before the operator's line (`a`) because the Problem asks for the driver's value to print first — both read the same `RUMBLE_STRENGTH`, so changing the strength later means editing only `e`, never either `println`. Then the braces close in reverse order: `main`'s body (`i`), then the class's body (`d`).
 
 ## Coding
 

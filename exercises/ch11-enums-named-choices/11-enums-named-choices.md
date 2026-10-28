@@ -68,6 +68,8 @@ Reorder the fragments below into a working program:
 
 **Interchangeable:** (d, i)
 
+**Also accepted:** b, h, k, e, j, a, g, m, i, d, c, l, f
+
 ```java
 public enum DriveMode
 {
