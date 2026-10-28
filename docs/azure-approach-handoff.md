@@ -28,6 +28,19 @@ Prices API, 2026-10-07) and should be re-checked before a purchase.
 >   - See the academy's `docs/site-wireflow.html`, "As built".
 > - **Deploys of the academy site:** Joe runs the rsync himself (Claude Code's auto mode blocks it as a
 >   production deploy).
+>
+> **10-27/10-28-2026:**
+>
+> - **Micro-Parsons:** each question now lists every other correct order in **Also accepted**, and the
+>   academy accepts them. Long fragment lines wrap, and the sidebar starts collapsed on phones. The rules
+>   are in `docs/exercise-authoring-conventions.md` (rule 6); the harnesses are in `tools/parsons_orders/`,
+>   and the reports and brief are in `docs/parsons-orders/`.
+> - **WPILib version:** the course uses `whenExited` (allwpilib `main`), which isn't in the 2027.0.0-alpha-7
+>   release or our Piston jars yet. Track it in `docs/wpilib-version-tracking.md`.
+> - **Bootcamp:** first real student copy `bootcamp-oliver` (PM track), status reminder on every copy's
+>   Overview, and the 1.1 status callout. See shockwave-openproject `docs/bootcamp-revamp.md`.
+> - **Heavy local jobs:** run them under a `systemd-run --user --scope -p MemoryMax=...` cap (a 10-27
+>   out-of-memory crash killed the Claude app).
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
