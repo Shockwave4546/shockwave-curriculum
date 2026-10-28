@@ -41,6 +41,12 @@ Prices API, 2026-10-07) and should be re-checked before a purchase.
 >   Overview, and the 1.1 status callout. See shockwave-openproject `docs/bootcamp-revamp.md`.
 > - **Heavy local jobs:** run them under a `systemd-run --user --scope -p MemoryMax=...` cap (a 10-27
 >   out-of-memory crash killed the Claude app).
+>
+> **10-28-2026: Java Tracks.** The academy serves every lesson and worked example of Java I, Java II and
+> Optional Advanced on one page, at `/java-tracks/` (with a PDF), linked from the Tracks page. Rebuild it
+> with the academy's `python3 scripts/java-tracks.py` after bumping the submodule. Run it from a regular
+> terminal (Ctrl+Alt+T): the snap Chromium that prints the PDF won't start inside the Claude app. The
+> same applies to the bootcamp guide's PDF.
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
