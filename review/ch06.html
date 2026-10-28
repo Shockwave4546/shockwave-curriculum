@@ -137,7 +137,7 @@ autoName.<span class="me">equals</span>(<span class="s">"BlueAlliance-Left"</spa
         <li><code class="inline">replace(old, new)</code> — a copy with every occurrence of <code class="inline">old</code> swapped for <code class="inline">new</code></li>
         <li><code class="inline">split(regex)</code> — breaks the string apart into a <code class="inline">String[]</code> around a separator</li>
       </ul>
-      <pre class="code"><code><span class="s">"  R2-1622  "</span>.<span class="me">trim</span>();                    <span class="c">// "R2-1622"</span>
+      <pre class="code"><code><span class="s">"  R2-4546  "</span>.<span class="me">trim</span>();                    <span class="c">// "R2-4546"</span>
 <span class="s">"BlueAlliance"</span>.<span class="me">contains</span>(<span class="s">"Alliance"</span>);     <span class="c">// true</span>
 <span class="s">"Left"</span>.<span class="me">equalsIgnoreCase</span>(<span class="s">"LEFT"</span>);         <span class="c">// true</span></code></pre>
       <p>A <code class="inline">String</code> variable can be <code class="inline">null</code> — a reference (Ch.7) pointing at no object at all. Calling a method <em>on</em> a <code class="inline">null</code> String throws a <code class="inline">NullPointerException</code>. If you're comparing against a value that might be <code class="inline">null</code>, put a known-non-null literal first: <code class="inline">"Left".equals(status)</code> never throws even if <code class="inline">status</code> is <code class="inline">null</code>, but <code class="inline">status.equals("Left")</code> does.</p>
