@@ -47,6 +47,10 @@ Prices API, 2026-10-07) and should be re-checked before a purchase.
 > with the academy's `python3 scripts/java-tracks.py` after bumping the submodule. Run it from a regular
 > terminal (Ctrl+Alt+T): the snap Chromium that prints the PDF won't start inside the Claude app. The
 > same applies to the bootcamp guide's PDF.
+>
+> **10-28-2026: team number.** Our team is **4546**. Examples 1.2, 5.1, 5.2, 5.4, 5.5, 6.1 and 7.3, lesson 6.1,
+> narrated lesson 6.1 (and its build script) and review ch06 now say 4546 (20 places). **1622** stays where
+> it is a scouted team (examples 9.3, 15, 28.1, exercise 9.8). Java Tracks HTML + PDF rebuilt and deployed.
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
