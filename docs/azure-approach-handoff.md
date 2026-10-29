@@ -51,6 +51,19 @@ Prices API, 2026-10-07) and should be re-checked before a purchase.
 > **10-28-2026: team number.** Our team is **4546**. Examples 1.2, 5.1, 5.2, 5.4, 5.5, 6.1 and 7.3, lesson 6.1,
 > narrated lesson 6.1 (and its build script) and review ch06 now say 4546 (20 places). **1622** stays where
 > it is a scouted team (examples 9.3, 15, 28.1, exercise 9.8). Java Tracks HTML + PDF rebuilt and deployed.
+>
+> **10-28/10-29-2026: ops.**
+>
+> - **SSH key replaced:** the old `academy_azure` key lost its passphrase. The new key `~/.ssh/shockwave_azure` was added
+>   through the Azure portal and the old one removed from all 3 VMs; `~/.ssh/config` uses `IdentityAgent none`. See the
+>   academy's `docs/deploy-azure-academy.md` (step 4.4 note).
+> - **OpenProject uploads fixed:** Rails commands run as root had left `/tmp/carrierwave` and `/tmp/op_uploaded_files`
+>   root-owned in the container, so uploads failed. Both folders now belong to `app`, and `bootcamp/bootcamp.py` runs
+>   Rails as `app` (`podman exec -u app`). See shockwave-openproject `docs/deploy-azure.md`, Troubleshooting.
+> - **Podman review:** nothing missing. Watch the OpenProject VM's memory (3.8 GB, swap in use); the resize option is in
+>   its deploy doc.
+> - **Laptop:** swap is now 8 GB; the global `~/.claude/CLAUDE.md` has a "Cap memory-heavy jobs" rule;
+>   `~/bin/mariadb-start` and `~/bin/mariadb-stop` start and stop the local `academy_mariadb` container.
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
