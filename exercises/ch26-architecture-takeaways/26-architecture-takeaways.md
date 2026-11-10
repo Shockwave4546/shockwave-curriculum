@@ -409,3 +409,62 @@ class IntakeController
 **Why:** Because `main` gives the controller a `Roller`, a `Feeder` or a `Pivot`, `IntakeController` has to accept the interface `Throttled`; a controller that declares `Roller` (or builds its own with `new Roller()`) can't
 drive the others and stops matching the scenarios. `Throttled` and `Rotatable` are kept apart so a `Roller` only promises what it can do. If `Rotatable`'s methods were squeezed into `Throttled`, `Roller` and `Feeder` would
 have to supply a fake `setAngle`, and `main`'s `instanceof Rotatable` check would no longer tell a pivot from a roller. The `0.8` appears exactly once, in `IntakeConstants`, which is what DRY asks for.
+
+## Playground
+
+Not graded. Write anything and run it to see what comes back. Some ideas:
+
+- Add a third `Drivetrain` (for example `MecanumDrive`). Nothing in the loop has to change.
+- Add a static factory, `Drivetrain.create(String kind)`, that returns the right one for `"tank"` or `"swerve"`.
+- Write a method that returns `Optional<Drivetrain>` for a name, and try it with a name that doesn't exist.
+- Build a small `Robot` class with a builder: `new Robot.Builder().name("Volt").drivetrain(...).build()`.
+
+**Starter:**
+
+```java
+import java.util.List;
+
+public class Main
+{
+    public static void main(String[] args)
+    {
+        List<Drivetrain> options = List.of(new TankDrive(), new SwerveDrive());
+        for (Drivetrain d : options)
+        {
+            System.out.println(d.name() + ": " + d.drive(0.5));
+        }
+    }
+}
+
+interface Drivetrain
+{
+    String name();
+    String drive(double speed);
+}
+
+class TankDrive implements Drivetrain
+{
+    public String name()
+    {
+        return "Tank";
+    }
+
+    public String drive(double speed)
+    {
+        return "left and right sides at " + speed;
+    }
+}
+
+class SwerveDrive implements Drivetrain
+{
+    public String name()
+    {
+        return "Swerve";
+    }
+
+    public String drive(double speed)
+    {
+        return "four modules steering, wheels at " + speed;
+    }
+}
+```

@@ -416,6 +416,27 @@ How it works:
 - Classes the student writes live in the same single file (`Main` first). Mechanism stand-ins
   such as `DriveMotor(int channel)` are given and marked `// Don't change`.
 
+## Playground stops (open practice, not graded; added 11-10-2026)
+
+Students can run any Java on Piston from the **Playground** page (`/playground`, in the
+sidebar). A few exercise files also end with a `## Playground` section that opens the same
+editor with starting code and ideas. Nothing there is graded, it never counts toward
+Mark complete, and the student's code is kept only in their browser (localStorage).
+
+**Format:** a `## Playground` section, last in the file:
+
+- one line saying it's not graded, then a short bullet list of ideas: change and predict,
+  extend the starter, and at least one "break it on purpose" idea that names the error to read;
+- `**Starter:**` followed by a ```java block: a complete program, `public class Main` first,
+  any other classes below it in the same file. It must compile and run as written.
+
+Only use what the course has taught by that chapter. `Scanner` on `System.in` isn't taught,
+so the stops that suggest it (from Ch.9, after `Scanner` on files) say how to use the
+**Program input** box. A file with no `**Starter:**` opens with a Hello program.
+
+**Where the stops are (approved 11-10-2026):** none in Ch.1-3, then the last exercise file of
+Ch.4, 6, 9, 13, 18, 26 and 28. Ch.25 has none (its code is WPILib command-based, not plain Java).
+
 ## 2026-09 content audit — conventions now in force (Ch.1-28)
 
 Ch.10-28 worked examples and exercises were authored, then every chapter was audited and fixed

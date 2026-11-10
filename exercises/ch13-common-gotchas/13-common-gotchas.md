@@ -153,3 +153,34 @@ equal-looking strings can fail it (the `new String(...)` test shows this), and `
 compares the characters. `trim()` does not change `entry` because `String` is immutable, so its
 result has to be kept (`cleaned`); calling `entry.trim();` alone does nothing. And calling a method
 on a `null` entry throws `NullPointerException`, so the `null` check has to come first.
+
+## Playground
+
+Not graded. This one is for breaking things on purpose, to see what each mistake looks like when it happens. Some ideas:
+
+- Remove the `try`/`catch` and run it again. Compare the crash output with the caught message.
+- Divide an `int` by zero, then a `double` by zero. Only one of them crashes. Which one, and what does the other print?
+- Compare two strings with `==`, one of them made with `new String("Shockwave")`, then with `.equals`.
+- Call `.length()` on a `String` that is `null`.
+- Make a 2D array grid, or an `enum` with a `switch`, and print it.
+
+**Starter:**
+
+```java
+public class Main
+{
+    public static void main(String[] args)
+    {
+        int[] scores = { 12, 30, 25 };
+        try
+        {
+            System.out.println(scores[3]);
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            System.out.println("Caught: " + e.getMessage());
+        }
+        System.out.println("Still running");
+    }
+}
+```
