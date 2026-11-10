@@ -64,6 +64,12 @@ Prices API, 2026-10-07) and should be re-checked before a purchase.
 >   its deploy doc.
 > - **Laptop:** swap is now 8 GB; the global `~/.claude/CLAUDE.md` has a "Cap memory-heavy jobs" rule;
 >   `~/bin/mariadb-start` and `~/bin/mariadb-stop` start and stop the local `academy_mariadb` container.
+>
+> **11-10-2026: Playground.** Students can run any Java on Piston from the new **Playground** page (sidebar,
+> `/playground`), with an optional input box for `Scanner`. Not graded, and code stays in the browser. The last exercise
+> file of Ch.4, 6, 9, 13, 18, 26 and 28 now ends with a `## Playground` stop (ideas + starting program). Format:
+> `docs/exercise-authoring-conventions.md`, "Playground stops". Academy 377a92c + a2ee8b0, curriculum 6b21f46.
+> Tested locally against Piston (output, compile error, crash, endless loop, input). Joe deploys.
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
