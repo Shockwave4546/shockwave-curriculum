@@ -69,7 +69,8 @@ Prices API, 2026-10-07) and should be re-checked before a purchase.
 > `/playground`), with an optional input box for `Scanner`. Not graded, and code stays in the browser. The last exercise
 > file of Ch.4, 6, 9, 13, 18, 26 and 28 now ends with a `## Playground` stop (ideas + starting program). Format:
 > `docs/exercise-authoring-conventions.md`, "Playground stops". Academy 377a92c + a2ee8b0, curriculum 6b21f46.
-> Tested locally against Piston (output, compile error, crash, endless loop, input). Joe deploys.
+> Tested locally against Piston (output, compile error, crash, endless loop, input). Site deployed 11-10-2026
+> (site rsync only, back end unchanged); live pages checked. Joe to confirm one Run on the live site.
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
