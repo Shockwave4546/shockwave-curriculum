@@ -71,6 +71,12 @@ Prices API, 2026-10-07) and should be re-checked before a purchase.
 > `docs/exercise-authoring-conventions.md`, "Playground stops". Academy 377a92c + a2ee8b0, curriculum 6b21f46.
 > Tested locally against Piston (output, compile error, crash, endless loop, input). Site deployed 11-10-2026
 > (site rsync only, back end unchanged); live pages checked. Joe to confirm one Run on the live site.
+>
+> **11-10-2026: Library.** Printable docs moved to **https://codeacademy.dovershockwave.org/library/** (an index page, not
+> linked from the app; Joe shares it in Slack): `/library/java-tracks/` and `/library/bootcamp-guide/`, each with its
+> PDF. The "Java Tracks: all on one page" card is gone from Tracks. The old `/java-tracks/` and `/bootcamp-guide/` are
+> redirect pages (the OpenProject wiki still links the old guide address; the repo's wiki seed now has the new one).
+> Academy 9d417ca, shockwave-openproject 36c5e9d. Deployed and checked live.
 
 ## 0. Decision (2026-10-08 session): three separate Azure VMs
 
